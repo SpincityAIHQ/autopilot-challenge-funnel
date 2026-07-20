@@ -61,7 +61,7 @@ export const TIERS: readonly Tier[] = [
   {
     id: "founder",
     name: "Founder Seat",
-    priceCents: 88800,
+    priceCents: 111100,
     headline:
       "Bundle + 3 months NuAmenti Diamond at launch + Founding Credits Wall + signed founding-edition book + private Founders room in the InnerCITY + Founders Meetup at InvestFest (Sat Aug 8, Atlanta) + first MCP beta access.",
     bullets: [

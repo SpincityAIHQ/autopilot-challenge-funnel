@@ -328,7 +328,7 @@ function FounderSection() {
             search={{ tier: "founder" }}
             className="mt-6 inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading font-semibold text-primary-foreground transition hover:opacity-90"
           >
-            Claim a Founder Seat — $888
+            Claim a Founder Seat — $1,111
           </Link>
         )}
         <p className="mt-3 text-xs text-muted-foreground">{FOUNDER_DISCLAIMER}</p>
@@ -471,7 +471,7 @@ function FinalCta() {
           search={{ tier: "founder" }}
           className="rounded-md border border-[color:var(--gold)] px-6 py-3 font-heading font-semibold text-[color:var(--gold)] transition hover:bg-[color:var(--gold)]/10"
         >
-          Founder Seat — $888
+          Founder Seat — $1,111
         </Link>
       </div>
       <p className="mx-auto mt-4 max-w-xl text-xs text-muted-foreground">
