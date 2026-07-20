@@ -43,20 +43,22 @@ export interface FounderCtaState {
 function useFounderCta(): FounderCtaState {
   const seats = useFounderSeatsRemaining();
   const cfg = getCommasConfig();
-  if (!cfg.salesEnabled) {
-    return {
-      disabled: false,
-      soldOut: false,
-      availabilityLabel: `${FOUNDER_HARD_CAP} seats total`,
-      buttonLabel: (fallback) => fallback,
-    };
-  }
+  // Verified zero is authoritative regardless of sales gate: never advertise
+  // an available Founder seat if inventory says none remain.
   if (seats.status === "ok" && seats.remaining <= 0) {
     return {
       disabled: true,
       soldOut: true,
       availabilityLabel: "SOLD OUT",
       buttonLabel: () => "Founder Seats sold out",
+    };
+  }
+  if (!cfg.salesEnabled) {
+    return {
+      disabled: false,
+      soldOut: false,
+      availabilityLabel: `${FOUNDER_HARD_CAP} seats total`,
+      buttonLabel: (fallback) => fallback,
     };
   }
   if (seats.status !== "ok") {
@@ -74,6 +76,7 @@ function useFounderCta(): FounderCtaState {
     buttonLabel: (fallback) => fallback,
   };
 }
+
 
 function Landing() {
   const cfg = getCommasConfig();
