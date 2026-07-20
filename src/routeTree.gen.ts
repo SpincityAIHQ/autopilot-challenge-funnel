@@ -9,38 +9,181 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ConfirmedRouteImport } from './routes/confirmed'
+import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CalendarDay2DoticsRouteImport } from './routes/calendar.day2[.]ics'
+import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.]ics'
+import { Route as ApiPublicWebhooksCommasRouteImport } from './routes/api/public/webhooks/commas'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RefundPolicyRoute = RefundPolicyRouteImport.update({
+  id: '/refund-policy',
+  path: '/refund-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfirmedRoute = ConfirmedRouteImport.update({
+  id: '/confirmed',
+  path: '/confirmed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CalendarDay2DoticsRoute = CalendarDay2DoticsRouteImport.update({
+  id: '/calendar/day2.ics',
+  path: '/calendar/day2.ics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CalendarDay1DoticsRoute = CalendarDay1DoticsRouteImport.update({
+  id: '/calendar/day1.ics',
+  path: '/calendar/day1.ics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicWebhooksCommasRoute = ApiPublicWebhooksCommasRouteImport.update({
+  id: '/api/public/webhooks/commas',
+  path: '/api/public/webhooks/commas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/checkout': typeof CheckoutRoute
+  '/confirmed': typeof ConfirmedRoute
+  '/privacy': typeof PrivacyRoute
+  '/refund-policy': typeof RefundPolicyRoute
+  '/terms': typeof TermsRoute
+  '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
+  '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
+  '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/checkout': typeof CheckoutRoute
+  '/confirmed': typeof ConfirmedRoute
+  '/privacy': typeof PrivacyRoute
+  '/refund-policy': typeof RefundPolicyRoute
+  '/terms': typeof TermsRoute
+  '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
+  '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
+  '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/checkout': typeof CheckoutRoute
+  '/confirmed': typeof ConfirmedRoute
+  '/privacy': typeof PrivacyRoute
+  '/refund-policy': typeof RefundPolicyRoute
+  '/terms': typeof TermsRoute
+  '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
+  '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
+  '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/checkout'
+    | '/confirmed'
+    | '/privacy'
+    | '/refund-policy'
+    | '/terms'
+    | '/calendar/day1.ics'
+    | '/calendar/day2.ics'
+    | '/api/public/webhooks/commas'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/checkout'
+    | '/confirmed'
+    | '/privacy'
+    | '/refund-policy'
+    | '/terms'
+    | '/calendar/day1.ics'
+    | '/calendar/day2.ics'
+    | '/api/public/webhooks/commas'
+  id:
+    | '__root__'
+    | '/'
+    | '/checkout'
+    | '/confirmed'
+    | '/privacy'
+    | '/refund-policy'
+    | '/terms'
+    | '/calendar/day1.ics'
+    | '/calendar/day2.ics'
+    | '/api/public/webhooks/commas'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CheckoutRoute: typeof CheckoutRoute
+  ConfirmedRoute: typeof ConfirmedRoute
+  PrivacyRoute: typeof PrivacyRoute
+  RefundPolicyRoute: typeof RefundPolicyRoute
+  TermsRoute: typeof TermsRoute
+  CalendarDay1DoticsRoute: typeof CalendarDay1DoticsRoute
+  CalendarDay2DoticsRoute: typeof CalendarDay2DoticsRoute
+  ApiPublicWebhooksCommasRoute: typeof ApiPublicWebhooksCommasRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/refund-policy': {
+      id: '/refund-policy'
+      path: '/refund-policy'
+      fullPath: '/refund-policy'
+      preLoaderRoute: typeof RefundPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/confirmed': {
+      id: '/confirmed'
+      path: '/confirmed'
+      fullPath: '/confirmed'
+      preLoaderRoute: typeof ConfirmedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +191,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/calendar/day2.ics': {
+      id: '/calendar/day2.ics'
+      path: '/calendar/day2.ics'
+      fullPath: '/calendar/day2.ics'
+      preLoaderRoute: typeof CalendarDay2DoticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calendar/day1.ics': {
+      id: '/calendar/day1.ics'
+      path: '/calendar/day1.ics'
+      fullPath: '/calendar/day1.ics'
+      preLoaderRoute: typeof CalendarDay1DoticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/webhooks/commas': {
+      id: '/api/public/webhooks/commas'
+      path: '/api/public/webhooks/commas'
+      fullPath: '/api/public/webhooks/commas'
+      preLoaderRoute: typeof ApiPublicWebhooksCommasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CheckoutRoute: CheckoutRoute,
+  ConfirmedRoute: ConfirmedRoute,
+  PrivacyRoute: PrivacyRoute,
+  RefundPolicyRoute: RefundPolicyRoute,
+  TermsRoute: TermsRoute,
+  CalendarDay1DoticsRoute: CalendarDay1DoticsRoute,
+  CalendarDay2DoticsRoute: CalendarDay2DoticsRoute,
+  ApiPublicWebhooksCommasRoute: ApiPublicWebhooksCommasRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
