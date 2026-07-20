@@ -358,7 +358,7 @@ function FitCheck() {
         <ul className="mt-4 space-y-2 text-muted-foreground text-sm">
           <li>· Operators tired of "AI ideas" that never ship.</li>
           <li>· Founders ready to hand one real job to a machine.</li>
-          <li>· People who can spend 2 hours a day, live, for two days.</li>
+          <li>· People who can complete two focused sessions — live when possible, or from included recordings (VIP+ and the GA recordings add-on).</li>
         </ul>
       </div>
       <div className="surface p-6">
@@ -366,7 +366,7 @@ function FitCheck() {
         <ul className="mt-4 space-y-2 text-muted-foreground text-sm">
           <li>· People looking for a done-for-you agency.</li>
           <li>· Anyone expecting an income promise. There is none.</li>
-          <li>· Anyone who prefers pure passive watching — this is a live build.</li>
+          <li>· People who only watch and never build — you leave with a working automation, not notes.</li>
         </ul>
       </div>
     </section>
