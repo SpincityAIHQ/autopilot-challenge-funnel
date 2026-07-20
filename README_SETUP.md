@@ -8,32 +8,42 @@ It is currently in **preview only** and must not be published until the checklis
 ## What's implemented
 
 - Public routes: `/`, `/checkout`, `/confirmed`, `/privacy`, `/terms`, `/refund-policy`
-- Diamond Standard / Galactic Black design system (Orbitron / Rajdhani / Space Mono / Inter), reduced-motion aware, mobile-first
-- Real countdown to `2026-08-01T12:00:00-04:00`. After that instant it shows *"The live challenge has started."* and never resets
-- Tier catalog with exact copy and prices: **GA $77**, **GA-only $22 bump**, **VIP $177**, **Bundle $333**, **Founder $888** (hard cap 33)
-- Founder disclaimer displayed beside every Founder CTA
-- Checkout page: tier selection, GA-only bump, price math, total, separate unchecked email + SMS marketing checkboxes, optional phone (explicitly *not* SMS consent), policy agreement gate
-- **Fail-closed pay button**: when the Commas URL for the selected tier is missing, the button is disabled and reads *"Registration opening soon."* No fake unlocks. No URL-parameter-driven confirmations.
-- Confirmed page: generic thank-you plus two separate `.ics` downloads (Day 1, Day 2, America/New_York) — no URL-based unlock
-- Legal placeholders clearly marked *pending legal review*
-- Event JSON-LD, per-route `<head>`, canonical + `og:url`
-- Two live `.ics` endpoints: `/calendar.day1.ics` and `/calendar.day2.ics`
+- Diamond Standard / Galactic Black design system, reduced-motion aware, mobile-first
+- Countdown to `2026-08-01T12:00:00-04:00`; after that instant it shows *"The live challenge has started."* and never resets
+- Tier catalog with exact copy and prices: **GA $77**, **VIP $177**, **Bundle $333**, **Founder $888** (hard cap 33). The $22 GA recordings bump is a **native Commas order bump inside GA checkout** — this app never shows a bumped total or a fake GA+bump URL
+- Founder disclaimer displayed adjacent to every Founder CTA (landing, Founder section, final CTA, checkout)
+- Handoff `/checkout` is a review-only summary — Commas securely collects buyer details, payment, and marketing consent on the next screen. No PII or consent is passed through URLs
+- **Two independent handoff gates**:
+  - `VITE_CHALLENGE_SALES_ENABLED` (must be literal `"true"`) — global gate
+  - Per-tier Commas URL must exist
+  - Founder additionally requires verified `founder_seats_remaining() > 0` from the safe RPC; an unknown seat state fails closed once sales are enabled
+- Verified availability: at 0 seats remaining and sales enabled → SOLD OUT UI, Founder handoff disabled
+- Neutral confirmation page: heading is *"Payment confirmation pending"*. Access is granted only from the verified webhook and email. Includes a "what to bring" section and a share CTA that never leaks access
+- Legal placeholders (`/privacy`, `/terms`, `/refund-policy`) all `noindex,nofollow`, clearly marked *pending legal review*
+- Two live `.ics` endpoints at the real paths **`/calendar/day1.ics`** and **`/calendar/day2.ics`** (America/New_York)
+- Event JSON-LD represents both sessions accurately via `subEvent`. Public URL fields are intentionally unset until a real domain is configured
+- Video slot accepts only an allowlist (YouTube watch / youtu.be / YouTube embed / Vimeo). Anything else fails closed. Iframe is `loading="lazy"`, `referrerPolicy="no-referrer"`, `allowFullScreen`
+- No runtime Google Fonts calls. Design uses strong local/system fallbacks (Orbitron/Rajdhani/Space Mono/Inter families with `ui-sans-serif`/`ui-monospace`/`system-ui` fallbacks). Install `@fontsource/*` packages later if you want self-hosted glyphs
 - Backend schema:
   - `challenge_registrations`, `challenge_payment_events`, `founder_seats` (33 pre-seeded)
-  - **RLS enabled and locked**: browser cannot create or read paid registrations, payment events, or seats. Only `service_role` writes.
-  - `founder_seats_remaining()` — anon-callable safe aggregate returning an integer
-  - `claim_lowest_founder_seat(_registration_id)` — atomic lowest-open-seat claim with `FOR UPDATE SKIP LOCKED`; raises if seat 34+ would be needed. Executable only by `service_role`.
+  - **RLS enabled and locked**: browser cannot read or write registrations, payment events, or seats. Only `service_role` writes
+  - `founder_seats_remaining()` — anon/authenticated-callable safe integer aggregate
+  - `claim_lowest_founder_seat(uuid)` — atomic lowest-open-seat claim. `EXECUTE` restricted to `service_role`
+  - `fulfill_challenge_payment(...)` — SECURITY DEFINER, `service_role` only. In a single transaction it validates tier, creates or returns the registration idempotently by `commas_payment_id`, and for Founder claims the lowest open seat *before* confirming. If no seat is available it raises and leaves no confirmed registration. Returns registration id, optional seat, and whether it already existed
 - **Disabled-by-default** Commas webhook at `/api/public/webhooks/commas`:
-  - Returns `503` unless `COMMAS_WEBHOOKS_ENABLED=true` and `COMMAS_WEBHOOK_SECRET` are both set
-  - Verifies `x-webhook-signature` as HMAC-SHA256 over the exact raw body before ANY parsing
-  - Envelope: `{ id, type, data }`; supports `payment.succeeded` and `product.purchased` only
-  - Idempotent by `provider_event_id` (unique DB index) AND by `commas_payment_id`
-  - Unknown product ids grant nothing
-  - Founder registrations trigger an atomic seat claim; the DB refuses seat 34
+  - `503` unless `COMMAS_WEBHOOKS_ENABLED=true` AND `COMMAS_WEBHOOK_SECRET` set
+  - HMAC-SHA256 (timing-safe compare) over the **exact raw body** verified before any parsing
+  - Canonical fulfillment event: **`payment.succeeded`** with `data.status === "succeeded"`. `product.purchased` is stored redacted and marked `ignored` (audit only) — it never fulfills
+  - Monetary values are decimal **dollars**; converted with `Math.round(v * 100)` (77.00 → 7700, 49.99 → 4999)
+  - Base tier from `data.item.id`; native order bump detected via `data.order_bumps[].item.id === COMMAS_PRODUCT_ID_GA_BUMP`. Non-GA never bumps. Bump is never a base tier
+  - Envelope validation requires `id`, `type`, `data.status === "succeeded"`, `payment_id`, `item.id`, buyer name + email, finite positive amount, currency. Never fabricates "Unknown", fake email, or `0`
+  - Payload stored **redacted**: event id/type, payment id, status, currency, amount, base item id/title, bump item ids, buyer provider id. Never buyer name/email/phone/address/metadata
+  - Idempotency: duplicate `provider_event_id` reads its prior state — `processed`/`ignored` returns 200; `received`/`error` resumes. Duplicate `commas_payment_id` returns existing fulfillment via the RPC (no second seat claim)
+  - Transient DB errors → 500 (Commas retries). Genuine Founder cap failure → recorded as error and returns deterministic 200 so it does not loop forever; grants nothing
   - No email/SMS delivery — a clean post-verification boundary is left for the outbound provider
-- Tests (Bun test runner): tier math, GA bump, countdown end state, sold-out / fail-closed URL logic, webhook signature verification, envelope parsing, product-id → tier mapping, idempotency helpers
+- Tests (Bun test runner) — see below
 
-Run tests locally with:
+Run tests locally:
 
 ```
 bun test
@@ -45,93 +55,116 @@ bun test
 
 ### 1. Commas configuration
 
-Add these as **runtime env vars** in Project Settings → Secrets. Client keys must be prefixed with `VITE_` to be visible to the browser; server keys must NOT be.
+Add these as **runtime env vars** in Project Settings → Secrets. Client keys must be prefixed with `VITE_` to reach the browser; server keys must NOT be.
 
-Client (browser-visible, used to open Commas checkout):
+Client (browser-visible):
 
 | Name | Purpose |
 | --- | --- |
-| `VITE_COMMAS_CHECKOUT_URL_GA` | Commas hosted checkout URL for GA ($77) |
-| `VITE_COMMAS_CHECKOUT_URL_GA_BUMP` | Optional: single Commas URL that pre-selects GA + bump ($99). If absent, GA+bump falls back to the GA URL and the bump is captured server-side via the mapped product id. |
+| `VITE_CHALLENGE_SALES_ENABLED` | Overall sales gate. Must be the literal string `"true"` for ANY handoff button to enable. |
+| `VITE_COMMAS_CHECKOUT_URL_GA` | Commas hosted checkout URL for GA ($77). The $22 recordings bump is offered **inside** this checkout as a native order bump — do NOT create a separate GA+bump URL |
 | `VITE_COMMAS_CHECKOUT_URL_VIP` | VIP ($177) |
 | `VITE_COMMAS_CHECKOUT_URL_BUNDLE` | Bundle ($333) |
 | `VITE_COMMAS_CHECKOUT_URL_FOUNDER` | Founder Seat ($888) |
-| `VITE_CHALLENGE_PREVIEW_VIDEO_URL` | Optional. If unset, the video slot is hidden entirely — no empty placeholder. |
+| `VITE_CHALLENGE_PREVIEW_VIDEO_URL` | Optional. YouTube (watch / youtu.be / embed) or Vimeo only. Anything else fails closed and the section stays hidden |
 
 Server (never `VITE_`-prefixed):
 
 | Name | Purpose |
 | --- | --- |
-| `COMMAS_WEBHOOKS_ENABLED` | Must be the literal string `true` to activate the webhook. Any other value keeps it disabled. |
-| `COMMAS_WEBHOOK_SECRET` | Shared HMAC secret from Commas. Used to verify `x-webhook-signature`. |
-| `COMMAS_PRODUCT_ID_GA` | Commas product id for the $77 GA ticket. |
-| `COMMAS_PRODUCT_ID_GA_BUMP` | Commas product id representing GA + $22 bump (if Commas models it as a distinct product). |
-| `COMMAS_PRODUCT_ID_VIP` | Commas product id for the $177 VIP tier. |
-| `COMMAS_PRODUCT_ID_BUNDLE` | Commas product id for the $333 Bundle. |
-| `COMMAS_PRODUCT_ID_FOUNDER` | Commas product id for the $888 Founder Seat. |
+| `COMMAS_WEBHOOKS_ENABLED` | Must be the literal string `true` to activate the webhook. Any other value keeps it disabled |
+| `COMMAS_WEBHOOK_SECRET` | Shared HMAC secret from Commas. Used to verify `x-webhook-signature` |
+| `COMMAS_PRODUCT_ID_GA` | Base product id for the $77 GA ticket |
+| `COMMAS_PRODUCT_ID_GA_BUMP` | Order-bump product id for the $22 recordings + completed-map template (attached inside GA checkout) |
+| `COMMAS_PRODUCT_ID_VIP` | $177 VIP |
+| `COMMAS_PRODUCT_ID_BUNDLE` | $333 Bundle |
+| `COMMAS_PRODUCT_ID_FOUNDER` | $888 Founder Seat |
 
-Unknown product ids on inbound webhooks grant nothing. Leave any unused key empty.
+Unknown product ids grant nothing. Leave any unused key empty.
 
-### 2. Commas events to subscribe
+### 2. Commas hosted-checkout wiring
 
-Configure these two events in Commas to POST to:
+For each Commas product, configure:
 
-```
-https://<your-published-domain>/api/public/webhooks/commas
-```
-
-- `payment.succeeded`
-- `product.purchased`
-
-Both are handled. Any other event type is stored, then ignored.
+- `success_url` → `https://<your-published-domain>/confirmed`
+- Cancellation / back URL → `https://<your-published-domain>/` (or the tier's landing anchor)
+- Two separate **unchecked** custom fields inside Commas: **Email marketing consent** and **SMS marketing consent**. Until a verified webhook field mapping for those fields is implemented, this app records both marketing consents as `false` and only sends transactional access. Phone is optional and is not consent
+- Configure webhook events to POST to `https://<your-published-domain>/api/public/webhooks/commas` for exactly:
+  - `payment.succeeded` — canonical fulfillment
+  - `product.purchased` — audit only
 
 ### 3. Provider inventory cap — Founder Seat = 33
 
-The database enforces the cap atomically (`claim_lowest_founder_seat` refuses to hand out seat 34). Mirror this in Commas by setting the Founder product's inventory to exactly **33** so the provider stops selling at the same moment the DB stops claiming.
+The database enforces the cap atomically (`fulfill_challenge_payment` claims the seat before confirming the registration; if no seat, no confirmed registration exists). Mirror this in Commas by setting the Founder product's inventory to exactly **33**.
 
-### 4. Outbound provider (later)
+### 4. Sandbox round-trip
 
-Post-registration email and SMS delivery is intentionally not wired. The webhook leaves a clean boundary after `status = 'processed'`. Choose a provider (e.g. Resend / Postmark for email, Twilio for SMS) and wire it separately, respecting the two independent consent flags (`email_marketing_consent`, `sms_marketing_consent`). Transactional access confirmation must be sent regardless of marketing consent.
+Before flipping `COMMAS_WEBHOOKS_ENABLED=true` in production:
 
-### 5. Policies
+- [ ] Sign a test payload with `COMMAS_WEBHOOK_SECRET` and POST it to the webhook path
+- [ ] Confirm the row appears in `challenge_payment_events` with `status = 'processed'` and no PII in `payload`
+- [ ] Confirm the row in `challenge_registrations` has the expected tier / amount / bump / commas_payment_id
+- [ ] For Founder: confirm one row moved in `founder_seats`
+- [ ] Replay the same event id → response is 200 and no new registration or seat claim
+- [ ] Send a `product.purchased` for the same order → stored `ignored`; no registration created
 
-`/privacy`, `/terms`, and `/refund-policy` are placeholders and marked as such. Have counsel finalize them **before** enabling checkout.
+### 5. Outbound provider (later)
 
-### 6. Public proof
+Post-registration email and SMS delivery is intentionally not wired. The webhook leaves a clean boundary after fulfillment. Wire your provider (Resend/Postmark/Twilio) respecting the two independent consent flags on `challenge_registrations`. Transactional access confirmation must be sent regardless of marketing consent.
 
-The "Receipts are being documented" section is intentional. Do not swap in fabricated testimonials, counters, or activity indicators. Replace it only with real, sourced, documented proof.
+### 6. Policies
 
-### 7. Domain
+`/privacy`, `/terms`, and `/refund-policy` are placeholders (`noindex,nofollow`). Have counsel finalize them **before** flipping the sales gate. The checkout page does not require the user to agree to placeholder policies.
+
+### 7. Public proof
+
+The "Receipts are being documented" section is intentional. Do not swap in fabricated testimonials, counters, or activity indicators.
+
+### 8. Domain
 
 No public URL has been configured. Once a Lovable subdomain or a custom domain is set, revisit:
 
-- Absolute URLs anywhere the migration/webhook path is copied into Commas (see §2)
+- Absolute URLs anywhere the webhook path is copied into Commas
+- Absolute URLs in JSON-LD (currently intentionally omitted)
 - Sitemap (add later once routes are finalized)
 
-### 8. Launch checklist (mobile QA)
+### 9. Launch checklist (mobile QA)
 
 Do all of these on a real phone before flipping publish:
 
 - [ ] Countdown ticks and holds shape at every viewport width
 - [ ] Every tier CTA lands on `/checkout` with the correct tier preselected
-- [ ] Changing tier on the checkout page updates the URL and recalculates the total
-- [ ] GA bump appears only for GA and disappears when switching tiers
-- [ ] Pay button is **disabled and reads "Registration opening soon"** when the Commas URL for the selected tier is not set
-- [ ] Legal / policy checkboxes gate the pay button
-- [ ] Email and SMS marketing checkboxes are separate and default unchecked
-- [ ] Phone is optional and text clearly says it is not SMS consent
-- [ ] `/calendar.day1.ics` and `/calendar.day2.ics` download and open in the OS calendar with `America/New_York`
+- [ ] Pay button is disabled and reads **"Registration opening soon"** when the sales gate is off OR the URL is missing
+- [ ] GA checkout page shows the native-bump copy — no fake $99 total
+- [ ] Founder pay button fails closed if seats-remaining is unknown; shows SOLD OUT at 0
+- [ ] Founder non-equity disclaimer appears adjacent to every Founder CTA including final CTA and checkout
+- [ ] `/calendar/day1.ics` and `/calendar/day2.ics` download and open in the OS calendar with America/New_York
 - [ ] Reduced-motion setting disables animations
-- [ ] Founder section shows the "not equity, shares, an investment, profit participation, or profit-sharing" disclaimer beside every Founder CTA
-- [ ] Sold-out UI has not been enabled (do NOT enable until verified data proves it)
-- [ ] Webhook remains **disabled** until `COMMAS_WEBHOOKS_ENABLED=true`, the secret is set, and a signed test payload has been round-tripped end to end
+- [ ] `/confirmed` heading is neutral; no URL-parameter unlock
+- [ ] Policy pages return `noindex,nofollow`
+- [ ] Webhook remains **disabled** until sandbox round-trip has been signed off (§4)
+
+---
+
+## Test coverage (Bun test)
+
+Files under `src/tests/`:
+
+- `tiers.test.ts` — tier math, GA bump math (server-only), Founder hard cap, no unapproved bullets
+- `checkout-url.test.ts` — fail-closed URL resolution, sales gate behavior (off/on, missing per-tier URL), no GA-bump URL surface
+- `countdown.test.ts` — pre-target countdown, post-target "started" state that never resets
+- `webhook.test.ts` — signature verify (accept/tamper/malformed/missing secret), envelope parsing, allow-listed events, dollars→cents (77.00 → 7700, 49.99 → 4999), strict `payment.succeeded` extraction (status/amount/buyer required), product mapping (bump is not a base tier), GA bump detection via `order_bumps`, redacted payload does not contain buyer PII
+- `video-embed.test.ts` — YouTube watch/short/embed + Vimeo normalization, non-allowlisted URLs fail closed
+- `calendar-routes.test.ts` — the flat route files that produce `/calendar/day1.ics` and `/calendar/day2.ics` exist; ICS content is well-formed
+- `copy.test.ts` — "with me" (not "Ce"), no "Live Q&A both days", real calendar paths on landing + confirmed, GA native-bump copy present, no `$99` on checkout, neutral confirmed heading + "What to bring", JSON-LD has `subEvent` and no `autopilot-challenge.example`, no runtime Google Fonts
 
 ---
 
 ## Explicit non-goals
 
-- No Stripe. No Stripe code, no Stripe language.
-- No calls to external services. No secrets embedded in code.
-- No fake activity, counters, testimonials, or income promises.
-- No URL-parameter-driven unlocks of `/confirmed`.
-- No changes to the NuAmenti project. This project is separate.
+- No Stripe. No Stripe code, no Stripe language
+- No calls to external services. No secrets embedded in code
+- No fake activity, counters, testimonials, or income promises
+- No URL-parameter-driven unlocks of `/confirmed`
+- No fake GA+bump $99 URL or total; the bump lives inside Commas
+- No changes to the NuAmenti project. This project is separate

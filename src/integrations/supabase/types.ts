@@ -143,6 +143,23 @@ export type Database = {
         Returns: number
       }
       founder_seats_remaining: { Args: never; Returns: number }
+      fulfill_challenge_payment: {
+        Args: {
+          _amount_cents: number
+          _bump: boolean
+          _commas_payment_id: string
+          _currency: string
+          _email: string
+          _full_name: string
+          _phone: string
+          _tier: string
+        }
+        Returns: {
+          already_existed: boolean
+          registration_id: string
+          seat_number: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

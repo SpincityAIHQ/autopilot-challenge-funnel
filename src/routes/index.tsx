@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Countdown } from "@/components/Countdown";
-import { TIERS, formatUsd, FOUNDER_DISCLAIMER, FOUNDER_HARD_CAP } from "@/lib/tiers";
+import { TIERS, formatUsd, FOUNDER_DISCLAIMER, FOUNDER_HARD_CAP, GA_BUMP_COPY } from "@/lib/tiers";
 import { getCommasConfig } from "@/lib/challenge-config";
+import { normalizeVideoEmbedUrl } from "@/lib/video-embed";
+import { useFounderSeatsRemaining } from "@/hooks/use-founder-seats";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -10,7 +12,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Two days. You leave with your Autonomy Map and your first working automated job — built live with Ce. Sat Aug 1 + Sun Aug 2, 2026, 12–2 PM ET.",
+          "Two days. You leave with your Autonomy Map and your first working automated job — built live with me. Sat Aug 1 + Sun Aug 2, 2026, 12–2 PM ET.",
       },
       { property: "og:title", content: "The AUTOPILOT Challenge — Aug 1–2, 2026" },
       {
@@ -27,6 +29,7 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   const cfg = getCommasConfig();
+  const safeVideoUrl = normalizeVideoEmbedUrl(cfg.videoUrl ?? null);
 
   return (
     <main className="min-h-screen">
@@ -44,7 +47,7 @@ function Landing() {
       <Faq />
       <Timeline />
       <FinalCta />
-      {cfg.videoUrl ? <VideoEmbed url={cfg.videoUrl} /> : null}
+      {safeVideoUrl ? <VideoEmbed url={safeVideoUrl} /> : null}
       <Footer />
     </main>
   );
@@ -148,13 +151,13 @@ function Agenda() {
       </div>
       <div className="mt-6 flex flex-wrap gap-3 text-sm">
         <a
-          href="/calendar.day1.ics"
+          href="/calendar/day1.ics"
           className="inline-flex items-center rounded-md border border-border px-4 py-2 text-foreground hover:bg-secondary"
         >
           Add Day 1 to calendar
         </a>
         <a
-          href="/calendar.day2.ics"
+          href="/calendar/day2.ics"
           className="inline-flex items-center rounded-md border border-border px-4 py-2 text-foreground hover:bg-secondary"
         >
           Add Day 2 to calendar
@@ -255,6 +258,7 @@ function TierComparison() {
                 {t.bullets.map((b) => (
                   <li key={b}>· {b}</li>
                 ))}
+                {t.id === "ga" ? <li>· {GA_BUMP_COPY}</li> : null}
               </ul>
               {isFounder ? (
                 <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
@@ -276,11 +280,31 @@ function TierComparison() {
   );
 }
 
+function FounderAvailabilityCopy() {
+  const seats = useFounderSeatsRemaining();
+  const cfg = getCommasConfig();
+  // Public copy: with sales gate off or RPC unavailable → honest "33 seats total".
+  // With sales enabled and remaining === 0 → SOLD OUT.
+  if (cfg.salesEnabled && seats.status === "ok" && seats.remaining <= 0) {
+    return (
+      <span className="text-[color:var(--emerald-signal)]">SOLD OUT</span>
+    );
+  }
+  return <>{FOUNDER_HARD_CAP} seats total</>;
+}
+
 function FounderSection() {
+  const seats = useFounderSeatsRemaining();
+  const cfg = getCommasConfig();
+  const soldOut =
+    cfg.salesEnabled && seats.status === "ok" && seats.remaining <= 0;
+
   return (
     <section className="mx-auto max-w-4xl px-5 py-16">
       <div className="surface-raised p-8">
-        <p className="eyebrow">Founder Seat · {FOUNDER_HARD_CAP} seats total</p>
+        <p className="eyebrow">
+          Founder Seat · <FounderAvailabilityCopy />
+        </p>
         <h2 className="mt-3 font-display text-2xl text-foreground sm:text-3xl">
           The 33.
         </h2>
@@ -290,13 +314,23 @@ function FounderSection() {
           the Founders Meetup at InvestFest (Sat Aug 8, Atlanta), and first MCP beta access.
         </p>
         <p className="mt-4 text-sm text-muted-foreground">{FOUNDER_DISCLAIMER}</p>
-        <Link
-          to="/checkout"
-          search={{ tier: "founder" }}
-          className="mt-6 inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading font-semibold text-primary-foreground transition hover:opacity-90"
-        >
-          Claim a Founder Seat — $888
-        </Link>
+        {soldOut ? (
+          <button
+            type="button"
+            disabled
+            className="mt-6 inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading font-semibold text-primary-foreground opacity-50"
+          >
+            Founder Seats sold out
+          </button>
+        ) : (
+          <Link
+            to="/checkout"
+            search={{ tier: "founder" }}
+            className="mt-6 inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading font-semibold text-primary-foreground transition hover:opacity-90"
+          >
+            Claim a Founder Seat — $888
+          </Link>
+        )}
         <p className="mt-3 text-xs text-muted-foreground">{FOUNDER_DISCLAIMER}</p>
       </div>
     </section>
@@ -332,7 +366,7 @@ function FitCheck() {
         <ul className="mt-4 space-y-2 text-muted-foreground text-sm">
           <li>· People looking for a done-for-you agency.</li>
           <li>· Anyone expecting an income promise. There is none.</li>
-          <li>· Anyone who can't be present live either day.</li>
+          <li>· Anyone who prefers pure passive watching — this is a live build.</li>
         </ul>
       </div>
     </section>
@@ -359,7 +393,7 @@ function Faq() {
   const items = [
     {
       q: "What if I can't make it live?",
-      a: "Show up if you can — the whole point is doing it together. VIP and above include recordings; the GA bump adds recordings + the completed-map template to GA.",
+      a: "Show up if you can — the whole point is doing it together. VIP and above include recordings; on GA, an optional $22 recordings + completed-map template add-on is available inside secure Commas checkout.",
     },
     {
       q: "Will you charge my card here?",
@@ -440,6 +474,9 @@ function FinalCta() {
           Founder Seat — $888
         </Link>
       </div>
+      <p className="mx-auto mt-4 max-w-xl text-xs text-muted-foreground">
+        {FOUNDER_DISCLAIMER}
+      </p>
     </section>
   );
 }
@@ -452,7 +489,10 @@ function VideoEmbed({ url }: { url: string }) {
         <iframe
           src={url}
           title="Challenge preview"
-          allow="fullscreen; picture-in-picture"
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          allow="fullscreen; picture-in-picture; encrypted-media"
+          allowFullScreen
           className="h-full w-full"
         />
       </div>

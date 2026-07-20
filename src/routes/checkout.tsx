@@ -4,14 +4,17 @@ import { z } from "zod";
 import {
   TIERS,
   TIER_MAP,
-  GA_BUMP_CENTS,
-  GA_BUMP_LABEL,
-  computeTotalCents,
+  GA_BUMP_COPY,
   formatUsd,
   isTierId,
   FOUNDER_DISCLAIMER,
 } from "@/lib/tiers";
-import { getCommasConfig, resolveCheckoutUrl } from "@/lib/challenge-config";
+import {
+  getCommasConfig,
+  resolveCheckoutUrl,
+  isHandoffAllowed,
+} from "@/lib/challenge-config";
+import { useFounderSeatsRemaining } from "@/hooks/use-founder-seats";
 
 const searchSchema = z.object({
   tier: z.enum(["ga", "vip", "bundle", "founder"]).optional(),
@@ -39,41 +42,37 @@ function Checkout() {
   const navigate = useNavigate();
   const initialTier: import("@/lib/tiers").TierId = isTierId(search.tier) ? search.tier : "ga";
   const [tier, setTier] = useState<import("@/lib/tiers").TierId>(initialTier);
-  const [bump, setBump] = useState(false);
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [emailMkt, setEmailMkt] = useState(false);
-  const [smsMkt, setSmsMkt] = useState(false);
-  const [agreedPolicies, setAgreedPolicies] = useState(false);
 
   const cfg = useMemo(() => getCommasConfig(), []);
+  const seats = useFounderSeatsRemaining();
   const t = TIER_MAP[tier];
-  const total = computeTotalCents(tier, bump);
-  const bumpApplies = tier === "ga" && bump;
-  const checkoutUrl = resolveCheckoutUrl(tier, bump, cfg);
+  const checkoutUrl = resolveCheckoutUrl(tier, cfg);
+  const handoffAllowed = isHandoffAllowed(tier, cfg);
 
-  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const canSubmit =
-    fullName.trim().length >= 2 &&
-    emailValid &&
-    agreedPolicies &&
-    checkoutUrl !== null;
+  // Founder-only additional gate: must have verified seats remaining > 0.
+  const founderBlocked =
+    tier === "founder" &&
+    (seats.status !== "ok" || seats.remaining <= 0);
 
-  const buttonLabel = checkoutUrl
-    ? `Continue to secure payment · ${formatUsd(total)}`
-    : "Registration opening soon";
+  const canSubmit = handoffAllowed && !founderBlocked;
+
+  let buttonLabel = "Registration opening soon";
+  if (canSubmit) {
+    buttonLabel = `Continue to secure payment · ${formatUsd(t.priceCents)}`;
+  } else if (tier === "founder" && seats.status === "ok" && seats.remaining <= 0) {
+    buttonLabel = "Founder Seats sold out";
+  }
 
   function onTierChange(next: string) {
     if (!isTierId(next)) return;
     setTier(next);
-    if (next !== "ga") setBump(false);
     navigate({ to: "/checkout", search: { tier: next } });
   }
 
   function handleContinue() {
     if (!canSubmit || !checkoutUrl) return;
-    // Redirect to Commas hosted checkout. We do NOT collect card data here.
+    // Redirect to Commas hosted checkout. We do NOT collect card data,
+    // buyer identity, or marketing consent on this page — Commas does.
     window.location.href = checkoutUrl;
   }
 
@@ -84,8 +83,8 @@ function Checkout() {
         The AUTOPILOT Challenge
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Card details are collected by Commas on the next screen. This page is a
-        secure summary — we never process payments here.
+        Commas securely collects your buyer details, payment, and consent
+        preferences on the next screen. This page is a review-only summary.
       </p>
 
       <section className="mt-8 surface-raised p-6">
@@ -122,25 +121,9 @@ function Checkout() {
         </div>
 
         {tier === "ga" ? (
-          <label className="mt-4 flex items-start gap-3 rounded-md border border-border p-3">
-            <input
-              type="checkbox"
-              checked={bump}
-              onChange={(e) => setBump(e.target.checked)}
-              className="mt-1 accent-[color:var(--gold)]"
-            />
-            <div className="flex-1">
-              <div className="flex justify-between">
-                <span className="text-sm text-foreground">Add: {GA_BUMP_LABEL}</span>
-                <span className="font-mono text-sm text-foreground">
-                  + {formatUsd(GA_BUMP_CENTS)}
-                </span>
-              </div>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Available only with GA.
-              </p>
-            </div>
-          </label>
+          <p className="mt-4 rounded-md border border-border bg-secondary/30 p-3 text-xs text-muted-foreground">
+            {GA_BUMP_COPY}
+          </p>
         ) : null}
 
         {tier === "founder" ? (
@@ -149,95 +132,22 @@ function Checkout() {
       </section>
 
       <section className="mt-6 surface-raised p-6">
-        <h2 className="font-heading text-lg text-foreground">Your details</h2>
-        <div className="mt-4 space-y-3">
-          <Field
-            id="full_name"
-            label="Full name"
-            value={fullName}
-            onChange={setFullName}
-            required
-            autoComplete="name"
-          />
-          <Field
-            id="email"
-            label="Email"
-            type="email"
-            value={email}
-            onChange={setEmail}
-            required
-            autoComplete="email"
-          />
-          <Field
-            id="phone"
-            label="Phone (optional)"
-            type="tel"
-            value={phone}
-            onChange={setPhone}
-            autoComplete="tel"
-            hint="Providing a phone number is NOT consent to SMS marketing."
-          />
-        </div>
-      </section>
-
-      <section className="mt-6 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">Order summary</h2>
         <dl className="mt-4 space-y-2 text-sm">
-          <Row label={t.name} value={formatUsd(t.priceCents)} />
-          {bumpApplies ? (
-            <Row label={`Bump · ${GA_BUMP_LABEL}`} value={`+ ${formatUsd(GA_BUMP_CENTS)}`} />
-          ) : null}
+          <div className="flex items-baseline justify-between">
+            <dt className="text-muted-foreground">{t.name}</dt>
+            <dd className="font-mono text-foreground">{formatUsd(t.priceCents)}</dd>
+          </div>
           <div className="gold-rule my-2" />
-          <Row label="Total" value={formatUsd(total)} strong />
+          <div className="flex items-baseline justify-between">
+            <dt className="font-heading text-base text-foreground">Subtotal</dt>
+            <dd className="font-mono text-base text-foreground">{formatUsd(t.priceCents)}</dd>
+          </div>
         </dl>
         <p className="mt-3 text-xs text-muted-foreground">
-          Transactional access to the Challenge is separate from any marketing consent.
+          Optional add-ons (like the GA $22 recordings bump) and marketing
+          consent are shown inside secure Commas checkout.
         </p>
-      </section>
-
-      <section className="mt-6 surface-raised p-6">
-        <h2 className="font-heading text-lg text-foreground">Consent</h2>
-        <div className="mt-4 space-y-3">
-          <label className="flex items-start gap-3 text-sm">
-            <input
-              type="checkbox"
-              checked={emailMkt}
-              onChange={(e) => setEmailMkt(e.target.checked)}
-              className="mt-1 accent-[color:var(--gold)]"
-            />
-            <span className="text-muted-foreground">
-              I agree to receive marketing emails from SpincityHQ / NuAmenti.
-              This is optional. Unchecking still confirms my Challenge access.
-            </span>
-          </label>
-          <label className="flex items-start gap-3 text-sm">
-            <input
-              type="checkbox"
-              checked={smsMkt}
-              onChange={(e) => setSmsMkt(e.target.checked)}
-              className="mt-1 accent-[color:var(--gold)]"
-            />
-            <span className="text-muted-foreground">
-              I agree to receive marketing text messages. Message and data rates
-              may apply. This is separate from providing my phone number.
-            </span>
-          </label>
-          <label className="flex items-start gap-3 text-sm">
-            <input
-              type="checkbox"
-              checked={agreedPolicies}
-              onChange={(e) => setAgreedPolicies(e.target.checked)}
-              required
-              className="mt-1 accent-[color:var(--gold)]"
-            />
-            <span className="text-muted-foreground">
-              I've reviewed the{" "}
-              <Link to="/terms" className="underline">Terms</Link>,{" "}
-              <Link to="/privacy" className="underline">Privacy</Link>, and{" "}
-              <Link to="/refund-policy" className="underline">Refund Policy</Link>.
-            </span>
-          </label>
-        </div>
       </section>
 
       <div className="mt-8 flex flex-col gap-3">
@@ -250,67 +160,20 @@ function Checkout() {
         >
           {buttonLabel}
         </button>
-        {!checkoutUrl ? (
+        {!canSubmit ? (
           <p className="text-xs text-muted-foreground">
-            Registration for this tier hasn't opened yet. Check back soon.
+            {tier === "founder" && seats.status === "ok" && seats.remaining <= 0
+              ? "All 33 Founder Seats are claimed."
+              : "Registration for this tier hasn't opened yet. Check back soon."}
           </p>
+        ) : null}
+        {tier === "founder" ? (
+          <p className="text-xs text-muted-foreground">{FOUNDER_DISCLAIMER}</p>
         ) : null}
         <Link to="/" className="text-center text-xs text-muted-foreground hover:text-foreground">
           ← Back to the Challenge
         </Link>
       </div>
     </main>
-  );
-}
-
-function Field({
-  id,
-  label,
-  value,
-  onChange,
-  type = "text",
-  required,
-  autoComplete,
-  hint,
-}: {
-  id: string;
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  type?: string;
-  required?: boolean;
-  autoComplete?: string;
-  hint?: string;
-}) {
-  return (
-    <div>
-      <label htmlFor={id} className="label-mono block">
-        {label}
-        {required ? <span className="ml-1 text-[color:var(--gold)]">*</span> : null}
-      </label>
-      <input
-        id={id}
-        type={type}
-        required={required}
-        autoComplete={autoComplete}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-[color:var(--gold)]"
-      />
-      {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
-    </div>
-  );
-}
-
-function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
-  return (
-    <div className="flex items-baseline justify-between">
-      <dt className={strong ? "font-heading text-base text-foreground" : "text-muted-foreground"}>
-        {label}
-      </dt>
-      <dd className={`font-mono ${strong ? "text-base text-foreground" : "text-foreground"}`}>
-        {value}
-      </dd>
-    </div>
   );
 }

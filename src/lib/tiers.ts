@@ -1,7 +1,10 @@
 /**
  * Tier catalog for The AUTOPILOT Challenge.
  * Prices are the public source of truth for display and math.
- * Payment collection happens through Commas — this app never charges cards itself.
+ * Payment collection happens through Commas — this app never charges cards.
+ *
+ * The $22 GA recordings bump is a NATIVE Commas order bump inside the GA
+ * checkout. It does NOT change the pre-Commas total shown on this site.
  */
 
 export type TierId = "ga" | "vip" | "bundle" | "founder";
@@ -12,12 +15,13 @@ export interface Tier {
   priceCents: number;
   headline: string;
   bullets: string[];
-  bumpEligible: boolean;
   hardCap?: number;
 }
 
 export const GA_BUMP_CENTS = 2200;
 export const GA_BUMP_LABEL = "Recordings + completed-map template — forever";
+export const GA_BUMP_COPY =
+  "Optional $22 recordings + completed-map template add-on available inside secure Commas checkout.";
 
 export const TIERS: readonly Tier[] = [
   {
@@ -28,9 +32,7 @@ export const TIERS: readonly Tier[] = [
     bullets: [
       "Sat Aug 1 + Sun Aug 2 · 12–2 PM ET",
       "Companion workbook",
-      "Live Q&A both days",
     ],
-    bumpEligible: true,
   },
   {
     id: "vip",
@@ -42,7 +44,6 @@ export const TIERS: readonly Tier[] = [
       "VIP Hour after Day 1 and Day 2 with live hot seats",
       "Recordings included",
     ],
-    bumpEligible: false,
   },
   {
     id: "bundle",
@@ -56,7 +57,6 @@ export const TIERS: readonly Tier[] = [
       "Companion PDF workbook — delivered now",
       "60 days of NuAmenti Gold, activating Aug 10",
     ],
-    bumpEligible: false,
   },
   {
     id: "founder",
@@ -73,7 +73,6 @@ export const TIERS: readonly Tier[] = [
       "Founders Meetup — Sat Aug 8, InvestFest, Atlanta",
       "First MCP beta access",
     ],
-    bumpEligible: false,
     hardCap: 33,
   },
 ] as const;
@@ -91,8 +90,8 @@ export function isTierId(value: unknown): value is TierId {
 }
 
 /**
- * Compute the total in cents.
- * Bump is ONLY allowed on GA. Any other tier ignores the bump flag.
+ * Server-side total in cents. Bump is ONLY valid on GA. Kept for webhook
+ * reconciliation math; the public site never shows a bumped total.
  */
 export function computeTotalCents(tier: TierId, bump: boolean): number {
   const base = TIER_MAP[tier].priceCents;

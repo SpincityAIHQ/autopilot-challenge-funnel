@@ -4,6 +4,7 @@ export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
       { title: "Privacy Policy — The AUTOPILOT Challenge" },
+      { name: "robots", content: "noindex,nofollow" },
       { name: "description", content: "Privacy policy placeholder. Legal review pending." },
       { property: "og:url", content: "/privacy" },
     ],
@@ -26,14 +27,14 @@ function Privacy() {
 
       <div className="prose prose-invert mt-8 max-w-none text-sm leading-relaxed">
         <p>
-          SpincityHQ LLC ("we") collects the information you provide to register for
-          The AUTOPILOT Challenge: your name, email, and (optionally) phone number.
-          Payment card information is collected and processed by our payment provider
-          (Commas), never by this website.
+          SpincityHQ LLC ("we") collects the information Commas passes to us
+          for verified paid registrations to The AUTOPILOT Challenge. Payment
+          card information is collected and processed by Commas — never by
+          this website.
         </p>
         <p className="mt-4">
-          Marketing consent for email and for SMS is collected separately at
-          checkout and is optional. Transactional communications about your
+          Marketing consent for email and for SMS is collected separately inside
+          Commas and is optional. Transactional communications about your
           Challenge access are sent regardless.
         </p>
         <p className="mt-4">

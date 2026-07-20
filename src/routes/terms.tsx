@@ -4,6 +4,7 @@ export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
       { title: "Terms — The AUTOPILOT Challenge" },
+      { name: "robots", content: "noindex,nofollow" },
       { name: "description", content: "Terms of service placeholder. Legal review pending." },
       { property: "og:url", content: "/terms" },
     ],
