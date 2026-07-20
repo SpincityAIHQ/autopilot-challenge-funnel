@@ -87,14 +87,11 @@ describe("Founder CTA fail-closed coverage", () => {
     expect(LANDING.includes("Founder availability unavailable")).toBe(true);
   });
   it("evaluates verified remaining===0 SOLD OUT BEFORE the sales-disabled fallback", () => {
-    // Source-order assertion: the `seats.remaining <= 0` SOLD OUT branch must
-    // appear before the `!cfg.salesEnabled` fallback so that a verified zero
-    // disables every Founder CTA even when sales are off.
     const soldOutIdx = LANDING.indexOf("seats.remaining <= 0");
     const salesOffIdx = LANDING.indexOf("!cfg.salesEnabled");
-    expect(soldOutIdx).toBeGreaterThan(-1);
-    expect(salesOffIdx).toBeGreaterThan(-1);
-    expect(soldOutIdx).toBeLessThan(salesOffIdx);
+    expect(soldOutIdx > -1).toBe(true);
+    expect(salesOffIdx > -1).toBe(true);
+    expect(soldOutIdx < salesOffIdx).toBe(true);
   });
 });
 
@@ -103,19 +100,19 @@ describe("webhook Founder-cap terminal-persistence ordering", () => {
     join(ROOT, "routes/api/public/webhooks/commas.ts"),
     "utf8",
   );
-  it("returns 500 when setTerminal fails, even on Founder-cap (no !ok && !isFounderCap escape)", () => {
-    // The old bug: `if (!ok && !isFounderCap) return 500` allowed a
-    // Founder-cap path with a failed terminal update to fall through to 200.
+  it("returns 500 when setTerminal fails, even on Founder-cap", () => {
+    // Old bug shape (must NOT be present): `!ok && !isFounderCap` gate let
+    // a Founder-cap with failed terminal update fall through to 200.
     expect(WEBHOOK.includes("!ok && !isFounderCap")).toBe(false);
-    // New shape: an unconditional `if (!ok) return 500;` gate precedes the
-    // isFounderCap deterministic 200.
+    // New shape: unconditional `if (!ok) return 500` gate before Founder-cap 200.
     const okGateIdx = WEBHOOK.search(/if\s*\(\s*!ok\s*\)\s*\{\s*[\r\n\s]*return new Response\("Fulfillment error", \{ status: 500 \}\)/);
     const founderCap200Idx = WEBHOOK.indexOf('"Founder cap"');
-    expect(okGateIdx).toBeGreaterThan(-1);
-    expect(founderCap200Idx).toBeGreaterThan(-1);
-    expect(okGateIdx).toBeLessThan(founderCap200Idx);
+    expect(okGateIdx > -1).toBe(true);
+    expect(founderCap200Idx > -1).toBe(true);
+    expect(okGateIdx < founderCap200Idx).toBe(true);
   });
 });
+
 
 
 describe("styles.css no longer misleads about font loading", () => {
