@@ -102,12 +102,17 @@ The database enforces the cap atomically (`fulfill_challenge_payment` claims the
 
 Before flipping `COMMAS_WEBHOOKS_ENABLED=true` in production:
 
-- [ ] Sign a test payload with `COMMAS_WEBHOOK_SECRET` and POST it to the webhook path
+- [ ] Verify the checkout host used in every `VITE_COMMAS_CHECKOUT_URL_*` env var is on the allowlist (`www.fanbasis.com` by default, or a verified extra host added via `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS`)
+- [ ] Confirm all five `COMMAS_PRODUCT_ID_*` values are set to **distinct** ids
+- [ ] Sign a valid `payment.succeeded` test payload with `COMMAS_WEBHOOK_SECRET` and POST it to the webhook path
 - [ ] Confirm the row appears in `challenge_payment_events` with `status = 'processed'` and no PII in `payload`
 - [ ] Confirm the row in `challenge_registrations` has the expected tier / amount / bump / commas_payment_id
 - [ ] For Founder: confirm one row moved in `founder_seats`
 - [ ] Replay the same event id → response is 200 and no new registration or seat claim
 - [ ] Send a `product.purchased` for the same order → stored `ignored`; no registration created
+- [ ] **Under-price attempt** (e.g. $1 GA event): stored with `status='error'`, no registration created, deterministic 200
+- [ ] **Over-price / retired-price attempt** (e.g. $888 Founder event): stored with `status='error'`, no registration, deterministic 200
+- [ ] **Non-USD currency** (e.g. EUR): stored with `status='error'`, no registration, deterministic 200
 
 ### 5. Outbound provider (later)
 
