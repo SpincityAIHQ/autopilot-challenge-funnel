@@ -4,6 +4,7 @@ export const Route = createFileRoute("/refund-policy")({
   head: () => ({
     meta: [
       { title: "Refund Policy — The AUTOPILOT Challenge" },
+      { name: "robots", content: "noindex,nofollow" },
       { name: "description", content: "Refund policy placeholder. Legal review pending." },
       { property: "og:url", content: "/refund-policy" },
     ],

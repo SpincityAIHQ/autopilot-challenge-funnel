@@ -73,6 +73,44 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
+// Two live sessions represented accurately as a parent Event with subEvents.
+// URLs remain env-driven and are intentionally omitted until a real domain
+// is configured (see README_SETUP.md).
+const JSON_LD_EVENT = {
+  "@context": "https://schema.org",
+  "@type": "Event",
+  name: "The AUTOPILOT Challenge",
+  description:
+    "2-Day Live Challenge. You leave with your Autonomy Map and one working automated job.",
+  startDate: "2026-08-01T12:00:00-04:00",
+  endDate: "2026-08-02T14:00:00-04:00",
+  eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+  eventStatus: "https://schema.org/EventScheduled",
+  organizer: {
+    "@type": "Organization",
+    name: "SpincityHQ LLC",
+    email: "Info@NuAmenti.com",
+  },
+  subEvent: [
+    {
+      "@type": "Event",
+      name: "AUTOPILOT Challenge — Day 1: MAP IT",
+      startDate: "2026-08-01T12:00:00-04:00",
+      endDate: "2026-08-01T14:00:00-04:00",
+      eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+      eventStatus: "https://schema.org/EventScheduled",
+    },
+    {
+      "@type": "Event",
+      name: "AUTOPILOT Challenge — Day 2: BUILD IT",
+      startDate: "2026-08-02T12:00:00-04:00",
+      endDate: "2026-08-02T14:00:00-04:00",
+      eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+      eventStatus: "https://schema.org/EventScheduled",
+    },
+  ],
+};
+
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
@@ -82,7 +120,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Two days. You leave with your Autonomy Map and your first working automated job — built live. Sat Aug 1 + Sun Aug 2, 2026, 12–2 PM ET.",
+          "Two days. You leave with your Autonomy Map and your first working automated job — built live with me. Sat Aug 1 + Sun Aug 2, 2026, 12–2 PM ET.",
       },
       { name: "author", content: "SpincityHQ LLC" },
       { name: "theme-color", content: "#0e0e14" },
@@ -99,36 +137,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Rajdhani:wght@500;600;700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap",
-      },
     ],
     scripts: [
       {
         type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Event",
-          name: "The AUTOPILOT Challenge",
-          description:
-            "2-Day Live Challenge. You leave with your Autonomy Map and one working automated job.",
-          startDate: "2026-08-01T12:00:00-04:00",
-          endDate: "2026-08-02T14:00:00-04:00",
-          eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
-          eventStatus: "https://schema.org/EventScheduled",
-          location: {
-            "@type": "VirtualLocation",
-            url: "https://autopilot-challenge.example",
-          },
-          organizer: {
-            "@type": "Organization",
-            name: "SpincityHQ LLC",
-            email: "Info@NuAmenti.com",
-          },
-        }),
+        children: JSON.stringify(JSON_LD_EVENT),
       },
     ],
   }),
