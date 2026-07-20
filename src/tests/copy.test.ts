@@ -86,7 +86,37 @@ describe("Founder CTA fail-closed coverage", () => {
   it("has an 'availability unavailable' fail-closed branch", () => {
     expect(LANDING.includes("Founder availability unavailable")).toBe(true);
   });
+  it("evaluates verified remaining===0 SOLD OUT BEFORE the sales-disabled fallback", () => {
+    // Source-order assertion: the `seats.remaining <= 0` SOLD OUT branch must
+    // appear before the `!cfg.salesEnabled` fallback so that a verified zero
+    // disables every Founder CTA even when sales are off.
+    const soldOutIdx = LANDING.indexOf("seats.remaining <= 0");
+    const salesOffIdx = LANDING.indexOf("!cfg.salesEnabled");
+    expect(soldOutIdx).toBeGreaterThan(-1);
+    expect(salesOffIdx).toBeGreaterThan(-1);
+    expect(soldOutIdx).toBeLessThan(salesOffIdx);
+  });
 });
+
+describe("webhook Founder-cap terminal-persistence ordering", () => {
+  const WEBHOOK = readFileSync(
+    join(ROOT, "routes/api/public/webhooks/commas.ts"),
+    "utf8",
+  );
+  it("returns 500 when setTerminal fails, even on Founder-cap (no !ok && !isFounderCap escape)", () => {
+    // The old bug: `if (!ok && !isFounderCap) return 500` allowed a
+    // Founder-cap path with a failed terminal update to fall through to 200.
+    expect(WEBHOOK.includes("!ok && !isFounderCap")).toBe(false);
+    // New shape: an unconditional `if (!ok) return 500;` gate precedes the
+    // isFounderCap deterministic 200.
+    const okGateIdx = WEBHOOK.search(/if\s*\(\s*!ok\s*\)\s*\{\s*[\r\n\s]*return new Response\("Fulfillment error", \{ status: 500 \}\)/);
+    const founderCap200Idx = WEBHOOK.indexOf('"Founder cap"');
+    expect(okGateIdx).toBeGreaterThan(-1);
+    expect(founderCap200Idx).toBeGreaterThan(-1);
+    expect(okGateIdx).toBeLessThan(founderCap200Idx);
+  });
+});
+
 
 describe("styles.css no longer misleads about font loading", () => {
   const CSS = readFileSync(join(ROOT, "styles.css"), "utf8");
