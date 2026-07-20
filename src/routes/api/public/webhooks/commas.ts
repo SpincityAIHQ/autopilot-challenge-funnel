@@ -77,8 +77,11 @@ export const Route = createFileRoute("/api/public/webhooks/commas")({
           status: "processed" | "ignored" | "error",
           error?: string,
         ): Promise<boolean> {
-          const patch: Record<string, unknown> = { status, processed_at: nowIso() };
-          if (error !== undefined) patch.error = error;
+          const patch = {
+            status,
+            processed_at: nowIso(),
+            ...(error !== undefined ? { error } : {}),
+          };
           const { error: updErr } = await supabaseAdmin
             .from("challenge_payment_events")
             .update(patch)
