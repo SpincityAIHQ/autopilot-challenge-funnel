@@ -280,7 +280,7 @@ function AutonomyMap() {
   );
 }
 
-function TierComparison() {
+function TierComparison({ founder }: { founder: FounderCtaState }) {
   return (
     <section id="tiers" className="mx-auto max-w-6xl px-5 py-16">
       <p className="eyebrow">The tiers</p>
@@ -291,6 +291,9 @@ function TierComparison() {
       <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {TIERS.map((t) => {
           const isFounder = t.id === "founder";
+          const founderDisabled = isFounder && founder.disabled;
+          const buttonBase =
+            "mt-5 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground transition";
           return (
             <article
               key={t.id}
@@ -303,6 +306,11 @@ function TierComparison() {
                 {formatUsd(t.priceCents)}
               </div>
               <p className="mt-3 text-sm text-muted-foreground">{t.headline}</p>
+              {isFounder ? (
+                <p className="mt-2 text-[11px] uppercase tracking-widest text-muted-foreground">
+                  {founder.availabilityLabel}
+                </p>
+              ) : null}
               <ul className="mt-4 flex-1 space-y-2 text-sm text-muted-foreground">
                 {t.bullets.map((b) => (
                   <li key={b}>· {b}</li>
@@ -314,13 +322,24 @@ function TierComparison() {
                   {FOUNDER_DISCLAIMER}
                 </p>
               ) : null}
-              <Link
-                to="/checkout"
-                search={{ tier: t.id }}
-                className="mt-5 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground transition hover:opacity-90"
-              >
-                Choose {t.name}
-              </Link>
+              {founderDisabled ? (
+                <button
+                  type="button"
+                  disabled
+                  aria-disabled
+                  className={`${buttonBase} cursor-not-allowed opacity-50`}
+                >
+                  {founder.buttonLabel(`Choose ${t.name}`)}
+                </button>
+              ) : (
+                <Link
+                  to="/checkout"
+                  search={{ tier: t.id }}
+                  className={`${buttonBase} hover:opacity-90`}
+                >
+                  Choose {t.name}
+                </Link>
+              )}
             </article>
           );
         })}
@@ -329,30 +348,19 @@ function TierComparison() {
   );
 }
 
-function FounderAvailabilityCopy() {
-  const seats = useFounderSeatsRemaining();
-  const cfg = getCommasConfig();
-  // Public copy: with sales gate off or RPC unavailable → honest "33 seats total".
-  // With sales enabled and remaining === 0 → SOLD OUT.
-  if (cfg.salesEnabled && seats.status === "ok" && seats.remaining <= 0) {
-    return (
-      <span className="text-[color:var(--emerald-signal)]">SOLD OUT</span>
-    );
-  }
-  return <>{FOUNDER_HARD_CAP} seats total</>;
-}
-
-function FounderSection() {
-  const seats = useFounderSeatsRemaining();
-  const cfg = getCommasConfig();
-  const soldOut =
-    cfg.salesEnabled && seats.status === "ok" && seats.remaining <= 0;
-
+function FounderSection({ founder }: { founder: FounderCtaState }) {
   return (
     <section className="mx-auto max-w-4xl px-5 py-16">
       <div className="surface-raised p-8">
         <p className="eyebrow">
-          Founder Seat · <FounderAvailabilityCopy />
+          Founder Seat ·{" "}
+          <span
+            className={
+              founder.soldOut ? "text-[color:var(--emerald-signal)]" : undefined
+            }
+          >
+            {founder.availabilityLabel}
+          </span>
         </p>
         <h2 className="mt-3 font-display text-2xl text-foreground sm:text-3xl">
           The 33.
@@ -363,13 +371,14 @@ function FounderSection() {
           the Founders Meetup at InvestFest (Sat Aug 8, Atlanta), and first MCP beta access.
         </p>
         <p className="mt-4 text-sm text-muted-foreground">{FOUNDER_DISCLAIMER}</p>
-        {soldOut ? (
+        {founder.disabled ? (
           <button
             type="button"
             disabled
+            aria-disabled
             className="mt-6 inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading font-semibold text-primary-foreground opacity-50"
           >
-            Founder Seats sold out
+            {founder.buttonLabel("Claim a Founder Seat — $1,111")}
           </button>
         ) : (
           <Link
