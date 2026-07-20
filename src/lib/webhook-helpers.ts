@@ -13,11 +13,12 @@
  *   Order bumps:      data.order_bumps[].item.id
  *   Buyer identity:   data.buyer.{name,email,phone,id}
  *   Amount:           data.amount  (dollars)
- *   Currency:         data.currency
+ *   Currency:         data.currency  (required; must equal USD after normalization)
  *   Payment id:       data.payment_id
  */
 
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { computeTotalCents, type TierId } from "./tiers";
 
 /**
  * Verify HMAC-SHA256 signature over the EXACT raw body.
@@ -83,7 +84,7 @@ export function isSupportedEvent(t: string): t is SupportedEvent {
 
 /**
  * Convert Commas decimal-DOLLAR amounts to integer cents.
- * Returns null for anything not a finite positive number.
+ * Returns null for anything not a finite non-negative number.
  */
 export function dollarsToCents(value: unknown): number | null {
   if (typeof value !== "number" || !Number.isFinite(value) || value < 0) return null;
@@ -96,7 +97,7 @@ export interface ExtractedPayment {
   baseItemId: string;
   bumpItemIds: string[];
   amountCents: number;
-  currency: string;
+  currency: string; // normalized uppercase; guaranteed non-empty
   buyer: {
     fullName: string;
     email: string;
@@ -108,6 +109,8 @@ export interface ExtractedPayment {
 /**
  * Strict extraction for `payment.succeeded`. Returns null unless every
  * required field is present with the right shape. Never fabricates data.
+ * Currency MUST be present (nonempty string); normalized to uppercase.
+ * Fulfillment enforcement (USD-only, amount match) lives at the call site.
  */
 export function extractPayment(env: CommasEnvelope): ExtractedPayment | null {
   const d = env.data as Record<string, unknown>;
@@ -125,7 +128,10 @@ export function extractPayment(env: CommasEnvelope): ExtractedPayment | null {
   const amountCents = dollarsToCents(d.amount);
   if (amountCents === null || amountCents <= 0) return null;
 
-  const currency = typeof d.currency === "string" && d.currency ? d.currency : "USD";
+  // Currency is REQUIRED. Never default a missing value to USD.
+  const rawCurrency = typeof d.currency === "string" ? d.currency.trim() : "";
+  if (!rawCurrency) return null;
+  const currency = rawCurrency.toUpperCase();
 
   const buyer = (d.buyer ?? {}) as Record<string, unknown>;
   const email = typeof buyer.email === "string" ? buyer.email.trim() : "";
@@ -163,7 +169,7 @@ export function extractPayment(env: CommasEnvelope): ExtractedPayment | null {
 export function resolveTierFromProduct(
   productId: string | null,
   env: Record<string, string | undefined>,
-): { tier: "ga" | "vip" | "bundle" | "founder" } | null {
+): { tier: TierId } | null {
   if (!productId) return null;
   if (productId === env.COMMAS_PRODUCT_ID_GA) return { tier: "ga" };
   if (productId === env.COMMAS_PRODUCT_ID_VIP) return { tier: "vip" };
@@ -183,6 +189,54 @@ export function detectGaBump(
   const bumpId = env.COMMAS_PRODUCT_ID_GA_BUMP;
   if (!bumpId) return false;
   return bumpItemIds.includes(bumpId);
+}
+
+/**
+ * Expected total cents for a verified payment. Delegates to the single
+ * public tier source of truth so prices cannot drift server-side.
+ *
+ *   GA           7700
+ *   GA + bump    9900
+ *   VIP         17700
+ *   Bundle      33300
+ *   Founder    111100
+ */
+export function expectedTotalCents(tier: TierId, bump: boolean): number {
+  return computeTotalCents(tier, bump);
+}
+
+/**
+ * Webhook activation gate. Returns { ok: true } only when the webhook is
+ * enabled AND the secret is set AND all five product IDs are nonempty and
+ * pairwise distinct. Otherwise returns { ok: false } and the handler
+ * responds 503. Never leak the reason externally.
+ */
+export interface WebhookConfigResult {
+  ok: boolean;
+  reason?: string;
+}
+
+export function validateWebhookConfig(
+  env: Record<string, string | undefined>,
+): WebhookConfigResult {
+  if (env.COMMAS_WEBHOOKS_ENABLED !== "true") return { ok: false, reason: "disabled" };
+  const secret = env.COMMAS_WEBHOOK_SECRET;
+  if (!secret || secret.trim() === "") return { ok: false, reason: "no secret" };
+  const ids = [
+    env.COMMAS_PRODUCT_ID_GA,
+    env.COMMAS_PRODUCT_ID_GA_BUMP,
+    env.COMMAS_PRODUCT_ID_VIP,
+    env.COMMAS_PRODUCT_ID_BUNDLE,
+    env.COMMAS_PRODUCT_ID_FOUNDER,
+  ];
+  for (const id of ids) {
+    if (!id || typeof id !== "string" || id.trim() === "") {
+      return { ok: false, reason: "missing product id" };
+    }
+  }
+  const set = new Set(ids.map((s) => (s as string).trim()));
+  if (set.size !== ids.length) return { ok: false, reason: "duplicate product id" };
+  return { ok: true };
 }
 
 /**

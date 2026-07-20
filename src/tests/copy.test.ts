@@ -63,3 +63,34 @@ describe("JSON-LD", () => {
     expect(ROOT_TSX.includes("fonts.gstatic.com")).toBe(false);
   });
 });
+
+describe("FitCheck reconciles with recordings", () => {
+  it("no longer contradicts recordings", () => {
+    expect(LANDING.includes("2 hours a day, live")).toBe(false);
+    expect(LANDING.includes("pure passive watching")).toBe(false);
+  });
+  it("mentions recordings-friendly attendance", () => {
+    expect(
+      LANDING.includes("live when possible, or from included recordings"),
+    ).toBe(true);
+  });
+});
+
+describe("Founder CTA fail-closed coverage", () => {
+  it("centralizes state via useFounderCta and threads it to every Founder CTA", () => {
+    expect(LANDING.includes("useFounderCta")).toBe(true);
+    // TierComparison, FounderSection, FinalCta all receive founder prop
+    const matches = LANDING.match(/founder=\{founder\}/g) ?? [];
+    expect(matches.length >= 3).toBe(true);
+  });
+  it("has an 'availability unavailable' fail-closed branch", () => {
+    expect(LANDING.includes("Founder availability unavailable")).toBe(true);
+  });
+});
+
+describe("styles.css no longer misleads about font loading", () => {
+  const CSS = readFileSync(join(ROOT, "styles.css"), "utf8");
+  it("no stale <link> comment", () => {
+    expect(CSS.includes("Fonts loaded via <link>")).toBe(false);
+  });
+});

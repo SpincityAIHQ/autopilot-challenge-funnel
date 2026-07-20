@@ -9,6 +9,8 @@ import {
   redactEventPayload,
   dollarsToCents,
   isSupportedEvent,
+  expectedTotalCents,
+  validateWebhookConfig,
   CANONICAL_FULFILLMENT_EVENT,
 } from "../lib/webhook-helpers";
 
@@ -189,5 +191,83 @@ describe("event payload redaction — no buyer PII", () => {
     expect(s.includes("+15551112222")).toBe(false);
     expect(s.includes("1 Real St")).toBe(false);
     expect(s.includes("s3cr3t")).toBe(false);
+  });
+});
+
+describe("currency is required + normalized", () => {
+  const base = {
+    id: "evt_c",
+    type: "payment.succeeded",
+    data: {
+      status: "succeeded",
+      payment_id: "pay_c",
+      amount: 77.0,
+      item: { id: "prod_ga" },
+      buyer: { name: "A B", email: "ab@example.com" },
+    } as Record<string, unknown>,
+  };
+  it("rejects missing/empty currency (never defaults to USD)", () => {
+    expect(extractPayment(base as never)).toBeNull();
+    expect(extractPayment({ ...base, data: { ...base.data, currency: "" } } as never)).toBeNull();
+    expect(extractPayment({ ...base, data: { ...base.data, currency: "   " } } as never)).toBeNull();
+  });
+  it("normalizes currency to uppercase (non-USD retained for downstream reject)", () => {
+    const usd = extractPayment({ ...base, data: { ...base.data, currency: "usd" } } as never);
+    expect(usd?.currency).toBe("USD");
+    const eur = extractPayment({ ...base, data: { ...base.data, currency: "eur" } } as never);
+    expect(eur?.currency).toBe("EUR");
+  });
+});
+
+describe("expectedTotalCents — server-side price of truth", () => {
+  it("matches the tier source of truth including 111100 Founder", () => {
+    expect(expectedTotalCents("ga", false)).toBe(7700);
+    expect(expectedTotalCents("ga", true)).toBe(9900);
+    expect(expectedTotalCents("vip", false)).toBe(17700);
+    expect(expectedTotalCents("bundle", false)).toBe(33300);
+    expect(expectedTotalCents("founder", false)).toBe(111100);
+  });
+  it("rejects the retired 88800 Founder price", () => {
+    expect(expectedTotalCents("founder", false)).not.toBe(88800);
+  });
+  it("rejects $1 (100) and other under-price attempts vs any tier", () => {
+    for (const t of ["ga", "vip", "bundle", "founder"] as const) {
+      expect(expectedTotalCents(t, false)).not.toBe(100);
+    }
+  });
+  it("VIP/Bundle/Founder ignore bump flag", () => {
+    expect(expectedTotalCents("vip", true)).toBe(17700);
+    expect(expectedTotalCents("bundle", true)).toBe(33300);
+    expect(expectedTotalCents("founder", true)).toBe(111100);
+  });
+});
+
+describe("validateWebhookConfig — activation gate", () => {
+  const full = {
+    COMMAS_WEBHOOKS_ENABLED: "true",
+    COMMAS_WEBHOOK_SECRET: "s",
+    COMMAS_PRODUCT_ID_GA: "prod_ga",
+    COMMAS_PRODUCT_ID_GA_BUMP: "prod_ga_bump",
+    COMMAS_PRODUCT_ID_VIP: "prod_vip",
+    COMMAS_PRODUCT_ID_BUNDLE: "prod_bundle",
+    COMMAS_PRODUCT_ID_FOUNDER: "prod_founder",
+  };
+  it("ok when enabled + secret + 5 distinct product ids", () => {
+    expect(validateWebhookConfig(full).ok).toBe(true);
+  });
+  it("fails when disabled", () => {
+    expect(validateWebhookConfig({ ...full, COMMAS_WEBHOOKS_ENABLED: "false" }).ok).toBe(false);
+  });
+  it("fails when secret missing", () => {
+    expect(validateWebhookConfig({ ...full, COMMAS_WEBHOOK_SECRET: "" }).ok).toBe(false);
+  });
+  it("fails when any product id is missing", () => {
+    expect(validateWebhookConfig({ ...full, COMMAS_PRODUCT_ID_VIP: "" }).ok).toBe(false);
+    expect(validateWebhookConfig({ ...full, COMMAS_PRODUCT_ID_FOUNDER: undefined }).ok).toBe(false);
+  });
+  it("fails when product ids are not pairwise distinct", () => {
+    expect(
+      validateWebhookConfig({ ...full, COMMAS_PRODUCT_ID_VIP: "prod_ga" }).ok,
+    ).toBe(false);
   });
 });

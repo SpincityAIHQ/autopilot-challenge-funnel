@@ -27,9 +27,58 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
+/**
+ * Centralized Founder availability state for every Founder CTA on this
+ * page (TierComparison, FounderSection, FinalCta). Fails closed whenever
+ * sales are enabled and the verified seat count is anything other than a
+ * finite positive number.
+ */
+export interface FounderCtaState {
+  disabled: boolean;
+  soldOut: boolean;
+  availabilityLabel: string; // e.g. "33 seats total" | "SOLD OUT" | "Checking availability…"
+  buttonLabel: (fallback: string) => string;
+}
+
+function useFounderCta(): FounderCtaState {
+  const seats = useFounderSeatsRemaining();
+  const cfg = getCommasConfig();
+  if (!cfg.salesEnabled) {
+    return {
+      disabled: false,
+      soldOut: false,
+      availabilityLabel: `${FOUNDER_HARD_CAP} seats total`,
+      buttonLabel: (fallback) => fallback,
+    };
+  }
+  if (seats.status === "ok" && seats.remaining <= 0) {
+    return {
+      disabled: true,
+      soldOut: true,
+      availabilityLabel: "SOLD OUT",
+      buttonLabel: () => "Founder Seats sold out",
+    };
+  }
+  if (seats.status !== "ok") {
+    return {
+      disabled: true,
+      soldOut: false,
+      availabilityLabel: "Checking availability…",
+      buttonLabel: () => "Founder availability unavailable",
+    };
+  }
+  return {
+    disabled: false,
+    soldOut: false,
+    availabilityLabel: `${seats.remaining} of ${FOUNDER_HARD_CAP} seats remaining`,
+    buttonLabel: (fallback) => fallback,
+  };
+}
+
 function Landing() {
   const cfg = getCommasConfig();
   const safeVideoUrl = normalizeVideoEmbedUrl(cfg.videoUrl ?? null);
+  const founder = useFounderCta();
 
   return (
     <main className="min-h-screen">
@@ -39,14 +88,14 @@ function Landing() {
       <Agenda />
       <LeaveWith />
       <AutonomyMap />
-      <TierComparison />
-      <FounderSection />
+      <TierComparison founder={founder} />
+      <FounderSection founder={founder} />
       <WhyDifferent />
       <FitCheck />
       <ProofPlaceholder />
       <Faq />
       <Timeline />
-      <FinalCta />
+      <FinalCta founder={founder} />
       {safeVideoUrl ? <VideoEmbed url={safeVideoUrl} /> : null}
       <Footer />
     </main>
@@ -231,7 +280,7 @@ function AutonomyMap() {
   );
 }
 
-function TierComparison() {
+function TierComparison({ founder }: { founder: FounderCtaState }) {
   return (
     <section id="tiers" className="mx-auto max-w-6xl px-5 py-16">
       <p className="eyebrow">The tiers</p>
@@ -242,6 +291,9 @@ function TierComparison() {
       <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {TIERS.map((t) => {
           const isFounder = t.id === "founder";
+          const founderDisabled = isFounder && founder.disabled;
+          const buttonBase =
+            "mt-5 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground transition";
           return (
             <article
               key={t.id}
@@ -254,6 +306,11 @@ function TierComparison() {
                 {formatUsd(t.priceCents)}
               </div>
               <p className="mt-3 text-sm text-muted-foreground">{t.headline}</p>
+              {isFounder ? (
+                <p className="mt-2 text-[11px] uppercase tracking-widest text-muted-foreground">
+                  {founder.availabilityLabel}
+                </p>
+              ) : null}
               <ul className="mt-4 flex-1 space-y-2 text-sm text-muted-foreground">
                 {t.bullets.map((b) => (
                   <li key={b}>· {b}</li>
@@ -265,13 +322,24 @@ function TierComparison() {
                   {FOUNDER_DISCLAIMER}
                 </p>
               ) : null}
-              <Link
-                to="/checkout"
-                search={{ tier: t.id }}
-                className="mt-5 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground transition hover:opacity-90"
-              >
-                Choose {t.name}
-              </Link>
+              {founderDisabled ? (
+                <button
+                  type="button"
+                  disabled
+                  aria-disabled
+                  className={`${buttonBase} cursor-not-allowed opacity-50`}
+                >
+                  {founder.buttonLabel(`Choose ${t.name}`)}
+                </button>
+              ) : (
+                <Link
+                  to="/checkout"
+                  search={{ tier: t.id }}
+                  className={`${buttonBase} hover:opacity-90`}
+                >
+                  Choose {t.name}
+                </Link>
+              )}
             </article>
           );
         })}
@@ -280,30 +348,19 @@ function TierComparison() {
   );
 }
 
-function FounderAvailabilityCopy() {
-  const seats = useFounderSeatsRemaining();
-  const cfg = getCommasConfig();
-  // Public copy: with sales gate off or RPC unavailable → honest "33 seats total".
-  // With sales enabled and remaining === 0 → SOLD OUT.
-  if (cfg.salesEnabled && seats.status === "ok" && seats.remaining <= 0) {
-    return (
-      <span className="text-[color:var(--emerald-signal)]">SOLD OUT</span>
-    );
-  }
-  return <>{FOUNDER_HARD_CAP} seats total</>;
-}
-
-function FounderSection() {
-  const seats = useFounderSeatsRemaining();
-  const cfg = getCommasConfig();
-  const soldOut =
-    cfg.salesEnabled && seats.status === "ok" && seats.remaining <= 0;
-
+function FounderSection({ founder }: { founder: FounderCtaState }) {
   return (
     <section className="mx-auto max-w-4xl px-5 py-16">
       <div className="surface-raised p-8">
         <p className="eyebrow">
-          Founder Seat · <FounderAvailabilityCopy />
+          Founder Seat ·{" "}
+          <span
+            className={
+              founder.soldOut ? "text-[color:var(--emerald-signal)]" : undefined
+            }
+          >
+            {founder.availabilityLabel}
+          </span>
         </p>
         <h2 className="mt-3 font-display text-2xl text-foreground sm:text-3xl">
           The 33.
@@ -314,13 +371,14 @@ function FounderSection() {
           the Founders Meetup at InvestFest (Sat Aug 8, Atlanta), and first MCP beta access.
         </p>
         <p className="mt-4 text-sm text-muted-foreground">{FOUNDER_DISCLAIMER}</p>
-        {soldOut ? (
+        {founder.disabled ? (
           <button
             type="button"
             disabled
+            aria-disabled
             className="mt-6 inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading font-semibold text-primary-foreground opacity-50"
           >
-            Founder Seats sold out
+            {founder.buttonLabel("Claim a Founder Seat — $1,111")}
           </button>
         ) : (
           <Link
@@ -358,7 +416,7 @@ function FitCheck() {
         <ul className="mt-4 space-y-2 text-muted-foreground text-sm">
           <li>· Operators tired of "AI ideas" that never ship.</li>
           <li>· Founders ready to hand one real job to a machine.</li>
-          <li>· People who can spend 2 hours a day, live, for two days.</li>
+          <li>· People who can complete two focused sessions — live when possible, or from included recordings (VIP+ and the GA recordings add-on).</li>
         </ul>
       </div>
       <div className="surface p-6">
@@ -366,7 +424,7 @@ function FitCheck() {
         <ul className="mt-4 space-y-2 text-muted-foreground text-sm">
           <li>· People looking for a done-for-you agency.</li>
           <li>· Anyone expecting an income promise. There is none.</li>
-          <li>· Anyone who prefers pure passive watching — this is a live build.</li>
+          <li>· People who only watch and never build — you leave with a working automation, not notes.</li>
         </ul>
       </div>
     </section>
@@ -451,7 +509,7 @@ function Timeline() {
   );
 }
 
-function FinalCta() {
+function FinalCta({ founder }: { founder: FounderCtaState }) {
   return (
     <section className="mx-auto max-w-4xl px-5 py-20 text-center">
       <p className="eyebrow">One more time</p>
@@ -466,14 +524,28 @@ function FinalCta() {
         >
           Reserve GA — $77
         </Link>
-        <Link
-          to="/checkout"
-          search={{ tier: "founder" }}
-          className="rounded-md border border-[color:var(--gold)] px-6 py-3 font-heading font-semibold text-[color:var(--gold)] transition hover:bg-[color:var(--gold)]/10"
-        >
-          Founder Seat — $1,111
-        </Link>
+        {founder.disabled ? (
+          <button
+            type="button"
+            disabled
+            aria-disabled
+            className="rounded-md border border-[color:var(--gold)] px-6 py-3 font-heading font-semibold text-[color:var(--gold)] opacity-50"
+          >
+            {founder.buttonLabel("Founder Seat — $1,111")}
+          </button>
+        ) : (
+          <Link
+            to="/checkout"
+            search={{ tier: "founder" }}
+            className="rounded-md border border-[color:var(--gold)] px-6 py-3 font-heading font-semibold text-[color:var(--gold)] transition hover:bg-[color:var(--gold)]/10"
+          >
+            Founder Seat — $1,111
+          </Link>
+        )}
       </div>
+      <p className="mx-auto mt-2 text-[11px] uppercase tracking-widest text-muted-foreground">
+        Founder · {founder.availabilityLabel}
+      </p>
       <p className="mx-auto mt-4 max-w-xl text-xs text-muted-foreground">
         {FOUNDER_DISCLAIMER}
       </p>
