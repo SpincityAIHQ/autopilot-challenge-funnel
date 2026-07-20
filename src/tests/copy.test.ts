@@ -8,6 +8,7 @@ const ROOT = join(HERE, "..");
 const LANDING = readFileSync(join(ROOT, "routes/index.tsx"), "utf8");
 const CONFIRMED = readFileSync(join(ROOT, "routes/confirmed.tsx"), "utf8");
 const CHECKOUT = readFileSync(join(ROOT, "routes/checkout.tsx"), "utf8");
+const TIERS_SRC = readFileSync(join(ROOT, "lib/tiers.ts"), "utf8");
 
 describe("landing copy corrections", () => {
   it("says 'built live with me' (not 'Ce')", () => {
@@ -27,7 +28,8 @@ describe("landing copy corrections", () => {
   });
 
   it("shows the GA native-bump copy, not a fake $99 total", () => {
-    expect(CHECKOUT.includes("Optional $22 recordings + completed-map template add-on available inside secure Commas checkout.")).toBe(true);
+    expect(TIERS_SRC.includes("Optional $22 recordings + completed-map template add-on available inside secure Commas checkout.")).toBe(true);
+    expect(CHECKOUT.includes("GA_BUMP_COPY")).toBe(true);
     expect(CHECKOUT.includes("$99")).toBe(false);
   });
 });
