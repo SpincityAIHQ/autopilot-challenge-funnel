@@ -182,7 +182,9 @@ export const Route = createFileRoute("/api/public/webhooks/commas")({
               ? "founder cap reached — operator action required"
               : "fulfillment failed",
           );
-          if (!ok && !isFounderCap) {
+          // Terminal persistence failure ALWAYS wins — never return 200 when
+          // we couldn't record the error state, including the Founder-cap path.
+          if (!ok) {
             return new Response("Fulfillment error", { status: 500 });
           }
           if (isFounderCap) {
@@ -190,6 +192,7 @@ export const Route = createFileRoute("/api/public/webhooks/commas")({
             return new Response("Founder cap", { status: 200 });
           }
           return new Response("Fulfillment error", { status: 500 });
+
         }
 
         const row = Array.isArray(fulfillData) ? fulfillData[0] : fulfillData;
