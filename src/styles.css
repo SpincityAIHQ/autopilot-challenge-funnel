@@ -7,8 +7,8 @@
 /*
  * AUTOPILOT Challenge Funnel — Diamond Standard / Galactic Black
  * Near-black surfaces, restrained gold, emerald signal accents.
- * Fonts loaded via <link> in __root.tsx (Orbitron display, Rajdhani headings,
- * Space Mono labels, Inter body).
+ * No runtime web-font requests; type stack is provided via CSS variables
+ * with strong local/system fallbacks (Orbitron, Rajdhani, Space Mono, Inter).
  */
 
 @theme inline {
