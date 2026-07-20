@@ -65,7 +65,8 @@ Client (browser-visible):
 | `VITE_COMMAS_CHECKOUT_URL_GA` | Commas hosted checkout URL for GA ($77). The $22 recordings bump is offered **inside** this checkout as a native order bump — do NOT create a separate GA+bump URL |
 | `VITE_COMMAS_CHECKOUT_URL_VIP` | VIP ($177) |
 | `VITE_COMMAS_CHECKOUT_URL_BUNDLE` | Bundle ($333) |
-| `VITE_COMMAS_CHECKOUT_URL_FOUNDER` | Founder Seat ($1,111) |
+| `VITE_COMMAS_CHECKOUT_URL_FOUNDER` | Founder Seat ($1,111). The Commas Founder product itself MUST be configured at exactly $1,111 |
+| `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS` | Optional. Comma-separated extra approved checkout hosts (exact match only). The default allowlist is `www.fanbasis.com`. Anything off-list, non-https, or with embedded credentials fails closed |
 | `VITE_CHALLENGE_PREVIEW_VIDEO_URL` | Optional. YouTube (watch / youtu.be / embed) or Vimeo only. Anything else fails closed and the section stays hidden |
 
 Server (never `VITE_`-prefixed):
