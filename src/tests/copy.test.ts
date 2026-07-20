@@ -81,7 +81,7 @@ describe("Founder CTA fail-closed coverage", () => {
     expect(LANDING.includes("useFounderCta")).toBe(true);
     // TierComparison, FounderSection, FinalCta all receive founder prop
     const matches = LANDING.match(/founder=\{founder\}/g) ?? [];
-    expect(matches.length).toBeGreaterThanOrEqual(3);
+    expect(matches.length >= 3).toBe(true);
   });
   it("has an 'availability unavailable' fail-closed branch", () => {
     expect(LANDING.includes("Founder availability unavailable")).toBe(true);
