@@ -15,7 +15,7 @@ describe("tier math (server-side reconciliation)", () => {
   it("VIP/Bundle/Founder IGNORE bump flag", () => {
     expect(computeTotalCents("vip", true)).toBe(17700);
     expect(computeTotalCents("bundle", true)).toBe(33300);
-    expect(computeTotalCents("founder", true)).toBe(88800);
+    expect(computeTotalCents("founder", true)).toBe(111100);
   });
 
   it("Founder hard cap is 33", () => {
@@ -25,7 +25,7 @@ describe("tier math (server-side reconciliation)", () => {
   it("formats USD without cents for whole-dollar amounts", () => {
     expect(formatUsd(7700)).toBe("$77");
     expect(formatUsd(9900)).toBe("$99");
-    expect(formatUsd(88800)).toBe("$888");
+    expect(formatUsd(111100)).toBe("$1,111");
   });
 
   it("GA bullets no longer include the unapproved 'Live Q&A both days' promise", () => {

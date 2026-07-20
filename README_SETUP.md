@@ -10,7 +10,7 @@ It is currently in **preview only** and must not be published until the checklis
 - Public routes: `/`, `/checkout`, `/confirmed`, `/privacy`, `/terms`, `/refund-policy`
 - Diamond Standard / Galactic Black design system, reduced-motion aware, mobile-first
 - Countdown to `2026-08-01T12:00:00-04:00`; after that instant it shows *"The live challenge has started."* and never resets
-- Tier catalog with exact copy and prices: **GA $77**, **VIP $177**, **Bundle $333**, **Founder $888** (hard cap 33). The $22 GA recordings bump is a **native Commas order bump inside GA checkout** — this app never shows a bumped total or a fake GA+bump URL
+- Tier catalog with exact copy and prices: **GA $77**, **VIP $177**, **Bundle $333**, **Founder $1,111** (hard cap 33). The $22 GA recordings bump is a **native Commas order bump inside GA checkout** — this app never shows a bumped total or a fake GA+bump URL
 - Founder disclaimer displayed adjacent to every Founder CTA (landing, Founder section, final CTA, checkout)
 - Handoff `/checkout` is a review-only summary — Commas securely collects buyer details, payment, and marketing consent on the next screen. No PII or consent is passed through URLs
 - **Two independent handoff gates**:
@@ -65,7 +65,7 @@ Client (browser-visible):
 | `VITE_COMMAS_CHECKOUT_URL_GA` | Commas hosted checkout URL for GA ($77). The $22 recordings bump is offered **inside** this checkout as a native order bump — do NOT create a separate GA+bump URL |
 | `VITE_COMMAS_CHECKOUT_URL_VIP` | VIP ($177) |
 | `VITE_COMMAS_CHECKOUT_URL_BUNDLE` | Bundle ($333) |
-| `VITE_COMMAS_CHECKOUT_URL_FOUNDER` | Founder Seat ($888) |
+| `VITE_COMMAS_CHECKOUT_URL_FOUNDER` | Founder Seat ($1,111) |
 | `VITE_CHALLENGE_PREVIEW_VIDEO_URL` | Optional. YouTube (watch / youtu.be / embed) or Vimeo only. Anything else fails closed and the section stays hidden |
 
 Server (never `VITE_`-prefixed):
@@ -78,7 +78,7 @@ Server (never `VITE_`-prefixed):
 | `COMMAS_PRODUCT_ID_GA_BUMP` | Order-bump product id for the $22 recordings + completed-map template (attached inside GA checkout) |
 | `COMMAS_PRODUCT_ID_VIP` | $177 VIP |
 | `COMMAS_PRODUCT_ID_BUNDLE` | $333 Bundle |
-| `COMMAS_PRODUCT_ID_FOUNDER` | $888 Founder Seat |
+| `COMMAS_PRODUCT_ID_FOUNDER` | $1,111 Founder Seat |
 
 Unknown product ids grant nothing. Leave any unused key empty.
 
