@@ -509,7 +509,7 @@ function Timeline() {
   );
 }
 
-function FinalCta() {
+function FinalCta({ founder }: { founder: FounderCtaState }) {
   return (
     <section className="mx-auto max-w-4xl px-5 py-20 text-center">
       <p className="eyebrow">One more time</p>
@@ -524,14 +524,28 @@ function FinalCta() {
         >
           Reserve GA — $77
         </Link>
-        <Link
-          to="/checkout"
-          search={{ tier: "founder" }}
-          className="rounded-md border border-[color:var(--gold)] px-6 py-3 font-heading font-semibold text-[color:var(--gold)] transition hover:bg-[color:var(--gold)]/10"
-        >
-          Founder Seat — $1,111
-        </Link>
+        {founder.disabled ? (
+          <button
+            type="button"
+            disabled
+            aria-disabled
+            className="rounded-md border border-[color:var(--gold)] px-6 py-3 font-heading font-semibold text-[color:var(--gold)] opacity-50"
+          >
+            {founder.buttonLabel("Founder Seat — $1,111")}
+          </button>
+        ) : (
+          <Link
+            to="/checkout"
+            search={{ tier: "founder" }}
+            className="rounded-md border border-[color:var(--gold)] px-6 py-3 font-heading font-semibold text-[color:var(--gold)] transition hover:bg-[color:var(--gold)]/10"
+          >
+            Founder Seat — $1,111
+          </Link>
+        )}
       </div>
+      <p className="mx-auto mt-2 text-[11px] uppercase tracking-widest text-muted-foreground">
+        Founder · {founder.availabilityLabel}
+      </p>
       <p className="mx-auto mt-4 max-w-xl text-xs text-muted-foreground">
         {FOUNDER_DISCLAIMER}
       </p>
