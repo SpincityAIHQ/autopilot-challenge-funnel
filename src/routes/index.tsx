@@ -27,9 +27,58 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
+/**
+ * Centralized Founder availability state for every Founder CTA on this
+ * page (TierComparison, FounderSection, FinalCta). Fails closed whenever
+ * sales are enabled and the verified seat count is anything other than a
+ * finite positive number.
+ */
+export interface FounderCtaState {
+  disabled: boolean;
+  soldOut: boolean;
+  availabilityLabel: string; // e.g. "33 seats total" | "SOLD OUT" | "Checking availability…"
+  buttonLabel: (fallback: string) => string;
+}
+
+function useFounderCta(): FounderCtaState {
+  const seats = useFounderSeatsRemaining();
+  const cfg = getCommasConfig();
+  if (!cfg.salesEnabled) {
+    return {
+      disabled: false,
+      soldOut: false,
+      availabilityLabel: `${FOUNDER_HARD_CAP} seats total`,
+      buttonLabel: (fallback) => fallback,
+    };
+  }
+  if (seats.status === "ok" && seats.remaining <= 0) {
+    return {
+      disabled: true,
+      soldOut: true,
+      availabilityLabel: "SOLD OUT",
+      buttonLabel: () => "Founder Seats sold out",
+    };
+  }
+  if (seats.status !== "ok") {
+    return {
+      disabled: true,
+      soldOut: false,
+      availabilityLabel: "Checking availability…",
+      buttonLabel: () => "Founder availability unavailable",
+    };
+  }
+  return {
+    disabled: false,
+    soldOut: false,
+    availabilityLabel: `${seats.remaining} of ${FOUNDER_HARD_CAP} seats remaining`,
+    buttonLabel: (fallback) => fallback,
+  };
+}
+
 function Landing() {
   const cfg = getCommasConfig();
   const safeVideoUrl = normalizeVideoEmbedUrl(cfg.videoUrl ?? null);
+  const founder = useFounderCta();
 
   return (
     <main className="min-h-screen">
@@ -39,14 +88,14 @@ function Landing() {
       <Agenda />
       <LeaveWith />
       <AutonomyMap />
-      <TierComparison />
-      <FounderSection />
+      <TierComparison founder={founder} />
+      <FounderSection founder={founder} />
       <WhyDifferent />
       <FitCheck />
       <ProofPlaceholder />
       <Faq />
       <Timeline />
-      <FinalCta />
+      <FinalCta founder={founder} />
       {safeVideoUrl ? <VideoEmbed url={safeVideoUrl} /> : null}
       <Footer />
     </main>
