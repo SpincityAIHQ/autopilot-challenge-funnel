@@ -1,9 +1,11 @@
 import { describe, it, expect } from "bun:test";
 import { readdirSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { buildIcs, DAY_1, DAY_2 } from "../lib/ics";
 
-const ROUTES_DIR = join(import.meta.dir, "..", "routes");
+const HERE = dirname(fileURLToPath(import.meta.url));
+const ROUTES_DIR = join(HERE, "..", "routes");
 
 describe("calendar routes — real paths", () => {
   it("has files that generate /calendar/day1.ics and /calendar/day2.ics", () => {

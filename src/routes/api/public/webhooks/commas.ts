@@ -149,7 +149,7 @@ export const Route = createFileRoute("/api/public/webhooks/commas")({
             _currency: payment.currency,
             _full_name: payment.buyer.fullName,
             _email: payment.buyer.email,
-            _phone: payment.buyer.phone,
+            _phone: payment.buyer.phone ?? "",
           },
         );
 

@@ -1,8 +1,10 @@
 import { describe, it, expect } from "bun:test";
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = join(import.meta.dir, "..");
+const HERE = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(HERE, "..");
 const LANDING = readFileSync(join(ROOT, "routes/index.tsx"), "utf8");
 const CONFIRMED = readFileSync(join(ROOT, "routes/confirmed.tsx"), "utf8");
 const CHECKOUT = readFileSync(join(ROOT, "routes/checkout.tsx"), "utf8");
