@@ -158,6 +158,32 @@ function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
         </a>
       </div>
       <div className="mt-6 gold-rule max-w-md" />
+
+      <VideoSlot url={heroVideoUrl} label="Watch: 60-second Challenge overview" className="mt-10 max-w-3xl" />
+    </section>
+  );
+}
+
+function ChooseAccessIntro({ chooseAccessVideoUrl }: { chooseAccessVideoUrl: string | null }) {
+  return (
+    <section className="mx-auto max-w-4xl px-5 pt-4 pb-2" aria-labelledby="choose-access-h">
+      <p className="eyebrow">Choose your access</p>
+      <h2 id="choose-access-h" className="mt-3 font-heading text-2xl text-foreground sm:text-3xl">
+        Pick the seat that fits how you show up.
+      </h2>
+      <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
+        Every tier includes both live days. Recordings, VIP Hours, and Founder benefits stack from there.
+      </p>
+      <VideoSlot url={chooseAccessVideoUrl} label="Watch: which tier is right for you" className="mt-6" />
+    </section>
+  );
+}
+
+// Legacy stub kept only to satisfy old references — no longer rendered.
+function _UnusedTail() {
+  return null;
+}
+
     </section>
   );
 }
