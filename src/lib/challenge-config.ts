@@ -22,15 +22,12 @@ export const CHALLENGE_END_ISO = "2026-08-02T14:00:00-04:00";
  * hosts can be added via `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS` (comma-
  * separated). Exact host match only; no suffix tricks.
  */
-export const DEFAULT_COMMAS_CHECKOUT_HOSTS: readonly string[] = ["www.fanbasis.com"];
+export const DEFAULT_COMMAS_CHECKOUT_HOSTS: readonly string[] = [
+  "www.fanbasis.com",
+];
 
 export interface SectionVideoUrls {
   hero: string | undefined;
-  dayOne: string | undefined;
-  dayTwo: string | undefined;
-  chooseAccess: string | undefined;
-  gaBump: string | undefined;
-  checkout: string | undefined;
   confirmed: string | undefined;
 }
 
@@ -66,22 +63,18 @@ export function getCommasConfig(): CommasConfig {
       founder: readEnv("VITE_COMMAS_CHECKOUT_URL_FOUNDER"),
     },
     videoUrl: readEnv("VITE_CHALLENGE_PREVIEW_VIDEO_URL"),
-    // Per-section video slots. Each is optional; when unset the section
-    // renders a "Video coming soon" placeholder rather than an iframe.
+    // Only videos that add value stay in the funnel. Missing videos render
+    // nothing, so customers never see internal placeholders.
     sectionVideos: {
       hero: readEnv("VITE_CHALLENGE_VIDEO_HERO"),
-      dayOne: readEnv("VITE_CHALLENGE_VIDEO_DAY_ONE"),
-      dayTwo: readEnv("VITE_CHALLENGE_VIDEO_DAY_TWO"),
-      chooseAccess: readEnv("VITE_CHALLENGE_VIDEO_CHOOSE_ACCESS"),
-      gaBump: readEnv("VITE_CHALLENGE_VIDEO_GA_BUMP"),
-      checkout: readEnv("VITE_CHALLENGE_VIDEO_CHECKOUT"),
       confirmed: readEnv("VITE_CHALLENGE_VIDEO_CONFIRMED"),
     },
     salesEnabled: readEnv("VITE_CHALLENGE_SALES_ENABLED") === "true",
-    allowedHosts: parseAllowedHosts(readEnv("VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS")),
+    allowedHosts: parseAllowedHosts(
+      readEnv("VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS"),
+    ),
   };
 }
-
 
 /**
  * Strict validator for a candidate checkout URL. Rejects:
