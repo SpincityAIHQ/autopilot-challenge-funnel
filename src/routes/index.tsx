@@ -194,7 +194,13 @@ function Promise() {
   );
 }
 
-function Agenda() {
+function Agenda({
+  dayOneVideoUrl,
+  dayTwoVideoUrl,
+}: {
+  dayOneVideoUrl: string | null;
+  dayTwoVideoUrl: string | null;
+}) {
   return (
     <section id="agenda" className="mx-auto max-w-5xl px-5 py-16">
       <p className="eyebrow">Two-day agenda</p>
@@ -211,6 +217,7 @@ function Agenda() {
             <li>· Choose the three jobs AI can take this month.</li>
             <li>· Finish the map before you close the laptop.</li>
           </ul>
+          <VideoSlot url={dayOneVideoUrl} label="Day 1 preview" className="mt-5" />
         </article>
         <article className="surface-raised p-6">
           <p className="label-mono">Day 2 · Sun Aug 2</p>
@@ -221,8 +228,10 @@ function Agenda() {
             <li>· Reliability math — will it actually hold?</li>
             <li>· Leave with a working first job.</li>
           </ul>
+          <VideoSlot url={dayTwoVideoUrl} label="Day 2 preview" className="mt-5" />
         </article>
       </div>
+
       <div className="mt-6 flex flex-wrap gap-3 text-sm">
         <a
           href="/calendar/day1.ics"
