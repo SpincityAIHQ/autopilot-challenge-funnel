@@ -83,9 +83,9 @@ const JSON_LD_EVENT = {
   "@type": "Event",
   name: "The AUTOPILOT Challenge",
   description:
-    "Build a monetizable website, launch marketing assets, and an AI-powered lead and sales system in two live days.",
+    "Build a monetizable website, launch marketing assets, and an AI-powered lead and sales system in eight live build hours.",
   startDate: "2026-08-01T12:00:00-04:00",
-  endDate: "2026-08-02T14:00:00-04:00",
+  endDate: "2026-08-02T16:00:00-04:00",
   eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
   eventStatus: "https://schema.org/EventScheduled",
   organizer: {
@@ -98,7 +98,7 @@ const JSON_LD_EVENT = {
       "@type": "Event",
       name: "AUTOPILOT Challenge — Day 1: BUILD THE OFFER + SITE",
       startDate: "2026-08-01T12:00:00-04:00",
-      endDate: "2026-08-01T14:00:00-04:00",
+      endDate: "2026-08-01T16:00:00-04:00",
       eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
       eventStatus: "https://schema.org/EventScheduled",
     },
@@ -106,7 +106,7 @@ const JSON_LD_EVENT = {
       "@type": "Event",
       name: "AUTOPILOT Challenge — Day 2: BUILD THE MARKETING + AUTOPILOT",
       startDate: "2026-08-02T12:00:00-04:00",
-      endDate: "2026-08-02T14:00:00-04:00",
+      endDate: "2026-08-02T16:00:00-04:00",
       eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
       eventStatus: "https://schema.org/EventScheduled",
     },
@@ -123,7 +123,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         {
           name: "description",
           content:
-            "Build a monetizable website, launch-ready marketing assets, and an AI-powered lead and sales system with us in two live days. Aug 1–2, 2026, 12–2 PM ET.",
+            "Build a monetizable website, launch-ready marketing assets, and an AI-powered lead and sales system with us in eight live build hours. Aug 1–2, 2026, 12–4 PM ET.",
         },
         { name: "author", content: "SpincityHQ LLC" },
         { name: "theme-color", content: "#0e0e14" },

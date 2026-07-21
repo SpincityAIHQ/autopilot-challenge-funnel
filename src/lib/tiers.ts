@@ -31,8 +31,8 @@ export const TIERS: readonly Tier[] = [
     headline:
       "Build your monetizable site, launch assets, and lead + sales system during both live days.",
     bullets: [
-      "Sat Aug 1 + Sun Aug 2 · 12–2 PM ET",
-      "Full two-day live business build",
+      "Sat Aug 1 + Sun Aug 2 · 12–4 PM ET",
+      "Eight-hour live business build",
       "Companion workbook",
     ],
   },

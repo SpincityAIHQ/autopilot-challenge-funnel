@@ -38,7 +38,7 @@ export interface IcsDay {
   description: string;
   dateYyyyMmDd: string; // e.g. "20260801"
   startHHmm: string; // "120000"
-  endHHmm: string; // "140000"
+  endHHmm: string; // "160000"
 }
 
 export function buildIcs(day: IcsDay): string {
@@ -69,18 +69,36 @@ export const DAY_1: IcsDay = {
   uid: "autopilot-challenge-day-1-2026-08-01@spincityhq",
   summary: "AUTOPILOT Challenge — Day 1: BUILD THE OFFER + SITE",
   description:
-    "Build the offer and monetizable site. Add the brand, sales message, media, and a way to pay, book, or become a lead. 12:00–2:00 PM ET.",
+    "Build the offer and monetizable site. Add the brand, sales message, media, and a way to pay, book, or become a lead. 12:00–4:00 PM ET.",
   dateYyyyMmDd: "20260801",
   startHHmm: "120000",
-  endHHmm: "140000",
+  endHHmm: "160000",
 };
 
 export const DAY_2: IcsDay = {
   uid: "autopilot-challenge-day-2-2026-08-02@spincityhq",
   summary: "AUTOPILOT Challenge — Day 2: BUILD THE MARKETING + AUTOPILOT",
   description:
-    "Build the marketing assets, lead and sales follow-up system, AI rules, and test the full path before launch. 12:00–2:00 PM ET.",
+    "Build the marketing assets, lead and sales follow-up system, AI rules, and test the full path before launch. 12:00–4:00 PM ET.",
   dateYyyyMmDd: "20260802",
   startHHmm: "120000",
-  endHHmm: "140000",
+  endHHmm: "160000",
+};
+
+export const DAY_1_VIP: IcsDay = {
+  ...DAY_1,
+  uid: "autopilot-challenge-day-1-vip-2026-08-01@spincityhq",
+  summary: "AUTOPILOT Challenge — Day 1 + VIP HOUR",
+  description:
+    "Day 1 live build from 12:00–4:00 PM ET, followed by the group VIP hour from 4:00–5:00 PM ET. Selected businesses receive a hot seat; a personal turn is not guaranteed.",
+  endHHmm: "170000",
+};
+
+export const DAY_2_VIP: IcsDay = {
+  ...DAY_2,
+  uid: "autopilot-challenge-day-2-vip-2026-08-02@spincityhq",
+  summary: "AUTOPILOT Challenge — Day 2 + VIP HOUR",
+  description:
+    "Day 2 live build from 12:00–4:00 PM ET, followed by the group VIP hour from 4:00–5:00 PM ET. Selected businesses receive a hot seat; a personal turn is not guaranteed.",
+  endHHmm: "170000",
 };

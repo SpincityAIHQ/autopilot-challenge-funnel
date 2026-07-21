@@ -15,7 +15,7 @@
 import type { TierId } from "./tiers";
 
 export const CHALLENGE_START_ISO = "2026-08-01T12:00:00-04:00";
-export const CHALLENGE_END_ISO = "2026-08-02T14:00:00-04:00";
+export const CHALLENGE_END_ISO = "2026-08-02T16:00:00-04:00";
 
 /**
  * Default approved official Commas hosted-checkout host. Extra verified
@@ -27,8 +27,11 @@ export const DEFAULT_COMMAS_CHECKOUT_HOSTS: readonly string[] = [
 ];
 
 export interface SectionVideoUrls {
-  hero: string | undefined;
-  confirmed: string | undefined;
+  hero?: string;
+  checkout?: string;
+  confirmed?: string;
+  offerVideos?: Partial<Record<TierId, string>>;
+  confirmedVideos?: Partial<Record<TierId, string>>;
 }
 
 export interface CommasConfig {
@@ -64,10 +67,24 @@ export function getCommasConfig(): CommasConfig {
     },
     videoUrl: readEnv("VITE_CHALLENGE_PREVIEW_VIDEO_URL"),
     // Only videos that add value stay in the funnel. Missing videos render
-    // nothing, so customers never see internal placeholders.
+    // nothing, so customers never see internal placeholders. There are no
+    // Day 1, Day 2, or recordings-add-on video slots.
     sectionVideos: {
       hero: readEnv("VITE_CHALLENGE_VIDEO_HERO"),
+      checkout: readEnv("VITE_CHALLENGE_VIDEO_CHECKOUT"),
       confirmed: readEnv("VITE_CHALLENGE_VIDEO_CONFIRMED"),
+      offerVideos: {
+        ga: readEnv("VITE_CHALLENGE_VIDEO_OFFER_GA"),
+        vip: readEnv("VITE_CHALLENGE_VIDEO_OFFER_VIP"),
+        bundle: readEnv("VITE_CHALLENGE_VIDEO_OFFER_BUNDLE"),
+        founder: readEnv("VITE_CHALLENGE_VIDEO_OFFER_FOUNDER"),
+      },
+      confirmedVideos: {
+        ga: readEnv("VITE_CHALLENGE_VIDEO_CONFIRMED_GA"),
+        vip: readEnv("VITE_CHALLENGE_VIDEO_CONFIRMED_VIP"),
+        bundle: readEnv("VITE_CHALLENGE_VIDEO_CONFIRMED_BUNDLE"),
+        founder: readEnv("VITE_CHALLENGE_VIDEO_CONFIRMED_FOUNDER"),
+      },
     },
     salesEnabled: readEnv("VITE_CHALLENGE_SALES_ENABLED") === "true",
     allowedHosts: parseAllowedHosts(

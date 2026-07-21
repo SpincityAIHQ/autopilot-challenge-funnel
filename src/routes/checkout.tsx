@@ -15,6 +15,7 @@ import {
   isHandoffAllowed,
 } from "@/lib/challenge-config";
 import { useFounderSeatsRemaining } from "@/hooks/use-founder-seats";
+import { VideoSlot } from "@/components/VideoSlot";
 
 const searchSchema = z.object({
   tier: z.enum(["ga", "vip", "bundle", "founder"]).optional(),
@@ -171,7 +172,9 @@ function Checkout() {
       <section className="mt-6 surface p-6">
         <h2 className="font-heading text-lg text-foreground">Before you pay</h2>
         <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-          <li>· This is a live build on Aug 1 and Aug 2 from 12–2 PM ET.</li>
+          <li>
+            · This is an eight-hour live build: Aug 1 and Aug 2 from 12–4 PM ET.
+          </li>
           <li>
             · We build your monetizable site, launch marketing assets, and lead
             + sales system together.
@@ -185,6 +188,12 @@ function Checkout() {
           </li>
         </ul>
       </section>
+
+      <VideoSlot
+        url={cfg.sectionVideos?.checkout ?? null}
+        label={`Watch: final truth check for ${t.name}`}
+        className="mt-6"
+      />
 
       <div className="mt-8 flex flex-col gap-3">
         <button
