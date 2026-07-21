@@ -15,6 +15,7 @@ import {
   isHandoffAllowed,
 } from "@/lib/challenge-config";
 import { useFounderSeatsRemaining } from "@/hooks/use-founder-seats";
+import { VideoSlot } from "@/components/VideoSlot";
 
 const searchSchema = z.object({
   tier: z.enum(["ga", "vip", "bundle", "founder"]).optional(),
@@ -149,6 +150,8 @@ function Checkout() {
           consent are shown inside secure Commas checkout.
         </p>
       </section>
+
+      <VideoSlot url={cfg.sectionVideos?.checkout ?? null} label="Watch: what happens next in Commas" className="mt-8" />
 
       <div className="mt-8 flex flex-col gap-3">
         <button

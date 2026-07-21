@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { VideoSlot } from "@/components/VideoSlot";
+import { getCommasConfig } from "@/lib/challenge-config";
 
 export const Route = createFileRoute("/confirmed")({
   head: () => ({
@@ -18,6 +20,7 @@ export const Route = createFileRoute("/confirmed")({
 });
 
 function Confirmed() {
+  const cfg = getCommasConfig();
   const shareText = encodeURIComponent(
     "The AUTOPILOT Challenge — 2 days, one working automation. Aug 1–2, 2026.",
   );
@@ -34,6 +37,8 @@ function Confirmed() {
         official confirmation email is sent from SpincityHQ / NuAmenti. This
         page does not grant access on its own.
       </p>
+
+      <VideoSlot url={cfg.sectionVideos?.confirmed ?? null} label="Watch: what to expect before Day 1" className="mt-8" />
 
       <section className="mt-10 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">Save both days to your calendar</h2>

@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Countdown } from "@/components/Countdown";
 import { TIERS, formatUsd, FOUNDER_DISCLAIMER, FOUNDER_HARD_CAP, GA_BUMP_COPY } from "@/lib/tiers";
 import { getCommasConfig } from "@/lib/challenge-config";
-import { normalizeVideoEmbedUrl } from "@/lib/video-embed";
+import { VideoSlot } from "@/components/VideoSlot";
+import { AiSpinAvatar } from "@/components/AiSpinAvatar";
 import { useFounderSeatsRemaining } from "@/hooks/use-founder-seats";
 
 export const Route = createFileRoute("/")({
@@ -80,18 +81,21 @@ function useFounderCta(): FounderCtaState {
 
 function Landing() {
   const cfg = getCommasConfig();
-  const safeVideoUrl = normalizeVideoEmbedUrl(cfg.videoUrl ?? null);
+  const v = cfg.sectionVideos ?? ({} as NonNullable<typeof cfg.sectionVideos>);
   const founder = useFounderCta();
 
   return (
     <main className="min-h-screen">
       <TopBar />
-      <Hero />
+      <Hero heroVideoUrl={v.hero ?? null} />
+      <AiSpinAvatar />
       <Promise />
-      <Agenda />
+      <Agenda dayOneVideoUrl={v.dayOne ?? null} dayTwoVideoUrl={v.dayTwo ?? null} />
       <LeaveWith />
       <AutonomyMap />
-      <TierComparison founder={founder} />
+      <ChooseAccessIntro chooseAccessVideoUrl={v.chooseAccess ?? null} />
+      <TierComparison founder={founder} gaBumpVideoUrl={v.gaBump ?? null} />
+
       <FounderSection founder={founder} />
       <WhyDifferent />
       <FitCheck />
@@ -99,11 +103,11 @@ function Landing() {
       <Faq />
       <Timeline />
       <FinalCta founder={founder} />
-      {safeVideoUrl ? <VideoEmbed url={safeVideoUrl} /> : null}
       <Footer />
     </main>
   );
 }
+
 
 function TopBar() {
   return (
@@ -120,7 +124,7 @@ function TopBar() {
   );
 }
 
-function Hero() {
+function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
   return (
     <section className="mx-auto max-w-6xl px-5 pt-14 pb-16 sm:pt-20 sm:pb-24">
       <p className="eyebrow">The AUTOPILOT Challenge</p>
@@ -154,9 +158,27 @@ function Hero() {
         </a>
       </div>
       <div className="mt-6 gold-rule max-w-md" />
+
+      <VideoSlot url={heroVideoUrl} label="Watch: 60-second Challenge overview" className="mt-10 max-w-3xl" />
     </section>
   );
 }
+
+function ChooseAccessIntro({ chooseAccessVideoUrl }: { chooseAccessVideoUrl: string | null }) {
+  return (
+    <section className="mx-auto max-w-4xl px-5 pt-4 pb-2" aria-labelledby="choose-access-h">
+      <p className="eyebrow">Choose your access</p>
+      <h2 id="choose-access-h" className="mt-3 font-heading text-2xl text-foreground sm:text-3xl">
+        Pick the seat that fits how you show up.
+      </h2>
+      <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
+        Every tier includes both live days. Recordings, VIP Hours, and Founder benefits stack from there.
+      </p>
+      <VideoSlot url={chooseAccessVideoUrl} label="Watch: which tier is right for you" className="mt-6" />
+    </section>
+  );
+}
+
 
 function Promise() {
   return (
@@ -172,7 +194,13 @@ function Promise() {
   );
 }
 
-function Agenda() {
+function Agenda({
+  dayOneVideoUrl,
+  dayTwoVideoUrl,
+}: {
+  dayOneVideoUrl: string | null;
+  dayTwoVideoUrl: string | null;
+}) {
   return (
     <section id="agenda" className="mx-auto max-w-5xl px-5 py-16">
       <p className="eyebrow">Two-day agenda</p>
@@ -189,6 +217,7 @@ function Agenda() {
             <li>· Choose the three jobs AI can take this month.</li>
             <li>· Finish the map before you close the laptop.</li>
           </ul>
+          <VideoSlot url={dayOneVideoUrl} label="Day 1 preview" className="mt-5" />
         </article>
         <article className="surface-raised p-6">
           <p className="label-mono">Day 2 · Sun Aug 2</p>
@@ -199,8 +228,10 @@ function Agenda() {
             <li>· Reliability math — will it actually hold?</li>
             <li>· Leave with a working first job.</li>
           </ul>
+          <VideoSlot url={dayTwoVideoUrl} label="Day 2 preview" className="mt-5" />
         </article>
       </div>
+
       <div className="mt-6 flex flex-wrap gap-3 text-sm">
         <a
           href="/calendar/day1.ics"
@@ -283,7 +314,13 @@ function AutonomyMap() {
   );
 }
 
-function TierComparison({ founder }: { founder: FounderCtaState }) {
+function TierComparison({
+  founder,
+  gaBumpVideoUrl,
+}: {
+  founder: FounderCtaState;
+  gaBumpVideoUrl: string | null;
+}) {
   return (
     <section id="tiers" className="mx-auto max-w-6xl px-5 py-16">
       <p className="eyebrow">The tiers</p>
@@ -294,6 +331,7 @@ function TierComparison({ founder }: { founder: FounderCtaState }) {
       <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {TIERS.map((t) => {
           const isFounder = t.id === "founder";
+          const isGa = t.id === "ga";
           const founderDisabled = isFounder && founder.disabled;
           const buttonBase =
             "mt-5 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground transition";
@@ -318,8 +356,16 @@ function TierComparison({ founder }: { founder: FounderCtaState }) {
                 {t.bullets.map((b) => (
                   <li key={b}>· {b}</li>
                 ))}
-                {t.id === "ga" ? <li>· {GA_BUMP_COPY}</li> : null}
+                {isGa ? <li>· {GA_BUMP_COPY}</li> : null}
               </ul>
+              {isGa ? (
+                <VideoSlot
+                  url={gaBumpVideoUrl}
+                  label="Recordings add-on preview"
+                  className="mt-4"
+                />
+              ) : null}
+
               {isFounder ? (
                 <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
                   {FOUNDER_DISCLAIMER}
