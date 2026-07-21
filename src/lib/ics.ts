@@ -25,7 +25,11 @@ const VTIMEZONE_NY = [
 ].join("\r\n");
 
 function escapeText(v: string): string {
-  return v.replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
+  return v
+    .replace(/\\/g, "\\\\")
+    .replace(/\n/g, "\\n")
+    .replace(/,/g, "\\,")
+    .replace(/;/g, "\\;");
 }
 
 export interface IcsDay {
@@ -38,8 +42,10 @@ export interface IcsDay {
 }
 
 export function buildIcs(day: IcsDay): string {
-  const dtstamp =
-    new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+  const dtstamp = new Date()
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}Z$/, "Z");
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -61,9 +67,9 @@ export function buildIcs(day: IcsDay): string {
 
 export const DAY_1: IcsDay = {
   uid: "autopilot-challenge-day-1-2026-08-01@spincityhq",
-  summary: "AUTOPILOT Challenge — Day 1: MAP IT",
+  summary: "AUTOPILOT Challenge — Day 1: BUILD THE OFFER + SITE",
   description:
-    "Day 1 MAP IT. Identify the wall. Research/Create/Distribute Autonomy Map. Choose your three jobs. Finish the map. 12:00–2:00 PM ET.",
+    "Build the offer and monetizable site. Add the brand, sales message, media, and a way to pay, book, or become a lead. 12:00–2:00 PM ET.",
   dateYyyyMmDd: "20260801",
   startHHmm: "120000",
   endHHmm: "140000",
@@ -71,9 +77,9 @@ export const DAY_1: IcsDay = {
 
 export const DAY_2: IcsDay = {
   uid: "autopilot-challenge-day-2-2026-08-02@spincityhq",
-  summary: "AUTOPILOT Challenge — Day 2: BUILD IT",
+  summary: "AUTOPILOT Challenge — Day 2: BUILD THE MARKETING + AUTOPILOT",
   description:
-    "Day 2 BUILD IT. Set the fence and rules. Build one real automation live. Reliability math. Leave with a working first job. 12:00–2:00 PM ET.",
+    "Build the marketing assets, lead and sales follow-up system, AI rules, and test the full path before launch. 12:00–2:00 PM ET.",
   dateYyyyMmDd: "20260802",
   startHHmm: "120000",
   endHHmm: "140000",
