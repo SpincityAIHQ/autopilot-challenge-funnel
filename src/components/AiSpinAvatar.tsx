@@ -25,6 +25,8 @@ export function AiSpinAvatar({ className }: { className?: string }) {
 
   return (
     <section
+      id="ai-spin"
+      data-chatbot-slot="heygen-live-avatar"
       aria-labelledby="ai-spin-h"
       className={`mx-auto max-w-4xl px-5 py-16 ${className ?? ""}`}
     >
@@ -33,12 +35,13 @@ export function AiSpinAvatar({ className }: { className?: string }) {
         id="ai-spin-h"
         className="mt-3 font-heading text-2xl text-foreground sm:text-3xl"
       >
-        Not sure which ticket fits?
+        Need help choosing? Ask AI Spin.
       </h2>
       <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
         I’m AI Spin, an AI avatar—not live Spin. I will ask three short
-        questions and point you to the lowest ticket that fits. This chat ends
-        after five messages or four minutes.
+        questions and point you to the lowest access level that fits. This chat
+        ends after five messages or four minutes. Do not share passwords,
+        payment details, or private business information.
       </p>
 
       <div className="mt-6 flex justify-center">
