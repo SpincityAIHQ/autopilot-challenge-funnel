@@ -1,176 +1,173 @@
-# AUTOPILOT Challenge Funnel — Setup
+# AUTOPILOT Challenge Funnel — Current Setup
 
-This project is an **independent** Lovable project. It shares nothing with NuAmenti — no code, no database, no workers, no domain.
-It is currently in **preview only** and must not be published until the checklist below is complete.
+This is the standalone launch funnel for The AUTOPILOT Challenge. It does not
+share code, routes, database tables, payment products, or a domain with the
+NuAmenti application.
 
----
+## Current offer truth
 
-## What's implemented
+- Core event: Saturday, August 1 and Sunday, August 2, 2026
+- Core live build: 12:00–4:00 PM Eastern each day — eight live hours total
+- VIP, Bundle, and Founder group hour: 4:00–5:00 PM Eastern each day
+- GA: $77
+- VIP: $177
+- Bundle: $333
+- Founder: $1,111, capped at 33 verified purchases
+- GA can add recordings + completed Autonomy Map template for $22 inside its
+  FanBasis checkout. There is no separate recordings tier or recordings video.
+- Promise: build a live monetizable site, launch-ready marketing assets, a
+  working lead-and-sales follow-up system, and an Autonomy Map together.
+- Sales and income are not guaranteed.
 
-- Public routes: `/`, `/checkout`, `/confirmed`, `/privacy`, `/terms`, `/refund-policy`
-- Diamond Standard / Galactic Black design system, reduced-motion aware, mobile-first
-- Countdown to `2026-08-01T12:00:00-04:00`; after that instant it shows *"The live challenge has started."* and never resets
-- Tier catalog with exact copy and prices: **GA $77**, **VIP $177**, **Bundle $333**, **Founder $1,111** (hard cap 33). The $22 GA recordings bump is a **native Commas order bump inside GA checkout** — this app never shows a bumped total or a fake GA+bump URL
-- Founder disclaimer displayed adjacent to every Founder CTA (landing, Founder section, final CTA, checkout)
-- Handoff `/checkout` is a review-only summary — Commas securely collects buyer details, payment, and marketing consent on the next screen. No PII or consent is passed through URLs
-- **Two independent handoff gates**:
-  - `VITE_CHALLENGE_SALES_ENABLED` (must be literal `"true"`) — global gate
-  - Per-tier Commas URL must exist
-  - Founder additionally requires verified `founder_seats_remaining() > 0` from the safe RPC; an unknown seat state fails closed once sales are enabled
-- Verified availability: at 0 seats remaining and sales enabled → SOLD OUT UI, Founder handoff disabled
-- Neutral confirmation page: heading is *"Payment confirmation pending"*. Access is granted only from the verified webhook and email. Includes a "what to bring" section and a share CTA that never leaks access
-- Legal placeholders (`/privacy`, `/terms`, `/refund-policy`) all `noindex,nofollow`, clearly marked *pending legal review*
-- Two live `.ics` endpoints at the real paths **`/calendar/day1.ics`** and **`/calendar/day2.ics`** (America/New_York)
-- Event JSON-LD represents both sessions accurately via `subEvent`. Public URL fields are intentionally unset until a real domain is configured
-- Video slot accepts only an allowlist (YouTube watch / youtu.be / YouTube embed / Vimeo). Anything else fails closed. Iframe is `loading="lazy"`, `referrerPolicy="no-referrer"`, `allowFullScreen`
-- No runtime Google Fonts calls. Design uses strong local/system fallbacks (Orbitron/Rajdhani/Space Mono/Inter families with `ui-sans-serif`/`ui-monospace`/`system-ui` fallbacks). Install `@fontsource/*` packages later if you want self-hosted glyphs
-- Backend schema:
-  - `challenge_registrations`, `challenge_payment_events`, `founder_seats` (33 pre-seeded)
-  - **RLS enabled and locked**: browser cannot read or write registrations, payment events, or seats. Only `service_role` writes
-  - `founder_seats_remaining()` — anon/authenticated-callable safe integer aggregate
-  - `claim_lowest_founder_seat(uuid)` — atomic lowest-open-seat claim. `EXECUTE` restricted to `service_role`
-  - `fulfill_challenge_payment(...)` — SECURITY DEFINER, `service_role` only. In a single transaction it validates tier, creates or returns the registration idempotently by `commas_payment_id`, and for Founder claims the lowest open seat *before* confirming. If no seat is available it raises and leaves no confirmed registration. Returns registration id, optional seat, and whether it already existed
-- **Disabled-by-default** Commas webhook at `/api/public/webhooks/commas`:
-  - `503` unless `COMMAS_WEBHOOKS_ENABLED=true` AND `COMMAS_WEBHOOK_SECRET` set
-  - HMAC-SHA256 (timing-safe compare) over the **exact raw body** verified before any parsing
-  - Canonical fulfillment event: **`payment.succeeded`** with `data.status === "succeeded"`. `product.purchased` is stored redacted and marked `ignored` (audit only) — it never fulfills
-  - Monetary values are decimal **dollars**; converted with `Math.round(v * 100)` (77.00 → 7700, 49.99 → 4999)
-  - Base tier from `data.item.id`; native order bump detected via `data.order_bumps[].item.id === COMMAS_PRODUCT_ID_GA_BUMP`. Non-GA never bumps. Bump is never a base tier
-  - Envelope validation requires `id`, `type`, `data.status === "succeeded"`, `payment_id`, `item.id`, buyer name + email, finite positive amount, currency. Never fabricates "Unknown", fake email, or `0`
-  - Payload stored **redacted**: event id/type, payment id, status, currency, amount, base item id/title, bump item ids, buyer provider id. Never buyer name/email/phone/address/metadata
-  - Idempotency: duplicate `provider_event_id` reads its prior state — `processed`/`ignored` returns 200; `received`/`error` resumes. Duplicate `commas_payment_id` returns existing fulfillment via the RPC (no second seat claim)
-  - Transient DB errors → 500 (Commas retries). Genuine Founder cap failure → recorded as error and returns deterministic 200 so it does not loop forever; grants nothing
-  - No email/SMS delivery — a clean post-verification boundary is left for the outbound provider
-- Tests (Bun test runner) — see below
+## Customer funnel
 
-Run tests locally:
+1. `/` — main sales page and landing VSL
+2. `/?offer=ga|vip|bundle|founder` — the short tier explainer opened by every
+   offer button
+3. `/checkout?tier=ga|vip|bundle|founder` — order summary, truth-check VSL, and
+   hosted FanBasis handoff
+4. `/confirmed?tier=ga|vip|bundle|founder` — tier-specific next steps after the
+   matching FanBasis return
+5. `/confirmed` — neutral fallback when no tier return context is present
 
-```
-bun test
-```
+The tier in a return URL only chooses public instructions. It never grants
+access. The verified FanBasis webhook, receipt, and official access email are
+the authority for the buyer's tier and benefits.
 
----
+Use `/preview-nav` to click through every state before promotion. It is unlinked
+and `noindex`, but it is not password-protected. Remove or protect it before the
+final public launch if that exposure is not acceptable.
 
-## Manual launch inputs still required
+## VSL configuration
 
-### 1. Commas configuration
+Add these browser-visible environment variables in the standalone Lovable
+project. Values must be YouTube or Vimeo URLs. Missing or invalid values render
+nothing; customers never see an empty player or build note.
 
-Add these as **runtime env vars** in Project Settings → Secrets. Client keys must be prefixed with `VITE_` to reach the browser; server keys must NOT be.
-
-Client (browser-visible):
-
-| Name | Purpose |
+| Environment variable | Customer placement |
 | --- | --- |
-| `VITE_CHALLENGE_SALES_ENABLED` | Overall sales gate. Must be the literal string `"true"` for ANY handoff button to enable. |
-| `VITE_COMMAS_CHECKOUT_URL_GA` | Commas hosted checkout URL for GA ($77). The $22 recordings bump is offered **inside** this checkout as a native order bump — do NOT create a separate GA+bump URL |
-| `VITE_COMMAS_CHECKOUT_URL_VIP` | VIP ($177) |
-| `VITE_COMMAS_CHECKOUT_URL_BUNDLE` | Bundle ($333) |
-| `VITE_COMMAS_CHECKOUT_URL_FOUNDER` | Founder Seat ($1,111). The Commas Founder product itself MUST be configured at exactly $1,111 |
-| `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS` | Optional. Comma-separated extra approved checkout hosts (exact match only). The default allowlist is `www.fanbasis.com`. Anything off-list, non-https, or with embedded credentials fails closed |
-| `VITE_CHALLENGE_PREVIEW_VIDEO_URL` | Optional. YouTube (watch / youtu.be / embed) or Vimeo only. Anything else fails closed and the section stays hidden |
+| `VITE_CHALLENGE_VIDEO_HERO` | Main page: what we build in eight live hours |
+| `VITE_CHALLENGE_VIDEO_OFFER_GA` | GA offer-click explainer |
+| `VITE_CHALLENGE_VIDEO_OFFER_VIP` | VIP offer-click explainer |
+| `VITE_CHALLENGE_VIDEO_OFFER_BUNDLE` | Bundle offer-click explainer |
+| `VITE_CHALLENGE_VIDEO_OFFER_FOUNDER` | Founder offer-click explainer |
+| `VITE_CHALLENGE_VIDEO_CHECKOUT` | Final checkout truth-check |
+| `VITE_CHALLENGE_VIDEO_CONFIRMED` | Optional generic confirmation fallback |
+| `VITE_CHALLENGE_VIDEO_CONFIRMED_GA` | GA confirmation and next steps |
+| `VITE_CHALLENGE_VIDEO_CONFIRMED_VIP` | VIP confirmation and next steps |
+| `VITE_CHALLENGE_VIDEO_CONFIRMED_BUNDLE` | Bundle confirmation and next steps |
+| `VITE_CHALLENGE_VIDEO_CONFIRMED_FOUNDER` | Founder confirmation and next steps |
 
-Server (never `VITE_`-prefixed):
+There are intentionally no Day 1, Day 2, or recordings-add-on video variables.
 
-| Name | Purpose |
+## HeyGen Live AI Spin slot
+
+The AI Spin section sits after the tier cards and stays hidden until all three
+values below are set:
+
+| Environment variable | Required value |
 | --- | --- |
-| `COMMAS_WEBHOOKS_ENABLED` | Must be the literal string `true` to activate the webhook. Any other value keeps it disabled |
-| `COMMAS_WEBHOOK_SECRET` | Shared HMAC secret from Commas. Used to verify `x-webhook-signature` |
-| `COMMAS_PRODUCT_ID_GA` | Base product id for the $77 GA ticket |
-| `COMMAS_PRODUCT_ID_GA_BUMP` | Order-bump product id for the $22 recordings + completed-map template (attached inside GA checkout) |
-| `COMMAS_PRODUCT_ID_VIP` | $177 VIP |
-| `COMMAS_PRODUCT_ID_BUNDLE` | $333 Bundle |
-| `COMMAS_PRODUCT_ID_FOUNDER` | $1,111 Founder Seat |
+| `VITE_AI_SPIN_ENABLED` | `true` |
+| `VITE_AI_SPIN_LIMITS_VERIFIED` | `true` only after the real limits are tested |
+| `VITE_HEYGEN_LIVE_AVATAR_EMBED_URL` | Approved HTTPS HeyGen live-avatar embed URL |
 
-Unknown product ids grant nothing. Leave any unused key empty.
+The customer disclosure says AI Spin is an AI avatar, recommends the lowest
+sufficient tier, and ends after five visitor messages or four minutes. The
+iframe component does not create those controls by itself. Do not set
+`VITE_AI_SPIN_LIMITS_VERIFIED=true` until the HeyGen/session layer actually
+enforces both limits and a refresh cannot restart unlimited consulting.
 
-### 2. Commas hosted-checkout wiring
+Never place a HeyGen API key in a `VITE_` variable or client source.
 
-For each Commas product, configure:
+## FanBasis hosted checkouts
 
-- `success_url` → `https://<your-published-domain>/confirmed`
-- Cancellation / back URL → `https://<your-published-domain>/` (or the tier's landing anchor)
-- Two separate **unchecked** custom fields inside Commas: **Email marketing consent** and **SMS marketing consent**. Until a verified webhook field mapping for those fields is implemented, this app records both marketing consents as `false` and only sends transactional access. Phone is optional and is not consent
-- Configure webhook events to POST to `https://<your-published-domain>/api/public/webhooks/commas` for exactly:
-  - `payment.succeeded` — canonical fulfillment
-  - `product.purchased` — audit only
+Browser-visible configuration:
 
-### 3. Provider inventory cap — Founder Seat = 33
+| Environment variable | Product |
+| --- | --- |
+| `VITE_CHALLENGE_SALES_ENABLED` | Must equal `true` before any payment handoff is enabled |
+| `VITE_COMMAS_CHECKOUT_URL_GA` | FanBasis GA checkout — $77 |
+| `VITE_COMMAS_CHECKOUT_URL_VIP` | FanBasis VIP checkout — $177 |
+| `VITE_COMMAS_CHECKOUT_URL_BUNDLE` | FanBasis Bundle checkout — $333 |
+| `VITE_COMMAS_CHECKOUT_URL_FOUNDER` | FanBasis Founder checkout — $1,111 |
+| `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS` | Optional exact-match extra hosts; `www.fanbasis.com` is already allowed |
 
-The database enforces the cap atomically (`fulfill_challenge_payment` claims the seat before confirming the registration; if no seat, no confirmed registration exists). Mirror this in Commas by setting the Founder product's inventory to exactly **33**.
+Configure a different success return for each FanBasis product:
 
-### 4. Sandbox round-trip
+```text
+GA:      https://NuAmentiLaunch.com/confirmed?tier=ga
+VIP:     https://NuAmentiLaunch.com/confirmed?tier=vip
+Bundle:  https://NuAmentiLaunch.com/confirmed?tier=bundle
+Founder: https://NuAmentiLaunch.com/confirmed?tier=founder
+```
 
-Before flipping `COMMAS_WEBHOOKS_ENABLED=true` in production:
+Use this cancel/back destination for all four:
 
-- [ ] Verify the checkout host used in every `VITE_COMMAS_CHECKOUT_URL_*` env var is on the allowlist (`www.fanbasis.com` by default, or a verified extra host added via `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS`)
-- [ ] Confirm all five `COMMAS_PRODUCT_ID_*` values are set to **distinct** ids
-- [ ] Sign a valid `payment.succeeded` test payload with `COMMAS_WEBHOOK_SECRET` and POST it to the webhook path
-- [ ] Confirm the row appears in `challenge_payment_events` with `status = 'processed'` and no PII in `payload`
-- [ ] Confirm the row in `challenge_registrations` has the expected tier / amount / bump / commas_payment_id
-- [ ] For Founder: confirm one row moved in `founder_seats`
-- [ ] Replay the same event id → response is 200 and no new registration or seat claim
-- [ ] Send a `product.purchased` for the same order → stored `ignored`; no registration created
-- [ ] **Under-price attempt** (e.g. $1 GA event): stored with `status='error'`, no registration created, deterministic 200
-- [ ] **Over-price / retired-price attempt** (e.g. $888 Founder event): stored with `status='error'`, no registration, deterministic 200
-- [ ] **Non-USD currency** (e.g. EUR): stored with `status='error'`, no registration, deterministic 200
+```text
+https://NuAmentiLaunch.com/#tiers
+```
 
-### 5. Outbound provider (later)
+Set the Founder product inventory to exactly 33 at FanBasis. The database cap
+protects fulfillment, but the provider cap is also required so a 34th buyer is
+not charged and forced into a refund.
 
-Post-registration email and SMS delivery is intentionally not wired. The webhook leaves a clean boundary after fulfillment. Wire your provider (Resend/Postmark/Twilio) respecting the two independent consent flags on `challenge_registrations`. Transactional access confirmation must be sent regardless of marketing consent.
+## Verified payment webhook
 
-### 6. Policies
+The server endpoint remains `/api/public/webhooks/commas` because that is the
+provider contract name used by the existing backend. It is disabled by default.
 
-`/privacy`, `/terms`, and `/refund-policy` are placeholders (`noindex,nofollow`). Have counsel finalize them **before** flipping the sales gate. The checkout page does not require the user to agree to placeholder policies.
+Required server-only variables:
 
-### 7. Public proof
+- `COMMAS_WEBHOOKS_ENABLED=true`
+- `COMMAS_WEBHOOK_SECRET`
+- `COMMAS_PRODUCT_ID_GA`
+- `COMMAS_PRODUCT_ID_GA_BUMP`
+- `COMMAS_PRODUCT_ID_VIP`
+- `COMMAS_PRODUCT_ID_BUNDLE`
+- `COMMAS_PRODUCT_ID_FOUNDER`
 
-The "Receipts are being documented" section is intentional. Do not swap in fabricated testimonials, counters, or activity indicators.
+Do not enable production fulfillment until one real FanBasis sandbox payload
+and signature pass the full round-trip. Product IDs must be distinct. Prices
+must reconcile to $77, $99 only when GA includes the native bump, $177, $333,
+or $1,111. Unknown products, wrong totals, and non-USD payments grant nothing.
 
-### 8. Domain
+The confirmation page does not send access email. A verified transactional
+email provider still needs to deliver the official join link, workbook, tier
+benefits, and Founder onboarding.
 
-No public URL has been configured. Once a Lovable subdomain or a custom domain is set, revisit:
+## Calendar routes
 
-- Absolute URLs anywhere the webhook path is copied into Commas
-- Absolute URLs in JSON-LD (currently intentionally omitted)
-- Sitemap (add later once routes are finalized)
+- `/calendar/day1.ics` — core Day 1, 12–4 PM ET
+- `/calendar/day2.ics` — core Day 2, 12–4 PM ET
+- `/calendar/day1-vip.ics` — Day 1 plus VIP hour, 12–5 PM ET
+- `/calendar/day2-vip.ics` — Day 2 plus VIP hour, 12–5 PM ET
 
-### 9. Launch checklist (mobile QA)
+GA confirmation uses the core calendars. VIP, Bundle, and Founder confirmation
+uses the extended calendars.
 
-Do all of these on a real phone before flipping publish:
+## Pre-launch checklist
 
-- [ ] Countdown ticks and holds shape at every viewport width
-- [ ] Every tier CTA lands on `/checkout` with the correct tier preselected
-- [ ] Pay button is disabled and reads **"Registration opening soon"** when the sales gate is off OR the URL is missing
-- [ ] GA checkout page shows the native-bump copy — no fake $99 total
-- [ ] Founder pay button fails closed if seats-remaining is unknown; shows SOLD OUT at 0
-- [ ] Founder non-equity disclaimer appears adjacent to every Founder CTA including final CTA and checkout
-- [ ] `/calendar/day1.ics` and `/calendar/day2.ics` download and open in the OS calendar with America/New_York
-- [ ] Reduced-motion setting disables animations
-- [ ] `/confirmed` heading is neutral; no URL-parameter unlock
-- [ ] Policy pages return `noindex,nofollow`
-- [ ] Webhook remains **disabled** until sandbox round-trip has been signed off (§4)
+- [ ] Buy/connect `NuAmentiLaunch.com` to this project only
+- [ ] Upload every VSL and confirm `/preview-nav` shows `READY`
+- [ ] Connect HeyGen Live AI Spin and test the five-message/four-minute limits
+- [ ] Create all four FanBasis products and the GA native order bump
+- [ ] Add each product's exact success return and common cancel URL
+- [ ] Cap Founder inventory at 33 in FanBasis
+- [ ] Complete one signed sandbox webhook round-trip for every tier and GA bump
+- [ ] Send and receive a real access email for every tier
+- [ ] Finalize privacy, terms, refund, book shipping, event cancellation, and
+  chargeback language
+- [ ] Test every page and calendar on desktop and a real phone
+- [ ] Confirm no public page displays internal provider/build notes
+- [ ] Republish only after payment, fulfillment, email, policies, avatar, and
+  domain all pass
 
----
+## Validation
 
-## Test coverage (Bun test)
+Current source validation:
 
-Files under `src/tests/`:
-
-- `tiers.test.ts` — tier math, GA bump math (server-only), Founder hard cap, no unapproved bullets
-- `checkout-url.test.ts` — fail-closed URL resolution, sales gate behavior (off/on, missing per-tier URL), no GA-bump URL surface
-- `countdown.test.ts` — pre-target countdown, post-target "started" state that never resets
-- `webhook.test.ts` — signature verify (accept/tamper/malformed/missing secret), envelope parsing, allow-listed events, dollars→cents (77.00 → 7700, 49.99 → 4999), strict `payment.succeeded` extraction (status/amount/buyer required), product mapping (bump is not a base tier), GA bump detection via `order_bumps`, redacted payload does not contain buyer PII
-- `video-embed.test.ts` — YouTube watch/short/embed + Vimeo normalization, non-allowlisted URLs fail closed
-- `calendar-routes.test.ts` — the flat route files that produce `/calendar/day1.ics` and `/calendar/day2.ics` exist; ICS content is well-formed
-- `copy.test.ts` — "with me" (not "Ce"), no "Live Q&A both days", real calendar paths on landing + confirmed, GA native-bump copy present, no `$99` on checkout, neutral confirmed heading + "What to bring", JSON-LD has `subEvent` and no `autopilot-challenge.example`, no runtime Google Fonts
-
----
-
-## Explicit non-goals
-
-- No Stripe. No Stripe code, no Stripe language
-- No calls to external services. No secrets embedded in code
-- No fake activity, counters, testimonials, or income promises
-- No URL-parameter-driven unlocks of `/confirmed`
-- No fake GA+bump $99 URL or total; the bump lives inside Commas
-- No changes to the NuAmenti project. This project is separate
+```text
+88 tests pass
+TypeScript type-check passes
+Production build passes
+```
