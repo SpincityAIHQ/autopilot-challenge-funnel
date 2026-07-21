@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { VideoSlot } from "@/components/VideoSlot";
+import { getCommasConfig } from "@/lib/challenge-config";
 
 export const Route = createFileRoute("/confirmed")({
   head: () => ({
