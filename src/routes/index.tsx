@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { z } from "zod";
 import { Countdown } from "@/components/Countdown";
 import {
   TIERS,
@@ -6,20 +7,28 @@ import {
   FOUNDER_DISCLAIMER,
   FOUNDER_HARD_CAP,
   GA_BUMP_COPY,
+  isTierId,
+  type TierId,
 } from "@/lib/tiers";
 import { getCommasConfig } from "@/lib/challenge-config";
 import { VideoSlot } from "@/components/VideoSlot";
 import { AiSpinAvatar } from "@/components/AiSpinAvatar";
+import { OfferExplainerDialog } from "@/components/OfferExplainerDialog";
 import { useFounderSeatsRemaining } from "@/hooks/use-founder-seats";
 
+const searchSchema = z.object({
+  offer: z.enum(["ga", "vip", "bundle", "founder"]).optional(),
+});
+
 export const Route = createFileRoute("/")({
+  validateSearch: (input) => searchSchema.parse(input),
   head: () => ({
     meta: [
       { title: "The AUTOPILOT Challenge — 2-Day Live Build · Aug 1–2, 2026" },
       {
         name: "description",
         content:
-          "Build a monetizable website, launch-ready marketing assets, and an AI-powered lead and sales system with us in two live days. Aug 1–2, 2026, 12–2 PM ET.",
+          "Build a monetizable website, launch-ready marketing assets, and an AI-powered lead and sales system with us in two four-hour live days. Aug 1–2, 2026, 12–4 PM ET.",
       },
       {
         property: "og:title",
@@ -88,29 +97,47 @@ function useFounderCta(): FounderCtaState {
 }
 
 function Landing() {
+  const search = Route.useSearch();
+  const navigate = useNavigate();
   const cfg = getCommasConfig();
   const v = cfg.sectionVideos ?? ({} as NonNullable<typeof cfg.sectionVideos>);
   const founder = useFounderCta();
+  const selectedTier: TierId | null = isTierId(search.offer)
+    ? search.offer
+    : null;
+
+  function openOffer(tier: TierId) {
+    navigate({ to: "/", search: { offer: tier }, replace: true });
+  }
+
+  function onExplainerOpenChange(open: boolean) {
+    if (!open) navigate({ to: "/", search: {}, replace: true });
+  }
 
   return (
     <main className="min-h-screen">
       <TopBar />
-      <Hero heroVideoUrl={v.hero ?? null} />
+      <Hero heroVideoUrl={v.hero ?? null} onChoose={openOffer} />
       <Promise />
       <Agenda />
       <LeaveWith />
       <AutonomyMap />
       <ChooseAccessIntro />
-      <TierComparison founder={founder} />
+      <TierComparison founder={founder} onChoose={openOffer} />
       <AiSpinAvatar />
 
-      <FounderSection founder={founder} />
+      <FounderSection founder={founder} onChoose={openOffer} />
       <WhyDifferent />
       <FitCheck />
       <Faq />
       <Timeline />
-      <FinalCta founder={founder} />
+      <FinalCta founder={founder} onChoose={openOffer} />
       <Footer />
+      <OfferExplainerDialog
+        tier={selectedTier}
+        videoUrl={selectedTier ? (v.offerVideos?.[selectedTier] ?? null) : null}
+        onOpenChange={onExplainerOpenChange}
+      />
     </main>
   );
 }
@@ -136,7 +163,13 @@ function TopBar() {
   );
 }
 
-function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
+function Hero({
+  heroVideoUrl,
+  onChoose,
+}: {
+  heroVideoUrl: string | null;
+  onChoose: (tier: TierId) => void;
+}) {
   return (
     <section className="mx-auto max-w-6xl px-5 pt-14 pb-16 sm:pt-20 sm:pb-24">
       <p className="eyebrow">The AUTOPILOT Challenge</p>
@@ -153,7 +186,8 @@ function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
         lead and sales system with you—live.
       </p>
       <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-        Sat Aug 1 + Sun Aug 2, 2026 · 12:00–2:00 PM ET both days.
+        Sat Aug 1 + Sun Aug 2, 2026 · 12:00–4:00 PM ET both days · 8 live build
+        hours.
       </p>
 
       <div className="mt-8 max-w-md">
@@ -162,13 +196,13 @@ function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
       </div>
 
       <div className="mt-10 flex flex-wrap gap-3">
-        <Link
-          to="/checkout"
-          search={{ tier: "ga" }}
+        <button
+          type="button"
+          onClick={() => onChoose("ga")}
           className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-base font-semibold text-primary-foreground shadow-lg shadow-black/40 transition hover:opacity-90"
         >
           Choose GA — $77
-        </Link>
+        </button>
         <a
           href="#tiers"
           className="inline-flex items-center rounded-md border border-border bg-transparent px-5 py-3 font-heading text-base text-foreground transition hover:bg-secondary"
@@ -180,7 +214,7 @@ function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
 
       <VideoSlot
         url={heroVideoUrl}
-        label="Watch: 60-second Challenge overview"
+        label="Watch: what we build in 8 live hours"
         className="mt-10 max-w-3xl"
       />
     </section>
@@ -382,7 +416,13 @@ function AutonomyMap() {
   );
 }
 
-function TierComparison({ founder }: { founder: FounderCtaState }) {
+function TierComparison({
+  founder,
+  onChoose,
+}: {
+  founder: FounderCtaState;
+  onChoose: (tier: TierId) => void;
+}) {
   return (
     <section id="tiers" className="mx-auto max-w-6xl px-5 py-16">
       <p className="eyebrow">The tiers</p>
@@ -439,9 +479,9 @@ function TierComparison({ founder }: { founder: FounderCtaState }) {
                   )}
                 </button>
               ) : (
-                <Link
-                  to="/checkout"
-                  search={{ tier: t.id }}
+                <button
+                  type="button"
+                  onClick={() => onChoose(t.id)}
                   className={`${buttonBase} hover:opacity-90`}
                 >
                   {t.id === "bundle"
@@ -449,7 +489,7 @@ function TierComparison({ founder }: { founder: FounderCtaState }) {
                     : t.id === "founder"
                       ? "Claim a Founder Seat — $1,111"
                       : `Choose ${t.name} — ${formatUsd(t.priceCents)}`}
-                </Link>
+                </button>
               )}
             </article>
           );
@@ -459,7 +499,13 @@ function TierComparison({ founder }: { founder: FounderCtaState }) {
   );
 }
 
-function FounderSection({ founder }: { founder: FounderCtaState }) {
+function FounderSection({
+  founder,
+  onChoose,
+}: {
+  founder: FounderCtaState;
+  onChoose: (tier: TierId) => void;
+}) {
   return (
     <section className="mx-auto max-w-4xl px-5 py-16">
       <div className="surface-raised p-8">
@@ -495,13 +541,13 @@ function FounderSection({ founder }: { founder: FounderCtaState }) {
             {founder.buttonLabel("Claim a Founder Seat — $1,111")}
           </button>
         ) : (
-          <Link
-            to="/checkout"
-            search={{ tier: "founder" }}
+          <button
+            type="button"
+            onClick={() => onChoose("founder")}
             className="mt-6 inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading font-semibold text-primary-foreground transition hover:opacity-90"
           >
             Claim a Founder Seat — $1,111
-          </Link>
+          </button>
         )}
         <p className="mt-3 text-xs text-muted-foreground">
           {FOUNDER_DISCLAIMER}
@@ -641,7 +687,13 @@ function Timeline() {
   );
 }
 
-function FinalCta({ founder }: { founder: FounderCtaState }) {
+function FinalCta({
+  founder,
+  onChoose,
+}: {
+  founder: FounderCtaState;
+  onChoose: (tier: TierId) => void;
+}) {
   return (
     <section className="mx-auto max-w-4xl px-5 py-20 text-center">
       <p className="eyebrow">One more time</p>
@@ -649,13 +701,13 @@ function FinalCta({ founder }: { founder: FounderCtaState }) {
         Two days. One business. Ready to sell.
       </h2>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
-        <Link
-          to="/checkout"
-          search={{ tier: "ga" }}
+        <button
+          type="button"
+          onClick={() => onChoose("ga")}
           className="rounded-md bg-primary px-6 py-3 font-heading font-semibold text-primary-foreground transition hover:opacity-90"
         >
           Choose GA — $77
-        </Link>
+        </button>
         {founder.disabled ? (
           <button
             type="button"
@@ -666,13 +718,13 @@ function FinalCta({ founder }: { founder: FounderCtaState }) {
             {founder.buttonLabel("Founder Seat — $1,111")}
           </button>
         ) : (
-          <Link
-            to="/checkout"
-            search={{ tier: "founder" }}
+          <button
+            type="button"
+            onClick={() => onChoose("founder")}
             className="rounded-md border border-[color:var(--gold)] px-6 py-3 font-heading font-semibold text-[color:var(--gold)] transition hover:bg-[color:var(--gold)]/10"
           >
             Founder Seat — $1,111
-          </Link>
+          </button>
         )}
       </div>
       <p className="mx-auto mt-2 text-[11px] uppercase tracking-widest text-muted-foreground">
