@@ -11,6 +11,10 @@ const CHECKOUT = readFileSync(join(ROOT, "routes/checkout.tsx"), "utf8");
 const TIERS_SRC = readFileSync(join(ROOT, "lib/tiers.ts"), "utf8");
 const VIDEO_SLOT = readFileSync(join(ROOT, "components/VideoSlot.tsx"), "utf8");
 const AI_SPIN = readFileSync(join(ROOT, "components/AiSpinAvatar.tsx"), "utf8");
+const OFFER_DIALOG = readFileSync(
+  join(ROOT, "components/OfferExplainerDialog.tsx"),
+  "utf8",
+);
 const CONFIG = readFileSync(join(ROOT, "lib/challenge-config.ts"), "utf8");
 
 describe("two-day build promise", () => {
@@ -47,24 +51,30 @@ describe("two-day build promise", () => {
 });
 
 describe("public video placements", () => {
-  it("keeps only the useful landing VSL slot", () => {
+  it("keeps the main VSL and sends every offer click through the explainer", () => {
     expect(
-      LANDING.includes('label="Watch: 60-second Challenge overview"'),
+      LANDING.includes('label="Watch: what we build in 8 live hours"'),
     ).toBe(true);
+    expect(LANDING.includes("OfferExplainerDialog")).toBe(true);
+    expect(OFFER_DIALOG.includes("AI Spin tier guide")).toBe(true);
+    expect(OFFER_DIALOG.includes('to="/checkout"')).toBe(true);
     expect(LANDING.includes('label="Day 1 preview"')).toBe(false);
     expect(LANDING.includes('label="Day 2 preview"')).toBe(false);
     expect(LANDING.includes('label="Recordings add-on preview"')).toBe(false);
-    expect(LANDING.includes('label="Watch: which tier is right for you"')).toBe(
-      false,
-    );
   });
 
-  it("removes the checkout video and dead environment slots", () => {
-    expect(CHECKOUT.includes("<VideoSlot")).toBe(false);
+  it("adds offer, checkout, and tier confirmation slots without recordings video", () => {
+    expect(CHECKOUT.includes("<VideoSlot")).toBe(true);
+    expect(CONFIG.includes("VITE_CHALLENGE_VIDEO_CHECKOUT")).toBe(true);
+    expect(CONFIG.includes("VITE_CHALLENGE_VIDEO_OFFER_GA")).toBe(true);
+    expect(CONFIG.includes("VITE_CHALLENGE_VIDEO_OFFER_FOUNDER")).toBe(true);
+    expect(CONFIG.includes("VITE_CHALLENGE_VIDEO_CONFIRMED_GA")).toBe(true);
+    expect(CONFIG.includes("VITE_CHALLENGE_VIDEO_CONFIRMED_FOUNDER")).toBe(
+      true,
+    );
     expect(CONFIG.includes("VITE_CHALLENGE_VIDEO_DAY_ONE")).toBe(false);
     expect(CONFIG.includes("VITE_CHALLENGE_VIDEO_DAY_TWO")).toBe(false);
     expect(CONFIG.includes("VITE_CHALLENGE_VIDEO_GA_BUMP")).toBe(false);
-    expect(CONFIG.includes("VITE_CHALLENGE_VIDEO_CHECKOUT")).toBe(false);
   });
 
   it("renders no fake player when a video is missing", () => {
@@ -97,6 +107,25 @@ describe("confirmed page copy", () => {
 
   it("includes a what-to-bring section", () => {
     expect(CONFIRMED.includes("What to bring")).toBe(true);
+  });
+
+  it("uses the tier only for next-step guidance, never as proof of access", () => {
+    expect(CONFIRMED.includes("This page alone does not unlock")).toBe(true);
+    expect(
+      CONFIRMED.includes(
+        "Your receipt and access email are the final record of what you bought",
+      ),
+    ).toBe(true);
+  });
+});
+
+describe("eight-hour schedule", () => {
+  it("shows four live hours per day everywhere customers decide", () => {
+    const landingFlat = LANDING.replace(/\s+/g, " ");
+    expect(LANDING.includes("12:00–4:00 PM ET")).toBe(true);
+    expect(landingFlat.includes("8 live build hours")).toBe(true);
+    expect(CHECKOUT.includes("eight-hour live build")).toBe(true);
+    expect(CONFIRMED.includes("12–4 PM Eastern both days")).toBe(true);
   });
 });
 
