@@ -44,19 +44,19 @@ Add these browser-visible environment variables in the standalone Lovable
 project. Values must be YouTube or Vimeo URLs. Missing or invalid values render
 nothing; customers never see an empty player or build note.
 
-| Environment variable | Customer placement |
-| --- | --- |
-| `VITE_CHALLENGE_VIDEO_HERO` | Main page: what we build in eight live hours |
-| `VITE_CHALLENGE_VIDEO_OFFER_GA` | GA offer-click explainer |
-| `VITE_CHALLENGE_VIDEO_OFFER_VIP` | VIP offer-click explainer |
-| `VITE_CHALLENGE_VIDEO_OFFER_BUNDLE` | Bundle offer-click explainer |
-| `VITE_CHALLENGE_VIDEO_OFFER_FOUNDER` | Founder offer-click explainer |
-| `VITE_CHALLENGE_VIDEO_CHECKOUT` | Final checkout truth-check |
-| `VITE_CHALLENGE_VIDEO_CONFIRMED` | Optional generic confirmation fallback |
-| `VITE_CHALLENGE_VIDEO_CONFIRMED_GA` | GA confirmation and next steps |
-| `VITE_CHALLENGE_VIDEO_CONFIRMED_VIP` | VIP confirmation and next steps |
-| `VITE_CHALLENGE_VIDEO_CONFIRMED_BUNDLE` | Bundle confirmation and next steps |
-| `VITE_CHALLENGE_VIDEO_CONFIRMED_FOUNDER` | Founder confirmation and next steps |
+| Environment variable                     | Customer placement                           |
+| ---------------------------------------- | -------------------------------------------- |
+| `VITE_CHALLENGE_VIDEO_HERO`              | Main page: what we build in eight live hours |
+| `VITE_CHALLENGE_VIDEO_OFFER_GA`          | GA offer-click explainer                     |
+| `VITE_CHALLENGE_VIDEO_OFFER_VIP`         | VIP offer-click explainer                    |
+| `VITE_CHALLENGE_VIDEO_OFFER_BUNDLE`      | Bundle offer-click explainer                 |
+| `VITE_CHALLENGE_VIDEO_OFFER_FOUNDER`     | Founder offer-click explainer                |
+| `VITE_CHALLENGE_VIDEO_CHECKOUT`          | Final checkout truth-check                   |
+| `VITE_CHALLENGE_VIDEO_CONFIRMED`         | Optional generic confirmation fallback       |
+| `VITE_CHALLENGE_VIDEO_CONFIRMED_GA`      | GA confirmation and next steps               |
+| `VITE_CHALLENGE_VIDEO_CONFIRMED_VIP`     | VIP confirmation and next steps              |
+| `VITE_CHALLENGE_VIDEO_CONFIRMED_BUNDLE`  | Bundle confirmation and next steps           |
+| `VITE_CHALLENGE_VIDEO_CONFIRMED_FOUNDER` | Founder confirmation and next steps          |
 
 There are intentionally no Day 1, Day 2, or recordings-add-on video variables.
 
@@ -65,11 +65,17 @@ There are intentionally no Day 1, Day 2, or recordings-add-on video variables.
 The AI Spin section sits after the tier cards and stays hidden until all three
 values below are set:
 
-| Environment variable | Required value |
-| --- | --- |
-| `VITE_AI_SPIN_ENABLED` | `true` |
-| `VITE_AI_SPIN_LIMITS_VERIFIED` | `true` only after the real limits are tested |
-| `VITE_HEYGEN_LIVE_AVATAR_EMBED_URL` | Approved HTTPS HeyGen live-avatar embed URL |
+| Environment variable           | Required value                                                                  |
+| ------------------------------ | ------------------------------------------------------------------------------- |
+| `VITE_AI_SPIN_ENABLED`         | `true`                                                                          |
+| `VITE_AI_SPIN_LIMITS_VERIFIED` | `true` only after the real limits are tested                                    |
+| `VITE_LIVEAVATAR_EMBED_URL`    | Fresh short-lived `https://embed.liveavatar.com/v1/...` URL for preview/testing |
+
+LiveAvatar creates that embed URL with a server-side call to
+`POST https://api.liveavatar.com/v2/embeddings`. The API key, avatar ID, and
+context ID must remain server-only. A permanent URL pasted into a client
+environment variable is not the production integration because LiveAvatar
+embed URLs expire.
 
 The customer disclosure says AI Spin is an AI avatar, recommends the lowest
 sufficient tier, and ends after five visitor messages or four minutes. The
@@ -77,19 +83,21 @@ iframe component does not create those controls by itself. Do not set
 `VITE_AI_SPIN_LIMITS_VERIFIED=true` until the HeyGen/session layer actually
 enforces both limits and a refresh cannot restart unlimited consulting.
 
-Never place a HeyGen API key in a `VITE_` variable or client source.
+Never place a LiveAvatar or HeyGen API key in a `VITE_` variable or client
+source. The legacy `VITE_HEYGEN_LIVE_AVATAR_EMBED_URL` name remains accepted for
+an older HeyGen Labs embed, but new setup should use the LiveAvatar host above.
 
 ## FanBasis hosted checkouts
 
 Browser-visible configuration:
 
-| Environment variable | Product |
-| --- | --- |
-| `VITE_CHALLENGE_SALES_ENABLED` | Must equal `true` before any payment handoff is enabled |
-| `VITE_COMMAS_CHECKOUT_URL_GA` | FanBasis GA checkout — $77 |
-| `VITE_COMMAS_CHECKOUT_URL_VIP` | FanBasis VIP checkout — $177 |
-| `VITE_COMMAS_CHECKOUT_URL_BUNDLE` | FanBasis Bundle checkout — $333 |
-| `VITE_COMMAS_CHECKOUT_URL_FOUNDER` | FanBasis Founder checkout — $1,111 |
+| Environment variable                 | Product                                                                 |
+| ------------------------------------ | ----------------------------------------------------------------------- |
+| `VITE_CHALLENGE_SALES_ENABLED`       | Must equal `true` before any payment handoff is enabled                 |
+| `VITE_COMMAS_CHECKOUT_URL_GA`        | FanBasis GA checkout — $77                                              |
+| `VITE_COMMAS_CHECKOUT_URL_VIP`       | FanBasis VIP checkout — $177                                            |
+| `VITE_COMMAS_CHECKOUT_URL_BUNDLE`    | FanBasis Bundle checkout — $333                                         |
+| `VITE_COMMAS_CHECKOUT_URL_FOUNDER`   | FanBasis Founder checkout — $1,111                                      |
 | `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS` | Optional exact-match extra hosts; `www.fanbasis.com` is already allowed |
 
 Configure a different success return for each FanBasis product:
@@ -156,11 +164,11 @@ uses the extended calendars.
 - [ ] Complete one signed sandbox webhook round-trip for every tier and GA bump
 - [ ] Send and receive a real access email for every tier
 - [ ] Finalize privacy, terms, refund, book shipping, event cancellation, and
-  chargeback language
+      chargeback language
 - [ ] Test every page and calendar on desktop and a real phone
 - [ ] Confirm no public page displays internal provider/build notes
 - [ ] Republish only after payment, fulfillment, email, policies, avatar, and
-  domain all pass
+      domain all pass
 
 ## Validation
 

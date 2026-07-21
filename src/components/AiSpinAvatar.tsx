@@ -1,8 +1,23 @@
-function getSafeHeyGenEmbed(raw: string | undefined): string | null {
+const LIVE_AVATAR_EMBED_HOSTS = new Set([
+  "embed.liveavatar.com",
+  "labs.heygen.com",
+]);
+
+export function getSafeHeyGenEmbed(raw: string | undefined): string | null {
   if (!raw) return null;
   try {
     const url = new URL(raw);
-    if (url.protocol !== "https:" || url.hostname !== "labs.heygen.com")
+    if (
+      url.protocol !== "https:" ||
+      url.username !== "" ||
+      url.password !== "" ||
+      !LIVE_AVATAR_EMBED_HOSTS.has(url.hostname.toLowerCase())
+    )
+      return null;
+    if (
+      url.hostname.toLowerCase() === "embed.liveavatar.com" &&
+      !url.pathname.startsWith("/v1/")
+    )
       return null;
     return url.toString();
   } catch {
@@ -11,15 +26,18 @@ function getSafeHeyGenEmbed(raw: string | undefined): string | null {
 }
 
 /**
- * AI Spin stays hidden until the real HeyGen session is ready and its
- * conversation limits have been verified. Public visitors never see an
- * internal placeholder or a false "live" state.
+ * AI Spin stays hidden until a fresh LiveAvatar embed session is ready and its
+ * conversation limits have been verified outside this iframe. LiveAvatar
+ * embed URLs are short-lived; production must mint them server-side. Public
+ * visitors never see an internal placeholder or a false "live" state.
  */
 export function AiSpinAvatar({ className }: { className?: string }) {
   const env = import.meta.env as Record<string, string | undefined>;
   const enabled = env.VITE_AI_SPIN_ENABLED === "true";
   const limitsVerified = env.VITE_AI_SPIN_LIMITS_VERIFIED === "true";
-  const embedUrl = getSafeHeyGenEmbed(env.VITE_HEYGEN_LIVE_AVATAR_EMBED_URL);
+  const embedUrl = getSafeHeyGenEmbed(
+    env.VITE_LIVEAVATAR_EMBED_URL ?? env.VITE_HEYGEN_LIVE_AVATAR_EMBED_URL,
+  );
 
   if (!enabled || !limitsVerified || !embedUrl) return null;
 
