@@ -9,34 +9,84 @@ const LANDING = readFileSync(join(ROOT, "routes/index.tsx"), "utf8");
 const CONFIRMED = readFileSync(join(ROOT, "routes/confirmed.tsx"), "utf8");
 const CHECKOUT = readFileSync(join(ROOT, "routes/checkout.tsx"), "utf8");
 const TIERS_SRC = readFileSync(join(ROOT, "lib/tiers.ts"), "utf8");
+const VIDEO_SLOT = readFileSync(join(ROOT, "components/VideoSlot.tsx"), "utf8");
+const AI_SPIN = readFileSync(join(ROOT, "components/AiSpinAvatar.tsx"), "utf8");
+const CONFIG = readFileSync(join(ROOT, "lib/challenge-config.ts"), "utf8");
 
-describe("landing copy corrections", () => {
-  it("says 'built live with me' (not 'Ce')", () => {
-    expect(LANDING.includes("built live with me")).toBe(true);
-    expect(LANDING.includes("with Ce")).toBe(false);
+describe("two-day build promise", () => {
+  it("promises the full build deliverables", () => {
+    expect(LANDING.includes("monetizable website")).toBe(true);
+    expect(LANDING.includes("launch marketing assets")).toBe(true);
+    expect(LANDING.includes("lead and sales follow-up system")).toBe(true);
+    expect(LANDING.includes("Your Autonomy Map")).toBe(true);
   });
 
-  it("removes the unapproved 'Live Q&A both days' bullet", () => {
-    expect(LANDING.includes("Live Q&A both days")).toBe(false);
+  it("defines monetizable without promising income", () => {
+    expect(LANDING.includes("pay, book, apply, or join your list")).toBe(true);
+    expect(
+      LANDING.includes("It does not mean sales or income are guaranteed"),
+    ).toBe(true);
   });
 
-  it("uses real calendar paths /calendar/day1.ics and /calendar/day2.ics", () => {
-    expect(LANDING.includes("/calendar/day1.ics")).toBe(true);
-    expect(LANDING.includes("/calendar/day2.ics")).toBe(true);
-    expect(LANDING.includes("/calendar.day1.ics")).toBe(false);
-    expect(LANDING.includes("/calendar.day2.ics")).toBe(false);
+  it("makes the hands-on participation requirements clear", () => {
+    expect(LANDING.includes("This is a hands-on build")).toBe(true);
+    expect(
+      LANDING.includes("bring your logins, brand files, photos, and videos"),
+    ).toBe(true);
   });
 
-  it("shows the GA native-bump copy, not a fake $99 total", () => {
-    expect(TIERS_SRC.includes("Optional $22 recordings + completed-map template add-on available inside secure Commas checkout.")).toBe(true);
+  it("shows the GA recordings option, not a fake $99 total", () => {
+    expect(
+      TIERS_SRC.includes(
+        "Recordings are not included. Add both replays and the completed Autonomy Map template for $22 during checkout.",
+      ),
+    ).toBe(true);
     expect(CHECKOUT.includes("GA_BUMP_COPY")).toBe(true);
     expect(CHECKOUT.includes("$99")).toBe(false);
   });
 });
 
+describe("public video placements", () => {
+  it("keeps only the useful landing VSL slot", () => {
+    expect(
+      LANDING.includes('label="Watch: 60-second Challenge overview"'),
+    ).toBe(true);
+    expect(LANDING.includes('label="Day 1 preview"')).toBe(false);
+    expect(LANDING.includes('label="Day 2 preview"')).toBe(false);
+    expect(LANDING.includes('label="Recordings add-on preview"')).toBe(false);
+    expect(LANDING.includes('label="Watch: which tier is right for you"')).toBe(
+      false,
+    );
+  });
+
+  it("removes the checkout video and dead environment slots", () => {
+    expect(CHECKOUT.includes("<VideoSlot")).toBe(false);
+    expect(CONFIG.includes("VITE_CHALLENGE_VIDEO_DAY_ONE")).toBe(false);
+    expect(CONFIG.includes("VITE_CHALLENGE_VIDEO_DAY_TWO")).toBe(false);
+    expect(CONFIG.includes("VITE_CHALLENGE_VIDEO_GA_BUMP")).toBe(false);
+    expect(CONFIG.includes("VITE_CHALLENGE_VIDEO_CHECKOUT")).toBe(false);
+  });
+
+  it("renders no fake player when a video is missing", () => {
+    expect(VIDEO_SLOT.includes("if (!safe) return null")).toBe(true);
+    expect(VIDEO_SLOT.includes("Video coming soon")).toBe(false);
+  });
+
+  it("hides AI Spin until the real session and limits are verified", () => {
+    expect(AI_SPIN.includes("VITE_AI_SPIN_ENABLED")).toBe(true);
+    expect(AI_SPIN.includes("VITE_AI_SPIN_LIMITS_VERIFIED")).toBe(true);
+    expect(AI_SPIN.includes("coming soon")).toBe(false);
+  });
+
+  it("removes the public proof placeholder", () => {
+    expect(LANDING.includes("ProofPlaceholder")).toBe(false);
+    expect(LANDING.includes("Receipts are being documented")).toBe(false);
+  });
+});
+
 describe("confirmed page copy", () => {
   it("uses a neutral heading", () => {
-    expect(CONFIRMED.includes("Payment confirmation pending")).toBe(true);
+    expect(CONFIRMED.includes("Thanks. We're checking your order.")).toBe(true);
     expect(CONFIRMED.includes("You're in.")).toBe(false);
   });
 
@@ -64,15 +114,11 @@ describe("JSON-LD", () => {
   });
 });
 
-describe("FitCheck reconciles with recordings", () => {
-  it("no longer contradicts recordings", () => {
-    expect(LANDING.includes("2 hours a day, live")).toBe(false);
-    expect(LANDING.includes("pure passive watching")).toBe(false);
-  });
-  it("mentions recordings-friendly attendance", () => {
-    expect(
-      LANDING.includes("live when possible, or from included recordings"),
-    ).toBe(true);
+describe("customer-facing payment language", () => {
+  it("uses FanBasis instead of the internal Commas name", () => {
+    expect(LANDING.includes("secure FanBasis checkout page")).toBe(true);
+    expect(CHECKOUT.includes("secure FanBasis checkout page")).toBe(true);
+    expect(CONFIRMED.includes("verified webhook")).toBe(false);
   });
 });
 
@@ -105,15 +151,15 @@ describe("webhook Founder-cap terminal-persistence ordering", () => {
     // a Founder-cap with failed terminal update fall through to 200.
     expect(WEBHOOK.includes("!ok && !isFounderCap")).toBe(false);
     // New shape: unconditional `if (!ok) return 500` gate before Founder-cap 200.
-    const okGateIdx = WEBHOOK.search(/if\s*\(\s*!ok\s*\)\s*\{\s*[\r\n\s]*return new Response\("Fulfillment error", \{ status: 500 \}\)/);
+    const okGateIdx = WEBHOOK.search(
+      /if\s*\(\s*!ok\s*\)\s*\{\s*[\r\n\s]*return new Response\("Fulfillment error", \{ status: 500 \}\)/,
+    );
     const founderCap200Idx = WEBHOOK.indexOf('"Founder cap"');
     expect(okGateIdx > -1).toBe(true);
     expect(founderCap200Idx > -1).toBe(true);
     expect(okGateIdx < founderCap200Idx).toBe(true);
   });
 });
-
-
 
 describe("styles.css no longer misleads about font loading", () => {
   const CSS = readFileSync(join(ROOT, "styles.css"), "utf8");
