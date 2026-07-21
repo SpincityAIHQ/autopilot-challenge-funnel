@@ -81,7 +81,7 @@ function useFounderCta(): FounderCtaState {
 
 function Landing() {
   const cfg = getCommasConfig();
-  const videos = cfg.sectionVideos;
+  const v = cfg.sectionVideos ?? ({} as NonNullable<typeof cfg.sectionVideos>);
   const founder = useFounderCta();
 
   return (
