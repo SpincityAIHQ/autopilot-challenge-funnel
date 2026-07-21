@@ -37,7 +37,7 @@ export interface SectionVideoUrls {
 export interface CommasConfig {
   urls: Partial<Record<TierId, string>>;
   videoUrl: string | undefined;
-  sectionVideos: SectionVideoUrls;
+  sectionVideos?: SectionVideoUrls;
   salesEnabled: boolean;
   allowedHosts: readonly string[];
 }
