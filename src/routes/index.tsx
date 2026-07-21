@@ -81,18 +81,20 @@ function useFounderCta(): FounderCtaState {
 
 function Landing() {
   const cfg = getCommasConfig();
-  const safeVideoUrl = normalizeVideoEmbedUrl(cfg.videoUrl ?? null);
+  const videos = cfg.sectionVideos ?? {};
   const founder = useFounderCta();
 
   return (
     <main className="min-h-screen">
       <TopBar />
-      <Hero />
+      <Hero heroVideoUrl={videos.hero ?? null} />
+      <AiSpinAvatar />
       <Promise />
-      <Agenda />
+      <Agenda dayOneVideoUrl={videos.dayOne ?? null} dayTwoVideoUrl={videos.dayTwo ?? null} />
       <LeaveWith />
       <AutonomyMap />
-      <TierComparison founder={founder} />
+      <ChooseAccessIntro chooseAccessVideoUrl={videos.chooseAccess ?? null} />
+      <TierComparison founder={founder} gaBumpVideoUrl={videos.gaBump ?? null} />
       <FounderSection founder={founder} />
       <WhyDifferent />
       <FitCheck />
@@ -100,11 +102,11 @@ function Landing() {
       <Faq />
       <Timeline />
       <FinalCta founder={founder} />
-      {safeVideoUrl ? <VideoEmbed url={safeVideoUrl} /> : null}
       <Footer />
     </main>
   );
 }
+
 
 function TopBar() {
   return (
