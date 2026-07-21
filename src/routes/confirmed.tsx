@@ -38,6 +38,8 @@ function Confirmed() {
         page does not grant access on its own.
       </p>
 
+      <VideoSlot url={cfg.sectionVideos?.confirmed ?? null} label="Watch: what to expect before Day 1" className="mt-8" />
+
       <section className="mt-10 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">Save both days to your calendar</h2>
         <p className="mt-2 text-sm text-muted-foreground">
