@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Countdown } from "@/components/Countdown";
 import { TIERS, formatUsd, FOUNDER_DISCLAIMER, FOUNDER_HARD_CAP, GA_BUMP_COPY } from "@/lib/tiers";
 import { getCommasConfig } from "@/lib/challenge-config";
-import { normalizeVideoEmbedUrl } from "@/lib/video-embed";
+import { VideoSlot } from "@/components/VideoSlot";
+import { AiSpinAvatar } from "@/components/AiSpinAvatar";
 import { useFounderSeatsRemaining } from "@/hooks/use-founder-seats";
 
 export const Route = createFileRoute("/")({

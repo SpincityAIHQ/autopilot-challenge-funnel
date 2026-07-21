@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PreviewNavRouteImport } from './routes/preview-nav'
 import { Route as ConfirmedRouteImport } from './routes/confirmed'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as IndexRouteImport } from './routes/index'
@@ -32,6 +33,11 @@ const RefundPolicyRoute = RefundPolicyRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PreviewNavRoute = PreviewNavRouteImport.update({
+  id: '/preview-nav',
+  path: '/preview-nav',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConfirmedRoute = ConfirmedRouteImport.update({
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
   '/confirmed': typeof ConfirmedRoute
+  '/preview-nav': typeof PreviewNavRoute
   '/privacy': typeof PrivacyRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/terms': typeof TermsRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
   '/confirmed': typeof ConfirmedRoute
+  '/preview-nav': typeof PreviewNavRoute
   '/privacy': typeof PrivacyRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/terms': typeof TermsRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
   '/confirmed': typeof ConfirmedRoute
+  '/preview-nav': typeof PreviewNavRoute
   '/privacy': typeof PrivacyRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/terms': typeof TermsRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/'
     | '/checkout'
     | '/confirmed'
+    | '/preview-nav'
     | '/privacy'
     | '/refund-policy'
     | '/terms'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/checkout'
     | '/confirmed'
+    | '/preview-nav'
     | '/privacy'
     | '/refund-policy'
     | '/terms'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/checkout'
     | '/confirmed'
+    | '/preview-nav'
     | '/privacy'
     | '/refund-policy'
     | '/terms'
@@ -139,6 +151,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckoutRoute: typeof CheckoutRoute
   ConfirmedRoute: typeof ConfirmedRoute
+  PreviewNavRoute: typeof PreviewNavRoute
   PrivacyRoute: typeof PrivacyRoute
   RefundPolicyRoute: typeof RefundPolicyRoute
   TermsRoute: typeof TermsRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/preview-nav': {
+      id: '/preview-nav'
+      path: '/preview-nav'
+      fullPath: '/preview-nav'
+      preLoaderRoute: typeof PreviewNavRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/confirmed': {
@@ -219,6 +239,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckoutRoute: CheckoutRoute,
   ConfirmedRoute: ConfirmedRoute,
+  PreviewNavRoute: PreviewNavRoute,
   PrivacyRoute: PrivacyRoute,
   RefundPolicyRoute: RefundPolicyRoute,
   TermsRoute: TermsRoute,
