@@ -15,6 +15,7 @@ import {
   isHandoffAllowed,
 } from "@/lib/challenge-config";
 import { useFounderSeatsRemaining } from "@/hooks/use-founder-seats";
+import { VideoSlot } from "@/components/VideoSlot";
 
 const searchSchema = z.object({
   tier: z.enum(["ga", "vip", "bundle", "founder"]).optional(),
