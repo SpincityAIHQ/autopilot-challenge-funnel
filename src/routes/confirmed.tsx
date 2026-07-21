@@ -5,12 +5,12 @@ import { getCommasConfig } from "@/lib/challenge-config";
 export const Route = createFileRoute("/confirmed")({
   head: () => ({
     meta: [
-      { title: "Payment confirmation pending — The AUTOPILOT Challenge" },
+      { title: "Order received — The AUTOPILOT Challenge" },
       { name: "robots", content: "noindex" },
       {
         name: "description",
         content:
-          "Thanks — check your verified receipt from Commas. Your Challenge access is granted only from a verified webhook and email.",
+          "Thanks. Check your email for your receipt and official Challenge access details.",
       },
       { property: "og:url", content: "/confirmed" },
     ],
@@ -22,28 +22,46 @@ export const Route = createFileRoute("/confirmed")({
 function Confirmed() {
   const cfg = getCommasConfig();
   const shareText = encodeURIComponent(
-    "The AUTOPILOT Challenge — 2 days, one working automation. Aug 1–2, 2026.",
+    "The AUTOPILOT Challenge — build a monetizable site, marketing assets, and an AI sales system in 2 live days. Aug 1–2, 2026.",
   );
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-16">
       <p className="eyebrow">Thanks</p>
       <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
-        Payment confirmation pending
+        Thanks. We're checking your order.
       </h1>
       <p className="mt-4 text-muted-foreground">
-        Thanks — check your verified receipt from Commas. Your Challenge access
-        is granted only after our system verifies the payment webhook and the
-        official confirmation email is sent from SpincityHQ / NuAmenti. This
-        page does not grant access on its own.
+        Check your email for your payment receipt. We will send your access
+        email after your payment is verified. This page alone does not unlock
+        the event.
       </p>
 
-      <VideoSlot url={cfg.sectionVideos?.confirmed ?? null} label="Watch: what to expect before Day 1" className="mt-8" />
+      <VideoSlot
+        url={cfg.sectionVideos?.confirmed ?? null}
+        label="Watch: what to expect before Day 1"
+        className="mt-8"
+      />
 
       <section className="mt-10 surface-raised p-6">
-        <h2 className="font-heading text-lg text-foreground">Save both days to your calendar</h2>
+        <h2 className="font-heading text-lg text-foreground">
+          Do these four things now
+        </h2>
+        <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
+          <li>Add both live sessions to your calendar.</li>
+          <li>Save your confirmation email and access link.</li>
+          <li>Make sure the ticket name and price match what you chose.</li>
+          <li>Pick one business or offer to build during Day 1.</li>
+        </ol>
+      </section>
+
+      <section className="mt-10 surface-raised p-6">
+        <h2 className="font-heading text-lg text-foreground">
+          Save both days to your calendar
+        </h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Two separate .ics files, one per day. Times are Eastern (America/New_York).
+          Two separate .ics files, one per day. Times are Eastern
+          (America/New_York).
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <a
@@ -65,23 +83,34 @@ function Confirmed() {
         <h2 className="font-heading text-lg text-foreground">What to bring</h2>
         <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
           <li>· A laptop and whatever tools you already use.</li>
-          <li>· One specific job in your business you'd like a machine to take.</li>
+          <li>
+            · One specific job in your business you'd like a machine to take.
+          </li>
           <li>· Two hours of focus each day. No side tabs, no side quests.</li>
           <li>· A note-taking surface — paper, doc, or the workbook.</li>
         </ul>
       </section>
 
       <section className="mt-10">
-        <h2 className="font-heading text-lg text-foreground">What happens next</h2>
+        <h2 className="font-heading text-lg text-foreground">
+          What happens next
+        </h2>
         <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-          <li>· Your official confirmation email will come from us, not this page.</li>
+          <li>
+            · Your official confirmation email will come from us, not this page.
+          </li>
           <li>· Join link and workbook are delivered before Day 1.</li>
-          <li>· Questions? Reply to your Commas receipt or write Info@NuAmenti.com.</li>
+          <li>
+            · Questions? Reply to your payment receipt or write
+            Info@NuAmenti.com.
+          </li>
         </ul>
       </section>
 
       <section className="mt-10 surface p-6">
-        <h2 className="font-heading text-lg text-foreground">Tell a builder friend</h2>
+        <h2 className="font-heading text-lg text-foreground">
+          Tell a builder friend
+        </h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Share the challenge — but never your access link. Access is personal
           and non-transferable.
