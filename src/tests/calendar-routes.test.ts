@@ -23,7 +23,7 @@ describe("calendar routes — real paths", () => {
       expect(s.includes("TZID:America/New_York")).toBe(true);
       expect(s.trim().endsWith("END:VCALENDAR")).toBe(true);
     }
-    expect(d1.includes("MAP IT")).toBe(true);
-    expect(d2.includes("BUILD IT")).toBe(true);
+    expect(d1.includes("BUILD THE OFFER + SITE")).toBe(true);
+    expect(d2.includes("BUILD THE MARKETING + AUTOPILOT")).toBe(true);
   });
 });
