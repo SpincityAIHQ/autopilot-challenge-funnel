@@ -15,7 +15,6 @@ import {
   isHandoffAllowed,
 } from "@/lib/challenge-config";
 import { useFounderSeatsRemaining } from "@/hooks/use-founder-seats";
-import { VideoSlot } from "@/components/VideoSlot";
 
 const searchSchema = z.object({
   tier: z.enum(["ga", "vip", "bundle", "founder"]).optional(),
@@ -41,7 +40,9 @@ export const Route = createFileRoute("/checkout")({
 function Checkout() {
   const search = Route.useSearch();
   const navigate = useNavigate();
-  const initialTier: import("@/lib/tiers").TierId = isTierId(search.tier) ? search.tier : "ga";
+  const initialTier: import("@/lib/tiers").TierId = isTierId(search.tier)
+    ? search.tier
+    : "ga";
   const [tier, setTier] = useState<import("@/lib/tiers").TierId>(initialTier);
 
   const cfg = useMemo(() => getCommasConfig(), []);
@@ -52,15 +53,18 @@ function Checkout() {
 
   // Founder-only additional gate: must have verified seats remaining > 0.
   const founderBlocked =
-    tier === "founder" &&
-    (seats.status !== "ok" || seats.remaining <= 0);
+    tier === "founder" && (seats.status !== "ok" || seats.remaining <= 0);
 
   const canSubmit = handoffAllowed && !founderBlocked;
 
-  let buttonLabel = "Registration opening soon";
+  let buttonLabel = "That ticket is not available right now";
   if (canSubmit) {
-    buttonLabel = `Continue to secure payment · ${formatUsd(t.priceCents)}`;
-  } else if (tier === "founder" && seats.status === "ok" && seats.remaining <= 0) {
+    buttonLabel = `Continue to secure checkout · ${formatUsd(t.priceCents)}`;
+  } else if (
+    tier === "founder" &&
+    seats.status === "ok" &&
+    seats.remaining <= 0
+  ) {
     buttonLabel = "Founder Seats sold out";
   }
 
@@ -84,8 +88,8 @@ function Checkout() {
         The AUTOPILOT Challenge
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Commas securely collects your buyer details, payment, and consent
-        preferences on the next screen. This page is a review-only summary.
+        Review your ticket below. When you continue, you will finish payment on
+        a secure FanBasis checkout page.
       </p>
 
       <section className="mt-8 surface-raised p-6">
@@ -110,12 +114,16 @@ function Checkout() {
               />
               <div className="flex-1">
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="font-heading text-foreground">{row.name}</span>
+                  <span className="font-heading text-foreground">
+                    {row.name}
+                  </span>
                   <span className="font-mono text-sm text-foreground">
                     {formatUsd(row.priceCents)}
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">{row.headline}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {row.headline}
+                </p>
               </div>
             </label>
           ))}
@@ -128,7 +136,9 @@ function Checkout() {
         ) : null}
 
         {tier === "founder" ? (
-          <p className="mt-4 text-xs text-muted-foreground">{FOUNDER_DISCLAIMER}</p>
+          <p className="mt-4 text-xs text-muted-foreground">
+            {FOUNDER_DISCLAIMER}
+          </p>
         ) : null}
       </section>
 
@@ -137,21 +147,44 @@ function Checkout() {
         <dl className="mt-4 space-y-2 text-sm">
           <div className="flex items-baseline justify-between">
             <dt className="text-muted-foreground">{t.name}</dt>
-            <dd className="font-mono text-foreground">{formatUsd(t.priceCents)}</dd>
+            <dd className="font-mono text-foreground">
+              {formatUsd(t.priceCents)}
+            </dd>
           </div>
           <div className="gold-rule my-2" />
           <div className="flex items-baseline justify-between">
             <dt className="font-heading text-base text-foreground">Subtotal</dt>
-            <dd className="font-mono text-base text-foreground">{formatUsd(t.priceCents)}</dd>
+            <dd className="font-mono text-base text-foreground">
+              {formatUsd(t.priceCents)}
+            </dd>
           </div>
         </dl>
-        <p className="mt-3 text-xs text-muted-foreground">
-          Optional add-ons (like the GA $22 recordings bump) and marketing
-          consent are shown inside secure Commas checkout.
-        </p>
+        {tier === "ga" ? (
+          <p className="mt-3 text-xs text-muted-foreground">
+            You can add both recordings and the completed Autonomy Map template
+            for $22 on the next screen. Your final total will change only if you
+            add them.
+          </p>
+        ) : null}
       </section>
 
-      <VideoSlot url={cfg.sectionVideos?.checkout ?? null} label="Watch: what happens next in Commas" className="mt-8" />
+      <section className="mt-6 surface p-6">
+        <h2 className="font-heading text-lg text-foreground">Before you pay</h2>
+        <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+          <li>· This is a live build on Aug 1 and Aug 2 from 12–2 PM ET.</li>
+          <li>
+            · We build your monetizable site, launch marketing assets, and lead
+            + sales system together.
+          </li>
+          <li>
+            · Bring a laptop, your business or offer, and your account logins.
+          </li>
+          <li>· Some outside software may have its own fee.</li>
+          <li>
+            · Your deliverables are real. Sales and income are not guaranteed.
+          </li>
+        </ul>
+      </section>
 
       <div className="mt-8 flex flex-col gap-3">
         <button
@@ -167,13 +200,16 @@ function Checkout() {
           <p className="text-xs text-muted-foreground">
             {tier === "founder" && seats.status === "ok" && seats.remaining <= 0
               ? "All 33 Founder Seats are claimed."
-              : "Registration for this tier hasn't opened yet. Check back soon."}
+              : "That ticket is not available right now. Check back soon."}
           </p>
         ) : null}
         {tier === "founder" ? (
           <p className="text-xs text-muted-foreground">{FOUNDER_DISCLAIMER}</p>
         ) : null}
-        <Link to="/" className="text-center text-xs text-muted-foreground hover:text-foreground">
+        <Link
+          to="/"
+          className="text-center text-xs text-muted-foreground hover:text-foreground"
+        >
           ← Back to the Challenge
         </Link>
       </div>
