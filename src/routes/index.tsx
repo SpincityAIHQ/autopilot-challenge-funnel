@@ -179,14 +179,6 @@ function ChooseAccessIntro({ chooseAccessVideoUrl }: { chooseAccessVideoUrl: str
   );
 }
 
-// Legacy stub kept only to satisfy old references — no longer rendered.
-function _UnusedTail() {
-  return null;
-}
-
-    </section>
-  );
-}
 
 function Promise() {
   return (
