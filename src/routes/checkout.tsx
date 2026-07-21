@@ -151,6 +151,8 @@ function Checkout() {
         </p>
       </section>
 
+      <VideoSlot url={cfg.sectionVideos?.checkout ?? null} label="Watch: what happens next in Commas" className="mt-8" />
+
       <div className="mt-8 flex flex-col gap-3">
         <button
           type="button"
