@@ -87,14 +87,15 @@ function Landing() {
   return (
     <main className="min-h-screen">
       <TopBar />
-      <Hero heroVideoUrl={videos.hero ?? null} />
+      <Hero heroVideoUrl={v.hero ?? null} />
       <AiSpinAvatar />
       <Promise />
-      <Agenda dayOneVideoUrl={videos.dayOne ?? null} dayTwoVideoUrl={videos.dayTwo ?? null} />
+      <Agenda dayOneVideoUrl={v.dayOne ?? null} dayTwoVideoUrl={v.dayTwo ?? null} />
       <LeaveWith />
       <AutonomyMap />
-      <ChooseAccessIntro chooseAccessVideoUrl={videos.chooseAccess ?? null} />
-      <TierComparison founder={founder} gaBumpVideoUrl={videos.gaBump ?? null} />
+      <ChooseAccessIntro chooseAccessVideoUrl={v.chooseAccess ?? null} />
+      <TierComparison founder={founder} gaBumpVideoUrl={v.gaBump ?? null} />
+
       <FounderSection founder={founder} />
       <WhyDifferent />
       <FitCheck />
