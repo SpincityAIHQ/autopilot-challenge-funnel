@@ -124,7 +124,7 @@ function TopBar() {
   );
 }
 
-function Hero() {
+function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
   return (
     <section className="mx-auto max-w-6xl px-5 pt-14 pb-16 sm:pt-20 sm:pb-24">
       <p className="eyebrow">The AUTOPILOT Challenge</p>
