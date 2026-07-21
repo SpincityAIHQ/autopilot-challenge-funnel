@@ -314,7 +314,13 @@ function AutonomyMap() {
   );
 }
 
-function TierComparison({ founder }: { founder: FounderCtaState }) {
+function TierComparison({
+  founder,
+  gaBumpVideoUrl,
+}: {
+  founder: FounderCtaState;
+  gaBumpVideoUrl: string | null;
+}) {
   return (
     <section id="tiers" className="mx-auto max-w-6xl px-5 py-16">
       <p className="eyebrow">The tiers</p>
@@ -325,6 +331,7 @@ function TierComparison({ founder }: { founder: FounderCtaState }) {
       <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {TIERS.map((t) => {
           const isFounder = t.id === "founder";
+          const isGa = t.id === "ga";
           const founderDisabled = isFounder && founder.disabled;
           const buttonBase =
             "mt-5 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground transition";
@@ -349,8 +356,16 @@ function TierComparison({ founder }: { founder: FounderCtaState }) {
                 {t.bullets.map((b) => (
                   <li key={b}>· {b}</li>
                 ))}
-                {t.id === "ga" ? <li>· {GA_BUMP_COPY}</li> : null}
+                {isGa ? <li>· {GA_BUMP_COPY}</li> : null}
               </ul>
+              {isGa ? (
+                <VideoSlot
+                  url={gaBumpVideoUrl}
+                  label="Recordings add-on preview"
+                  className="mt-4"
+                />
+              ) : null}
+
               {isFounder ? (
                 <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground">
                   {FOUNDER_DISCLAIMER}
