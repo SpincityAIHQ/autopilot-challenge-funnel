@@ -21,16 +21,18 @@ export interface Tier {
 export const GA_BUMP_CENTS = 2200;
 export const GA_BUMP_LABEL = "Recordings + completed-map template — forever";
 export const GA_BUMP_COPY =
-  "Optional $22 recordings + completed-map template add-on available inside secure Commas checkout.";
+  "Recordings are not included. Add both replays and the completed Autonomy Map template for $22 during checkout.";
 
 export const TIERS: readonly Tier[] = [
   {
     id: "ga",
     name: "GA Ticket",
     priceCents: 7700,
-    headline: "Both live days + workbook.",
+    headline:
+      "Build your monetizable site, launch assets, and lead + sales system during both live days.",
     bullets: [
       "Sat Aug 1 + Sun Aug 2 · 12–2 PM ET",
+      "Full two-day live business build",
       "Companion workbook",
     ],
   },
@@ -38,10 +40,12 @@ export const TIERS: readonly Tier[] = [
     id: "vip",
     name: "VIP",
     priceCents: 17700,
-    headline: "GA + VIP Hour after each day with live hot seats + recordings.",
+    headline:
+      "Everything in GA + recordings + one group VIP hour after each day.",
     bullets: [
       "Everything in GA",
-      "VIP Hour after Day 1 and Day 2 with live hot seats",
+      "Group VIP Hour after Day 1 and Day 2",
+      "Selected businesses receive a live hot seat; a personal turn is not guaranteed",
       "Recordings included",
     ],
   },
@@ -63,7 +67,7 @@ export const TIERS: readonly Tier[] = [
     name: "Founder Seat",
     priceCents: 111100,
     headline:
-      "Bundle + 3 months NuAmenti Diamond at launch + Founding Credits Wall + signed founding-edition book + private Founders room in the InnerCITY + Founders Meetup at InvestFest (Sat Aug 8, Atlanta) + first MCP beta access.",
+      "Everything in the Bundle + 3 months NuAmenti Diamond + Founder access, recognition, meetup, and early MCP beta access.",
     bullets: [
       "Everything in The Bundle",
       "3 months of NuAmenti Diamond at launch",
@@ -71,6 +75,7 @@ export const TIERS: readonly Tier[] = [
       "Signed founding-edition book",
       "Private Founders room in the InnerCITY",
       "Founders Meetup — Sat Aug 8, InvestFest, Atlanta",
+      "InvestFest admission, travel, lodging, meals, and transportation are not included",
       "First MCP beta access",
     ],
     hardCap: 33,
@@ -86,7 +91,12 @@ export const TIER_MAP: Record<TierId, Tier> = TIERS.reduce(
 );
 
 export function isTierId(value: unknown): value is TierId {
-  return value === "ga" || value === "vip" || value === "bundle" || value === "founder";
+  return (
+    value === "ga" ||
+    value === "vip" ||
+    value === "bundle" ||
+    value === "founder"
+  );
 }
 
 /**
