@@ -20,6 +20,7 @@ export const Route = createFileRoute("/confirmed")({
 });
 
 function Confirmed() {
+  const cfg = getCommasConfig();
   const shareText = encodeURIComponent(
     "The AUTOPILOT Challenge — 2 days, one working automation. Aug 1–2, 2026.",
   );
