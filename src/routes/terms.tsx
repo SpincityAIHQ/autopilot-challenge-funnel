@@ -5,7 +5,10 @@ export const Route = createFileRoute("/terms")({
     meta: [
       { title: "Terms — The AUTOPILOT Challenge" },
       { name: "robots", content: "noindex,nofollow" },
-      { name: "description", content: "Terms of service placeholder. Legal review pending." },
+      {
+        name: "description",
+        content: "Terms of service placeholder. Legal review pending.",
+      },
       { property: "og:url", content: "/terms" },
     ],
     links: [{ rel: "canonical", href: "/terms" }],
@@ -16,30 +19,36 @@ export const Route = createFileRoute("/terms")({
 function Terms() {
   return (
     <main className="mx-auto max-w-3xl px-5 py-16 text-muted-foreground">
-      <Link to="/" className="text-xs hover:text-foreground">← Home</Link>
+      <Link to="/" className="text-xs hover:text-foreground">
+        ← Home
+      </Link>
       <p className="eyebrow mt-4">Terms</p>
       <h1 className="mt-3 font-display text-2xl text-foreground">Terms</h1>
 
       <div className="mt-4 rounded-md border border-[color:var(--gold-soft)] bg-secondary/40 p-4 text-sm text-foreground">
-        <strong className="font-heading">Placeholder — pending legal review.</strong>{" "}
+        <strong className="font-heading">
+          Placeholder — pending legal review.
+        </strong>{" "}
         This text is not final and has not been reviewed by counsel.
       </div>
 
       <div className="mt-8 space-y-4 text-sm leading-relaxed">
         <p>
-          By registering for The AUTOPILOT Challenge you agree to attend as-scheduled
-          and follow the participation guidelines shared before Day 1.
+          By registering for The AUTOPILOT Challenge you agree to attend
+          as-scheduled and follow the participation guidelines shared before Day
+          1.
         </p>
         <p>
-          The Founder Seat is a founding-member package — not equity, shares,
-          an investment, profit participation, or profit-sharing.
+          The Founder Seat is a founding-member package — not equity, shares, an
+          investment, profit participation, or profit-sharing.
         </p>
         <p>
           No income promises are made. No guarantees of specific business
           outcomes are made.
         </p>
         <p>
-          Payments are processed by Commas. Their terms and privacy policy also apply.
+          Payments are processed by FanBasis. Their terms and privacy policy
+          also apply.
         </p>
       </div>
     </main>
