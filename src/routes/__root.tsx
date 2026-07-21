@@ -17,7 +17,9 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <p className="eyebrow">Error 404</p>
-        <h1 className="mt-3 font-display text-5xl text-foreground">Off route</h1>
+        <h1 className="mt-3 font-display text-5xl text-foreground">
+          Off route
+        </h1>
         <p className="mt-4 text-sm text-muted-foreground">
           The page you're looking for isn't part of the Challenge.
         </p>
@@ -81,7 +83,7 @@ const JSON_LD_EVENT = {
   "@type": "Event",
   name: "The AUTOPILOT Challenge",
   description:
-    "2-Day Live Challenge. You leave with your Autonomy Map and one working automated job.",
+    "Build a monetizable website, launch marketing assets, and an AI-powered lead and sales system in two live days.",
   startDate: "2026-08-01T12:00:00-04:00",
   endDate: "2026-08-02T14:00:00-04:00",
   eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
@@ -94,7 +96,7 @@ const JSON_LD_EVENT = {
   subEvent: [
     {
       "@type": "Event",
-      name: "AUTOPILOT Challenge — Day 1: MAP IT",
+      name: "AUTOPILOT Challenge — Day 1: BUILD THE OFFER + SITE",
       startDate: "2026-08-01T12:00:00-04:00",
       endDate: "2026-08-01T14:00:00-04:00",
       eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
@@ -102,7 +104,7 @@ const JSON_LD_EVENT = {
     },
     {
       "@type": "Event",
-      name: "AUTOPILOT Challenge — Day 2: BUILD IT",
+      name: "AUTOPILOT Challenge — Day 2: BUILD THE MARKETING + AUTOPILOT",
       startDate: "2026-08-02T12:00:00-04:00",
       endDate: "2026-08-02T14:00:00-04:00",
       eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
@@ -111,45 +113,50 @@ const JSON_LD_EVENT = {
   ],
 };
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "The AUTOPILOT Challenge — 2-Day Live Build · Aug 1–2, 2026" },
-      {
-        name: "description",
-        content:
-          "Two days. You leave with your Autonomy Map and your first working automated job — built live with me. Sat Aug 1 + Sun Aug 2, 2026, 12–2 PM ET.",
-      },
-      { name: "author", content: "SpincityHQ LLC" },
-      { name: "theme-color", content: "#0e0e14" },
-      { property: "og:site_name", content: "The AUTOPILOT Challenge" },
-      { property: "og:type", content: "website" },
-      { property: "og:title", content: "The AUTOPILOT Challenge — Aug 1–2, 2026" },
-      {
-        property: "og:description",
-        content:
-          "2-Day Live Challenge. Build one real automated job in your business, live.",
-      },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [
-      { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
-    ],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify(JSON_LD_EVENT),
-      },
-    ],
-  }),
-  shellComponent: RootShell,
-  component: RootComponent,
-  notFoundComponent: NotFoundComponent,
-  errorComponent: ErrorComponent,
-});
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
+  {
+    head: () => ({
+      meta: [
+        { charSet: "utf-8" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+        { title: "The AUTOPILOT Challenge — 2-Day Live Build · Aug 1–2, 2026" },
+        {
+          name: "description",
+          content:
+            "Build a monetizable website, launch-ready marketing assets, and an AI-powered lead and sales system with us in two live days. Aug 1–2, 2026, 12–2 PM ET.",
+        },
+        { name: "author", content: "SpincityHQ LLC" },
+        { name: "theme-color", content: "#0e0e14" },
+        { property: "og:site_name", content: "The AUTOPILOT Challenge" },
+        { property: "og:type", content: "website" },
+        {
+          property: "og:title",
+          content: "The AUTOPILOT Challenge — Aug 1–2, 2026",
+        },
+        {
+          property: "og:description",
+          content:
+            "Leave with a live monetizable site, launch marketing assets, and an automated path from lead to sale.",
+        },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+      links: [
+        { rel: "stylesheet", href: appCss },
+        { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      ],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(JSON_LD_EVENT),
+        },
+      ],
+    }),
+    shellComponent: RootShell,
+    component: RootComponent,
+    notFoundComponent: NotFoundComponent,
+    errorComponent: ErrorComponent,
+  },
+);
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
