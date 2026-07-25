@@ -79,6 +79,8 @@ export function getCommasConfig(): CommasConfig {
       readEnv("VITE_SUMMIT_INTENSIVE_SALES_ENABLED") === "true",
     keynoteSalesEnabled:
       readEnv("VITE_SUMMIT_KEYNOTE_SALES_ENABLED") === "true",
+    mentorshipApplicationsEnabled:
+      readEnv("VITE_SUMMIT_MENTORSHIP_APPLICATIONS_ENABLED") === "true",
     allowedHosts: parseAllowedHosts(
       readEnv("VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS"),
     ),
