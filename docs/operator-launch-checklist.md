@@ -28,8 +28,8 @@ minimum bar to sell.
 
 Public site sells only General Admission at $22. Every later product is
 offered post-verification, one at a time. Four current sale products only —
-direct-VIP admission is NOT a current product and no `COMMAS_PRODUCT_ID_VIP`
-or `VITE_COMMAS_CHECKOUT_URL_VIP` is required.
+direct-VIP admission is NOT a current product, so no legacy direct-VIP
+env var or product ID is required.
 
 - [ ] Live product IDs exist for GA ($22), VIP Implementation Experience ($77), Vault ($199), Intensive ($1,000).
 - [ ] All 4 IDs set as env: `COMMAS_PRODUCT_ID_GA`, `_VIP_UPGRADE`, `_VAULT`, `_INTENSIVE`.
@@ -77,7 +77,7 @@ scope from the HttpOnly session — not from `?tier=` and not from the URL.
 
 ### Content
 - [ ] Summit start times filled in (or copy remains "session times sent to registrants").
-- [ ] No stale references to Aug 1–2, Founder, Bundle, $88, $177, $333, $888, $1,111 anywhere.
+- [ ] No stale references to old August 1–2 dates, Founder, Bundle, or legacy prices anywhere.
 - [ ] Public landing page `/` shows NO price strings ($22 / $77 / $199 / $1,000) and NO links to `/offer/*`, `/strategy-intensive`, `/apply/mentorship`, or `/next-keynote`.
 - [ ] `/checkout` exposes only General Admission ($22); any legacy `?tier=vip` link normalizes to GA.
 - [ ] Video URLs (`VITE_SUMMIT_VIDEO_HERO`, `VITE_SUMMIT_VIDEO_THANK_YOU`) either set to approved embed URLs or left empty.

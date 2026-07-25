@@ -67,9 +67,9 @@ allowlist (`www.fanbasis.com` plus any hosts in
 | `VITE_SUMMIT_VIDEO_THANK_YOU`           | Approved confirmation thank-you embed URL     |
 | `VITE_SUMMIT_VIDEO_THANK_YOU_GA` / `_VIP` / `_VAULT` / `_INTENSIVE` | Optional per-product verified-only thank-you videos |
 
-`VITE_COMMAS_CHECKOUT_URL_VIP` and `COMMAS_PRODUCT_ID_VIP` are intentionally
-**removed** from current activation. Anything already set is ignored by
-`getCommasConfig()` and by `resolveProductFromItem()`.
+The legacy direct-VIP browser env var and product ID are intentionally
+**removed** from current activation. Anything still set in the environment
+is ignored by `getCommasConfig()` and by `resolveProductFromItem()`.
 
 FanBasis product-success return URLs (configured inside FanBasis, not here):
 

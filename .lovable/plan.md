@@ -26,9 +26,10 @@ Separate gated path (not part of the four-product ascension):
   Not capped at 10.
 
 Direct-VIP admission is **not** sold. Legacy Founder, Bundle, GA/VIP
-public tier picker, $55 upgrade math, `?t=` query-token magic links,
-placeholder videos, and Aug 1–2 dates are removed from the current funnel.
-Historical DB migrations remain in place as immutable audit history only.
+public tier picker, price-difference VIP upgrade math, raw query-token
+magic links, placeholder videos, and pre-August-24 dates are removed
+from the current funnel. Historical DB migrations remain in place as
+immutable audit history only.
 
 ## Verified-session offer visibility
 
