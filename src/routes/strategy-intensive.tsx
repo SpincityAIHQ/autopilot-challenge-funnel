@@ -10,21 +10,23 @@ import {
   useEntitlementSummary,
   derivedAccess,
 } from "@/hooks/use-entitlement-summary";
+import { TestimonialSection } from "@/components/TestimonialSection";
 
 export const Route = createFileRoute("/strategy-intensive")({
   head: () => ({
     meta: [
-      { title: "Strategy & Build Intensive — $1,000 · 10 slots" },
+      { title: "Private 1-on-1 Strategy & Build Intensive" },
       {
         name: "description",
         content:
-          "A two-hour private session. Only 10 total, exclusively for verified NuAmenti and Summit attendees.",
+          "A two-hour private 1-on-1 strategy and build session. Only 10 total, exclusively for verified Vault holders and operator-approved attendees.",
       },
-      { property: "og:title", content: "Strategy & Build Intensive — $1,000" },
+      { name: "robots", content: "noindex" },
+      { property: "og:title", content: "Private 1-on-1 Strategy & Build Intensive" },
       {
         property: "og:description",
         content:
-          "Two-hour private strategy + build session. Ten slots, atomic inventory, verified Summit attendees only.",
+          "Two-hour private 1-on-1 strategy + build session. Ten slots, atomic inventory, verified Vault holders only.",
       },
       { property: "og:url", content: "/strategy-intensive" },
     ],
@@ -42,35 +44,71 @@ function StrategyIntensive() {
   const salesOn = isHandoffAllowed("intensive", cfg);
   const summary = useEntitlementSummary();
 
-  const subLabel = soldOut
-    ? "The Intensive is fully claimed for this cohort."
-    : slots.status === "ok"
-      ? `${slots.remaining} of ${i.hardCap} slots remaining.`
-      : `${i.hardCap} slots total.`;
-
   return (
     <main className="mx-auto max-w-3xl px-5 py-16">
-      <p className="eyebrow">Post-Summit · Ascension</p>
+      <p className="eyebrow">Post-Vault · Final ascension</p>
       <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
-        {i.name}
+        Book Your Private 1-on-1 Strategy & Build Intensive
       </h1>
       <div className="mt-4 font-display text-4xl text-[color:var(--gold)]">
         {formatUsd(i.priceCents)}
       </div>
-      <p className="mt-4 text-muted-foreground">{i.summary}</p>
+
+      <div className="mt-6 surface-raised p-6" aria-live="polite">
+        <p className="label-mono">Live inventory</p>
+        <div className="mt-2 font-display text-3xl text-foreground">
+          {slots.status === "loading" ? (
+            <span className="text-muted-foreground">Checking availability…</span>
+          ) : slots.status === "ok" ? (
+            soldOut ? (
+              <span>All {i.hardCap} slots taken</span>
+            ) : (
+              <span>
+                {slots.remaining}
+                <span className="ml-2 text-base text-muted-foreground">
+                  of {i.hardCap} slots remaining
+                </span>
+              </span>
+            )
+          ) : (
+            <span className="text-muted-foreground">Checking availability…</span>
+          )}
+        </div>
+        <p className="mt-3 text-xs text-muted-foreground">
+          Atomic inventory. We never claim a slot is reserved until verified
+          payment is received.
+        </p>
+      </div>
+
+      <p className="mt-6 text-muted-foreground">{i.summary}</p>
       <p className="mt-2 text-xs text-muted-foreground">
-        Your Summit ticket stays valid whether you claim an Intensive slot or
-        not. The Mentorship is a separate offer, not this one.
-      </p>
-      <p className="mt-2 text-sm uppercase tracking-widest text-muted-foreground">
-        {subLabel}
+        Your Summit ticket and Vault access stay valid whether you claim an
+        Intensive slot or not. The 8-Week Mentorship is a separate offer, not
+        this one.
       </p>
 
-      <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
-        {i.bullets.map((b) => (
-          <li key={b}>· {b}</li>
-        ))}
-      </ul>
+      <section className="mt-8 surface p-6">
+        <h2 className="font-heading text-lg text-foreground">
+          What you already have vs. what the Intensive adds
+        </h2>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div>
+            <p className="label-mono">You already have</p>
+            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+              <li>· Your Summit ticket + resources</li>
+              <li>· The Implementation Vault</li>
+            </ul>
+          </div>
+          <div>
+            <p className="label-mono text-[color:var(--gold)]">The Intensive adds</p>
+            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+              {i.bullets.map((b) => (
+                <li key={b}>· {b}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
 
       <div className="mt-8">
         <IntensiveCta
@@ -83,16 +121,20 @@ function StrategyIntensive() {
         />
       </div>
 
-      <p className="mt-6 text-xs text-muted-foreground">
-        We never claim a slot is reserved until verified payment is received.
-      </p>
+      <div className="mt-6">
+        <Link
+          to="/next-steps"
+          className="text-sm text-muted-foreground underline hover:text-foreground"
+        >
+          No thanks — continue to next steps →
+        </Link>
+      </div>
 
-      <Link
-        to="/"
-        className="mt-10 inline-block text-sm text-muted-foreground hover:text-foreground"
-      >
-        ← Back to the Summit
-      </Link>
+      <TestimonialSection
+        page="intensive"
+        eyebrow="From Intensive alumni"
+        heading="What people built in a private 1-on-1"
+      />
     </main>
   );
 }
@@ -119,18 +161,18 @@ function IntensiveCta({
   }
   if (summary.status === "unauthenticated" || summary.status === "error") {
     return (
-      <SecureLinkNotice message="The Intensive is only sold to verified Summit or NuAmenti attendees. Open the secure Intensive link in your NuAmenti access email — verified sign-in is required." />
+      <SecureLinkNotice message="The Intensive is only sold to verified Vault holders (or operator-approved attendees). Open the secure Intensive link in your NuAmenti access email — verified sign-in is required." />
     );
   }
-  const { hasGa, hasIntensive } = derivedAccess(summary.scopes);
+  const { hasVault, hasIntensive } = derivedAccess(summary.scopes);
   if (hasIntensive) {
     return (
-      <AlreadyOwned message="You already hold an Intensive slot. Booking + prep details come through your NuAmenti access email." />
+      <AlreadyOwned message="You already hold an Intensive slot. Booking and prep details come through your NuAmenti access email." />
     );
   }
-  if (!hasGa) {
+  if (!hasVault) {
     return (
-      <SecureLinkNotice message="Intensive eligibility requires a verified Summit registration on the same session. Open the secure Intensive link in your NuAmenti access email." />
+      <SecureLinkNotice message="Intensive eligibility requires a verified Implementation Vault purchase (or operator approval). Add the Vault first, then return here." />
     );
   }
   if (!salesOn || !url || !slotsKnown) {

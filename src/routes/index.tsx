@@ -2,12 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Countdown } from "@/components/Countdown";
 import { VideoSlot } from "@/components/VideoSlot";
-import {
-  TIERS,
-  UPSELLS,
-  formatUsd,
-  type AdmissionTierId,
-} from "@/lib/tiers";
+import { TestimonialSection } from "@/components/TestimonialSection";
 import { getCommasConfig } from "@/lib/challenge-config";
 import { captureAttribution } from "@/lib/attribution";
 
@@ -18,13 +13,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Two days, live online. Map your AI-powered revenue and operating system and build a first AI-assisted workflow to keep going. GA $22 · VIP $77.",
+          "Two days, live online, with the NuAmenti family. Map your AI-powered revenue and operating system, then build the first working piece together.",
       },
       { property: "og:title", content: "AI AutoPilot Summit — Aug 24–25, 2026" },
       {
         property: "og:description",
         content:
-          "Map It · Build It. Leave with a starter Autonomy Map and a first AI-assisted workflow to keep building. Aug 24–25, 2026.",
+          "Map It · Build It. Leave with a starter Autonomy Map and a first AI-assisted workflow prototype. Live online, Aug 24–25, 2026.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -34,7 +29,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Landing,
 });
-
 
 function Landing() {
   const cfg = getCommasConfig();
@@ -47,11 +41,9 @@ function Landing() {
       <Promise />
       <Agenda />
       <MapItBuildIt />
-      <TierComparison />
-      <VaultTeaser />
-      <IntensiveTeaser />
       <WhyDifferent />
       <FitCheck />
+      <TestimonialSection page="landing" />
       <Faq />
       <Timeline />
       <FinalCta />
@@ -68,7 +60,7 @@ function TopBar() {
       </div>
       <nav className="hidden gap-6 text-sm text-muted-foreground sm:flex">
         <a href="#agenda" className="hover:text-foreground">Agenda</a>
-        <a href="#tiers" className="hover:text-foreground">Tickets</a>
+        <a href="#experience" className="hover:text-foreground">Experience</a>
         <a href="#faq" className="hover:text-foreground">FAQ</a>
       </nav>
     </header>
@@ -98,21 +90,12 @@ function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
         <Countdown />
       </div>
 
-
       <div className="mt-10 flex flex-wrap gap-3">
         <Link
           to="/checkout"
-          search={{ tier: "ga" }}
-          className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-base font-semibold text-primary-foreground shadow-lg shadow-black/40 transition hover:opacity-90"
+          className="inline-flex items-center rounded-md bg-primary px-6 py-3 font-heading text-base font-semibold text-primary-foreground shadow-lg shadow-black/40 transition hover:opacity-90"
         >
-          Get GA — $22
-        </Link>
-        <Link
-          to="/checkout"
-          search={{ tier: "vip" }}
-          className="inline-flex items-center rounded-md border border-[color:var(--gold)] bg-transparent px-5 py-3 font-heading text-base text-[color:var(--gold)] transition hover:bg-secondary"
-        >
-          Go VIP — $77
+          Reserve Your Seat
         </Link>
       </div>
       <div className="mt-6 gold-rule max-w-md" />
@@ -151,7 +134,6 @@ function Promise() {
   );
 }
 
-
 function Agenda() {
   return (
     <section id="agenda" className="mx-auto max-w-5xl px-5 py-16">
@@ -167,7 +149,6 @@ function Agenda() {
             <li>· Identify the wall — where your time and revenue are stuck.</li>
             <li>· Complete your starter Research / Create / Distribute Autonomy Map.</li>
             <li>· Choose three workflow candidates for AI assist this month.</li>
-
             <li>· Finish the map together, live.</li>
           </ul>
         </article>
@@ -180,7 +161,6 @@ function Agenda() {
             <li>· Talk through reliability — how the workflow holds up outside the room.</li>
             <li>· Leave with a first AI-assisted workflow prototype to keep refining.</li>
           </ul>
-
         </article>
       </div>
       <p className="mt-6 text-xs text-muted-foreground">
@@ -192,7 +172,7 @@ function Agenda() {
 
 function MapItBuildIt() {
   return (
-    <section className="mx-auto max-w-5xl px-5 py-16">
+    <section id="experience" className="mx-auto max-w-5xl px-5 py-16">
       <p className="eyebrow">The map</p>
       <h2 className="mt-3 font-heading text-2xl text-foreground sm:text-3xl">
         Research · Create · Distribute
@@ -221,91 +201,6 @@ function MapItBuildIt() {
   );
 }
 
-function TierComparison() {
-  return (
-    <section id="tiers" className="mx-auto max-w-6xl px-5 py-16">
-      <p className="eyebrow">Pick your seat</p>
-      <h2 className="mt-3 font-heading text-2xl text-foreground sm:text-3xl">
-        GA gets you in. VIP goes deeper.
-      </h2>
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
-        {TIERS.map((t) => (
-          <article key={t.id} className="surface-raised flex flex-col p-6">
-            <p className="label-mono">{t.name}</p>
-            <div className="mt-2 font-display text-3xl text-foreground">
-              {formatUsd(t.priceCents)}
-            </div>
-            <p className="mt-3 text-sm text-muted-foreground">{t.headline}</p>
-            <ul className="mt-4 flex-1 space-y-2 text-sm text-muted-foreground">
-              {t.bullets.map((b) => (
-                <li key={b}>· {b}</li>
-              ))}
-            </ul>
-            <Link
-              to="/checkout"
-              search={{ tier: t.id as AdmissionTierId }}
-              className="mt-5 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground transition hover:opacity-90"
-            >
-              Continue — {formatUsd(t.priceCents)}
-            </Link>
-          </article>
-        ))}
-      </div>
-      <p className="mt-4 text-xs text-muted-foreground">
-        No income promises. No fake scarcity. Every seat is a real seat.
-      </p>
-    </section>
-  );
-}
-
-function VaultTeaser() {
-  const v = UPSELLS.vault;
-  return (
-    <section className="mx-auto max-w-4xl px-5 py-16">
-      <p className="eyebrow">After you register</p>
-      <h2 className="mt-3 font-heading text-2xl text-foreground sm:text-3xl">
-        {v.name} — {formatUsd(v.priceCents)}
-      </h2>
-      <p className="mt-3 text-sm text-muted-foreground">
-        Offered as an optional add-on right after you register. Admission is
-        purchased separately.
-      </p>
-      <ul className="mt-4 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
-        {v.bullets.map((b) => (
-          <li key={b}>· {b}</li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-function IntensiveTeaser() {
-  const i = UPSELLS.intensive;
-  return (
-    <section className="mx-auto max-w-4xl px-5 py-16">
-      <p className="eyebrow">After the Summit</p>
-      <h2 className="mt-3 font-heading text-2xl text-foreground sm:text-3xl">
-        {i.name} — {formatUsd(i.priceCents)}
-      </h2>
-      <p className="mt-3 text-sm text-muted-foreground">{i.summary}</p>
-      <div className="mt-4 flex flex-wrap gap-3">
-        <Link
-          to="/strategy-intensive"
-          className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
-        >
-          See the Intensive
-        </Link>
-        <Link
-          to="/apply/mentorship"
-          className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
-        >
-          8-Week Mentorship (application)
-        </Link>
-      </div>
-    </section>
-  );
-}
-
 function WhyDifferent() {
   return (
     <section className="mx-auto max-w-4xl px-5 py-16">
@@ -323,7 +218,6 @@ function WhyDifferent() {
     </section>
   );
 }
-
 
 function FitCheck() {
   return (
@@ -358,13 +252,12 @@ function Faq() {
       a: "100% live online. Details are sent to registrants by email.",
     },
     {
-      q: "Are recordings included?",
-      a: "GA is live only. VIP includes 30-day recordings. The $199 Vault does NOT include recordings — it's a separate implementation library.",
-
+      q: "How do I register?",
+      a: "Reserve your seat above. General Admission opens the door to both live days. Deeper implementation options are offered to registrants after your seat is confirmed.",
     },
     {
       q: "What happens after I pay?",
-      a: "You get a FanBasis receipt and a NuAmenti welcome email. Your seat is confirmed only after payment is verified.",
+      a: "You get a FanBasis receipt and a NuAmenti welcome email. Your seat is confirmed only after payment is verified — a URL alone never proves purchase or unlocks resources.",
     },
     {
       q: "Refund policy?",
@@ -405,21 +298,15 @@ function FinalCta() {
       <h2 className="font-display text-3xl text-foreground sm:text-4xl">
         Meet us at the Summit.
       </h2>
-      <p className="mt-3 text-muted-foreground">Choose your seat and let's build.</p>
+      <p className="mt-3 text-muted-foreground">
+        Reserve your seat and we'll take it from there.
+      </p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         <Link
           to="/checkout"
-          search={{ tier: "ga" }}
-          className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-base font-semibold text-primary-foreground transition hover:opacity-90"
+          className="inline-flex items-center rounded-md bg-primary px-6 py-3 font-heading text-base font-semibold text-primary-foreground transition hover:opacity-90"
         >
-          Get GA — $22
-        </Link>
-        <Link
-          to="/checkout"
-          search={{ tier: "vip" }}
-          className="inline-flex items-center rounded-md border border-[color:var(--gold)] px-5 py-3 font-heading text-base text-[color:var(--gold)] transition hover:bg-secondary"
-        >
-          Go VIP — $77
+          Reserve Your Seat
         </Link>
       </div>
     </section>

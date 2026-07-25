@@ -1,9 +1,17 @@
 /**
  * Public copy for the AI AutoPilot Summit confirmation flow.
- * GA gets the $55 VIP upgrade offer; direct VIP never sees it.
+ *
+ * Sequential funnel: the ONLY public admission is General Admission ($22).
+ * The GA confirmation page presents the $77 VIP Implementation Experience
+ * as the primary ascension decision; declining routes to /next-steps, NOT
+ * directly to the $199 Vault. Vault is revealed only after VIP purchase.
+ *
+ * Legacy `vip` confirmation copy remains for verified-webhook fulfillment
+ * of direct VIP payments (e.g. operator-issued VIP admission), even though
+ * VIP is not sold from the public site.
  */
 
-import type { AdmissionTierId } from "./tiers";
+export type ConfirmationTier = "ga" | "vip";
 
 export interface ConfirmationContent {
   shortName: string;
@@ -12,10 +20,13 @@ export interface ConfirmationContent {
   nextSteps: string[];
   notices: string[];
   videoLabel: string;
+  /** GA-only: reveal the $77 VIP Implementation Experience upsell. */
   showVipUpgrade: boolean;
+  /** VIP path (legacy): reveal the $199 Vault as the next ascension step. */
+  showVaultOffer: boolean;
 }
 
-export const CONFIRMATION_CONTENT: Record<AdmissionTierId, ConfirmationContent> = {
+export const CONFIRMATION_CONTENT: Record<ConfirmationTier, ConfirmationContent> = {
   ga: {
     shortName: "General Admission",
     headline:
@@ -31,10 +42,11 @@ export const CONFIRMATION_CONTENT: Record<AdmissionTierId, ConfirmationContent> 
     ],
     notices: [
       "This confirmation page is display context only — it does not prove purchase. Wait for the NuAmenti verification + access email before treating anything as unlocked.",
-      "GA does not include recordings. Below: upgrade to VIP for $55, or keep GA and continue to the Implementation Vault.",
+      "GA does not include recordings. See the next section for the VIP Implementation Experience — or continue with GA.",
     ],
     videoLabel: "Watch: your first move as a GA registrant",
     showVipUpgrade: true,
+    showVaultOffer: false,
   },
   vip: {
     shortName: "VIP Experience",
@@ -53,12 +65,12 @@ export const CONFIRMATION_CONTENT: Record<AdmissionTierId, ConfirmationContent> 
     ],
     videoLabel: "Watch: your VIP welcome from the family",
     showVipUpgrade: false,
+    showVaultOffer: true,
   },
 };
 
-
 export function getConfirmationContent(
-  tier: AdmissionTierId | null,
+  tier: ConfirmationTier | null,
 ): ConfirmationContent | null {
   if (!tier) return null;
   return CONFIRMATION_CONTENT[tier];

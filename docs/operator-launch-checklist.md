@@ -24,14 +24,37 @@ minimum bar to sell.
 
 
 
-### Payments (Commas / FanBasis)
-- [ ] Live product IDs exist for GA ($22), VIP ($77), VIP Upgrade ($55), Vault ($199), Intensive ($1,000).
+### Payments (Commas / FanBasis) — sequential funnel
+
+Public site sells only General Admission at $22. Every later product is
+offered post-verification, one at a time.
+
+- [ ] Live product IDs exist for GA ($22), VIP ($77), VIP Implementation Experience ($77), Vault ($199), Intensive ($1,000).
 - [ ] All 5 IDs set as env: `COMMAS_PRODUCT_ID_GA`, `_VIP`, `_VIP_UPGRADE`, `_VAULT`, `_INTENSIVE`.
 - [ ] `COMMAS_WEBHOOK_SECRET` set (strong random, minted outside this app).
 - [ ] `COMMAS_WEBHOOKS_ENABLED=true`.
 - [ ] Signed sample `payment.succeeded` POST to `/api/public/webhooks/commas` returns `ok` and creates a `summit_registrations` row.
 - [ ] Signed sample `payment.refunded` POST reverses the same row (`reversed_product` returned).
 - [ ] Sample without signature returns 401. Sample with wrong currency returns 200 with `rejected` status.
+- [ ] Server-side preconditions verified: Vault fulfillment REJECTS a buyer with GA only; Intensive fulfillment REJECTS a buyer with GA/VIP but no Vault (unless listed in `intensive_eligibility`).
+
+### Commas / FanBasis success redirects (external configuration)
+
+Configured on the checkout product itself — this app does NOT set the
+return URL. Every URL below is same-origin and safe to reveal (no PII in
+the query string). Decline paths live inside the app on `/next-steps`.
+
+| Product | Price | Success return URL | Decline path |
+|---------|-------|--------------------|--------------|
+| General Admission | $22 | `/confirmed?tier=ga` | n/a |
+| VIP Implementation Experience | $77 | `/offer/implementation-vault` | `/next-steps` |
+| Implementation Vault | $199 | `/strategy-intensive` | `/next-steps` |
+| Strategy & Build Intensive | $1,000 | `/next-steps` | `/next-steps` |
+| Legacy direct VIP admission | $77 | `/confirmed?tier=vip` | n/a |
+
+Fulfillment is authoritative via the signed webhook — a redirect URL
+never proves purchase.
+
 
 ### Checkout URLs (browser-visible)
 - [ ] `VITE_COMMAS_CHECKOUT_URL_GA` — HTTPS, allowlisted host.
@@ -51,8 +74,17 @@ minimum bar to sell.
 
 ### Content
 - [ ] Summit start times filled in (or copy remains "session times sent to registrants").
-- [ ] No stale references to Aug 1–2, Founder, Bundle, $88, $177, $333, $888, $1,111 anywhere.
+- [ ] No stale references to Aug 1–2, Founder, Bundle, $88, $177, $333, $888, $1,111, or the legacy $55 VIP-upgrade price anywhere.
+- [ ] Public landing page `/` shows NO price strings ($22 / $77 / $199 / $1,000) and NO links to `/offer/*`, `/strategy-intensive`, `/apply/mentorship`, or `/next-keynote`.
+- [ ] `/checkout` exposes only General Admission ($22); any legacy `?tier=vip` link normalizes to GA.
 - [ ] Video URLs (`VITE_SUMMIT_VIDEO_HERO`, `VITE_SUMMIT_VIDEO_THANK_YOU`) either set to approved embed URLs or left empty.
+
+### Testimonials (one slot per funnel page)
+- [ ] Real, released video/text testimonials loaded into `src/lib/testimonials.ts` with `status: "published"` — or the array left empty (nothing renders otherwise).
+- [ ] Per-page video env slots either set to an approved-host embed URL or left empty: `VITE_TESTIMONIAL_VIDEO_LANDING`, `_CHECKOUT`, `_CONFIRMED`, `_VIP`, `_VAULT`, `_INTENSIVE`.
+- [ ] Signed release on file for every published testimonial (see `docs/testimonial-scripts.md`).
+- [ ] Every numeric claim in a published testimonial is backed by client-provided evidence.
+
 
 ### Security
 - [ ] `security--run_security_scan` shows no new findings.

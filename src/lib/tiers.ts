@@ -1,18 +1,24 @@
 /**
- * AI AutoPilot Summit — product catalog.
+ * AI AutoPilot Summit — product catalog (SEQUENTIAL ASCENSION FUNNEL).
  *
- * Admission tickets: GA ($22), VIP ($77).
- * VIP Upgrade ($55) is an OTO offered ONLY to GA buyers on /confirmed.
- * Vault ($199) is a post-registration add-on requiring GA or VIP.
- * Strategy Intensive ($1,000) is capped atomically at 10 and requires
- * Summit registration OR operator-created eligibility.
- * Mentorship ($8,000) is application-based, separate from the Intensive.
+ * Public price visibility rule:
+ *   $22 GA        — visible ONLY on /checkout (first funnel offer page).
+ *   $77 VIP        — visible ONLY on the post-GA offer page (/offer/vip-upgrade).
+ *   $199 Vault    — visible ONLY on /offer/implementation-vault (noindex).
+ *   $1,000 Intensive — visible ONLY on /strategy-intensive (noindex).
+ * The public landing page (/) shows NO prices and NO later-offer links.
  *
- * All money in cents. Payment collection lives on Commas; this app never
- * handles card data and never fulfills from URL query strings.
+ * Legacy note:
+ *   `vip_upgrade` was previously priced at the "price difference" ($55).
+ *   In the sequential funnel it is the FULL $77 VIP Implementation
+ *   Experience offered after verified GA purchase — no "difference" math,
+ *   no direct VIP admission offered from the public site.
+ *
+ * All money in cents. Payment collection lives on Commas/FanBasis; this
+ * app never handles card data and never fulfills from URL query strings.
  */
 
-export type AdmissionTierId = "ga" | "vip";
+export type AdmissionTierId = "ga";
 export type ProductId =
   | "ga"
   | "vip"
@@ -32,6 +38,10 @@ export interface Tier {
   bullets: string[];
 }
 
+/**
+ * Public tier catalog. Only General Admission is a public purchase — every
+ * later offer is post-verification, gated to its own private funnel page.
+ */
 export const TIERS: readonly Tier[] = [
   {
     id: "ga",
@@ -49,22 +59,6 @@ export const TIERS: readonly Tier[] = [
       "GA does not include session recordings",
     ],
   },
-  {
-    id: "vip",
-    name: "VIP Experience",
-    shortName: "VIP Ticket",
-    priceCents: 7700,
-    headline:
-      "Everything in GA plus recordings, a VIP Implementation Lab, priority Q&A, and the outreach vault.",
-    bullets: [
-      "Everything in GA",
-      "30-day session recordings",
-      "One live VIP Implementation Lab",
-      "Priority Q&A submission",
-      "VIP Proposal + Outreach Kit",
-      "VIP Resource Vault",
-    ],
-  },
 ] as const;
 
 export const TIER_MAP: Record<AdmissionTierId, Tier> = TIERS.reduce(
@@ -76,12 +70,33 @@ export const TIER_MAP: Record<AdmissionTierId, Tier> = TIERS.reduce(
 );
 
 export function isTierId(value: unknown): value is AdmissionTierId {
-  return value === "ga" || value === "vip";
+  return value === "ga";
 }
+
+/**
+ * VIP admission spec — kept as a catalog entry (not a public tier) so the
+ * webhook, entitlements, and the $77 VIP Implementation Experience page can
+ * reference the same benefit set. Not offered as a direct public purchase.
+ */
+export const VIP_SPEC = {
+  name: "VIP Experience",
+  shortName: "VIP Ticket",
+  priceCents: 7700,
+  headline:
+    "Everything in GA plus recordings, a VIP Implementation Lab, priority Q&A, and the outreach vault.",
+  bullets: [
+    "Everything in GA",
+    "30-day session recordings",
+    "One live VIP Implementation Lab",
+    "Priority Q&A submission",
+    "VIP Proposal + Outreach Kit",
+    "VIP Resource Vault",
+  ],
+} as const;
 
 /** Post-purchase and post-Summit products (not admission tickets). */
 export interface UpsellProduct {
-  id: Exclude<ProductId, "ga" | "vip">;
+  id: Exclude<ProductId, "ga">;
   name: string;
   priceCents: number;
   summary: string;
@@ -90,17 +105,26 @@ export interface UpsellProduct {
 }
 
 export const UPSELLS: Record<UpsellProduct["id"], UpsellProduct> = {
+  vip: {
+    id: "vip",
+    name: VIP_SPEC.name,
+    priceCents: VIP_SPEC.priceCents,
+    summary: VIP_SPEC.headline,
+    bullets: [...VIP_SPEC.bullets],
+  },
   vip_upgrade: {
     id: "vip_upgrade",
-    name: "GA → VIP Upgrade",
-    priceCents: 5500,
+    name: "VIP Implementation Experience",
+    // Sequential funnel: full $77 VIP price for GA holders — NOT a difference.
+    priceCents: 7700,
     summary:
-      "Upgrade your GA registration to VIP for the same price difference. Adds 30-day recordings, the VIP Implementation Lab, priority Q&A, and the outreach vault.",
+      "The full VIP Implementation Experience for verified GA registrants. Adds 30-day session recordings, one live VIP Implementation Lab, priority Q&A, the VIP Proposal + Outreach Kit, and the VIP Resource Vault.",
     bullets: [
-      "Upgrade a verified GA seat only",
+      "Requires a verified GA registration on the same email",
       "30-day session recordings",
       "One live VIP Implementation Lab",
       "Priority Q&A + VIP Resource Vault",
+      "VIP Proposal + Outreach Kit",
     ],
   },
   vault: {
@@ -108,7 +132,7 @@ export const UPSELLS: Record<UpsellProduct["id"], UpsellProduct> = {
     name: "AI AutoPilot Implementation Vault",
     priceCents: 19900,
     summary:
-      "The full implementation stack: prompts, blueprints, calendar, and proposal builder. Post-purchase add-on — admission is purchased separately.",
+      "The full implementation stack: prompts, blueprints, calendar, and proposal builder. Post-VIP add-on — admission and recordings are purchased separately.",
     bullets: [
       "Company Brain Starter Kit",
       "AI sales and follow-up agent prompt stack",
@@ -124,11 +148,11 @@ export const UPSELLS: Record<UpsellProduct["id"], UpsellProduct> = {
     name: "Strategy & Build Intensive",
     priceCents: 100000,
     summary:
-      "A two-hour private session. Only 10 total, exclusively for NuAmenti and Summit attendees.",
+      "A two-hour private 1-on-1 session. Only 10 total, exclusively for verified Vault holders and operator-approved attendees.",
     bullets: [
-      "Two-hour private strategy + build session",
+      "Two-hour private 1-on-1 strategy + build session",
       "10 total slots · atomic inventory",
-      "For NuAmenti and Summit attendees only",
+      "For verified Vault holders and operator-approved attendees",
     ],
     hardCap: 10,
   },
@@ -156,8 +180,9 @@ export function formatUsd(cents: number): string {
 export function expectedTotalCents(product: ProductId): number {
   switch (product) {
     case "ga":
+      return TIER_MAP.ga.priceCents;
     case "vip":
-      return TIER_MAP[product].priceCents;
+      return UPSELLS.vip.priceCents;
     case "vip_upgrade":
       return UPSELLS.vip_upgrade.priceCents;
     case "vault":

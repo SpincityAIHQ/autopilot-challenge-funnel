@@ -2,13 +2,21 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { VideoSlot } from "@/components/VideoSlot";
 import { getCommasConfig } from "@/lib/challenge-config";
-import { getConfirmationContent } from "@/lib/funnel-content";
-import { UPSELLS, formatUsd, isTierId, type AdmissionTierId } from "@/lib/tiers";
-import { CONFIRMATION_CONTENT } from "@/lib/funnel-content";
+import {
+  getConfirmationContent,
+  CONFIRMATION_CONTENT,
+  type ConfirmationTier,
+} from "@/lib/funnel-content";
+import { UPSELLS, formatUsd } from "@/lib/tiers";
+import { TestimonialSection } from "@/components/TestimonialSection";
 
 const searchSchema = z.object({
   tier: z.enum(["ga", "vip"]).optional(),
 });
+
+function isConfirmationTier(v: unknown): v is ConfirmationTier {
+  return v === "ga" || v === "vip";
+}
 
 export const Route = createFileRoute("/confirmed")({
   validateSearch: (input) => searchSchema.parse(input),
@@ -30,13 +38,18 @@ export const Route = createFileRoute("/confirmed")({
 
 function Confirmed() {
   const search = Route.useSearch();
-  const tier: AdmissionTierId | null = isTierId(search.tier) ? search.tier : null;
+  const tier: ConfirmationTier | null = isConfirmationTier(search.tier)
+    ? search.tier
+    : null;
   const content = getConfirmationContent(tier);
   const cfg = getCommasConfig();
   const thankYouUrl = cfg.sectionVideos.confirmedThankYou ?? null;
   const vault = UPSELLS.vault;
+  const vipUpgrade = UPSELLS.vip_upgrade;
   const showGaUpgradeChoice =
     tier === "ga" && CONFIRMATION_CONTENT.ga.showVipUpgrade;
+  const showVaultChoice =
+    tier === "vip" && CONFIRMATION_CONTENT.vip.showVaultOffer;
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-16">
@@ -65,7 +78,6 @@ function Confirmed() {
           Manage your communication preferences →
         </Link>
       </p>
-
 
       <VideoSlot
         url={thankYouUrl}
@@ -137,31 +149,33 @@ function Confirmed() {
 
       {showGaUpgradeChoice ? (
         <section className="mt-10 surface-raised p-6 border-[color:var(--gold)]">
-          <p className="eyebrow">GA only — one decision</p>
+          <p className="eyebrow">Your first choice — one time only</p>
           <h2 className="mt-2 font-heading text-xl text-foreground">
-            Upgrade GA → VIP for {formatUsd(UPSELLS.vip_upgrade.priceCents)}, or keep GA and continue.
+            Add the VIP Implementation Experience for {formatUsd(vipUpgrade.priceCents)}?
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            {UPSELLS.vip_upgrade.summary} Your GA ticket remains valid either way.
+            {vipUpgrade.summary} Your GA ticket remains valid either way.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
               to="/offer/vip-upgrade"
               className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
             >
-              Upgrade to VIP — {formatUsd(UPSELLS.vip_upgrade.priceCents)}
+              See the VIP Experience
             </Link>
             <Link
-              to="/offer/implementation-vault"
+              to="/next-steps"
               className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
             >
-              Keep GA — continue to the Implementation Vault
+              No thanks — continue with GA
             </Link>
           </div>
         </section>
-      ) : (
+      ) : null}
+
+      {showVaultChoice ? (
         <section className="mt-10 surface-raised p-6 border-[color:var(--gold)]">
-          <p className="eyebrow">Add now — save later</p>
+          <p className="eyebrow">Add now — build faster</p>
           <h2 className="mt-2 font-heading text-xl text-foreground">
             {vault.name} — {formatUsd(vault.priceCents)}
           </h2>
@@ -180,17 +194,23 @@ function Confirmed() {
               to="/offer/implementation-vault"
               className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
             >
-              See the Vault — {formatUsd(vault.priceCents)}
+              See the Vault
             </Link>
             <Link
-              to="/next-keynote"
+              to="/next-steps"
               className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
             >
-              No thanks — take me to the next keynote
+              No thanks — continue
             </Link>
           </div>
         </section>
-      )}
+      ) : null}
+
+      <TestimonialSection
+        page="confirmed"
+        eyebrow="From the family"
+        heading="What people say after they register"
+      />
 
       <section className="mt-10">
         <h2 className="font-heading text-lg text-foreground">Questions?</h2>
