@@ -47,7 +47,29 @@ describe("landing page — no prices, no later-offer links", () => {
     expect(src.match(/Go VIP/)).toBeNull();
   });
 
-  it("replaces the nav 'Tickets' link with a neutral label", () => {
+  it("replaces the nav 'Tickets' link with a neutral 'Registration' label", () => {
     expect(src.includes(">Tickets<")).toBe(false);
+    expect(src.includes(">Registration<")).toBe(true);
+    expect(src.includes('href="#registration"')).toBe(true);
+    expect(src.includes('id="registration"')).toBe(true);
+  });
+
+  it("hero CTA is 'Reserve Your Seat' and final CTA is 'Join the Summit', both to /checkout with no tier param", () => {
+    expect(src.includes(">Reserve Your Seat<")).toBe(true);
+    expect(src.includes(">Join the Summit<")).toBe(true);
+    // No tier search param anywhere on the landing page.
+    expect(src.match(/\/checkout\?/)).toBeNull();
+    expect(src.match(/tier=/)).toBeNull();
+  });
+
+  it("contains no `$<digit>` price string anywhere in the source (visible, meta, or JSON-LD)", () => {
+    const matches = src.match(/\$\d[\d,]*/g);
+    expect(matches).toBeNull();
+  });
+
+  it("does not link to /communication-preferences or other later-funnel pages", () => {
+    for (const r of ["/next-steps", "/resources", "/communication-preferences"]) {
+      expect(src.includes(r)).toBe(false);
+    }
   });
 });
