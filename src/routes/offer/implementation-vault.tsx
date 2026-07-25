@@ -7,6 +7,7 @@ import {
   isHandoffAllowed,
 } from "@/lib/challenge-config";
 import { OfferGate } from "@/components/OfferGate";
+import { ProductThankYou } from "@/components/ProductThankYou";
 import { TestimonialSection } from "@/components/TestimonialSection";
 
 export const Route = createFileRoute("/offer/implementation-vault")({
