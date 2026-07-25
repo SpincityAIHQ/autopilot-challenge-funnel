@@ -74,10 +74,13 @@ describe("paid content isolation (source scan)", () => {
   );
 
   it("no public source imports resource-content.server", () => {
+    // Match real imports (static or dynamic), not doc-comment mentions.
+    const importRe =
+      /(?:from\s+["'][^"']*resource-content\.server["']|import\(\s*["'][^"']*resource-content\.server["']\s*\))/;
     const offenders: string[] = [];
     for (const f of publicFiles) {
       const src = readFileSync(f, "utf8");
-      if (src.includes("resource-content.server")) offenders.push(f);
+      if (importRe.test(src)) offenders.push(f);
     }
     expect(offenders).toEqual([]);
   });
