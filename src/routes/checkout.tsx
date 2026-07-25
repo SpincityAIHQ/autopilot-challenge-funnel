@@ -1,31 +1,34 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { z } from "zod";
-import {
-  TIERS,
-  TIER_MAP,
-  formatUsd,
-  isTierId,
-  type AdmissionTierId,
-} from "@/lib/tiers";
+import { TIER_MAP, formatUsd } from "@/lib/tiers";
 import {
   getCommasConfig,
   resolveCheckoutUrl,
   isHandoffAllowed,
 } from "@/lib/challenge-config";
+import { TestimonialSection } from "@/components/TestimonialSection";
 
+/**
+ * Sequential ascension funnel — checkout page.
+ * Only General Admission ($22) is offered here. Any legacy ?tier=vip URL is
+ * safely normalized to GA so visitors cannot skip the sequence. Deeper
+ * implementation experiences are offered ONLY after verified GA purchase.
+ */
 const searchSchema = z.object({
-  tier: z.enum(["ga", "vip"]).optional(),
+  // Accept any string so legacy links don't error; we always render GA.
+  tier: z.string().optional(),
 });
 
 export const Route = createFileRoute("/checkout")({
   validateSearch: (input) => searchSchema.parse(input),
   head: () => ({
     meta: [
-      { title: "Checkout — AI AutoPilot Summit" },
+      { title: "Reserve Your Seat — AI AutoPilot Summit" },
       {
         name: "description",
-        content: "Secure your seat for the AI AutoPilot Summit, live online Aug 24–25, 2026.",
+        content:
+          "Reserve your seat for the AI AutoPilot Summit, live online Aug 24–25, 2026.",
       },
       { name: "robots", content: "noindex" },
       { property: "og:url", content: "/checkout" },
@@ -36,24 +39,13 @@ export const Route = createFileRoute("/checkout")({
 });
 
 function Checkout() {
-  const search = Route.useSearch();
-  const navigate = useNavigate();
-  const initialTier: AdmissionTierId = isTierId(search.tier) ? search.tier : "ga";
-  const [tier, setTier] = useState<AdmissionTierId>(initialTier);
-
   const cfg = useMemo(() => getCommasConfig(), []);
-  const t = TIER_MAP[tier];
-  const checkoutUrl = resolveCheckoutUrl(tier, cfg);
-  const canSubmit = isHandoffAllowed(tier, cfg);
+  const t = TIER_MAP.ga;
+  const checkoutUrl = resolveCheckoutUrl("ga", cfg);
+  const canSubmit = isHandoffAllowed("ga", cfg);
   const buttonLabel = canSubmit
     ? `Continue to secure checkout · ${formatUsd(t.priceCents)}`
     : "Registration opening soon";
-
-  function onTierChange(next: string) {
-    if (!isTierId(next)) return;
-    setTier(next);
-    navigate({ to: "/checkout", search: { tier: next } });
-  }
 
   function handleContinue() {
     if (!canSubmit || !checkoutUrl) return;
@@ -62,47 +54,33 @@ function Checkout() {
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-12">
-      <p className="eyebrow">Checkout · AI AutoPilot Summit</p>
+      <p className="eyebrow">Reserve your seat · AI AutoPilot Summit</p>
       <h1 className="mt-3 font-display text-2xl text-foreground sm:text-3xl">
         Meet us at the Summit
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Aug 24–25, 2026 · live online. You'll finish payment on a secure FanBasis
-        page.
+        Aug 24–25, 2026 · live online. You'll finish payment on a secure
+        FanBasis page.
       </p>
 
       <section className="mt-8 surface-raised p-6">
-        <h2 className="font-heading text-lg text-foreground">Your ticket</h2>
-        <div className="mt-4 grid gap-2">
-          {TIERS.map((row) => (
-            <label
-              key={row.id}
-              className={`flex cursor-pointer items-start gap-3 rounded-md border p-3 transition ${
-                tier === row.id
-                  ? "border-[color:var(--gold)] bg-secondary/60"
-                  : "border-border hover:bg-secondary/40"
-              }`}
-            >
-              <input
-                type="radio"
-                name="tier"
-                value={row.id}
-                checked={tier === row.id}
-                onChange={(e) => onTierChange(e.target.value)}
-                className="mt-1 accent-[color:var(--gold)]"
-              />
-              <div className="flex-1">
-                <div className="flex items-baseline justify-between gap-2">
-                  <span className="font-heading text-foreground">{row.name}</span>
-                  <span className="font-mono text-sm text-foreground">
-                    {formatUsd(row.priceCents)}
-                  </span>
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">{row.headline}</p>
-              </div>
-            </label>
-          ))}
+        <h2 className="font-heading text-lg text-foreground">{t.name}</h2>
+        <div className="mt-2 flex items-baseline justify-between gap-4">
+          <p className="text-sm text-muted-foreground">{t.headline}</p>
+          <span className="font-mono text-lg text-foreground">
+            {formatUsd(t.priceCents)}
+          </span>
         </div>
+        <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+          {t.bullets.map((b) => (
+            <li key={b}>· {b}</li>
+          ))}
+        </ul>
+        <p className="mt-4 text-xs text-muted-foreground">
+          Deeper implementation experiences (VIP, Vault, Intensive) are
+          offered — one at a time — only after your seat is verified. No
+          upsells are shown here.
+        </p>
       </section>
 
       <section className="mt-6 surface-raised p-6">
@@ -147,6 +125,12 @@ function Checkout() {
           <Link to="/refund-policy" className="underline hover:text-foreground">Refund Policy</Link>.
         </p>
       </section>
+
+      <TestimonialSection
+        page="checkout"
+        eyebrow="From the family"
+        heading="Why people reserved a seat"
+      />
     </main>
   );
 }
