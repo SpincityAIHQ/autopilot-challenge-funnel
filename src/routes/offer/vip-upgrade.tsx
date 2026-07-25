@@ -10,24 +10,25 @@ import {
   useEntitlementSummary,
   derivedAccess,
 } from "@/hooks/use-entitlement-summary";
+import { TestimonialSection } from "@/components/TestimonialSection";
 
 const product = "vip_upgrade" as const;
 
 export const Route = createFileRoute("/offer/vip-upgrade")({
   head: () => ({
     meta: [
-      { title: "Upgrade GA → VIP · AI AutoPilot Summit" },
+      { title: "VIP Implementation Experience · AI AutoPilot Summit" },
       {
         name: "description",
         content:
-          "GA registrants: upgrade to VIP for the price difference and unlock 30-day recordings, the VIP Implementation Lab, priority Q&A, and the outreach vault.",
+          "For verified GA registrants: the VIP Implementation Experience adds 30-day recordings, one live VIP Implementation Lab, priority Q&A, and the outreach vault.",
       },
       { name: "robots", content: "noindex" },
-      { property: "og:title", content: "Upgrade GA → VIP · AI AutoPilot Summit" },
+      { property: "og:title", content: "VIP Implementation Experience · AI AutoPilot Summit" },
       {
         property: "og:description",
         content:
-          "Add recordings, the VIP Implementation Lab, priority Q&A, and the outreach vault for $55.",
+          "Add recordings, the VIP Implementation Lab, priority Q&A, and the outreach vault.",
       },
       { property: "og:url", content: "/offer/vip-upgrade" },
     ],
@@ -47,7 +48,7 @@ function VipUpgradeOffer() {
     <main className="mx-auto max-w-3xl px-5 py-12">
       <p className="eyebrow">Only for verified GA registrants</p>
       <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
-        Upgrade GA → VIP for {formatUsd(upgrade.priceCents)}
+        {upgrade.name} — {formatUsd(upgrade.priceCents)}
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
         Eligibility is checked from your verified access session — not from
@@ -55,9 +56,39 @@ function VipUpgradeOffer() {
         email if you don't see checkout below.
       </p>
 
-      <VideoSlot url={cfg.sectionVideos.hero ?? null} label="VIP upgrade preview" className="mt-8" />
+      <VideoSlot url={cfg.sectionVideos.hero ?? null} label="VIP experience preview" className="mt-8" />
 
-      <section className="mt-10 surface-raised p-6">
+      <section className="mt-8 surface p-6">
+        <h2 className="font-heading text-lg text-foreground">
+          What you already have vs. what this adds
+        </h2>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div>
+            <p className="label-mono">You already have (GA)</p>
+            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+              <li>· Live online access · Aug 24 + Aug 25</li>
+              <li>· Digital Summit Action Guide</li>
+              <li>· AI Readiness Scorecard</li>
+              <li>· Buyer + Offer Canvas</li>
+            </ul>
+          </div>
+          <div>
+            <p className="label-mono text-[color:var(--gold)]">VIP adds</p>
+            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+              <li>· 30-day session recordings</li>
+              <li>· One live VIP Implementation Lab</li>
+              <li>· Priority Q&A submission</li>
+              <li>· VIP Proposal + Outreach Kit</li>
+              <li>· VIP Resource Vault</li>
+            </ul>
+          </div>
+        </div>
+        <p className="mt-4 text-xs text-muted-foreground">
+          This is additive. Your GA ticket remains valid whether you add VIP or not.
+        </p>
+      </section>
+
+      <section className="mt-8 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">{upgrade.name}</h2>
         <p className="mt-2 text-sm text-muted-foreground">{upgrade.summary}</p>
         <ul className="mt-4 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
@@ -70,17 +101,21 @@ function VipUpgradeOffer() {
         </div>
         <p className="mt-4 text-xs text-muted-foreground">
           Fulfillment requires a verified GA registration on the same email.
-          Without a matching GA record we cannot grant VIP. This app has no
-          provider refund adapter — an unmatched payment is not reversed
-          automatically. Please pay with the same email you used for GA, or
-          write Info@NuAmenti.com before paying if you need to change the
-          email on your ticket.
+          Without a matching GA record we cannot grant VIP. Please pay with
+          the same email you used for GA, or write Info@NuAmenti.com before
+          paying if you need to change the email on your ticket.
         </p>
       </section>
 
+      <TestimonialSection
+        page="vip_upgrade"
+        eyebrow="From VIP registrants"
+        heading="What deeper implementation looked like"
+      />
+
       <p className="mt-6 text-xs text-muted-foreground">
-        <Link to="/offer/implementation-vault" className="underline">
-          No thanks — keep GA and continue to the Implementation Vault →
+        <Link to="/next-steps" className="underline">
+          No thanks — continue with GA →
         </Link>
       </p>
     </main>
