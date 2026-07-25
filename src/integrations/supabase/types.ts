@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_tokens: {
+        Row: {
+          buyer_email: string
+          created_at: string
+          expires_at: string
+          id: string
+          registration_id: string | null
+          scope: string
+          token_hash: string
+          used_at: string | null
+        }
+        Insert: {
+          buyer_email: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          registration_id?: string | null
+          scope: string
+          token_hash: string
+          used_at?: string | null
+        }
+        Update: {
+          buyer_email?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          registration_id?: string | null
+          scope?: string
+          token_hash?: string
+          used_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "access_tokens_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "summit_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       affiliate_clicks: {
         Row: {
           converted_registration_id: string | null
@@ -151,6 +192,84 @@ export type Database = {
         }
         Relationships: []
       }
+      consent_events: {
+        Row: {
+          action: string
+          channel: string
+          copy_version: string
+          created_at: string
+          id: string
+          ip_hash: string | null
+          source: string | null
+          subject_email: string
+          user_agent_hash: string | null
+        }
+        Insert: {
+          action: string
+          channel: string
+          copy_version: string
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          source?: string | null
+          subject_email: string
+          user_agent_hash?: string | null
+        }
+        Update: {
+          action?: string
+          channel?: string
+          copy_version?: string
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          source?: string | null
+          subject_email?: string
+          user_agent_hash?: string | null
+        }
+        Relationships: []
+      }
+      delivery_outbox: {
+        Row: {
+          attempts: number
+          channel: string
+          created_at: string
+          destination_hash: string
+          id: string
+          last_error: string | null
+          provider: string | null
+          scheduled_at: string
+          sent_at: string | null
+          status: string
+          template_key: string
+        }
+        Insert: {
+          attempts?: number
+          channel: string
+          created_at?: string
+          destination_hash: string
+          id?: string
+          last_error?: string | null
+          provider?: string | null
+          scheduled_at?: string
+          sent_at?: string | null
+          status?: string
+          template_key: string
+        }
+        Update: {
+          attempts?: number
+          channel?: string
+          created_at?: string
+          destination_hash?: string
+          id?: string
+          last_error?: string | null
+          provider?: string | null
+          scheduled_at?: string
+          sent_at?: string | null
+          status?: string
+          template_key?: string
+        }
+        Relationships: []
+      }
       entitlements: {
         Row: {
           buyer_email: string
@@ -215,25 +334,61 @@ export type Database = {
           },
         ]
       }
+      intensive_eligibility: {
+        Row: {
+          buyer_email: string
+          created_at: string
+          id: string
+          note: string | null
+          source: string
+        }
+        Insert: {
+          buyer_email: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          source?: string
+        }
+        Update: {
+          buyer_email?: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          source?: string
+        }
+        Relationships: []
+      }
       intensive_slots: {
         Row: {
+          amount_cents: number | null
+          booking_status: string
           buyer_email: string | null
           claimed_at: string | null
           commas_payment_id: string | null
+          currency: string | null
+          refunded_at: string | null
           registration_id: string | null
           slot_number: number
         }
         Insert: {
+          amount_cents?: number | null
+          booking_status?: string
           buyer_email?: string | null
           claimed_at?: string | null
           commas_payment_id?: string | null
+          currency?: string | null
+          refunded_at?: string | null
           registration_id?: string | null
           slot_number: number
         }
         Update: {
+          amount_cents?: number | null
+          booking_status?: string
           buyer_email?: string | null
           claimed_at?: string | null
           commas_payment_id?: string | null
+          currency?: string | null
+          refunded_at?: string | null
           registration_id?: string | null
           slot_number?: number
         }
@@ -404,7 +559,9 @@ export type Database = {
           full_name: string
           id: string
           last_touch: Json | null
+          payment_status: string
           phone: string | null
+          refunded_at: string | null
           sms_marketing_consent: boolean
           sms_marketing_consent_at: string | null
           status: string
@@ -425,7 +582,9 @@ export type Database = {
           full_name: string
           id?: string
           last_touch?: Json | null
+          payment_status?: string
           phone?: string | null
+          refunded_at?: string | null
           sms_marketing_consent?: boolean
           sms_marketing_consent_at?: string | null
           status?: string
@@ -446,7 +605,9 @@ export type Database = {
           full_name?: string
           id?: string
           last_touch?: Json | null
+          payment_status?: string
           phone?: string | null
+          refunded_at?: string | null
           sms_marketing_consent?: boolean
           sms_marketing_consent_at?: string | null
           status?: string
@@ -463,6 +624,8 @@ export type Database = {
           created_at: string
           currency: string
           id: string
+          payment_status: string
+          refunded_at: string | null
           registration_id: string | null
           status: string
         }
@@ -473,6 +636,8 @@ export type Database = {
           created_at?: string
           currency?: string
           id?: string
+          payment_status?: string
+          refunded_at?: string | null
           registration_id?: string | null
           status?: string
         }
@@ -483,12 +648,58 @@ export type Database = {
           created_at?: string
           currency?: string
           id?: string
+          payment_status?: string
+          refunded_at?: string | null
           registration_id?: string | null
           status?: string
         }
         Relationships: [
           {
             foreignKeyName: "summit_vault_purchases_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "summit_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      summit_vip_upgrades: {
+        Row: {
+          amount_cents: number
+          buyer_email: string
+          commas_payment_id: string
+          created_at: string
+          currency: string
+          id: string
+          payment_status: string
+          refunded_at: string | null
+          registration_id: string
+        }
+        Insert: {
+          amount_cents: number
+          buyer_email: string
+          commas_payment_id: string
+          created_at?: string
+          currency?: string
+          id?: string
+          payment_status?: string
+          refunded_at?: string | null
+          registration_id: string
+        }
+        Update: {
+          amount_cents?: number
+          buyer_email?: string
+          commas_payment_id?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          payment_status?: string
+          refunded_at?: string | null
+          registration_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "summit_vip_upgrades_registration_id_fkey"
             columns: ["registration_id"]
             isOneToOne: false
             referencedRelation: "summit_registrations"
@@ -508,6 +719,17 @@ export type Database = {
       claim_lowest_intensive_slot: {
         Args: { _buyer_email: string; _commas_payment_id: string }
         Returns: number
+      }
+      entitlement_by_token_hash: {
+        Args: { _token_hash: string }
+        Returns: {
+          active: boolean
+          buyer_email: string
+          expires_at: string
+          registration_id: string
+          scope: string
+          used_at: string
+        }[]
       }
       founder_seats_remaining: { Args: never; Returns: number }
       fulfill_challenge_payment: {
@@ -546,6 +768,13 @@ export type Database = {
         }[]
       }
       intensive_slots_remaining: { Args: never; Returns: number }
+      reverse_summit_payment: {
+        Args: { _commas_payment_id: string }
+        Returns: {
+          released_slot: number
+          reversed_product: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
