@@ -131,6 +131,7 @@ export function isHandoffAllowed(
   cfg: CommasConfig = getCommasConfig(),
 ): boolean {
   if (!cfg.salesEnabled) return false;
+  if (!cfg.legalReady) return false;
   if (product === "vip_upgrade" || product === "vault") {
     if (!cfg.upsellsEnabled) return false;
   } else if (product === "intensive") {
@@ -138,4 +139,26 @@ export function isHandoffAllowed(
   }
   return resolveCheckoutUrl(product, cfg) !== null;
 }
+
+/**
+ * Keynote checkout — the raw env URL must pass the same HTTPS allowlist
+ * as every other CTA. Never renders `cfg.keynote.checkoutUrl` directly.
+ */
+export function resolveKeynoteCheckoutUrl(
+  cfg: CommasConfig = getCommasConfig(),
+): string | null {
+  const raw = cfg.keynote.checkoutUrl;
+  const hosts = cfg.allowedHosts ?? DEFAULT_COMMAS_CHECKOUT_HOSTS;
+  return isAllowedCheckoutUrl(raw, hosts) ? (raw as string) : null;
+}
+
+export function isKeynoteHandoffAllowed(
+  cfg: CommasConfig = getCommasConfig(),
+): boolean {
+  if (!cfg.salesEnabled) return false;
+  if (!cfg.legalReady) return false;
+  if (!cfg.keynoteSalesEnabled) return false;
+  return resolveKeynoteCheckoutUrl(cfg) !== null;
+}
+
 
