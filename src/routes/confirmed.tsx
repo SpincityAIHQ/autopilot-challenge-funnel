@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { VideoSlot } from "@/components/VideoSlot";
 import { getCommasConfig } from "@/lib/challenge-config";
 import { UPSELLS, formatUsd } from "@/lib/tiers";
 import { TestimonialSection } from "@/components/TestimonialSection";
+import { ProductThankYou } from "@/components/ProductThankYou";
 import {
   useEntitlementSummary,
   derivedAccess,
