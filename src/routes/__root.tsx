@@ -75,17 +75,17 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
-// Two live sessions represented accurately as a parent Event with subEvents.
-// URLs remain env-driven and are intentionally omitted until a real domain
-// is configured (see README_SETUP.md).
+// Two live sessions represented as a parent Event with subEvents. Times
+// have not been finalized publicly, so date-only values are used until
+// exact session times are announced to registrants.
 const JSON_LD_EVENT = {
   "@context": "https://schema.org",
   "@type": "Event",
-  name: "The AUTOPILOT Challenge",
+  name: "AI AutoPilot Summit",
   description:
-    "Build a monetizable website, launch marketing assets, and an AI-powered lead and sales system in eight live build hours.",
-  startDate: "2026-08-01T12:00:00-04:00",
-  endDate: "2026-08-02T16:00:00-04:00",
+    "Two-day live online implementation Summit. Map It on Day 1, Build It on Day 2. Leave with a starter Autonomy Map and a first AI-assisted workflow to keep building.",
+  startDate: "2026-08-24",
+  endDate: "2026-08-25",
   eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
   eventStatus: "https://schema.org/EventScheduled",
   organizer: {
@@ -96,22 +96,23 @@ const JSON_LD_EVENT = {
   subEvent: [
     {
       "@type": "Event",
-      name: "AUTOPILOT Challenge — Day 1: BUILD THE OFFER + SITE",
-      startDate: "2026-08-01T12:00:00-04:00",
-      endDate: "2026-08-01T16:00:00-04:00",
+      name: "AI AutoPilot Summit — Day 1: Map It",
+      startDate: "2026-08-24",
+      endDate: "2026-08-24",
       eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
       eventStatus: "https://schema.org/EventScheduled",
     },
     {
       "@type": "Event",
-      name: "AUTOPILOT Challenge — Day 2: BUILD THE MARKETING + AUTOPILOT",
-      startDate: "2026-08-02T12:00:00-04:00",
-      endDate: "2026-08-02T16:00:00-04:00",
+      name: "AI AutoPilot Summit — Day 2: Build It",
+      startDate: "2026-08-25",
+      endDate: "2026-08-25",
       eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
       eventStatus: "https://schema.org/EventScheduled",
     },
   ],
 };
+
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   {
@@ -136,8 +137,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         {
           property: "og:description",
           content:
-            "Live online implementation. Leave with your Autonomy Map and one working AI-powered job in your business.",
+            "Live online implementation. Leave with a starter Autonomy Map and a first AI-assisted workflow to keep building.",
         },
+
 
         { name: "twitter:card", content: "summary_large_image" },
       ],

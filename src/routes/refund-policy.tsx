@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 export const Route = createFileRoute("/refund-policy")({
   head: () => ({
     meta: [
-      { title: "Refund Policy — The AUTOPILOT Challenge" },
+      { title: "Refund Policy — AI AutoPilot Summit" },
       { name: "robots", content: "noindex,nofollow" },
       { name: "description", content: "Refund policy placeholder. Legal review pending." },
       { property: "og:url", content: "/refund-policy" },

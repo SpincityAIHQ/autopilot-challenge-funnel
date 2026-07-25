@@ -748,6 +748,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      _qa_toggle_entitlement: {
+        Args: { _email: string; _product: string; _revoke: boolean }
+        Returns: undefined
+      }
       claim_lowest_founder_seat: {
         Args: { _registration_id: string }
         Returns: number
