@@ -34,14 +34,11 @@ function Terms() {
 
       <div className="mt-8 space-y-4 text-sm leading-relaxed">
         <p>
-          By registering for The AUTOPILOT Challenge you agree to attend
-          as-scheduled and follow the participation guidelines shared before Day
-          1.
+          By registering for the AI AutoPilot Summit you agree to attend the
+          live sessions as-scheduled and follow the participation guidelines
+          shared before Day 1.
         </p>
-        <p>
-          The Founder Seat is a founding-member package — not equity, shares, an
-          investment, profit participation, or profit-sharing.
-        </p>
+
         <p>
           No income promises are made. No guarantees of specific business
           outcomes are made.
