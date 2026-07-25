@@ -1,24 +1,23 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-export type FounderSeatsState =
+export type IntensiveSlotsState =
   | { status: "loading" }
-  | { status: "unknown" } // RPC unreachable — treat as fail-closed for handoff
+  | { status: "unknown" }
   | { status: "ok"; remaining: number };
 
 /**
- * Reads the safe `founder_seats_remaining()` RPC. Never exposes seat rows.
- * With the sales gate off, public copy should still say "33 seats total";
- * with sales enabled, an "unknown" state must fail Founder checkout closed.
+ * Reads the safe `intensive_slots_remaining()` RPC.
+ * With the sales gate off, public copy should still say "10 slots total";
+ * with sales enabled, an "unknown" state must fail the Intensive CTA closed.
  */
-export function useFounderSeatsRemaining(): FounderSeatsState {
-  const [state, setState] = useState<FounderSeatsState>({ status: "loading" });
-
+export function useIntensiveSlotsRemaining(): IntensiveSlotsState {
+  const [state, setState] = useState<IntensiveSlotsState>({ status: "loading" });
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const { data, error } = await supabase.rpc("founder_seats_remaining");
+        const { data, error } = await supabase.rpc("intensive_slots_remaining");
         if (cancelled) return;
         if (error || typeof data !== "number" || !Number.isFinite(data)) {
           setState({ status: "unknown" });
@@ -33,6 +32,5 @@ export function useFounderSeatsRemaining(): FounderSeatsState {
       cancelled = true;
     };
   }, []);
-
   return state;
 }

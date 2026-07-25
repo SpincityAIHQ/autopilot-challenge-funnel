@@ -1,6 +1,8 @@
 /**
- * .ics generator for the two live days. Times are in America/New_York.
- * We emit a VTIMEZONE block plus local DTSTART/DTEND with TZID.
+ * .ics generator for the two Summit days.
+ * Times are in America/New_York. Exact start/end times are operator-
+ * configured; until set, calendars use all-day event blocks so no
+ * misleading clock time ships publicly.
  */
 
 const VTIMEZONE_NY = [
@@ -36,9 +38,21 @@ export interface IcsDay {
   uid: string;
   summary: string;
   description: string;
-  dateYyyyMmDd: string; // e.g. "20260801"
-  startHHmm: string; // "120000"
-  endHHmm: string; // "160000"
+  dateYyyyMmDd: string; // "20260824"
+  /** Optional local times. If omitted, an all-day event is emitted. */
+  startHHmm?: string;
+  endHHmm?: string;
+}
+
+function nextDay(dateYyyyMmDd: string): string {
+  const y = Number(dateYyyyMmDd.slice(0, 4));
+  const m = Number(dateYyyyMmDd.slice(4, 6));
+  const d = Number(dateYyyyMmDd.slice(6, 8));
+  const dt = new Date(Date.UTC(y, m - 1, d + 1));
+  const yy = dt.getUTCFullYear().toString().padStart(4, "0");
+  const mm = (dt.getUTCMonth() + 1).toString().padStart(2, "0");
+  const dd = dt.getUTCDate().toString().padStart(2, "0");
+  return `${yy}${mm}${dd}`;
 }
 
 export function buildIcs(day: IcsDay): string {
@@ -46,18 +60,27 @@ export function buildIcs(day: IcsDay): string {
     .toISOString()
     .replace(/[-:]/g, "")
     .replace(/\.\d{3}Z$/, "Z");
+  const useTimed = Boolean(day.startHHmm && day.endHHmm);
+  const timeLines = useTimed
+    ? [
+        `DTSTART;TZID=America/New_York:${day.dateYyyyMmDd}T${day.startHHmm}`,
+        `DTEND;TZID=America/New_York:${day.dateYyyyMmDd}T${day.endHHmm}`,
+      ]
+    : [
+        `DTSTART;VALUE=DATE:${day.dateYyyyMmDd}`,
+        `DTEND;VALUE=DATE:${nextDay(day.dateYyyyMmDd)}`,
+      ];
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//SpincityHQ//AUTOPILOT Challenge//EN",
+    "PRODID:-//SpincityHQ//AI AutoPilot Summit//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     VTIMEZONE_NY,
     "BEGIN:VEVENT",
     `UID:${day.uid}`,
     `DTSTAMP:${dtstamp}`,
-    `DTSTART;TZID=America/New_York:${day.dateYyyyMmDd}T${day.startHHmm}`,
-    `DTEND;TZID=America/New_York:${day.dateYyyyMmDd}T${day.endHHmm}`,
+    ...timeLines,
     `SUMMARY:${escapeText(day.summary)}`,
     `DESCRIPTION:${escapeText(day.description)}`,
     "END:VEVENT",
@@ -65,40 +88,22 @@ export function buildIcs(day: IcsDay): string {
   ].join("\r\n");
 }
 
-export const DAY_1: IcsDay = {
-  uid: "autopilot-challenge-day-1-2026-08-01@spincityhq",
-  summary: "AUTOPILOT Challenge — Day 1: BUILD THE OFFER + SITE",
+export const SUMMIT_DAY_1: IcsDay = {
+  uid: "ai-autopilot-summit-day-1-2026-08-24@spincityhq",
+  summary: "AI AutoPilot Summit — Day 1: MAP IT",
   description:
-    "Build the offer and monetizable site. Add the brand, sales message, media, and a way to pay, book, or become a lead. 12:00–4:00 PM ET.",
-  dateYyyyMmDd: "20260801",
-  startHHmm: "120000",
-  endHHmm: "160000",
+    "Live online. Map your AI-powered revenue and operating system. Session start time is sent to registrants by email.",
+  dateYyyyMmDd: "20260824",
 };
 
-export const DAY_2: IcsDay = {
-  uid: "autopilot-challenge-day-2-2026-08-02@spincityhq",
-  summary: "AUTOPILOT Challenge — Day 2: BUILD THE MARKETING + AUTOPILOT",
+export const SUMMIT_DAY_2: IcsDay = {
+  uid: "ai-autopilot-summit-day-2-2026-08-25@spincityhq",
+  summary: "AI AutoPilot Summit — Day 2: BUILD IT",
   description:
-    "Build the marketing assets, lead and sales follow-up system, AI rules, and test the full path before launch. 12:00–4:00 PM ET.",
-  dateYyyyMmDd: "20260802",
-  startHHmm: "120000",
-  endHHmm: "160000",
+    "Live online. Build the AI-powered workflows that move leads, offers, and delivery. Session start time is sent to registrants by email.",
+  dateYyyyMmDd: "20260825",
 };
 
-export const DAY_1_VIP: IcsDay = {
-  ...DAY_1,
-  uid: "autopilot-challenge-day-1-vip-2026-08-01@spincityhq",
-  summary: "AUTOPILOT Challenge — Day 1 + VIP HOUR",
-  description:
-    "Day 1 live build from 12:00–4:00 PM ET, followed by the group VIP hour from 4:00–5:00 PM ET. Selected businesses receive a hot seat; a personal turn is not guaranteed.",
-  endHHmm: "170000",
-};
-
-export const DAY_2_VIP: IcsDay = {
-  ...DAY_2,
-  uid: "autopilot-challenge-day-2-vip-2026-08-02@spincityhq",
-  summary: "AUTOPILOT Challenge — Day 2 + VIP HOUR",
-  description:
-    "Day 2 live build from 12:00–4:00 PM ET, followed by the group VIP hour from 4:00–5:00 PM ET. Selected businesses receive a hot seat; a personal turn is not guaranteed.",
-  endHHmm: "170000",
-};
+// Legacy aliases kept for any older imports still in the tree.
+export const DAY_1 = SUMMIT_DAY_1;
+export const DAY_2 = SUMMIT_DAY_2;
