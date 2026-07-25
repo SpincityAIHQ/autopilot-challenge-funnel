@@ -119,8 +119,7 @@ BEGIN
 END $$;
 
 -- TEST 6: revoking GA entitlement removes it from current session scopes.
-PERFORM_OK
---replaced
+SELECT public._qa_toggle_entitlement((SELECT email FROM qa_ids), 'ga', true);
 DO $$
 DECLARE r record; ids record;
 BEGIN
@@ -135,8 +134,8 @@ BEGIN
   RAISE NOTICE 'TEST6 PASS post-revoke scopes=%', r.scopes;
 END $$;
 -- Reactivate GA for the refund tests below.
-UPDATE public.entitlements SET revoked_at = NULL
---replaced
+SELECT public._qa_toggle_entitlement((SELECT email FROM qa_ids), 'ga', false);
+
 
 -- TEST 7: refund of the Vault purchase does NOT touch GA.
 INSERT INTO public.summit_registrations
