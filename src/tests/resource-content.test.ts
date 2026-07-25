@@ -1,31 +1,46 @@
 import { describe, expect, it } from "bun:test";
-import { RESOURCE_INDEX, getResource, listResourceMetas } from "@/lib/resource-content";
+import {
+  RESOURCE_METAS,
+  listResourceMetas,
+  getResourceMeta,
+} from "@/lib/resource-metadata";
+import {
+  RESOURCE_INDEX as SERVER_INDEX,
+  getResource as getServerResource,
+} from "@/lib/resource-content.server";
 
-describe("resource content library", () => {
+describe("resource metadata (public)", () => {
   it("has at least 11 resources across ga/vip/vault", () => {
-    expect(RESOURCE_INDEX.length).toBeGreaterThanOrEqual(11);
-    const tiers = new Set(RESOURCE_INDEX.map((r) => r.tier));
+    expect(RESOURCE_METAS.length).toBeGreaterThanOrEqual(11);
+    const tiers = new Set(RESOURCE_METAS.map((r) => r.tier));
     expect(tiers.has("ga")).toBe(true);
     expect(tiers.has("vip")).toBe(true);
     expect(tiers.has("vault")).toBe(true);
   });
-  it("resource metas expose no section content", () => {
+  it("public metas expose no section content", () => {
     for (const m of listResourceMetas()) {
       expect(Object.keys(m).sort()).toEqual(["name", "preview", "slug", "tier"]);
+      expect((m as unknown as { sections?: unknown }).sections).toBeUndefined();
     }
   });
-  it("every slug is retrievable and has non-empty sections", () => {
-    for (const r of RESOURCE_INDEX) {
-      const got = getResource(r.slug);
-      expect(got).not.toBeNull();
-      expect(got!.sections.length).toBeGreaterThan(0);
-      for (const s of got!.sections) {
+  it("returns null for unknown slug", () => {
+    expect(getResourceMeta("does-not-exist")).toBeNull();
+  });
+});
+
+describe("resource content (server-only)", () => {
+  it("every metadata slug is also present in the server index", () => {
+    for (const m of RESOURCE_METAS) {
+      const full = getServerResource(m.slug);
+      expect(full).not.toBeNull();
+      expect(full!.sections.length).toBeGreaterThan(0);
+      for (const s of full!.sections) {
         expect(s.heading.length).toBeGreaterThan(0);
         expect(s.bullets.length).toBeGreaterThan(0);
       }
     }
   });
-  it("returns null for unknown slug", () => {
-    expect(getResource("does-not-exist")).toBeNull();
+  it("server index has at least as many entries as public metadata", () => {
+    expect(SERVER_INDEX.length).toBeGreaterThanOrEqual(RESOURCE_METAS.length);
   });
 });

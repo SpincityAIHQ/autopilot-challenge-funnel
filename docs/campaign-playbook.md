@@ -1,145 +1,217 @@
 # AI AutoPilot Summit — Campaign Playbook
 
-**Audience:** operator / launch team.
-**Not a public asset.** Nothing here is legal or compliance advice — every
-outbound message must clear your own review before it goes out.
+Purpose. Ready-to-customize outreach for the two-day live Summit on
+Aug 24–25, 2026 and its post-Summit ladder. Every message has
+placeholders in `[BRACKETS]` for the operator to fill.
 
-> Every claim about outcomes, revenue, or attendee counts must be true and
-> substantiable. No fake proof, no fake scarcity, no fake testimonials.
+Non-negotiables.
+- No earnings promises, invented scarcity, invented attendee counts, or
+  claims about partners.
+- Ashley Kirkwood and Justin Burns are previously observed research
+  inputs only. No fresh mailbox audit was performed for this document;
+  no partnership or affiliation is implied.
+- No "add it once, keep it," "we hand this to anyone," "1-to-1-ish,"
+  Wednesday-only claims, or lifetime access implied anywhere.
+- Say "AI Spin" for the AI presenter concept. Do not use "Nova."
+- Email opt-out language: "unsubscribe below" or the platform footer.
+- SMS opt-out language: reply STOP; help via reply HELP.
+- AI/prerecorded calls need explicit seller-specific written consent,
+  AI disclosure at the start, and honor DNC + state quiet hours.
+- Consent per channel is unbundled, unchecked by default, and never a
+  condition of purchase.
+- Suppress buyers from further sales sequences the moment fulfillment is
+  confirmed by webhook. Never continue selling a product a buyer already
+  owns.
 
----
+Segments used below.
+- LIST_INTEREST — opted-in email prospects who have not registered.
+- LIST_GA — confirmed GA registrants.
+- LIST_VIP — confirmed VIP registrants (includes GA→VIP upgrades).
+- LIST_VAULT — confirmed Vault buyers.
+- LIST_INTENSIVE_ELIGIBLE — Summit registrants + operator-added eligibles.
+- LIST_MENTORSHIP_APPLICANTS — submitted /apply/mentorship.
+- SUPPRESS: for every offer, exclude anyone in the buyer list for that
+  offer + anyone who declined via a documented opt-out.
 
-## 1. Campaign spine
+------------------------------------------------------------
+## 1 · Transactional emails (always sent; no marketing consent needed)
 
-| Phase | Dates | Public message | Ask |
-|---|---|---|---|
-| Warm-up | July 15 – Aug 6, 2026 | "Something we're building for the family." | Watch for InvestFest. |
-| InvestFest | Aug 7–9, 2026 | Networking + capture. | Add name + email + explicit consent. |
-| NuAmenti 3 launch | Aug 10, 2026 | Proof + capability. | Watch the drop; grab GA if it lands. |
-| Summit run-up | Aug 11–23, 2026 | Registration open. GA $22, VIP $77. | Register at /checkout?tier=ga (or vip). |
-| Summit live | Aug 24–25, 2026 | "Map It, Build It." Live online. | Show up. Build with us. |
-| Post-Summit | Aug 26 – Sept 25 | Vault $199 (verified). Intensive $1,000 (10 total). Mentorship $8,000 (apply). | Choose one next step. |
+### 1a. GA receipt + access
+Subject: You're in — AI AutoPilot Summit (GA)
+Preview: Save Aug 24 + 25. Access details inside.
 
-## 2. Research pattern (observed, not endorsed)
+Hi [FIRST_NAME],
 
-We reviewed public marketing patterns from two Atlanta educators — Ashley
-Kirkwood and Justin Burns — as inputs only. We do NOT copy their language,
-imply affiliation, or claim their proof.
+Thank you, family — you're officially registered with the GA Ticket to
+the AI AutoPilot Summit on Aug 24 + 25, 2026 (live online).
 
-Observed patterns worth noting (research only):
-- Clear promise + one deliverable per day.
-- Time-boxed live cohorts with a build outcome.
-- Founder / high-tier disclaimer paired with the CTA.
+- Add to calendar: [DAY_1_ICS_URL] · [DAY_2_ICS_URL]
+- Your next steps: [https://SITE/next-steps]
+- Session start times are sent from this address a few days before Day 1.
 
-Our own NuAmenti approach differs deliberately:
-- Family voice, not corporate.
-- Two-day build, not a 5-day pitch runway.
-- Post-event ascension is one Vault OTO + one Intensive + one Mentorship —
-  not a five-price ladder.
+Optional add-ons:
+- Upgrade to VIP for $55 (recordings + VIP Lab): [https://SITE/offer/vip-upgrade]
+- Implementation Vault ($199, independent add-on): [https://SITE/offer/implementation-vault]
 
-## 3. Email drafts
+Questions? Reply to this email or write Info@NuAmenti.com.
+— The NuAmenti team
 
-> All sends go through Mailchimp (planned). Every email includes an unsubscribe
-> link and the sender's physical address (SpincityHQ LLC · Atlanta, GA).
+### 1b. VIP receipt + access
+Subject: You're in — AI AutoPilot Summit (VIP)
+Body: same shape as 1a, minus the VIP upgrade CTA. Mention 30-day
+recordings + VIP Implementation Lab invite arriving separately.
 
-### 3.1 InvestFest capture confirmation
+### 1c. Vault receipt (independent scope)
+Subject: Your Implementation Vault access is ready
+Body: Include the single-use magic link and explain it drops a private
+session cookie on first click, then browsing works for a few hours. Note:
+Vault does not upgrade GA to VIP; it's a separate scope.
 
-Subject: You're on the family list.
+### 1d. Intensive booking confirmation
+Subject: Strategy & Build Intensive — slot [SLOT_NUMBER] of 10 confirmed
+Body: Include scheduling link, prep questions, and the reminder that the
+Intensive is a separate offer from the 8-week Mentorship.
 
-> Hey {first_name} — thanks for saying hi in Atlanta. You're on the list for
-> the AI AutoPilot Summit (Aug 24–25, live online). We'll send one note when
-> registration opens. That's it. Reply STOP any time to leave the list.
-> — The NuAmenti family
+### 1e. Refund / dispute notification
+Subject: Your [PRODUCT_NAME] refund has been processed
+Body: Confirm access has been revoked and any downstream tickets that
+depend on the refunded product are unaffected (or affected, if it was
+GA→VIP upgrade being reversed).
 
-### 3.2 Summit registration open
+------------------------------------------------------------
+## 2 · Marketing email sequences (LIST_INTEREST → registered)
 
-Subject: Two days. One AI-powered offer, running.
+Each email ends with the platform unsubscribe link. Suppress a recipient
+the moment they register for any Summit tier.
 
-> Doors are open for the AI AutoPilot Summit (Aug 24–25, live online).
-> - GA — $22 · both days + Action Guide + Scorecard + Buyer Canvas
-> - VIP — $77 · everything in GA + recordings + Implementation Lab + priority Q&A
-> Pick your seat: {ga_link} · {vip_link}
+### 2.1 GA nudge (day 0 · pre-registration)
+Subject: Two days. Build one AI-powered job with us.
+Body:
+- The Summit is Aug 24 + 25, 2026 — live online, both days.
+- Day 1 you map three jobs AI can take this month. Day 2 you build one.
+- GA is $22. VIP is $77 with recordings + Lab.
+CTA: [https://SITE/checkout?tier=ga]
 
-### 3.3 GA → VIP upgrade (24h post-purchase)
+### 2.2 Story email (day +2)
+Subject: I stopped doing this last month
+Body: Short first-person story about handing one recurring job to AI Spin.
+No earnings claims. End with the same GA CTA.
 
-Subject: Recordings included if you upgrade by Aug 20
+### 2.3 VIP framing (day +4)
+Subject: The difference between watching and being in the room
+Body: Explain the VIP Implementation Lab + priority Q&A. Do not imply
+"1-to-1-ish" access.
+CTA: [https://SITE/checkout?tier=vip]
 
-> {first_name} — quick heads up: GA doesn't include the recordings. If your
-> weekend is unpredictable, upgrade to VIP for $55 and you'll have the
-> replays for 30 days after the Summit.
-> Upgrade: {vip_upgrade_link}
+### 2.4 Last-call email (day before Summit only, if seats remain)
+Subject: We start tomorrow — final GA seats
+Body: State the honest capacity note only if operator has real capacity
+data. No invented counters. CTA: [https://SITE/checkout?tier=ga]
 
-### 3.4 Vault OTO (post-confirmation)
+### 2.5 GA → VIP upgrade (to LIST_GA only)
+Subject: One-time GA → VIP upgrade — $55
+Body: Explain what you'd add: 30-day recordings, VIP Lab, priority Q&A,
+outreach kit. Note that declining leaves your GA ticket fully valid.
+CTA: [https://SITE/offer/vip-upgrade]
 
-Subject: The build kit. Optional. Once.
+### 2.6 Vault offer (to LIST_GA + LIST_VIP only, exclude LIST_VAULT)
+Subject: The build kit for after the Summit — $199
+Body: Explain independent-scope Vault. No claim it upgrades GA or VIP.
+CTA: [https://SITE/offer/implementation-vault]
 
-> The Implementation Vault is the $199 kit we hand to anyone we work with —
-> prompt stack, site blueprint, 30-day campaign calendar, proposal builder,
-> Autonomy Map + SOP templates, affiliate directory. Add it once, keep it.
-> {vault_link}
+### 2.7 Next-keynote priority (post-Summit; to any consented list)
+Subject: Priority list — next NuAmenti keynote
+Body: We don't have a date yet. Join the priority list to be told first.
+CTA: [https://SITE/next-keynote]
 
-### 3.5 Intensive (post-Summit, verified attendees only)
+### 2.8 Strategy Intensive invite (to LIST_INTENSIVE_ELIGIBLE, exclude LIST_INTENSIVE)
+Subject: Ten seats · Strategy & Build Intensive — $1,000
+Body: Two-hour private session. Ten total. Inventory is atomic; a seat
+is only yours after verified payment. Not the same as the Mentorship.
+CTA: [https://SITE/strategy-intensive]
 
-Subject: 10 seats — 2-hour Strategy & Build with the family
+### 2.9 Mentorship invite (to LIST_INTENSIVE_ELIGIBLE, exclude LIST_MENTORSHIP_APPLICANTS)
+Subject: Eight-week Mentorship & Work-Along — application
+Body: $8,000. Application does not charge a card. Separate from the
+Intensive. Explicitly do not imply a 10-slot cap for the Mentorship
+itself.
+CTA: [https://SITE/apply/mentorship]
 
-> Only 10 people get this. Two hours, 1-to-1-ish, we map + build one thing
-> live. It's $1,000. If you want the seat, tap here — inventory is atomic
-> and shows current availability. {intensive_link}
+------------------------------------------------------------
+## 3 · SMS (consented; STOP/HELP always)
 
-### 3.6 Mentorship (application-based)
+Each SMS ends with `Reply STOP to opt out; HELP for help.` Suppress
+buyers from further sales SMS the moment fulfillment is confirmed.
 
-Subject: 8 weeks. Application only.
+- Pre-Summit reminder (24h): "AI AutoPilot Summit is tomorrow, [START_TIME] ET. Add: [DAY_1_ICS_URL]. Reply STOP to opt out; HELP for help."
+- Day-of reminder (2h): "We start in ~2h. Room link: [LINK]. Reply STOP to opt out; HELP for help."
+- GA → VIP upgrade (to LIST_GA only): "$55 GA→VIP upgrade — recordings + Lab: [SITE]/offer/vip-upgrade. Reply STOP to opt out; HELP for help."
+- Vault (post-Summit, to LIST_GA + LIST_VIP): "Implementation Vault add-on ($199): [SITE]/offer/implementation-vault. Reply STOP to opt out; HELP for help."
 
-> If you're ready to be in the room with us every week for 8 weeks, apply
-> here. This is separate from the 10 intensives. {mentorship_apply_link}
+Never SMS during buyer-local quiet hours (before 9am / after 8pm) or
+without STOP/HELP language. Never SMS a person who is not on
+LIST_INTEREST via a documented double-opt-in.
 
-## 4. SMS drafts
+------------------------------------------------------------
+## 4 · Manual DMs (operator-sent, human-typed)
 
-> Only send to numbers with SMS consent explicitly captured. Quiet hours:
-> buyer-local 9pm to 9am. STOP / HELP handled automatically.
+Do not automate outbound DMs. Use these only where the platform TOS and
+the recipient relationship allow, and where the operator personally
+typed and sent the message.
 
-- "NuAmenti: AI AutoPilot Summit is Aug 24–25 online. GA $22 / VIP $77. Register {link}. Reply STOP to opt out."
-- "NuAmenti: GA → VIP upgrade is $55, keeps you covered with recordings. {link} Reply STOP to opt out."
+- Warm reply (someone who liked a Summit post):
+  "Hey [NAME] — saw you tapped in on the Summit post. It's Aug 24-25,
+  two live implementation days. GA is $22. Here's the page:
+  [https://SITE]. No pressure — happy to answer anything."
 
-## 5. AI / prerecorded call scripts (consented seller-specific only)
+- Post-Summit follow-up (someone who was in the room and posted):
+  "[NAME], that thing you shared today is exactly what the Vault
+  builds on. If you want the full stack: $199,
+  [https://SITE/offer/implementation-vault]. No worries either way."
 
-> Federal TCPA + state analogs require prior express written consent that
-> is seller-specific for AI or prerecorded marketing calls. We do NOT dial
-> until: consent is stored with copy version, AI disclosure is at the top
-> of every call, opt-out is one-touch, and internal + DNC suppression is
-> checked. See `src/lib/ai-call.ts`.
+Do NOT use DMs to run sales sequences without explicit platform +
+recipient authorization.
 
-Script skeleton:
+------------------------------------------------------------
+## 5 · AI-call scripts (requires explicit written consent)
 
-> "Hi, this is Nova, an AI assistant calling on behalf of NuAmenti. You
-> asked us to send you AI AutoPilot Summit updates. Registration opens
-> Wed. To stop these calls, press 9 now. If you'd like a human, press 0."
+Use ONLY for recipients on LIST_INTEREST who have separately given
+explicit written seller-specific consent to receive AI/prerecorded
+calls. Disclose AI at the start. Honor DNC. Respect quiet hours.
 
-## 6. DM outreach
+### 5.1 Warm reminder call (pre-Summit, if consented)
+"Hi [FIRST_NAME], this is AI Spin calling on behalf of NuAmenti — I'm
+an AI voice. The AI AutoPilot Summit starts [START_TIME_LOCAL] on
+Aug 24. This is a courtesy reminder. To opt out of future NuAmenti
+calls, press 9. To speak with a human, press 0. Thank you, family."
 
-We do NOT automate DMs. Manual, opted-in, real-conversation only. Suggested
-skeleton (human sends):
+### 5.2 Post-Summit ascension call (to LIST_INTENSIVE_ELIGIBLE)
+"Hi [FIRST_NAME], this is AI Spin — I'm an AI voice from NuAmenti.
+There are [REMAINING] of ten Strategy Intensive slots open at
+$1,000. That's separate from the eight-week Mentorship. To opt out,
+press 9. To speak with a human, press 0."
 
-> "{first_name} — noticed your last post about {specific}. Thought of you
-> for the Summit we're running Aug 24–25 (live online). No pitch — happy
-> to share the outline if useful."
+No AI call scripts for buyers of the product being offered. No AI
+call scripts to numbers not on a documented consent record.
 
-## 7. Affiliate / attribution rules
+------------------------------------------------------------
+## 6 · Suppression + hygiene rules
 
-- Every outbound campaign includes `utm_source`, `utm_medium`, `utm_campaign`,
-  `utm_content`. First-touch + last-touch are captured client-side (safe,
-  no PII), and only persisted through the verified purchase path.
-- Every tool we teach lives in `src/lib/affiliate-registry.ts` with an
-  owner and a status. Placeholders render no clickable link. Live entries
-  use `rel="sponsored nofollow noopener noreferrer"` and show the
-  disclosure on the same screen.
-- Speaker / partner referrals are tracked separately from tool affiliates.
+- On webhook `payment.succeeded` for a product, remove the buyer from
+  every sales sequence for that product AND for any prerequisite
+  (buying VIP suppresses the GA→VIP upgrade sequence).
+- On `payment.refunded` / `payment.disputed`, remove the buyer from
+  post-purchase sequences for that product (they're no longer a buyer).
+- Never re-add a suppressed contact to a sequence within 30 days.
+- Never send more than one Summit-related email per calendar day per
+  address in the two weeks before Day 1.
 
-## 8. Refund + reversal policy
+------------------------------------------------------------
+## 7 · Research inputs (labeled for transparency)
 
-- Refunds process through Commas. Webhook receives `payment.refunded`
-  (or `payment.failed` / `payment.disputed`) and calls
-  `reverse_summit_payment` — entitlements are revoked, intensive slots
-  released, access tokens invalidated. This is atomic and idempotent.
-- If a buyer email is different from the entitlement email, operator
-  intervention is required — the RPC will not guess.
+We previously observed public mechanisms used by other operators such
+as Ashley Kirkwood (corporate pitch structures) and Justin Burns
+(challenge-into-mentorship flows). Those observations informed the
+Summit → Vault → Intensive → Mentorship ladder generally. No fresh
+mailbox audit was performed for this playbook and no partnership,
+affiliation, or endorsement is implied.
