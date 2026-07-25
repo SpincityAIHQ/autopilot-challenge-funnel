@@ -2,16 +2,17 @@
  * Server-only helpers for the Commas webhook — Summit product graph.
  *
  * Envelope: { id, type, data: { ... } }
- * Monetary fields are DECIMAL DOLLARS. Convert with Math.round(v * 100).
+ * Monetary values are DECIMAL DOLLARS — convert with Math.round(v * 100).
  * Canonical fulfillment event: `payment.succeeded` (data.status === "succeeded").
- * `product.purchased` fires in addition and is audit-only — NEVER fulfills.
+ * `product.purchased` is audit-only — NEVER fulfills.
+ * Refund/failure events reverse via reverse_summit_payment RPC.
  *
- * Product graph (env-driven, unknown → grants nothing):
- *   COMMAS_PRODUCT_ID_GA        → 'ga'         ($22)
- *   COMMAS_PRODUCT_ID_VIP       → 'vip'        ($77)
- *   COMMAS_PRODUCT_ID_VAULT     → 'vault'      ($199, OTO)
- *   COMMAS_PRODUCT_ID_INTENSIVE → 'intensive'  ($1,000, cap 10)
- *   COMMAS_PRODUCT_ID_KEYNOTE   → 'keynote'    (optional; audit-only until wired)
+ * Product ids (env-driven, unknown → grants nothing):
+ *   COMMAS_PRODUCT_ID_GA           → 'ga'          ($22)
+ *   COMMAS_PRODUCT_ID_VIP          → 'vip'         ($77)
+ *   COMMAS_PRODUCT_ID_VIP_UPGRADE  → 'vip_upgrade' ($55)
+ *   COMMAS_PRODUCT_ID_VAULT        → 'vault'       ($199, OTO)
+ *   COMMAS_PRODUCT_ID_INTENSIVE    → 'intensive'   ($1,000, cap 10)
  */
 
 import { createHmac, timingSafeEqual } from "node:crypto";
@@ -27,7 +28,9 @@ export function verifyCommasSignature(
     ? headerSignature.slice("sha256=".length)
     : headerSignature;
   if (!/^[a-f0-9]{64}$/i.test(provided)) return false;
-  const expected = createHmac("sha256", secret).update(rawBody, "utf8").digest("hex");
+  const expected = createHmac("sha256", secret)
+    .update(rawBody, "utf8")
+    .digest("hex");
   const a = Buffer.from(provided.toLowerCase(), "utf8");
   const b = Buffer.from(expected.toLowerCase(), "utf8");
   if (a.length !== b.length) return false;
@@ -69,7 +72,9 @@ export type SupportedEvent =
   | "payment.succeeded"
   | "product.purchased"
   | "payment.refunded"
-  | "payment.failed";
+  | "payment.failed"
+  | "payment.disputed";
+
 export const CANONICAL_FULFILLMENT_EVENT: SupportedEvent = "payment.succeeded";
 
 export function isSupportedEvent(t: string): t is SupportedEvent {
@@ -77,12 +82,18 @@ export function isSupportedEvent(t: string): t is SupportedEvent {
     t === "payment.succeeded" ||
     t === "product.purchased" ||
     t === "payment.refunded" ||
-    t === "payment.failed"
+    t === "payment.failed" ||
+    t === "payment.disputed"
   );
 }
 
+export function isReversalEvent(t: string): boolean {
+  return t === "payment.refunded" || t === "payment.failed" || t === "payment.disputed";
+}
+
 export function dollarsToCents(value: unknown): number | null {
-  if (typeof value !== "number" || !Number.isFinite(value) || value < 0) return null;
+  if (typeof value !== "number" || !Number.isFinite(value) || value < 0)
+    return null;
   return Math.round(value * 100);
 }
 
@@ -118,11 +129,14 @@ export function extractPayment(env: CommasEnvelope): ExtractedPayment | null {
   const email = typeof buyer.email === "string" ? buyer.email.trim() : "";
   const fullName =
     (typeof buyer.name === "string" && buyer.name.trim()) ||
-    (typeof buyer.full_name === "string" && (buyer.full_name as string).trim()) ||
+    (typeof buyer.full_name === "string" &&
+      (buyer.full_name as string).trim()) ||
     "";
   if (!email || !fullName) return null;
-  const phone = typeof buyer.phone === "string" && buyer.phone ? buyer.phone : null;
-  const providerId = typeof buyer.id === "string" && buyer.id ? buyer.id : null;
+  const phone =
+    typeof buyer.phone === "string" && buyer.phone ? buyer.phone : null;
+  const providerId =
+    typeof buyer.id === "string" && buyer.id ? buyer.id : null;
   return {
     paymentId,
     status,
@@ -133,7 +147,12 @@ export function extractPayment(env: CommasEnvelope): ExtractedPayment | null {
   };
 }
 
-/** Env-driven product id → Summit product mapping. */
+export function extractPaymentIdForReversal(env: CommasEnvelope): string | null {
+  const d = env.data as Record<string, unknown>;
+  const pid = typeof d.payment_id === "string" ? d.payment_id : "";
+  return pid || null;
+}
+
 export function resolveProductFromItem(
   itemId: string | null,
   env: Record<string, string | undefined>,
@@ -141,6 +160,7 @@ export function resolveProductFromItem(
   if (!itemId) return null;
   if (itemId === env.COMMAS_PRODUCT_ID_GA) return "ga";
   if (itemId === env.COMMAS_PRODUCT_ID_VIP) return "vip";
+  if (itemId === env.COMMAS_PRODUCT_ID_VIP_UPGRADE) return "vip_upgrade";
   if (itemId === env.COMMAS_PRODUCT_ID_VAULT) return "vault";
   if (itemId === env.COMMAS_PRODUCT_ID_INTENSIVE) return "intensive";
   return null;
@@ -154,19 +174,21 @@ export interface WebhookConfigResult {
 }
 
 /**
- * Webhook activation gate. Requires enabled flag, secret, and at least the
- * four core product IDs (GA, VIP, Vault, Intensive), pairwise distinct.
- * Keynote id is optional until announced.
+ * Webhook activation gate. Requires enabled flag, secret, and the five
+ * core product IDs (GA, VIP, VIP_UPGRADE, Vault, Intensive), pairwise distinct.
  */
 export function validateWebhookConfig(
   env: Record<string, string | undefined>,
 ): WebhookConfigResult {
-  if (env.COMMAS_WEBHOOKS_ENABLED !== "true") return { ok: false, reason: "disabled" };
+  if (env.COMMAS_WEBHOOKS_ENABLED !== "true")
+    return { ok: false, reason: "disabled" };
   const secret = env.COMMAS_WEBHOOK_SECRET;
-  if (!secret || secret.trim() === "") return { ok: false, reason: "no secret" };
+  if (!secret || secret.trim() === "")
+    return { ok: false, reason: "no secret" };
   const ids = [
     env.COMMAS_PRODUCT_ID_GA,
     env.COMMAS_PRODUCT_ID_VIP,
+    env.COMMAS_PRODUCT_ID_VIP_UPGRADE,
     env.COMMAS_PRODUCT_ID_VAULT,
     env.COMMAS_PRODUCT_ID_INTENSIVE,
   ];
@@ -176,12 +198,15 @@ export function validateWebhookConfig(
     }
   }
   const set = new Set(ids.map((s) => (s as string).trim()));
-  if (set.size !== ids.length) return { ok: false, reason: "duplicate product id" };
+  if (set.size !== ids.length)
+    return { ok: false, reason: "duplicate product id" };
   return { ok: true };
 }
 
 /** Redacted audit payload. Excludes buyer name, email, phone, address, metadata. */
-export function redactEventPayload(env: CommasEnvelope): Record<string, unknown> {
+export function redactEventPayload(
+  env: CommasEnvelope,
+): Record<string, unknown> {
   const d = (env.data ?? {}) as Record<string, unknown>;
   const item = (d.item ?? {}) as Record<string, unknown>;
   const buyer = (d.buyer ?? {}) as Record<string, unknown>;

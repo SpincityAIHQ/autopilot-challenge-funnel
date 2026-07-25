@@ -1,19 +1,26 @@
 /**
  * AI AutoPilot Summit — product catalog.
  *
- * Public admission has TWO tiers only: GA ($22) and VIP ($77).
- * The $199 Implementation Vault is a post-purchase OTO/add-on, NOT
- * a third admission ticket. The $1,000 Strategy & Build Intensive and
- * the $8,000 Mentorship are separate post-Summit offers.
+ * Admission tickets: GA ($22), VIP ($77).
+ * VIP Upgrade ($55) is an OTO offered ONLY to GA buyers on /confirmed.
+ * Vault ($199) is a post-registration add-on requiring GA or VIP.
+ * Strategy Intensive ($1,000) is capped atomically at 10 and requires
+ * Summit registration OR operator-created eligibility.
+ * Mentorship ($8,000) is application-based, separate from the Intensive.
  *
- * All money in cents. Payment collection lives on Commas; this app
- * never handles card data and never fulfills from URL query strings.
+ * All money in cents. Payment collection lives on Commas; this app never
+ * handles card data and never fulfills from URL query strings.
  */
 
 export type AdmissionTierId = "ga" | "vip";
-export type ProductId = "ga" | "vip" | "vault" | "intensive" | "mentorship";
+export type ProductId =
+  | "ga"
+  | "vip"
+  | "vip_upgrade"
+  | "vault"
+  | "intensive"
+  | "mentorship";
 
-// Backwards-compat name for older imports still in the tree.
 export type TierId = AdmissionTierId;
 
 export interface Tier {
@@ -83,6 +90,19 @@ export interface UpsellProduct {
 }
 
 export const UPSELLS: Record<UpsellProduct["id"], UpsellProduct> = {
+  vip_upgrade: {
+    id: "vip_upgrade",
+    name: "GA → VIP Upgrade",
+    priceCents: 5500,
+    summary:
+      "Upgrade your GA registration to VIP for the same price difference. Adds 30-day recordings, the VIP Implementation Lab, priority Q&A, and the outreach vault.",
+    bullets: [
+      "Upgrade a verified GA seat only",
+      "30-day session recordings",
+      "One live VIP Implementation Lab",
+      "Priority Q&A + VIP Resource Vault",
+    ],
+  },
   vault: {
     id: "vault",
     name: "AI AutoPilot Implementation Vault",
@@ -132,12 +152,14 @@ export function formatUsd(cents: number): string {
   })}`;
 }
 
-/** Expected total for a Summit product. Bumps do not exist in the new model. */
+/** Expected total for a Summit product. */
 export function expectedTotalCents(product: ProductId): number {
   switch (product) {
     case "ga":
     case "vip":
       return TIER_MAP[product].priceCents;
+    case "vip_upgrade":
+      return UPSELLS.vip_upgrade.priceCents;
     case "vault":
       return UPSELLS.vault.priceCents;
     case "intensive":
