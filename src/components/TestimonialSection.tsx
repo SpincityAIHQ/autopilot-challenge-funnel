@@ -1,4 +1,5 @@
 import { VideoSlot } from "./VideoSlot";
+import { normalizeVideoEmbedUrl } from "@/lib/video-embed";
 import {
   publishedTexts,
   testimonialVideoUrl,
