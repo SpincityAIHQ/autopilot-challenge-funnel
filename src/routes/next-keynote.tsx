@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { getCommasConfig } from "@/lib/challenge-config";
+import {
+  getCommasConfig,
+  resolveKeynoteCheckoutUrl,
+  isKeynoteHandoffAllowed,
+} from "@/lib/challenge-config";
 
 export const Route = createFileRoute("/next-keynote")({
   head: () => ({
