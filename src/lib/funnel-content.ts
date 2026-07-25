@@ -35,6 +35,7 @@ export const CONFIRMATION_CONTENT: Record<AdmissionTierId, ConfirmationContent> 
       notices: [
         "GA does not include session recordings. If you want the 30-day replay library, upgrade to VIP or add the Implementation Vault below.",
       ],
+      videoLabel: VIDEO_LABEL_GA,
     },
     vip: {
       shortName: "VIP Experience",
