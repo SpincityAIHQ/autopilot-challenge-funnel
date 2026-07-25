@@ -21,11 +21,17 @@ import { Route as ConfirmedRouteImport } from './routes/confirmed'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
+import { Route as OfferVipUpgradeRouteImport } from './routes/offer/vip-upgrade'
+import { Route as OfferStrategyIntensiveRouteImport } from './routes/offer/strategy-intensive'
+import { Route as OfferMentorshipRouteImport } from './routes/offer/mentorship'
+import { Route as OfferKeynoteRouteImport } from './routes/offer/keynote'
+import { Route as OfferImplementationVaultRouteImport } from './routes/offer/implementation-vault'
 import { Route as CalendarDay2DoticsRouteImport } from './routes/calendar.day2[.]ics'
 import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.]ics'
 import { Route as ApiPublicMentorshipApplicationRouteImport } from './routes/api/public/mentorship-application'
 import { Route as ApiPublicKeynoteWaitlistRouteImport } from './routes/api/public/keynote-waitlist'
 import { Route as ApiPublicWebhooksCommasRouteImport } from './routes/api/public/webhooks/commas'
+import { Route as ApiPublicResourcesReadRouteImport } from './routes/api/public/resources.read'
 
 const VaultRoute = VaultRouteImport.update({
   id: '/vault',
@@ -87,6 +93,32 @@ const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => ResourcesRoute,
 } as any)
+const OfferVipUpgradeRoute = OfferVipUpgradeRouteImport.update({
+  id: '/offer/vip-upgrade',
+  path: '/offer/vip-upgrade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OfferStrategyIntensiveRoute = OfferStrategyIntensiveRouteImport.update({
+  id: '/offer/strategy-intensive',
+  path: '/offer/strategy-intensive',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OfferMentorshipRoute = OfferMentorshipRouteImport.update({
+  id: '/offer/mentorship',
+  path: '/offer/mentorship',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OfferKeynoteRoute = OfferKeynoteRouteImport.update({
+  id: '/offer/keynote',
+  path: '/offer/keynote',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OfferImplementationVaultRoute =
+  OfferImplementationVaultRouteImport.update({
+    id: '/offer/implementation-vault',
+    path: '/offer/implementation-vault',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CalendarDay2DoticsRoute = CalendarDay2DoticsRouteImport.update({
   id: '/calendar/day2.ics',
   path: '/calendar/day2.ics',
@@ -114,6 +146,11 @@ const ApiPublicWebhooksCommasRoute = ApiPublicWebhooksCommasRouteImport.update({
   path: '/api/public/webhooks/commas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicResourcesReadRoute = ApiPublicResourcesReadRouteImport.update({
+  id: '/api/public/resources/read',
+  path: '/api/public/resources/read',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -129,9 +166,15 @@ export interface FileRoutesByFullPath {
   '/vault': typeof VaultRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
+  '/offer/implementation-vault': typeof OfferImplementationVaultRoute
+  '/offer/keynote': typeof OfferKeynoteRoute
+  '/offer/mentorship': typeof OfferMentorshipRoute
+  '/offer/strategy-intensive': typeof OfferStrategyIntensiveRoute
+  '/offer/vip-upgrade': typeof OfferVipUpgradeRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
 }
 export interface FileRoutesByTo {
@@ -148,9 +191,15 @@ export interface FileRoutesByTo {
   '/vault': typeof VaultRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
+  '/offer/implementation-vault': typeof OfferImplementationVaultRoute
+  '/offer/keynote': typeof OfferKeynoteRoute
+  '/offer/mentorship': typeof OfferMentorshipRoute
+  '/offer/strategy-intensive': typeof OfferStrategyIntensiveRoute
+  '/offer/vip-upgrade': typeof OfferVipUpgradeRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
 }
 export interface FileRoutesById {
@@ -168,9 +217,15 @@ export interface FileRoutesById {
   '/vault': typeof VaultRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
+  '/offer/implementation-vault': typeof OfferImplementationVaultRoute
+  '/offer/keynote': typeof OfferKeynoteRoute
+  '/offer/mentorship': typeof OfferMentorshipRoute
+  '/offer/strategy-intensive': typeof OfferStrategyIntensiveRoute
+  '/offer/vip-upgrade': typeof OfferVipUpgradeRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
 }
 export interface FileRouteTypes {
@@ -189,9 +244,15 @@ export interface FileRouteTypes {
     | '/vault'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
+    | '/offer/implementation-vault'
+    | '/offer/keynote'
+    | '/offer/mentorship'
+    | '/offer/strategy-intensive'
+    | '/offer/vip-upgrade'
     | '/resources/$slug'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -208,9 +269,15 @@ export interface FileRouteTypes {
     | '/vault'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
+    | '/offer/implementation-vault'
+    | '/offer/keynote'
+    | '/offer/mentorship'
+    | '/offer/strategy-intensive'
+    | '/offer/vip-upgrade'
     | '/resources/$slug'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
   id:
     | '__root__'
@@ -227,9 +294,15 @@ export interface FileRouteTypes {
     | '/vault'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
+    | '/offer/implementation-vault'
+    | '/offer/keynote'
+    | '/offer/mentorship'
+    | '/offer/strategy-intensive'
+    | '/offer/vip-upgrade'
     | '/resources/$slug'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
   fileRoutesById: FileRoutesById
 }
@@ -247,8 +320,14 @@ export interface RootRouteChildren {
   VaultRoute: typeof VaultRoute
   CalendarDay1DoticsRoute: typeof CalendarDay1DoticsRoute
   CalendarDay2DoticsRoute: typeof CalendarDay2DoticsRoute
+  OfferImplementationVaultRoute: typeof OfferImplementationVaultRoute
+  OfferKeynoteRoute: typeof OfferKeynoteRoute
+  OfferMentorshipRoute: typeof OfferMentorshipRoute
+  OfferStrategyIntensiveRoute: typeof OfferStrategyIntensiveRoute
+  OfferVipUpgradeRoute: typeof OfferVipUpgradeRoute
   ApiPublicKeynoteWaitlistRoute: typeof ApiPublicKeynoteWaitlistRoute
   ApiPublicMentorshipApplicationRoute: typeof ApiPublicMentorshipApplicationRoute
+  ApiPublicResourcesReadRoute: typeof ApiPublicResourcesReadRoute
   ApiPublicWebhooksCommasRoute: typeof ApiPublicWebhooksCommasRoute
 }
 
@@ -338,6 +417,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResourcesSlugRouteImport
       parentRoute: typeof ResourcesRoute
     }
+    '/offer/vip-upgrade': {
+      id: '/offer/vip-upgrade'
+      path: '/offer/vip-upgrade'
+      fullPath: '/offer/vip-upgrade'
+      preLoaderRoute: typeof OfferVipUpgradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offer/strategy-intensive': {
+      id: '/offer/strategy-intensive'
+      path: '/offer/strategy-intensive'
+      fullPath: '/offer/strategy-intensive'
+      preLoaderRoute: typeof OfferStrategyIntensiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offer/mentorship': {
+      id: '/offer/mentorship'
+      path: '/offer/mentorship'
+      fullPath: '/offer/mentorship'
+      preLoaderRoute: typeof OfferMentorshipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offer/keynote': {
+      id: '/offer/keynote'
+      path: '/offer/keynote'
+      fullPath: '/offer/keynote'
+      preLoaderRoute: typeof OfferKeynoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offer/implementation-vault': {
+      id: '/offer/implementation-vault'
+      path: '/offer/implementation-vault'
+      fullPath: '/offer/implementation-vault'
+      preLoaderRoute: typeof OfferImplementationVaultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/calendar/day2.ics': {
       id: '/calendar/day2.ics'
       path: '/calendar/day2.ics'
@@ -373,6 +487,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWebhooksCommasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/resources/read': {
+      id: '/api/public/resources/read'
+      path: '/api/public/resources/read'
+      fullPath: '/api/public/resources/read'
+      preLoaderRoute: typeof ApiPublicResourcesReadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -402,8 +523,14 @@ const rootRouteChildren: RootRouteChildren = {
   VaultRoute: VaultRoute,
   CalendarDay1DoticsRoute: CalendarDay1DoticsRoute,
   CalendarDay2DoticsRoute: CalendarDay2DoticsRoute,
+  OfferImplementationVaultRoute: OfferImplementationVaultRoute,
+  OfferKeynoteRoute: OfferKeynoteRoute,
+  OfferMentorshipRoute: OfferMentorshipRoute,
+  OfferStrategyIntensiveRoute: OfferStrategyIntensiveRoute,
+  OfferVipUpgradeRoute: OfferVipUpgradeRoute,
   ApiPublicKeynoteWaitlistRoute: ApiPublicKeynoteWaitlistRoute,
   ApiPublicMentorshipApplicationRoute: ApiPublicMentorshipApplicationRoute,
+  ApiPublicResourcesReadRoute: ApiPublicResourcesReadRoute,
   ApiPublicWebhooksCommasRoute: ApiPublicWebhooksCommasRoute,
 }
 export const routeTree = rootRouteImport

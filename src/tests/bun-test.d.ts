@@ -19,6 +19,11 @@ declare module "bun:test" {
     toBeFalsy(): void;
     toContain(v: unknown): void;
     toThrow(v?: unknown): void;
+    toMatch(v: RegExp | string): void;
+    toBeGreaterThan(v: number): void;
+    toBeGreaterThanOrEqual(v: number): void;
+    toBeLessThan(v: number): void;
+    toBeLessThanOrEqual(v: number): void;
     not: Expectation;
   }
   export const expect: (value: unknown) => Expectation;
