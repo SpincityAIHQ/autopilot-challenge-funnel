@@ -111,12 +111,29 @@ function Checkout() {
             </dd>
           </div>
         </dl>
+
+        <label className="mt-6 flex items-start gap-3 rounded-md border border-border bg-secondary/30 p-4 text-sm text-muted-foreground">
+          <input
+            type="checkbox"
+            checked={legalAck}
+            onChange={(e) => setLegalAck(e.target.checked)}
+            className="mt-1 accent-[color:var(--gold)]"
+            aria-describedby="legal-ack-copy"
+          />
+          <span id="legal-ack-copy">
+            I have read and agree to the{" "}
+            <Link to="/terms" className="underline hover:text-foreground">Terms</Link>,{" "}
+            <Link to="/privacy" className="underline hover:text-foreground">Privacy Policy</Link>, and{" "}
+            <Link to="/refund-policy" className="underline hover:text-foreground">Refund Policy</Link>.
+          </span>
+        </label>
+
         <button
           type="button"
           disabled={!canSubmit}
           onClick={handleContinue}
           aria-disabled={!canSubmit}
-          className={`mt-6 inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-3 font-heading text-base font-semibold text-primary-foreground transition ${
+          className={`mt-4 inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-3 font-heading text-base font-semibold text-primary-foreground transition ${
             canSubmit ? "hover:opacity-90" : "cursor-not-allowed opacity-50"
           }`}
         >
