@@ -71,7 +71,9 @@ minimum bar to sell.
 - [ ] JSON-LD `Event` schema for the Summit on the landing page.
 - [ ] OG images regenerated for all shareable routes.
 - [ ] Print-friendly resource previews tested on paper.
-- [ ] Redirect canonicals: `/offer/implementation-vault → /vault`, `/offer/strategy-intensive → /intensive`, `/offer/mentorship → /mentorship`, `/offer/keynote → /keynote`, `/offer/vip-upgrade` renders directly.
+- [ ] Canonical routes: `/offer/vip-upgrade`, `/offer/implementation-vault`, `/next-keynote`, `/next-steps`, `/strategy-intensive`, `/apply/mentorship` render directly. Legacy `/vault`, `/keynote`, `/mentorship`, `/intensive`, `/offer/keynote`, `/offer/mentorship`, `/offer/strategy-intensive` redirect TO the canonicals (never the reverse).
+- [ ] Attribution persistence is BLOCKED until the exact Commas metadata / custom-field name for first/last-touch is confirmed by a signed sample payload. Client-side UTM capture + affiliate registry remain safe; server persists `null` until unblocked.
+- [ ] Calendar files (`/calendar/day1.ics`, `/calendar/day2.ics`) are intentionally all-day for Aug 24 and Aug 25 until exact session times are configured. Exact times go in access emails, not in the ICS.
 
 ## Verify before publish
 
