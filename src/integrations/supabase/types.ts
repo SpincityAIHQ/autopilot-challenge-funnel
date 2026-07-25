@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_clicks: {
+        Row: {
+          converted_registration_id: string | null
+          id: string
+          landed_at: string
+          ref_code: string | null
+          session_id: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          converted_registration_id?: string | null
+          id?: string
+          landed_at?: string
+          ref_code?: string | null
+          session_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          converted_registration_id?: string | null
+          id?: string
+          landed_at?: string
+          ref_code?: string | null
+          session_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_clicks_converted_registration_id_fkey"
+            columns: ["converted_registration_id"]
+            isOneToOne: false
+            referencedRelation: "summit_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       challenge_payment_events: {
         Row: {
           created_at: string
@@ -107,6 +151,44 @@ export type Database = {
         }
         Relationships: []
       }
+      entitlements: {
+        Row: {
+          buyer_email: string
+          delivery_token_hash: string | null
+          granted_at: string
+          id: string
+          product: string
+          registration_id: string | null
+          revoked_at: string | null
+        }
+        Insert: {
+          buyer_email: string
+          delivery_token_hash?: string | null
+          granted_at?: string
+          id?: string
+          product: string
+          registration_id?: string | null
+          revoked_at?: string | null
+        }
+        Update: {
+          buyer_email?: string
+          delivery_token_hash?: string | null
+          granted_at?: string
+          id?: string
+          product?: string
+          registration_id?: string | null
+          revoked_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entitlements_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "summit_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       founder_seats: {
         Row: {
           claimed_at: string | null
@@ -133,6 +215,287 @@ export type Database = {
           },
         ]
       }
+      intensive_slots: {
+        Row: {
+          buyer_email: string | null
+          claimed_at: string | null
+          commas_payment_id: string | null
+          registration_id: string | null
+          slot_number: number
+        }
+        Insert: {
+          buyer_email?: string | null
+          claimed_at?: string | null
+          commas_payment_id?: string | null
+          registration_id?: string | null
+          slot_number: number
+        }
+        Update: {
+          buyer_email?: string | null
+          claimed_at?: string | null
+          commas_payment_id?: string | null
+          registration_id?: string | null
+          slot_number?: number
+        }
+        Relationships: []
+      }
+      keynote_waitlist: {
+        Row: {
+          created_at: string
+          email: string
+          email_marketing_consent: boolean
+          email_marketing_consent_at: string | null
+          first_touch: Json | null
+          full_name: string | null
+          id: string
+          source: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          email_marketing_consent?: boolean
+          email_marketing_consent_at?: string | null
+          first_touch?: Json | null
+          full_name?: string | null
+          id?: string
+          source?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          email_marketing_consent?: boolean
+          email_marketing_consent_at?: string | null
+          first_touch?: Json | null
+          full_name?: string | null
+          id?: string
+          source?: string | null
+        }
+        Relationships: []
+      }
+      marketing_consents: {
+        Row: {
+          channel: string
+          copy_version: string | null
+          created_at: string
+          granted: boolean
+          granted_at: string | null
+          id: string
+          revoked_at: string | null
+          source: string | null
+          subject_email: string
+        }
+        Insert: {
+          channel: string
+          copy_version?: string | null
+          created_at?: string
+          granted: boolean
+          granted_at?: string | null
+          id?: string
+          revoked_at?: string | null
+          source?: string | null
+          subject_email: string
+        }
+        Update: {
+          channel?: string
+          copy_version?: string | null
+          created_at?: string
+          granted?: boolean
+          granted_at?: string | null
+          id?: string
+          revoked_at?: string | null
+          source?: string | null
+          subject_email?: string
+        }
+        Relationships: []
+      }
+      mentorship_applications: {
+        Row: {
+          business: string | null
+          created_at: string
+          current_offer: string | null
+          email: string
+          full_name: string
+          goals: string
+          id: string
+          monthly_revenue_band: string | null
+          phone: string | null
+          ready_to_invest: boolean
+          status: string
+        }
+        Insert: {
+          business?: string | null
+          created_at?: string
+          current_offer?: string | null
+          email: string
+          full_name: string
+          goals: string
+          id?: string
+          monthly_revenue_band?: string | null
+          phone?: string | null
+          ready_to_invest?: boolean
+          status?: string
+        }
+        Update: {
+          business?: string | null
+          created_at?: string
+          current_offer?: string | null
+          email?: string
+          full_name?: string
+          goals?: string
+          id?: string
+          monthly_revenue_band?: string | null
+          phone?: string | null
+          ready_to_invest?: boolean
+          status?: string
+        }
+        Relationships: []
+      }
+      summit_payment_events: {
+        Row: {
+          created_at: string
+          error: string | null
+          event_type: string
+          id: string
+          payload: Json | null
+          payment_id: string | null
+          processed_at: string | null
+          product: string | null
+          provider_event_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          event_type: string
+          id?: string
+          payload?: Json | null
+          payment_id?: string | null
+          processed_at?: string | null
+          product?: string | null
+          provider_event_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          event_type?: string
+          id?: string
+          payload?: Json | null
+          payment_id?: string | null
+          processed_at?: string | null
+          product?: string | null
+          provider_event_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      summit_registrations: {
+        Row: {
+          ai_call_consent: boolean
+          ai_call_consent_at: string | null
+          amount_cents: number
+          commas_payment_id: string
+          created_at: string
+          currency: string
+          email: string
+          email_marketing_consent: boolean
+          email_marketing_consent_at: string | null
+          first_touch: Json | null
+          full_name: string
+          id: string
+          last_touch: Json | null
+          phone: string | null
+          sms_marketing_consent: boolean
+          sms_marketing_consent_at: string | null
+          status: string
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          ai_call_consent?: boolean
+          ai_call_consent_at?: string | null
+          amount_cents: number
+          commas_payment_id: string
+          created_at?: string
+          currency?: string
+          email: string
+          email_marketing_consent?: boolean
+          email_marketing_consent_at?: string | null
+          first_touch?: Json | null
+          full_name: string
+          id?: string
+          last_touch?: Json | null
+          phone?: string | null
+          sms_marketing_consent?: boolean
+          sms_marketing_consent_at?: string | null
+          status?: string
+          tier: string
+          updated_at?: string
+        }
+        Update: {
+          ai_call_consent?: boolean
+          ai_call_consent_at?: string | null
+          amount_cents?: number
+          commas_payment_id?: string
+          created_at?: string
+          currency?: string
+          email?: string
+          email_marketing_consent?: boolean
+          email_marketing_consent_at?: string | null
+          first_touch?: Json | null
+          full_name?: string
+          id?: string
+          last_touch?: Json | null
+          phone?: string | null
+          sms_marketing_consent?: boolean
+          sms_marketing_consent_at?: string | null
+          status?: string
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      summit_vault_purchases: {
+        Row: {
+          amount_cents: number
+          buyer_email: string
+          commas_payment_id: string
+          created_at: string
+          currency: string
+          id: string
+          registration_id: string | null
+          status: string
+        }
+        Insert: {
+          amount_cents: number
+          buyer_email: string
+          commas_payment_id: string
+          created_at?: string
+          currency?: string
+          id?: string
+          registration_id?: string | null
+          status?: string
+        }
+        Update: {
+          amount_cents?: number
+          buyer_email?: string
+          commas_payment_id?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          registration_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "summit_vault_purchases_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "summit_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -140,6 +503,10 @@ export type Database = {
     Functions: {
       claim_lowest_founder_seat: {
         Args: { _registration_id: string }
+        Returns: number
+      }
+      claim_lowest_intensive_slot: {
+        Args: { _buyer_email: string; _commas_payment_id: string }
         Returns: number
       }
       founder_seats_remaining: { Args: never; Returns: number }
@@ -160,6 +527,25 @@ export type Database = {
           seat_number: number
         }[]
       }
+      fulfill_summit_payment: {
+        Args: {
+          _amount_cents: number
+          _commas_payment_id: string
+          _currency: string
+          _email: string
+          _first_touch: Json
+          _full_name: string
+          _last_touch: Json
+          _phone: string
+          _product: string
+        }
+        Returns: {
+          already_existed: boolean
+          registration_id: string
+          slot_number: number
+        }[]
+      }
+      intensive_slots_remaining: { Args: never; Returns: number }
     }
     Enums: {
       [_ in never]: never
