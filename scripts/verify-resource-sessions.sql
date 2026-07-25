@@ -253,7 +253,7 @@ BEGIN
   SELECT * INTO ids FROM qa_ids;
   PERFORM public.fulfill_summit_payment('ga', ids.pay_ga_c, 2200, 'USD',
     'QA C', ids.email_c, NULL, NULL, NULL);
-  PERFORM public.fulfill_summit_payment('vip_upgrade', ids.pay_vipup_c, 5500, 'USD',
+  PERFORM public.fulfill_summit_payment('vip_upgrade', ids.pay_vipup_c, 7700, 'USD',
     'QA C', ids.email_c, NULL, NULL, NULL);
   PERFORM public.reverse_summit_payment(ids.pay_vipup_c);
   IF NOT EXISTS (SELECT 1 FROM public.entitlements
@@ -317,10 +317,10 @@ BEGIN
   SELECT * INTO ids FROM qa_ids;
   PERFORM public.fulfill_summit_payment('ga', ids.pay_ga_f, 2200, 'USD',
     'QA F', ids.email_f, NULL, NULL, NULL);
-  PERFORM public.fulfill_summit_payment('vip_upgrade', ids.pay_vipup_f1, 5500, 'USD',
+  PERFORM public.fulfill_summit_payment('vip_upgrade', ids.pay_vipup_f1, 7700, 'USD',
     'QA F', ids.email_f, NULL, NULL, NULL);
   PERFORM public.reverse_summit_payment(ids.pay_vipup_f1);
-  PERFORM public.fulfill_summit_payment('vip_upgrade', ids.pay_vipup_f2, 5500, 'USD',
+  PERFORM public.fulfill_summit_payment('vip_upgrade', ids.pay_vipup_f2, 7700, 'USD',
     'QA F', ids.email_f, NULL, NULL, NULL);
   -- Duplicate/late refund of the ALREADY-refunded upgrade payment.
   PERFORM public.reverse_summit_payment(ids.pay_vipup_f1);
