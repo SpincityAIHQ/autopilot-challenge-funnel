@@ -20,6 +20,10 @@ export const DEFAULT_COMMAS_CHECKOUT_HOSTS: readonly string[] = [
 export interface SectionVideoUrls {
   hero?: string;
   confirmedThankYou?: string;
+  thankYouGa?: string;
+  thankYouVip?: string;
+  thankYouVault?: string;
+  thankYouIntensive?: string;
 }
 
 export interface KeynoteConfig {
@@ -71,6 +75,10 @@ export function getCommasConfig(): CommasConfig {
     sectionVideos: {
       hero: readEnv("VITE_SUMMIT_VIDEO_HERO"),
       confirmedThankYou: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU"),
+      thankYouGa: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_GA"),
+      thankYouVip: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_VIP"),
+      thankYouVault: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_VAULT"),
+      thankYouIntensive: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_INTENSIVE"),
     },
     salesEnabled: readEnv("VITE_SUMMIT_SALES_ENABLED") === "true",
     legalReady: readEnv("VITE_SUMMIT_LEGAL_READY") === "true",

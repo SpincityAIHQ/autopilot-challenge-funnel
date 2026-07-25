@@ -1,4 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { getCommasConfig } from "@/lib/challenge-config";
+import { ProductThankYou } from "@/components/ProductThankYou";
+import {
+  useEntitlementSummary,
+  derivedAccess,
+} from "@/hooks/use-entitlement-summary";
 
 export const Route = createFileRoute("/next-steps")({
   head: () => ({
@@ -22,6 +28,12 @@ export const Route = createFileRoute("/next-steps")({
 });
 
 function NextSteps() {
+  const cfg = getCommasConfig();
+  const summary = useEntitlementSummary();
+  const access =
+    summary.status === "ok" ? derivedAccess(summary.scopes) : null;
+  const verifiedIntensive = Boolean(access && access.hasIntensive);
+
   return (
     <main className="mx-auto max-w-3xl px-5 py-16">
       <p className="eyebrow">You're set</p>
@@ -32,6 +44,17 @@ function NextSteps() {
         Save the dates, watch for our emails and texts, and gather what you'll
         bring to Day 1.
       </p>
+
+      <ProductThankYou
+        verified={verifiedIntensive}
+        eyebrow="Verified · Strategy & Build Intensive"
+        headline="Thank you, family — you purchased the Strategy & Build Intensive."
+        body="Your private 1-on-1 is confirmed. Our team will reach out from Info@NuAmenti.com with a scheduling link so you can pick a time that works. If you don't see it within one business day, reply to your receipt from the same email."
+        videoUrl={cfg.sectionVideos.thankYouIntensive}
+        videoLabel="A note from the family — Intensive welcome"
+      />
+
+
 
       <section className="mt-10 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">Save the dates</h2>
