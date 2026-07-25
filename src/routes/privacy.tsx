@@ -3,11 +3,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — AI AutoPilot Summit" },
+      { title: "Privacy — AI AutoPilot Summit (Pre-Launch Draft)" },
       { name: "robots", content: "noindex,nofollow" },
       {
         name: "description",
-        content: "Privacy policy placeholder. Legal review pending.",
+        content:
+          "Pre-launch draft privacy notice for the AI AutoPilot Summit. Describes current app behavior only. Pending counsel review.",
       },
       { property: "og:url", content: "/privacy" },
     ],
@@ -22,36 +23,75 @@ function Privacy() {
       <Link to="/" className="text-xs hover:text-foreground">
         ← Home
       </Link>
-      <p className="eyebrow mt-4">Privacy Policy</p>
+      <p className="eyebrow mt-4">Pre-Launch Draft · Privacy</p>
       <h1 className="mt-3 font-display text-2xl text-foreground">
-        Privacy Policy
+        Privacy Notice
       </h1>
+      <p className="mt-2 text-xs uppercase tracking-widest text-muted-foreground">
+        Last updated: 2026-07-25
+      </p>
 
-      <div className="mt-4 rounded-md border border-[color:var(--gold-soft)] bg-secondary/40 p-4 text-sm text-foreground">
-        <strong className="font-heading">
-          Placeholder — pending legal review.
-        </strong>{" "}
-        This text is not final and has not been reviewed by counsel.
-      </div>
-
-      <div className="prose prose-invert mt-8 max-w-none text-sm leading-relaxed">
+      <div className="mt-8 space-y-4 text-sm leading-relaxed">
         <p>
-          SpincityHQ LLC ("we") collects the information FanBasis passes to us
-          for verified paid registrations to AI AutoPilot Summit. Payment
-          card information is collected and processed by FanBasis — never by
-          this website.
+          This notice describes how SpincityHQ LLC dba NuAmenti ("we") handles
+          information collected through the AI AutoPilot Summit funnel today.
+          Public checkout remains disabled until operator-approved final policy
+          language is posted and accepted at checkout.
         </p>
-        <p className="mt-4">
-          Marketing consent for email and for SMS is collected separately inside
-          FanBasis and is optional. Transactional communications about your
-          Challenge access are sent regardless.
+
+        <h2 className="mt-6 font-heading text-base text-foreground">
+          Who processes what
+        </h2>
+        <p>
+          Payment card details and order data are collected and processed by
+          FanBasis on their hosted checkout — never by this website. On
+          verified payment, FanBasis passes us the order fields we need to
+          create your Summit registration (name, email, optional phone,
+          product, amount, currency, payment ID).
         </p>
-        <p className="mt-4">
-          For questions, contact{" "}
+        <p>
+          Optional communication consent (email, SMS, AI-assisted or
+          prerecorded calls) is captured separately by NuAmenti on the
+          <Link
+            to="/communication-preferences"
+            className="ml-1 underline hover:text-foreground"
+          >
+            communication preferences page
+          </Link>
+          , not inside FanBasis. Marketing consent is never a condition of
+          purchase. Transactional access messages about your Summit ticket are
+          separate from marketing consent and continue as long as your ticket
+          is active.
+        </p>
+
+        <h2 className="mt-6 font-heading text-base text-foreground">
+          Access to Summit resources
+        </h2>
+        <p>
+          Summit resources are locked behind a single-use magic link sent to
+          your registered email. Opening the link exchanges it for a short-
+          lived, HttpOnly session cookie scoped to your active entitlements.
+          Refunds and revocations immediately remove access.
+        </p>
+
+        <h2 className="mt-6 font-heading text-base text-foreground">
+          Your choices
+        </h2>
+        <p>
+          You can revoke any communication channel at any time by resubmitting
+          the preferences form unchecked, replying STOP to a text, or writing
+          Info@NuAmenti.com. Deletion requests for personal data are handled
+          by the same email.
+        </p>
+
+        <p className="mt-8 text-xs">
+          SpincityHQ LLC · Atlanta, GA ·{" "}
           <a className="underline" href="mailto:Info@NuAmenti.com">
             Info@NuAmenti.com
           </a>
-          .
+          . No income, sales, or business-outcome guarantees are made. This
+          notice is a pre-launch draft pending counsel review and will be
+          replaced with the final version before public checkout opens.
         </p>
       </div>
     </main>

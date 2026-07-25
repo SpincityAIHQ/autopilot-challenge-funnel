@@ -18,13 +18,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Two days, live online. Map and build your AI-powered revenue and operating system with the NuAmenti family. GA $22 · VIP $77.",
+          "Two days, live online. Map your AI-powered revenue and operating system and build a first AI-assisted workflow to keep going. GA $22 · VIP $77.",
       },
       { property: "og:title", content: "AI AutoPilot Summit — Aug 24–25, 2026" },
       {
         property: "og:description",
         content:
-          "Map It · Build It. Live online with the NuAmenti family — Aug 24–25, 2026.",
+          "Map It · Build It. Leave with a starter Autonomy Map and a first AI-assisted workflow to keep building. Aug 24–25, 2026.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -34,6 +34,7 @@ export const Route = createFileRoute("/")({
   }),
   component: Landing,
 });
+
 
 function Landing() {
   const cfg = getCommasConfig();
@@ -93,9 +94,10 @@ function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
       </p>
 
       <div className="mt-8 max-w-md">
-        <p className="label-mono mb-3">Doors open in</p>
+        <p className="label-mono mb-3">Summit week begins in</p>
         <Countdown />
       </div>
+
 
       <div className="mt-10 flex flex-wrap gap-3">
         <Link
@@ -129,21 +131,26 @@ function Promise() {
     <section className="mx-auto max-w-4xl px-5 py-16" aria-labelledby="promise-h">
       <p className="eyebrow">The promise</p>
       <h2 id="promise-h" className="mt-3 font-heading text-2xl text-foreground sm:text-3xl">
-        Two days to leave with a clear AI Autonomy Map and one working
-        AI-powered job in your business.
+        Two days to leave with a starter AI Autonomy Map and a first
+        AI-assisted workflow prototype you can keep building.
       </h2>
       <p className="mt-4 text-muted-foreground">
         We show up as a family. You bring a real business, offer, or idea.
         Together we identify three workflow candidates for AI assist this
-        month, set the rules, and turn one of them on — live.
+        month, set the rules, and start building one of them — live.
       </p>
 
       <p className="mt-4 font-heading text-lg text-[color:var(--gold)]">
         Automated where it should be. Human where it matters.
       </p>
+      <p className="mt-3 text-xs text-muted-foreground">
+        No income promises. No guaranteed business outcomes. What you build
+        depends on the work you bring and continue after the Summit.
+      </p>
     </section>
   );
 }
+
 
 function Agenda() {
   return (
@@ -169,10 +176,11 @@ function Agenda() {
           <h3 className="mt-2 font-display text-xl text-[color:var(--gold)]">BUILD IT</h3>
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
             <li>· Set the fence — rules for what AI does and doesn't touch.</li>
-            <li>· Build one real automation live with the family.</li>
-            <li>· Do the reliability math on how the job holds up.</li>
-            <li>· Leave with a working first job, running.</li>
+            <li>· Start building one real AI-assisted workflow, live with the family.</li>
+            <li>· Talk through reliability — how the workflow holds up outside the room.</li>
+            <li>· Leave with a first AI-assisted workflow prototype to keep refining.</li>
           </ul>
+
         </article>
       </div>
       <p className="mt-6 text-xs text-muted-foreground">
@@ -306,13 +314,16 @@ function WhyDifferent() {
         Implementation, not information.
       </h2>
       <p className="mt-4 text-muted-foreground">
-        You leave with a completed map and a working AI-powered job in your
-        business. Not a course library. Not a hype tape. Real work, built with
-        the family, on the actual business you brought.
+        You leave with a completed starter Autonomy Map and a first
+        AI-assisted workflow prototype for the business you brought. Not a
+        course library. Not a hype tape. Real work, built with the family, on
+        the actual business in front of you — and yours to keep refining after
+        the Summit.
       </p>
     </section>
   );
 }
+
 
 function FitCheck() {
   return (

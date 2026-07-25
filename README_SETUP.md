@@ -1,181 +1,157 @@
-# AUTOPILOT Challenge Funnel — Current Setup
+# AI AutoPilot Summit — Operator Setup
 
-This is the standalone launch funnel for The AUTOPILOT Challenge. It does not
-share code, routes, database tables, payment products, or a domain with the
-NuAmenti application.
+The AI AutoPilot Summit is a two-day live online implementation event on
+**August 24 and 25, 2026**. Exact session start times are announced to
+registrants closer to the event and are never invented in code. This app is a
+standalone Lovable Cloud project — it does not share code, routes, tables,
+domains, or payment products with the NuAmenti application.
 
-## Current offer truth
+## Product catalog
 
-- Core event: Saturday, August 1 and Sunday, August 2, 2026
-- Core live build: 12:00–4:00 PM Eastern each day — eight live hours total
-- VIP, Bundle, and Founder group hour: 4:00–5:00 PM Eastern each day
-- GA: $77
-- VIP: $177
-- Bundle: $333
-- Founder: $1,111, capped at 33 verified purchases
-- GA can add recordings + completed Autonomy Map template for $22 inside its
-  FanBasis checkout. There is no separate recordings tier or recordings video.
-- Promise: build a live monetizable site, launch-ready marketing assets, a
-  working lead-and-sales follow-up system, and an Autonomy Map together.
-- Sales and income are not guaranteed.
+| Product                                | Price     | Notes                                                         |
+| -------------------------------------- | --------- | ------------------------------------------------------------- |
+| General Admission (GA)                 | $22       | Two live days + Action Guide, scorecard, canvas. No recordings. |
+| VIP Experience                         | $77       | GA + 30-day recordings, VIP Implementation Lab, priority Q&A.   |
+| VIP Upgrade (GA → VIP)                 | $55       | OTO. Requires existing GA registration on same email.           |
+| AI AutoPilot Implementation Vault      | $199      | Independent library add-on. Does NOT include admission or recordings. |
+| Strategy & Build Intensive             | $1,000    | Two-hour private session. Hard cap **10 total**, atomic inventory. |
+| Eight-Week Mentorship & Work-Along     | $8,000    | Application-based. Separate from the Intensive.                 |
+| Next NuAmenti Keynote                  | TBA       | Priority-access waitlist. Rendered as "coming soon" until configured. |
 
-## Customer funnel
+No income promises, no guaranteed business outcomes, no fake scarcity or
+testimonials anywhere.
 
-1. `/` — main sales page and landing VSL
-2. `/?offer=ga|vip|bundle|founder` — the short tier explainer opened by every
-   offer button
-3. `/checkout?tier=ga|vip|bundle|founder` — order summary, truth-check VSL, and
-   hosted FanBasis handoff
-4. `/confirmed?tier=ga|vip|bundle|founder` — tier-specific next steps after the
-   matching FanBasis return
-5. `/confirmed` — neutral fallback when no tier return context is present
+## Public funnel
 
-The tier in a return URL only chooses public instructions. It never grants
-access. The verified FanBasis webhook, receipt, and official access email are
-the authority for the buyer's tier and benefits.
+1. `/` — landing / sales
+2. `/checkout?tier=ga|vip` — order summary + FanBasis handoff (GA / VIP only)
+3. `/confirmed?tier=ga|vip` — warm truthful "we're verifying your payment" state
+4. `/offer/vip-upgrade` — GA-only $55 upgrade (eligibility-gated)
+5. `/offer/implementation-vault` — $199 Vault add-on (registered attendees only)
+6. `/next-keynote` — next-keynote priority-access / waitlist
+7. `/strategy-intensive` — $1,000 Intensive (10 total, verified attendees only)
+8. `/offer/mentorship` — application-based mentorship
+9. `/offer/keynote` — configured-only keynote OTO
+10. `/communication-preferences` — three separate opt-in channels
+11. `/privacy`, `/terms`, `/refund-policy` — pre-launch drafts (noindex)
+12. `/resources` — server-validated resource hub gated by HttpOnly session
 
-Use `/preview-nav` to click through every state before promotion. It is unlinked
-and `noindex`, but it is not password-protected. Remove or protect it before the
-final public launch if that exposure is not acceptable.
+`?tier=` in the URL is display context only. It never proves purchase or
+unlocks anything. Authority for entry, links, and paid resources is the
+NuAmenti verification + access email plus the resulting HttpOnly session.
 
-## VSL configuration
+## Browser-visible environment (all default OFF)
 
-Add these browser-visible environment variables in the standalone Lovable
-project. Values must be YouTube or Vimeo URLs. Missing or invalid values render
-nothing; customers never see an empty player or build note.
+Sales gates fail closed — the app does not present checkout unless the
+corresponding gate is `true` **and** the checkout URL passes the HTTPS
+allowlist (`www.fanbasis.com` plus any hosts in
+`VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS`).
 
-| Environment variable                     | Customer placement                           |
-| ---------------------------------------- | -------------------------------------------- |
-| `VITE_CHALLENGE_VIDEO_HERO`              | Main page: what we build in eight live hours |
-| `VITE_CHALLENGE_VIDEO_OFFER_GA`          | GA offer-click explainer                     |
-| `VITE_CHALLENGE_VIDEO_OFFER_VIP`         | VIP offer-click explainer                    |
-| `VITE_CHALLENGE_VIDEO_OFFER_BUNDLE`      | Bundle offer-click explainer                 |
-| `VITE_CHALLENGE_VIDEO_OFFER_FOUNDER`     | Founder offer-click explainer                |
-| `VITE_CHALLENGE_VIDEO_CHECKOUT`          | Final checkout truth-check                   |
-| `VITE_CHALLENGE_VIDEO_CONFIRMED`         | Optional generic confirmation fallback       |
-| `VITE_CHALLENGE_VIDEO_CONFIRMED_GA`      | GA confirmation and next steps               |
-| `VITE_CHALLENGE_VIDEO_CONFIRMED_VIP`     | VIP confirmation and next steps              |
-| `VITE_CHALLENGE_VIDEO_CONFIRMED_BUNDLE`  | Bundle confirmation and next steps           |
-| `VITE_CHALLENGE_VIDEO_CONFIRMED_FOUNDER` | Founder confirmation and next steps          |
+| Variable                                | Purpose                                       |
+| --------------------------------------- | --------------------------------------------- |
+| `VITE_SUMMIT_SALES_ENABLED`             | GA + VIP checkout master gate                 |
+| `VITE_SUMMIT_UPSELLS_ENABLED`           | VIP Upgrade + Vault gate                      |
+| `VITE_SUMMIT_INTENSIVE_SALES_ENABLED`   | Strategy & Build Intensive gate               |
+| `VITE_COMMAS_CHECKOUT_URL_GA`           | FanBasis GA checkout — $22                     |
+| `VITE_COMMAS_CHECKOUT_URL_VIP`          | FanBasis VIP checkout — $77                    |
+| `VITE_COMMAS_CHECKOUT_URL_VIP_UPGRADE`  | FanBasis VIP Upgrade — $55                     |
+| `VITE_COMMAS_CHECKOUT_URL_VAULT`        | FanBasis Vault — $199                          |
+| `VITE_COMMAS_CHECKOUT_URL_INTENSIVE`    | FanBasis Intensive — $1,000                    |
+| `VITE_COMMAS_CHECKOUT_URL_KEYNOTE`      | Next keynote checkout (also needs date)       |
+| `VITE_KEYNOTE_DATE_ISO`                 | Next keynote date (enables the /offer/keynote card) |
+| `VITE_KEYNOTE_PRICE_LABEL`              | Optional display price for keynote            |
+| `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS`    | Comma-separated extra allowlisted hosts       |
+| `VITE_SUMMIT_VIDEO_HERO`                | Approved hero VSL embed URL                   |
+| `VITE_SUMMIT_VIDEO_THANK_YOU`           | Approved confirmation thank-you embed URL     |
 
-There are intentionally no Day 1, Day 2, or recordings-add-on video variables.
-
-## HeyGen Live AI Spin slot
-
-The AI Spin section sits after the tier cards and stays hidden until all three
-values below are set:
-
-| Environment variable           | Required value                                                                  |
-| ------------------------------ | ------------------------------------------------------------------------------- |
-| `VITE_AI_SPIN_ENABLED`         | `true`                                                                          |
-| `VITE_AI_SPIN_LIMITS_VERIFIED` | `true` only after the real limits are tested                                    |
-| `VITE_LIVEAVATAR_EMBED_URL`    | Fresh short-lived `https://embed.liveavatar.com/v1/...` URL for preview/testing |
-
-LiveAvatar creates that embed URL with a server-side call to
-`POST https://api.liveavatar.com/v2/embeddings`. The API key, avatar ID, and
-context ID must remain server-only. A permanent URL pasted into a client
-environment variable is not the production integration because LiveAvatar
-embed URLs expire.
-
-The customer disclosure says AI Spin is an AI avatar, recommends the lowest
-sufficient tier, and ends after five visitor messages or four minutes. The
-iframe component does not create those controls by itself. Do not set
-`VITE_AI_SPIN_LIMITS_VERIFIED=true` until the HeyGen/session layer actually
-enforces both limits and a refresh cannot restart unlimited consulting.
-
-Never place a LiveAvatar or HeyGen API key in a `VITE_` variable or client
-source. The legacy `VITE_HEYGEN_LIVE_AVATAR_EMBED_URL` name remains accepted for
-an older HeyGen Labs embed, but new setup should use the LiveAvatar host above.
-
-## FanBasis hosted checkouts
-
-Browser-visible configuration:
-
-| Environment variable                 | Product                                                                 |
-| ------------------------------------ | ----------------------------------------------------------------------- |
-| `VITE_CHALLENGE_SALES_ENABLED`       | Must equal `true` before any payment handoff is enabled                 |
-| `VITE_COMMAS_CHECKOUT_URL_GA`        | FanBasis GA checkout — $77                                              |
-| `VITE_COMMAS_CHECKOUT_URL_VIP`       | FanBasis VIP checkout — $177                                            |
-| `VITE_COMMAS_CHECKOUT_URL_BUNDLE`    | FanBasis Bundle checkout — $333                                         |
-| `VITE_COMMAS_CHECKOUT_URL_FOUNDER`   | FanBasis Founder checkout — $1,111                                      |
-| `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS` | Optional exact-match extra hosts; `www.fanbasis.com` is already allowed |
-
-Configure a different success return for each FanBasis product:
+FanBasis product-success return URLs (configured inside FanBasis, not here):
 
 ```text
-GA:      https://NuAmentiLaunch.com/confirmed?tier=ga
-VIP:     https://NuAmentiLaunch.com/confirmed?tier=vip
-Bundle:  https://NuAmentiLaunch.com/confirmed?tier=bundle
-Founder: https://NuAmentiLaunch.com/confirmed?tier=founder
+GA:             https://<domain>/confirmed?tier=ga
+VIP:            https://<domain>/confirmed?tier=vip
+VIP Upgrade:    https://<domain>/confirmed?tier=vip
+Vault:          https://<domain>/next-keynote
+Intensive:      https://<domain>/next-keynote
 ```
 
-Use this cancel/back destination for all four:
+Set the Intensive inventory to exactly **10** at FanBasis. The database cap
+protects fulfillment, but the provider cap prevents an 11th purchase.
 
-```text
-https://NuAmentiLaunch.com/#tiers
-```
+## Server-only environment
 
-Set the Founder product inventory to exactly 33 at FanBasis. The database cap
-protects fulfillment, but the provider cap is also required so a 34th buyer is
-not charged and forced into a refund.
-
-## Verified payment webhook
-
-The server endpoint remains `/api/public/webhooks/commas` because that is the
-provider contract name used by the existing backend. It is disabled by default.
-
-Required server-only variables:
+Payment webhook and Supabase server client. Webhook remains OFF until all
+required variables are set. Nothing is called if any is missing.
 
 - `COMMAS_WEBHOOKS_ENABLED=true`
 - `COMMAS_WEBHOOK_SECRET`
 - `COMMAS_PRODUCT_ID_GA`
-- `COMMAS_PRODUCT_ID_GA_BUMP`
 - `COMMAS_PRODUCT_ID_VIP`
-- `COMMAS_PRODUCT_ID_BUNDLE`
-- `COMMAS_PRODUCT_ID_FOUNDER`
+- `COMMAS_PRODUCT_ID_VIP_UPGRADE`
+- `COMMAS_PRODUCT_ID_VAULT`
+- `COMMAS_PRODUCT_ID_INTENSIVE`
 
-Do not enable production fulfillment until one real FanBasis sandbox payload
-and signature pass the full round-trip. Product IDs must be distinct. Prices
-must reconcile to $77, $99 only when GA includes the native bump, $177, $333,
-or $1,111. Unknown products, wrong totals, and non-USD payments grant nothing.
+All five product IDs must be distinct. Prices reconcile in cents to $22 / $77
+/ $55 / $199 / $1,000; unknown products, mismatched totals, or non-USD grant
+nothing.
 
-The confirmation page does not send access email. A verified transactional
-email provider still needs to deliver the official join link, workbook, tier
-benefits, and Founder onboarding.
+Provider adapters (Mailchimp, SMS, AI-call) are **defined but disabled**.
+They only take effect after operator-supplied credentials and template IDs
+are added and verified. This app does not send emails, texts, or calls until
+that step is complete.
 
-## Calendar routes
+## Communication preferences
 
-- `/calendar/day1.ics` — core Day 1, 12–4 PM ET
-- `/calendar/day2.ics` — core Day 2, 12–4 PM ET
-- `/calendar/day1-vip.ics` — Day 1 plus VIP hour, 12–5 PM ET
-- `/calendar/day2-vip.ics` — Day 2 plus VIP hour, 12–5 PM ET
+`/communication-preferences` writes one row per channel to
+`public.marketing_consents` (email, SMS, AI-assisted/prerecorded calls). Each
+row records `granted`, `granted_at`, `revoked_at`, `source`, `copy_version`,
+and (for SMS/AI-call) `phone`. Marketing consent is never a condition of
+purchase. Transactional access messages are separate and continue while a
+ticket is active.
 
-GA confirmation uses the core calendars. VIP, Bundle, and Founder confirmation
-uses the extended calendars.
+## Verified access model
 
-## Pre-launch checklist
+- Fulfillment (`fulfill_summit_payment`) creates the registration and grants
+  scoped entitlements. VIP upgrade requires an existing GA on the same email.
+- Access tokens are single-use hashed magic links stored in `access_tokens`.
+- Exchange (`exchange_access_token`) marks a token used and mints a
+  short-lived hashed `resource_sessions` row. The client only ever sees the
+  HttpOnly session cookie.
+- `session_active_scopes` returns the buyer's currently active scopes so
+  refunds and revocations take effect immediately.
+- Refunds (`reverse_summit_payment`) revoke only the entitlement tied to the
+  reversed payment. Independent purchases (e.g. a separately paid Vault) are
+  preserved when GA is refunded, and vice versa. VIP-upgrade refunds
+  preserve GA and revoke VIP.
 
-- [ ] Buy/connect `NuAmentiLaunch.com` to this project only
-- [ ] Upload every VSL and confirm `/preview-nav` shows `READY`
-- [ ] Connect HeyGen Live AI Spin and test the five-message/four-minute limits
-- [ ] Create all four FanBasis products and the GA native order bump
-- [ ] Add each product's exact success return and common cancel URL
-- [ ] Cap Founder inventory at 33 in FanBasis
-- [ ] Complete one signed sandbox webhook round-trip for every tier and GA bump
-- [ ] Send and receive a real access email for every tier
-- [ ] Finalize privacy, terms, refund, book shipping, event cancellation, and
-      chargeback language
-- [ ] Test every page and calendar on desktop and a real phone
-- [ ] Confirm no public page displays internal provider/build notes
-- [ ] Republish only after payment, fulfillment, email, policies, avatar, and
-      domain all pass
+## Pre-launch checklist (P0)
+
+- [ ] **Legal**: finalize and publish counsel-approved privacy, terms,
+      refund window, and Intensive slot-release language. Checkout stays
+      OFF until posted and accepted at checkout.
+- [ ] **Payments**: create the five FanBasis products, distinct IDs, exact
+      success returns, inventory cap 10 on Intensive, one full signed
+      webhook round-trip per product.
+- [ ] **Verified access**: send and receive a real NuAmenti access email
+      end-to-end for GA, VIP, VIP upgrade, Vault, and Intensive; verify the
+      magic-link exchange lands a scoped HttpOnly session.
+- [ ] **Communication preferences**: test opt-in, opt-out, phone-required
+      logic for SMS and AI-call, STOP/HELP wiring, and that revocation
+      writes a new row rather than deleting history.
+- [ ] **Adapters**: Mailchimp audience/tags, SMS provider, AI-call provider
+      credentials verified before flipping any sender ON.
+- [ ] **QA scripts**: run `bun test`, `bunx tsgo --noEmit`, `bun run build`,
+      `psql -v ON_ERROR_STOP=1 -f scripts/verify-resource-sessions.sql`, and
+      `scripts/scan-assets.sh` — all green.
+- [ ] **Domain + mobile**: attach domain to this project only; test every
+      route on desktop and a real phone with reduced-motion enabled.
+- [ ] Republish only after all of the above pass.
 
 ## Validation
 
-Current source validation:
-
 ```text
-88 tests pass
-TypeScript type-check passes
-Production build passes
+bun test                              → all tests pass
+bunx tsgo --noEmit                    → clean
+bun run build                         → clean
+scripts/scan-assets.sh                → 0 paid-content leaks, 0 stale hits
+scripts/verify-resource-sessions.sql  → all scenarios pass, 0 rows persisted
 ```

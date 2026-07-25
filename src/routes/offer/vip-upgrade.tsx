@@ -6,6 +6,10 @@ import {
   resolveCheckoutUrl,
   isHandoffAllowed,
 } from "@/lib/challenge-config";
+import {
+  useEntitlementSummary,
+  derivedAccess,
+} from "@/hooks/use-entitlement-summary";
 
 const product = "vip_upgrade" as const;
 
@@ -25,7 +29,9 @@ export const Route = createFileRoute("/offer/vip-upgrade")({
         content:
           "Add recordings, the VIP Implementation Lab, priority Q&A, and the outreach vault for $55.",
       },
+      { property: "og:url", content: "/offer/vip-upgrade" },
     ],
+    links: [{ rel: "canonical", href: "/offer/vip-upgrade" }],
   }),
   component: VipUpgradeOffer,
 });
@@ -34,17 +40,19 @@ function VipUpgradeOffer() {
   const cfg = getCommasConfig();
   const upgrade = UPSELLS.vip_upgrade;
   const url = resolveCheckoutUrl(product, cfg);
-  const canBuy = isHandoffAllowed(product, cfg);
+  const salesOn = isHandoffAllowed(product, cfg);
+  const summary = useEntitlementSummary();
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-12">
-      <p className="eyebrow">Only for GA registrants</p>
+      <p className="eyebrow">Only for verified GA registrants</p>
       <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
         Upgrade GA → VIP for {formatUsd(upgrade.priceCents)}
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        This upgrade requires a verified GA registration on the same email. If
-        you already bought VIP, you don't need this — you already have it.
+        Eligibility is checked from your verified access session — not from
+        this URL. Open the secure upgrade link inside your NuAmenti access
+        email if you don't see checkout below.
       </p>
 
       <VideoSlot url={cfg.sectionVideos.hero ?? null} label="VIP upgrade preview" className="mt-8" />
@@ -57,41 +65,95 @@ function VipUpgradeOffer() {
             <li key={b}>· {b}</li>
           ))}
         </ul>
-        <div className="mt-6 flex flex-wrap items-center gap-3">
-          {canBuy && url ? (
-            <a
-              href={url}
-              className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
-              rel="noopener noreferrer"
-            >
-              Upgrade to VIP · {formatUsd(upgrade.priceCents)}
-            </a>
-          ) : (
-            <button
-              type="button"
-              disabled
-              className="inline-flex cursor-not-allowed items-center rounded-md bg-muted px-5 py-3 font-heading text-sm font-semibold text-muted-foreground"
-            >
-              VIP upgrade opening soon
-            </button>
-          )}
-          <Link
-            to="/offer/implementation-vault"
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            No thanks — keep GA and continue
-          </Link>
-
+        <div className="mt-6">
+          <UpgradeCta salesOn={salesOn} url={url} summary={summary} price={upgrade.priceCents} />
         </div>
         <p className="mt-4 text-xs text-muted-foreground">
-          Fulfillment matches your VIP upgrade to an existing GA registration
-          on the same email. Without a matching GA record on file we cannot
-          grant VIP. Please pay with the same email you used for GA, or write
-          Info@NuAmenti.com before paying if you need to change the email on
-          your ticket.
+          Fulfillment requires a verified GA registration on the same email.
+          Without a matching GA record we cannot grant VIP. This app has no
+          provider refund adapter — an unmatched payment is not reversed
+          automatically. Please pay with the same email you used for GA, or
+          write Info@NuAmenti.com before paying if you need to change the
+          email on your ticket.
         </p>
-
       </section>
+
+      <p className="mt-6 text-xs text-muted-foreground">
+        <Link to="/offer/implementation-vault" className="underline">
+          No thanks — keep GA and continue to the Implementation Vault →
+        </Link>
+      </p>
     </main>
+  );
+}
+
+function UpgradeCta({
+  salesOn,
+  url,
+  summary,
+  price,
+}: {
+  salesOn: boolean;
+  url: string | null;
+  summary: ReturnType<typeof useEntitlementSummary>;
+  price: number;
+}) {
+  if (summary.status === "loading") {
+    return <DisabledBtn label="Checking your eligibility…" />;
+  }
+  if (summary.status === "unauthenticated" || summary.status === "error") {
+    return (
+      <SecureLinkNotice message="To upgrade to VIP, open the secure upgrade link in your NuAmenti access email — verified sign-in is required. Not signed in? Reply to Info@NuAmenti.com and we'll resend it." />
+    );
+  }
+  const { hasGa, hasVip } = derivedAccess(summary.scopes);
+  if (hasVip) {
+    return (
+      <AlreadyOwned message="You already have VIP. Your NuAmenti access email is the source of truth for VIP resources and the Implementation Lab invite." />
+    );
+  }
+  if (!hasGa) {
+    return (
+      <SecureLinkNotice message="This upgrade is only available to verified GA registrants. If you already bought GA, open the secure upgrade link in your NuAmenti access email — signed in on the same browser." />
+    );
+  }
+  if (!salesOn || !url) return <DisabledBtn label="VIP upgrade opening soon" />;
+  return (
+    <a
+      href={url}
+      className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+      rel="noopener noreferrer"
+    >
+      Upgrade to VIP · {formatUsd(price)}
+    </a>
+  );
+}
+
+function DisabledBtn({ label }: { label: string }) {
+  return (
+    <button
+      type="button"
+      disabled
+      className="inline-flex cursor-not-allowed items-center rounded-md bg-muted px-5 py-3 font-heading text-sm font-semibold text-muted-foreground"
+    >
+      {label}
+    </button>
+  );
+}
+
+function AlreadyOwned({ message }: { message: string }) {
+  return (
+    <div className="rounded-md border border-[color:var(--emerald-signal)]/40 bg-secondary/40 p-4 text-sm text-foreground">
+      <p className="font-heading">You already have this.</p>
+      <p className="mt-2 text-muted-foreground">{message}</p>
+    </div>
+  );
+}
+
+function SecureLinkNotice({ message }: { message: string }) {
+  return (
+    <div className="rounded-md border border-border bg-secondary/30 p-4 text-sm text-muted-foreground">
+      {message}
+    </div>
   );
 }
