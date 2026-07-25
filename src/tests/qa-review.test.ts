@@ -26,7 +26,7 @@ describe("QA review stages", () => {
 
   it("rejects unknown review stages", () => {
     expect(isQaReviewStage("ga")).toBe(true);
-    expect(isQaReviewStage("free")) .toBe(false);
+    expect(isQaReviewStage("free")).toBe(false);
     expect(isQaReviewStage(null)).toBe(false);
   });
 
@@ -39,8 +39,10 @@ describe("QA review stages", () => {
 describe("QA review safety boundaries", () => {
   it("forces every checkout handoff off during review mode", () => {
     expect(CONFIG).toContain("if (isQaReviewRuntimeEnabled()) return false;");
-    expect(CONFIG.match(/if \(isQaReviewRuntimeEnabled\(\)\) return false;/g)?.length)
-      .toBe(2);
+    expect(
+      CONFIG.match(/if \(isQaReviewRuntimeEnabled\(\)\) return false;/g)
+        ?.length,
+    ).toBe(2);
   });
 
   it("uses QA scopes only in the client-side entitlement presentation hook", () => {
