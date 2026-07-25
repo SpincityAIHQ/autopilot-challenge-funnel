@@ -9,10 +9,14 @@
  *
  * Product ids (env-driven, unknown → grants nothing):
  *   COMMAS_PRODUCT_ID_GA           → 'ga'          ($22)
- *   COMMAS_PRODUCT_ID_VIP          → 'vip'         ($77)
  *   COMMAS_PRODUCT_ID_VIP_UPGRADE  → 'vip_upgrade' ($77 — post-GA VIP Implementation Experience)
  *   COMMAS_PRODUCT_ID_VAULT        → 'vault'       ($199, OTO)
  *   COMMAS_PRODUCT_ID_INTENSIVE    → 'intensive'   ($1,000, cap 10)
+ *
+ * Direct-VIP admission is NOT accepted for fulfillment — the sequential
+ * funnel only sells GA up front, then vip_upgrade after verified GA.
+ * Reversal events (payment.refunded/failed/disputed) match by payment_id
+ * and therefore keep working for already-recorded legacy VIP payments.
  */
 
 import { createHmac, timingSafeEqual } from "node:crypto";
