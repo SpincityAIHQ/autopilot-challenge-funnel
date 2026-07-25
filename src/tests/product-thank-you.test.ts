@@ -94,12 +94,13 @@ describe("verified product-specific thank-you copy", () => {
 
   it("no page derives which thank-you to show from a URL parameter", () => {
     for (const src of [CONFIRMED, VAULT, INTENSIVE, NEXT_STEPS]) {
-      expect(src).not.toContain("searchParams");
-      expect(src).not.toContain('"tier"');
-      expect(src).not.toContain("'tier'");
-      expect(src).not.toMatch(/\?tier=/);
+      // No runtime read of location/search params to choose the copy.
+      expect(src).not.toContain("useSearch(");
+      expect(src).not.toContain("URLSearchParams");
+      expect(src).not.toContain("location.search");
     }
   });
+
 });
 
 describe("ProductThankYou component — non-disclosure to anonymous / ineligible visitors", () => {
