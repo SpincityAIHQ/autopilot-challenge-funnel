@@ -54,7 +54,7 @@ allowlist (`www.fanbasis.com` plus any hosts in
 | `VITE_SUMMIT_INTENSIVE_SALES_ENABLED`   | Strategy & Build Intensive gate               |
 | `VITE_COMMAS_CHECKOUT_URL_GA`           | FanBasis GA checkout — $22                     |
 | `VITE_COMMAS_CHECKOUT_URL_VIP`          | FanBasis VIP checkout — $77                    |
-| `VITE_COMMAS_CHECKOUT_URL_VIP_UPGRADE`  | FanBasis VIP Upgrade — $55                     |
+| `VITE_COMMAS_CHECKOUT_URL_VIP_UPGRADE`  | FanBasis VIP Upgrade — $77                     |
 | `VITE_COMMAS_CHECKOUT_URL_VAULT`        | FanBasis Vault — $199                          |
 | `VITE_COMMAS_CHECKOUT_URL_INTENSIVE`    | FanBasis Intensive — $1,000                    |
 | `VITE_COMMAS_CHECKOUT_URL_KEYNOTE`      | Next keynote checkout (also needs date)       |
