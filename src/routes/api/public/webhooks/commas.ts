@@ -255,13 +255,13 @@ async function setTerminal(
   product?: string | null,
   paymentId?: string | null,
 ): Promise<boolean> {
-  const update: Record<string, unknown> = {
+  const update = {
     status,
     error,
     processed_at: new Date().toISOString(),
+    ...(product ? { product } : {}),
+    ...(paymentId ? { payment_id: paymentId } : {}),
   };
-  if (product) update.product = product;
-  if (paymentId) update.payment_id = paymentId;
   const { error: e } = await admin
     .from("summit_payment_events")
     .update(update)
