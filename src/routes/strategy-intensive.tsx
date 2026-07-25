@@ -83,6 +83,16 @@ function IntensiveContent() {
 
   return (
     <>
+      <ProductThankYou
+        verified={true}
+        eyebrow="Verified · Implementation Vault"
+        headline="Thank you, family — you added the Implementation Vault."
+        body="Your Vault access is confirmed. Below is your next optional step — the private 1-on-1 Strategy & Build Intensive."
+        videoUrl={cfg.sectionVideos.thankYouVault}
+        videoLabel="A note from the family — Vault welcome"
+        className="mt-6 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-6"
+      />
+
       <div className="mt-8">
         <h2 className="font-display text-2xl text-foreground">
           Book Your Private 1-on-1 Strategy &amp; Build Intensive
