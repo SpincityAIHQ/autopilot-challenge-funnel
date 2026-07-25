@@ -143,46 +143,70 @@ END $$;
 SELECT public._qa_toggle_entitlement((SELECT email FROM qa_ids), 'ga', false);
 
 
--- TEST 7: refund of the Vault purchase does NOT touch GA.
--- Use fulfill_summit_payment (security definer) so all writes go through
--- the same code path production fulfills through.
+-- TEST 7a: refund of the GA admission does NOT touch an independently paid Vault.
+-- Distinct QA email so no other scenario contaminates this assertion.
 DO $$
 DECLARE ids record;
 BEGIN
   SELECT * INTO ids FROM qa_ids;
-  PERFORM public.fulfill_summit_payment('ga', ids.pay_ga, 2200, 'USD',
-    'QA GA', ids.email, NULL, NULL, NULL);
-  PERFORM public.fulfill_summit_payment('vault', ids.pay_vault, 19900, 'USD',
-    'QA GA', ids.email, NULL, NULL, NULL);
-  PERFORM public.reverse_summit_payment(ids.pay_vault);
-  IF NOT EXISTS (SELECT 1 FROM public.entitlements
-                 WHERE buyer_email = ids.email
-                   AND product = 'ga' AND revoked_at IS NULL) THEN
-    RAISE EXCEPTION 'TEST7 FAIL: GA revoked by vault refund';
-  END IF;
+  PERFORM public.fulfill_summit_payment('ga', ids.pay_ga_a, 2200, 'USD',
+    'QA A', ids.email_a, NULL, NULL, NULL);
+  PERFORM public.fulfill_summit_payment('vault', ids.pay_vault_a, 19900, 'USD',
+    'QA A', ids.email_a, NULL, NULL, NULL);
+  PERFORM public.reverse_summit_payment(ids.pay_ga_a);
   IF EXISTS (SELECT 1 FROM public.entitlements
-             WHERE buyer_email = ids.email
-               AND product = 'vault' AND revoked_at IS NULL) THEN
-    RAISE EXCEPTION 'TEST7 FAIL: vault still active after refund';
+             WHERE buyer_email = ids.email_a
+               AND product = 'ga' AND revoked_at IS NULL) THEN
+    RAISE EXCEPTION 'TEST7a FAIL: GA still active after GA refund';
   END IF;
-  RAISE NOTICE 'TEST7 PASS vault refund preserves GA';
+  IF NOT EXISTS (SELECT 1 FROM public.entitlements
+                 WHERE buyer_email = ids.email_a
+                   AND product = 'vault' AND revoked_at IS NULL) THEN
+    RAISE EXCEPTION 'TEST7a FAIL: independently paid Vault revoked by GA refund';
+  END IF;
+  RAISE NOTICE 'TEST7a PASS GA refund preserves independent Vault';
 END $$;
 
--- TEST 8: VIP-upgrade refund preserves GA.
+-- TEST 7b: refund of the Vault purchase does NOT touch GA.
 DO $$
 DECLARE ids record;
 BEGIN
   SELECT * INTO ids FROM qa_ids;
-  PERFORM public.fulfill_summit_payment('vip_upgrade', ids.pay_vipup, 5500, 'USD',
-    'QA GA', ids.email, NULL, NULL, NULL);
-  PERFORM public.reverse_summit_payment(ids.pay_vipup);
+  PERFORM public.fulfill_summit_payment('ga', ids.pay_ga_b, 2200, 'USD',
+    'QA B', ids.email_b, NULL, NULL, NULL);
+  PERFORM public.fulfill_summit_payment('vault', ids.pay_vault_b, 19900, 'USD',
+    'QA B', ids.email_b, NULL, NULL, NULL);
+  PERFORM public.reverse_summit_payment(ids.pay_vault_b);
   IF NOT EXISTS (SELECT 1 FROM public.entitlements
-                 WHERE buyer_email = ids.email
+                 WHERE buyer_email = ids.email_b
+                   AND product = 'ga' AND revoked_at IS NULL) THEN
+    RAISE EXCEPTION 'TEST7b FAIL: GA revoked by vault refund';
+  END IF;
+  IF EXISTS (SELECT 1 FROM public.entitlements
+             WHERE buyer_email = ids.email_b
+               AND product = 'vault' AND revoked_at IS NULL) THEN
+    RAISE EXCEPTION 'TEST7b FAIL: vault still active after refund';
+  END IF;
+  RAISE NOTICE 'TEST7b PASS vault refund preserves GA';
+END $$;
+
+-- TEST 8: VIP-upgrade refund preserves GA. Distinct email per scenario.
+DO $$
+DECLARE ids record;
+BEGIN
+  SELECT * INTO ids FROM qa_ids;
+  PERFORM public.fulfill_summit_payment('ga', ids.pay_ga_c, 2200, 'USD',
+    'QA C', ids.email_c, NULL, NULL, NULL);
+  PERFORM public.fulfill_summit_payment('vip_upgrade', ids.pay_vipup_c, 5500, 'USD',
+    'QA C', ids.email_c, NULL, NULL, NULL);
+  PERFORM public.reverse_summit_payment(ids.pay_vipup_c);
+  IF NOT EXISTS (SELECT 1 FROM public.entitlements
+                 WHERE buyer_email = ids.email_c
                    AND product = 'ga' AND revoked_at IS NULL) THEN
     RAISE EXCEPTION 'TEST8 FAIL: GA revoked by vip-upgrade refund';
   END IF;
   IF EXISTS (SELECT 1 FROM public.entitlements
-             WHERE buyer_email = ids.email
+             WHERE buyer_email = ids.email_c
                AND product = 'vip' AND revoked_at IS NULL) THEN
     RAISE EXCEPTION 'TEST8 FAIL: VIP still active after upgrade refund';
   END IF;
