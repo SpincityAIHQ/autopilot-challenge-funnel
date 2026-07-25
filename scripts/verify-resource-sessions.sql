@@ -20,6 +20,9 @@ SELECT
   'qa+scen-b@nuamenti.test'                    AS email_b,
   'qa+scen-c@nuamenti.test'                    AS email_c,
   'qa+scen-d@nuamenti.test'                    AS email_d,
+  'qa+scen-e@nuamenti.test'                    AS email_e,
+  'qa+scen-f@nuamenti.test'                    AS email_f,
+  'qa+scen-g@nuamenti.test'                    AS email_g,
   'qa_hash_ga_'    || substr(md5(random()::text||random()::text),1,40) AS tok_ga,
   'qa_hash_vault_' || substr(md5(random()::text||random()::text),1,40) AS tok_vault,
   'qa_hash_exp_'   || substr(md5(random()::text||random()::text),1,40) AS tok_expired,
@@ -28,6 +31,8 @@ SELECT
   'qa_sess_a_'     || substr(md5(random()::text||random()::text),1,40) AS sess_a,
   'qa_sess_m_'     || substr(md5(random()::text||random()::text),1,40) AS sess_multi,
   'qa_sess_d_'     || substr(md5(random()::text||random()::text),1,40) AS sess_d,
+  'qa_pay_seed_ga_'    || substr(md5(random()::text||random()::text),1,40) AS pay_seed_ga,
+  'qa_pay_seed_vault_' || substr(md5(random()::text||random()::text),1,40) AS pay_seed_vault,
   'qa_pay_ga_a_'    || substr(md5(random()::text||random()::text),1,40) AS pay_ga_a,
   'qa_pay_vault_a_' || substr(md5(random()::text||random()::text),1,40) AS pay_vault_a,
   'qa_pay_ga_b_'    || substr(md5(random()::text||random()::text),1,40) AS pay_ga_b,
@@ -35,14 +40,27 @@ SELECT
   'qa_pay_ga_c_'    || substr(md5(random()::text||random()::text),1,40) AS pay_ga_c,
   'qa_pay_vipup_c_' || substr(md5(random()::text||random()::text),1,40) AS pay_vipup_c,
   'qa_pay_ga_d_'    || substr(md5(random()::text||random()::text),1,40) AS pay_ga_d,
-  'qa_pay_vault_d_' || substr(md5(random()::text||random()::text),1,40) AS pay_vault_d;
+  'qa_pay_vault_d_' || substr(md5(random()::text||random()::text),1,40) AS pay_vault_d,
+  -- TEST9: Vault repurchase after refund (out-of-order duplicate refund).
+  'qa_pay_ga_e_'      || substr(md5(random()::text||random()::text),1,40) AS pay_ga_e,
+  'qa_pay_vault_e1_'  || substr(md5(random()::text||random()::text),1,40) AS pay_vault_e1,
+  'qa_pay_vault_e2_'  || substr(md5(random()::text||random()::text),1,40) AS pay_vault_e2,
+  -- TEST10: VIP-upgrade repurchase after refund.
+  'qa_pay_ga_f_'      || substr(md5(random()::text||random()::text),1,40) AS pay_ga_f,
+  'qa_pay_vipup_f1_'  || substr(md5(random()::text||random()::text),1,40) AS pay_vipup_f1,
+  'qa_pay_vipup_f2_'  || substr(md5(random()::text||random()::text),1,40) AS pay_vipup_f2,
+  -- TEST11: Intensive repurchase after refund.
+  'qa_pay_ga_g_'         || substr(md5(random()::text||random()::text),1,40) AS pay_ga_g,
+  'qa_pay_intensive_g1_' || substr(md5(random()::text||random()::text),1,40) AS pay_intensive_g1,
+  'qa_pay_intensive_g2_' || substr(md5(random()::text||random()::text),1,40) AS pay_intensive_g2;
 
 
--- Seed: two independent entitlements (GA and Vault) for one buyer.
-INSERT INTO public.entitlements (buyer_email, product)
-SELECT email, 'ga'    FROM qa_ids
+-- Seed: two independent entitlements (GA and Vault) for one buyer, each with
+-- its own source_payment_id so the new provenance model accepts them.
+INSERT INTO public.entitlements (buyer_email, product, source_payment_id)
+SELECT email, 'ga',    pay_seed_ga    FROM qa_ids
 UNION ALL
-SELECT email, 'vault' FROM qa_ids;
+SELECT email, 'vault', pay_seed_vault FROM qa_ids;
 
 -- Seed tokens: two live, one expired, one revoked.
 INSERT INTO public.access_tokens (token_hash, buyer_email, scope, expires_at)
@@ -54,6 +72,7 @@ SELECT tok_expired, email, 'ga',    now() - interval '1 hour' FROM qa_ids;
 
 INSERT INTO public.access_tokens (token_hash, buyer_email, scope, expires_at, revoked_at)
 SELECT tok_revoked, email, 'ga', now() + interval '1 hour', now() FROM qa_ids;
+
 
 -- ------------------------------------------------------------------
 -- TEST 1: first exchange succeeds; scopes include both GA and Vault.
