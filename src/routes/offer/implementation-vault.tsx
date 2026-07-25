@@ -80,6 +80,16 @@ function VaultContent() {
     );
   return (
     <>
+      <ProductThankYou
+        verified={true}
+        eyebrow="Verified · VIP Implementation Experience"
+        headline="Thank you, family — you added the VIP Implementation Experience."
+        body="Your VIP add-on is confirmed. Below is your next optional step — the Implementation Vault."
+        videoUrl={cfg.sectionVideos.thankYouVip}
+        videoLabel="A note from the family — VIP welcome"
+        className="mt-6 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-6"
+      />
+
       <div className="mt-8">
         <h2 className="font-display text-2xl text-foreground">{v.name}</h2>
         <p className="mt-2 text-sm text-muted-foreground">
