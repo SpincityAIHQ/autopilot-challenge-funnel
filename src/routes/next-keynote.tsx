@@ -111,7 +111,14 @@ function NextKeynote() {
             role="status"
             className="rounded-md border border-border bg-secondary/30 p-4 text-sm text-muted-foreground"
           >
-            Thank you, family — you're on the priority list.
+            Thank you, family — your request is recorded. When the next
+            keynote is announced, we'll send you the single announcement
+            message you asked for and nothing else. Broader marketing is
+            separate and always optional on{" "}
+            <Link to="/communication-preferences" className="underline">
+              your communication preferences
+            </Link>
+            .
           </p>
           <Link
             to="/next-steps"
