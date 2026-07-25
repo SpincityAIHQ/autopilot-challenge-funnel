@@ -33,8 +33,10 @@ export interface CommasConfig {
   urls: Partial<Record<ProductId, string>>;
   sectionVideos: SectionVideoUrls;
   salesEnabled: boolean;
+  legalReady: boolean;
   upsellsEnabled: boolean;
   intensiveSalesEnabled: boolean;
+  keynoteSalesEnabled: boolean;
   allowedHosts: readonly string[];
   keynote: KeynoteConfig;
 }
@@ -70,9 +72,12 @@ export function getCommasConfig(): CommasConfig {
       confirmedThankYou: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU"),
     },
     salesEnabled: readEnv("VITE_SUMMIT_SALES_ENABLED") === "true",
+    legalReady: readEnv("VITE_SUMMIT_LEGAL_READY") === "true",
     upsellsEnabled: readEnv("VITE_SUMMIT_UPSELLS_ENABLED") === "true",
     intensiveSalesEnabled:
       readEnv("VITE_SUMMIT_INTENSIVE_SALES_ENABLED") === "true",
+    keynoteSalesEnabled:
+      readEnv("VITE_SUMMIT_KEYNOTE_SALES_ENABLED") === "true",
     allowedHosts: parseAllowedHosts(
       readEnv("VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS"),
     ),
@@ -84,6 +89,8 @@ export function getCommasConfig(): CommasConfig {
     },
   };
 }
+
+// Duplicate readEnv/parseAllowedHosts removed below.
 
 
 export function isAllowedCheckoutUrl(
