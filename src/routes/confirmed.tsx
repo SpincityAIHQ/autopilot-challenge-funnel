@@ -4,6 +4,7 @@ import { VideoSlot } from "@/components/VideoSlot";
 import { getCommasConfig } from "@/lib/challenge-config";
 import { getConfirmationContent } from "@/lib/funnel-content";
 import { UPSELLS, formatUsd, isTierId, type AdmissionTierId } from "@/lib/tiers";
+import { CONFIRMATION_CONTENT } from "@/lib/funnel-content";
 
 const searchSchema = z.object({
   tier: z.enum(["ga", "vip"]).optional(),
@@ -116,6 +117,26 @@ function Confirmed() {
         </ul>
       </section>
 
+      {tier === "ga" && CONFIRMATION_CONTENT.ga.showVipUpgrade ? (
+        <section className="mt-10 surface-raised p-6 border-[color:var(--gold)]">
+          <p className="eyebrow">GA only — upgrade offer</p>
+          <h2 className="mt-2 font-heading text-xl text-foreground">
+            Upgrade GA → VIP — {formatUsd(UPSELLS.vip_upgrade.priceCents)}
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {UPSELLS.vip_upgrade.summary}
+          </p>
+          <div className="mt-5">
+            <Link
+              to="/offer/vip-upgrade"
+              className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+            >
+              Upgrade to VIP — {formatUsd(UPSELLS.vip_upgrade.priceCents)}
+            </Link>
+          </div>
+        </section>
+      ) : null}
+
       <section className="mt-10 surface-raised p-6 border-[color:var(--gold)]">
         <p className="eyebrow">Add now — save later</p>
         <h2 className="mt-2 font-heading text-xl text-foreground">
@@ -129,13 +150,13 @@ function Confirmed() {
         </ul>
         <div className="mt-5 flex flex-wrap gap-3">
           <Link
-            to="/vault"
+            to="/offer/implementation-vault"
             className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
           >
             See the Vault — {formatUsd(vault.priceCents)}
           </Link>
           <Link
-            to="/keynote"
+            to="/offer/keynote"
             className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
           >
             No thanks — take me to the next keynote
