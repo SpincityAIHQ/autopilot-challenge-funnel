@@ -28,6 +28,8 @@ export const Route = createFileRoute("/next-keynote")({
 
 function NextKeynote() {
   const cfg = getCommasConfig();
+  const keynoteUrl = resolveKeynoteCheckoutUrl(cfg);
+  const keynoteHandoffOn = isKeynoteHandoffAllowed(cfg);
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -39,6 +41,15 @@ function NextKeynote() {
     setError(null);
     if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
       setError("Enter a valid email address.");
+      return;
+    }
+    // Consent is the announcement request — we don't add anyone to a
+    // notification list without an explicit, checked opt-in for this
+    // single, transactional keynote-announcement message.
+    if (!consent) {
+      setError(
+        "Please check the box to request the one keynote-announcement message.",
+      );
       return;
     }
     setSubmitting(true);
@@ -72,21 +83,25 @@ function NextKeynote() {
       </h1>
       <p className="mt-3 text-muted-foreground">
         We don't have a public date, price, or checkout for the next keynote
-        yet. Add your email and we'll notify the family first. Skipping this
+        yet. If you check the box below, we'll send you one transactional
+        announcement message when it's live — nothing else. Skipping this
         list does not affect your Summit ticket or Vault access.
       </p>
 
-      {cfg.keynote.announced ? (
+      {cfg.keynote.announced && keynoteHandoffOn && keynoteUrl ? (
         <p className="mt-4 rounded-md border border-[color:var(--gold)] bg-secondary/30 p-4 text-sm text-foreground">
           Announced for {cfg.keynote.dateIso} — {cfg.keynote.price ?? ""}.{" "}
-          {cfg.keynote.checkoutUrl ? (
-            <a
-              href={cfg.keynote.checkoutUrl}
-              className="underline text-[color:var(--gold)]"
-            >
-              Reserve your seat →
-            </a>
-          ) : null}
+          <a
+            href={keynoteUrl}
+            className="underline text-[color:var(--gold)]"
+            rel="noopener noreferrer"
+          >
+            Reserve your seat →
+          </a>
+        </p>
+      ) : cfg.keynote.announced ? (
+        <p className="mt-4 rounded-md border border-border bg-secondary/20 p-4 text-xs text-muted-foreground">
+          Reservations open once the keynote checkout is finalized.
         </p>
       ) : null}
 
