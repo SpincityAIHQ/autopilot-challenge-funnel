@@ -142,13 +142,17 @@ function NextKeynote() {
           <label className="flex items-start gap-2 text-xs text-muted-foreground">
             <input
               type="checkbox"
+              required
               checked={consent}
               onChange={(e) => setConsent(e.target.checked)}
               className="mt-1 accent-[color:var(--gold)]"
+              aria-describedby="keynote-consent-copy"
             />
-            <span>
-              I want NuAmenti to email me when the next keynote is announced.
-              Optional; unsubscribe anytime from any email.
+            <span id="keynote-consent-copy">
+              Please send me the one keynote-announcement message when the
+              next NuAmenti keynote is live. This is a single transactional
+              message tied to this request — it is not broader marketing,
+              and it is not required to keep your Summit ticket.
             </span>
           </label>
           {error ? (
