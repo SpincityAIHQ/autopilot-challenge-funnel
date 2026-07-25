@@ -120,7 +120,7 @@ REQUIRED_ROUTES=(
   "src/routes/offer/implementation-vault.tsx"
   "src/routes/next-keynote.tsx"
   "src/routes/next-steps.tsx"
-  "src/routes/apply/mentorship.tsx"
+  "src/routes/apply.mentorship.tsx"
   "src/routes/strategy-intensive.tsx"
   "src/routes/api/public/resources/exchange.ts"
   "src/routes/api/public/resources/read.ts"
