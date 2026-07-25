@@ -8,8 +8,10 @@ import {
 
 const cfg = {
   salesEnabled: true,
+  legalReady: true,
   upsellsEnabled: true,
   intensiveSalesEnabled: true,
+  keynoteSalesEnabled: true,
   allowedHosts: DEFAULT_COMMAS_CHECKOUT_HOSTS,
   sectionVideos: {},
   keynote: { announced: false },
