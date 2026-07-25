@@ -1,13 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getCookie } from "@tanstack/react-start/server";
 import { hashToken } from "@/lib/access-tokens.server";
-import { assertSameOrigin, callerId, rateLimit } from "@/lib/rate-limit";
+import { assertSameOrigin, consumeRateLimit } from "@/lib/rate-limit";
 
 /**
- * Entitlement summary — same-origin, no-store, rate-limited.
+ * Entitlement summary — same-origin, no-store, DURABLE rate-limited.
  * Reads the HttpOnly resource session cookie set by /exchange and returns
  * ONLY the current product scopes for the active buyer. No PII, no email,
  * no expiry timestamps beyond the derived active flag. Never logs bodies.
+ *
+ * Rate limiter: uses the shared DB-backed limiter keyed by HMAC(IP).
+ * Fails closed with HTTP 503 when RATE_LIMIT_HMAC_SECRET is unset —
+ * never degrades to an in-memory limiter that resets on Worker restart.
  *
  * Every response path sets Cache-Control: private, no-store.
  */
@@ -37,7 +41,9 @@ export const Route = createFileRoute("/api/public/resources/entitlement-summary"
     handlers: {
       GET: async ({ request }) => {
         if (!assertSameOrigin(request)) return respond(403, "Forbidden");
-        const rl = rateLimit(`entsum:${callerId(request)}`, 60, 60);
+        const rlSecret = process.env.RATE_LIMIT_HMAC_SECRET ?? "";
+        if (!rlSecret) return respond(503, "Service unavailable");
+        const rl = await consumeRateLimit(request, "entsum", 60, 60, rlSecret);
         if (!rl.ok) {
           const h = noStore();
           h.set("retry-after", String(rl.retryAfterSeconds));
