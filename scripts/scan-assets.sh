@@ -120,6 +120,9 @@ REQUIRED_ROUTES=(
   "src/routes/offer/mentorship.tsx"
   "src/routes/offer/keynote.tsx"
   "src/routes/next-keynote.tsx"
+  "src/routes/api/public/resources/exchange.ts"
+  "src/routes/api/public/resources/read.ts"
+  "src/routes/api/public/resources/logout.ts"
 )
 for r in "${REQUIRED_ROUTES[@]}"; do
   if [[ -f "$r" ]]; then say_pass "route present: $r"

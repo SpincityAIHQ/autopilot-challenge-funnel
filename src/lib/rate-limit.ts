@@ -1,21 +1,132 @@
 /**
- * Minimal in-memory sliding-window rate limiter for public form endpoints.
- * Best-effort; the source of truth is per-record uniqueness in Postgres.
- * Enough to slow spam without depending on external infrastructure.
+ * Same-origin gate + rate-limit helpers.
+ *
+ * Same-origin: fail closed. A cross-origin browser fetch always sends
+ * either an Origin or Referer header; if BOTH are missing on a POST we
+ * refuse. The signed Commas webhook does NOT call assertSameOrigin —
+ * its HMAC signature over the raw body is the sole authority.
+ *
+ * Rate limiting comes in two flavours:
+ *  - consumeRateLimit(request, name, limit, windowSeconds, secret):
+ *      durable, DB-backed, safe across multiple worker instances.
+ *      Stores ONLY an HMAC of the caller identity, never a raw IP.
+ *      This is the production limiter for browser-facing POST endpoints.
+ *      Requires RATE_LIMIT_HMAC_SECRET; sensitive callers (exchange,
+ *      communication-preferences) must fail closed when the secret is
+ *      missing rather than silently downgrading.
+ *  - rateLimit(key, limit, windowSeconds): in-memory sliding-window,
+ *      retained only for unit tests. Never call from production endpoints.
  */
 
-interface Bucket {
-  count: number;
-  resetAt: number;
+import { createHmac } from "node:crypto";
+
+// ---------- Same-origin ----------
+
+export function assertSameOrigin(request: Request): boolean {
+  const origin = request.headers.get("origin");
+  const referer = request.headers.get("referer");
+  // Fail closed: a legitimate browser-initiated fetch always sends at
+  // least one of Origin or Referer. Reject when both are absent so a
+  // scripted or curl-style POST cannot slip past the check.
+  if (!origin && !referer) return false;
+  const host = request.headers.get("host") ?? "";
+  const src = origin ?? referer ?? "";
+  try {
+    return new URL(src).host === host;
+  } catch {
+    return false;
+  }
 }
 
-const BUCKETS: Map<string, Bucket> = new Map();
+// ---------- Caller identity (never stored raw) ----------
+
+function rawCallerId(request: Request): string {
+  const h = request.headers;
+  return (
+    h.get("cf-connecting-ip") ??
+    h.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    h.get("x-real-ip") ??
+    "unknown"
+  );
+}
+
+/**
+ * Deterministic HMAC over the caller IP + bucket name. The raw IP never
+ * leaves this function; only the hex digest is passed to the DB limiter.
+ */
+export function hashCaller(
+  request: Request,
+  bucket: string,
+  secret: string,
+): string {
+  return createHmac("sha256", secret)
+    .update(`${bucket}\n${rawCallerId(request)}`)
+    .digest("hex");
+}
+
+// Legacy — retained ONLY for tests.
+export function callerId(request: Request): string {
+  return rawCallerId(request);
+}
+
+// ---------- Rate-limit result shape ----------
 
 export interface RateLimitResult {
   ok: boolean;
   retryAfterSeconds: number;
 }
 
+// ---------- Durable, DB-backed limiter (production) ----------
+
+/**
+ * Consume one token from the shared server-side rate-limit store.
+ *
+ * Returns `{ ok: false, retryAfterSeconds: windowSeconds }` on any
+ * transport/database error so endpoints fail closed rather than opening
+ * up under partial infrastructure failure.
+ *
+ * `secret` must be a non-empty string; callers that treat the secret as
+ * required (exchange, communication-preferences) MUST reject the request
+ * upstream before invoking this helper when the secret is absent.
+ */
+export async function consumeRateLimit(
+  request: Request,
+  bucket: string,
+  limit: number,
+  windowSeconds: number,
+  secret: string,
+): Promise<RateLimitResult> {
+  if (!secret) return { ok: false, retryAfterSeconds: windowSeconds };
+  const keyHash = hashCaller(request, bucket, secret);
+  try {
+    const { supabaseAdmin } = await import(
+      "@/integrations/supabase/client.server"
+    );
+    const { data, error } = await supabaseAdmin.rpc("consume_rate_limit", {
+      _key_hash: keyHash,
+      _limit: limit,
+      _window_seconds: windowSeconds,
+    });
+    if (error) return { ok: false, retryAfterSeconds: windowSeconds };
+    const row = Array.isArray(data) ? data[0] : data;
+    return {
+      ok: Boolean(row?.ok),
+      retryAfterSeconds: Number(row?.retry_after ?? 0),
+    };
+  } catch {
+    return { ok: false, retryAfterSeconds: windowSeconds };
+  }
+}
+
+// ---------- In-memory limiter (tests only) ----------
+
+interface Bucket {
+  count: number;
+  resetAt: number;
+}
+const BUCKETS: Map<string, Bucket> = new Map();
+
+/** @deprecated Use consumeRateLimit in production. Kept for unit tests. */
 export function rateLimit(
   key: string,
   limit: number,
@@ -28,32 +139,11 @@ export function rateLimit(
     return { ok: true, retryAfterSeconds: 0 };
   }
   if (b.count >= limit) {
-    return { ok: false, retryAfterSeconds: Math.ceil((b.resetAt - now) / 1000) };
+    return {
+      ok: false,
+      retryAfterSeconds: Math.ceil((b.resetAt - now) / 1000),
+    };
   }
   b.count += 1;
   return { ok: true, retryAfterSeconds: 0 };
-}
-
-/** Best-effort caller id from headers; never used for auth. */
-export function callerId(request: Request): string {
-  const h = request.headers;
-  return (
-    h.get("cf-connecting-ip") ??
-    h.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    h.get("x-real-ip") ??
-    "unknown"
-  );
-}
-
-export function assertSameOrigin(request: Request): boolean {
-  const origin = request.headers.get("origin");
-  const referer = request.headers.get("referer");
-  if (!origin && !referer) return true; // same-origin POST from server-generated form
-  const host = request.headers.get("host") ?? "";
-  const src = origin ?? referer ?? "";
-  try {
-    return new URL(src).host === host;
-  } catch {
-    return false;
-  }
 }

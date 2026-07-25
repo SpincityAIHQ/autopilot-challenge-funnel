@@ -1,10 +1,10 @@
 import { describe, expect, it } from "bun:test";
-import { rateLimit, assertSameOrigin } from "@/lib/rate-limit";
+import { rateLimit, assertSameOrigin, hashCaller } from "@/lib/rate-limit";
 import { isMailchimpReady } from "@/lib/mailchimp";
 import { isSmsReady, isStopKeyword, isHelpKeyword } from "@/lib/sms";
 import { isAiCallReady } from "@/lib/ai-call";
 
-describe("rateLimit", () => {
+describe("rateLimit (legacy in-memory, tests only)", () => {
   it("allows up to `limit` requests then blocks with retry-after", () => {
     const k = "test-" + Math.random();
     for (let i = 0; i < 3; i++) expect(rateLimit(k, 3, 60).ok).toBe(true);
@@ -14,17 +14,47 @@ describe("rateLimit", () => {
   });
 });
 
-describe("assertSameOrigin", () => {
-  it("returns true when there is no origin/referer", () => {
-    expect(assertSameOrigin(new Request("http://localhost/x"))).toBe(true);
+describe("hashCaller", () => {
+  it("returns a 64-char hex HMAC and never leaks the raw IP", () => {
+    const r = new Request("http://localhost/x", {
+      headers: { "x-forwarded-for": "203.0.113.7", host: "localhost" },
+    });
+    const h = hashCaller(r, "exchange", "test-secret-abcdef1234567890");
+    expect(h).toMatch(/^[a-f0-9]{64}$/);
+    expect(h).not.toContain("203.0.113.7");
   });
-  it("returns true for same host", () => {
+  it("is deterministic per (bucket, ip, secret) and bucket-scoped", () => {
+    const mk = () =>
+      new Request("http://localhost/x", {
+        headers: { "x-forwarded-for": "203.0.113.7", host: "localhost" },
+      });
+    const s = "test-secret-abcdef1234567890";
+    expect(hashCaller(mk(), "exchange", s)).toBe(hashCaller(mk(), "exchange", s));
+    expect(hashCaller(mk(), "exchange", s)).not.toBe(hashCaller(mk(), "read", s));
+  });
+});
+
+
+describe("assertSameOrigin — fail-closed", () => {
+  it("returns FALSE when both Origin and Referer are absent (fail closed)", () => {
+    // A legitimate browser fetch always sends at least one of these
+    // headers on a POST; a request with neither is treated as suspicious
+    // (curl, script, non-browser client) and rejected.
+    expect(assertSameOrigin(new Request("http://localhost/x"))).toBe(false);
+  });
+  it("returns true when Origin matches Host", () => {
     const r = new Request("http://localhost/x", {
       headers: { origin: "http://localhost", host: "localhost" },
     });
     expect(assertSameOrigin(r)).toBe(true);
   });
-  it("returns false for different host", () => {
+  it("returns true when only Referer is present and its host matches", () => {
+    const r = new Request("http://localhost/x", {
+      headers: { referer: "http://localhost/prev", host: "localhost" },
+    });
+    expect(assertSameOrigin(r)).toBe(true);
+  });
+  it("returns false when Origin host differs from request host", () => {
     const r = new Request("http://localhost/x", {
       headers: { origin: "http://evil.com", host: "localhost" },
     });

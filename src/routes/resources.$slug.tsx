@@ -35,8 +35,10 @@ function ResourcePreview() {
     "idle" | "exchanging" | "loading" | "denied" | "expired" | "error"
   >("idle");
 
-  // On mount: if ?t=magic-token is present, exchange it for a session
-  // cookie (single-use, HttpOnly). Then strip ?t from the address bar.
+  // On mount: if ?t=magic-token is present, IMMEDIATELY strip it from
+  // the visible URL (before any await, before any network call). The
+  // raw token is kept only in a local variable for the exchange POST
+  // and is never handed to analytics, logging, or history.
   useEffect(() => {
     if (typeof window === "undefined") return;
     const url = new URL(window.location.href);
@@ -46,6 +48,12 @@ function ResourcePreview() {
       loadResource();
       return;
     }
+    // Strip ?t synchronously so a screenshot / logger / referer / analytics
+    // beacon captured after this tick can never see it. Do this BEFORE we
+    // await the exchange response.
+    url.searchParams.delete("t");
+    window.history.replaceState({}, "", url.toString());
+
     setStatus("exchanging");
     fetch("/api/public/resources/exchange", {
       method: "POST",
@@ -54,9 +62,6 @@ function ResourcePreview() {
       body: JSON.stringify({ token: t }),
     })
       .then(async (res) => {
-        // Always strip ?t so the token can't be re-shared/re-tried from the URL.
-        url.searchParams.delete("t");
-        window.history.replaceState({}, "", url.toString());
         if (res.status === 401) {
           setStatus("denied");
           return;
@@ -68,8 +73,6 @@ function ResourcePreview() {
         loadResource();
       })
       .catch(() => {
-        url.searchParams.delete("t");
-        window.history.replaceState({}, "", url.toString());
         setStatus("error");
       });
   }, [meta.slug]);

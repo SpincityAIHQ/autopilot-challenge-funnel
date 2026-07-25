@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import { assertSameOrigin, callerId, rateLimit } from "@/lib/rate-limit";
+import { assertSameOrigin, consumeRateLimit } from "@/lib/rate-limit";
 
 const bodySchema = z.object({
   email: z.string().trim().email().max(255),
@@ -21,7 +21,11 @@ export const Route = createFileRoute("/api/public/keynote-waitlist")({
         if (!assertSameOrigin(request)) {
           return new Response("Forbidden", { status: 403, headers: NO_STORE });
         }
-        const rl = rateLimit(`keynote:${callerId(request)}`, 5, 60);
+        const rlSecret = process.env.RATE_LIMIT_HMAC_SECRET ?? "";
+        if (!rlSecret) {
+          return new Response("Service unavailable", { status: 503, headers: NO_STORE });
+        }
+        const rl = await consumeRateLimit(request, "keynote", 5, 60, rlSecret);
         if (!rl.ok) {
           return new Response("Too many requests", {
             status: 429,

@@ -38,6 +38,7 @@ import { Route as ApiPublicKeynoteWaitlistRouteImport } from './routes/api/publi
 import { Route as ApiPublicCommunicationPreferencesRouteImport } from './routes/api/public/communication-preferences'
 import { Route as ApiPublicWebhooksCommasRouteImport } from './routes/api/public/webhooks/commas'
 import { Route as ApiPublicResourcesReadRouteImport } from './routes/api/public/resources/read'
+import { Route as ApiPublicResourcesLogoutRouteImport } from './routes/api/public/resources/logout'
 import { Route as ApiPublicResourcesExchangeRouteImport } from './routes/api/public/resources/exchange'
 import { Route as ApiPublicResourcesEntitlementSummaryRouteImport } from './routes/api/public/resources/entitlement-summary'
 
@@ -191,6 +192,12 @@ const ApiPublicResourcesReadRoute = ApiPublicResourcesReadRouteImport.update({
   path: '/api/public/resources/read',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicResourcesLogoutRoute =
+  ApiPublicResourcesLogoutRouteImport.update({
+    id: '/api/public/resources/logout',
+    path: '/api/public/resources/logout',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicResourcesExchangeRoute =
   ApiPublicResourcesExchangeRouteImport.update({
     id: '/api/public/resources/exchange',
@@ -234,6 +241,7 @@ export interface FileRoutesByFullPath {
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
+  '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
 }
@@ -267,6 +275,7 @@ export interface FileRoutesByTo {
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
+  '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
 }
@@ -301,6 +310,7 @@ export interface FileRoutesById {
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
+  '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
 }
@@ -336,6 +346,7 @@ export interface FileRouteTypes {
     | '/api/public/mentorship-application'
     | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
+    | '/api/public/resources/logout'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
   fileRoutesByTo: FileRoutesByTo
@@ -369,6 +380,7 @@ export interface FileRouteTypes {
     | '/api/public/mentorship-application'
     | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
+    | '/api/public/resources/logout'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
   id:
@@ -402,6 +414,7 @@ export interface FileRouteTypes {
     | '/api/public/mentorship-application'
     | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
+    | '/api/public/resources/logout'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
   fileRoutesById: FileRoutesById
@@ -435,6 +448,7 @@ export interface RootRouteChildren {
   ApiPublicMentorshipApplicationRoute: typeof ApiPublicMentorshipApplicationRoute
   ApiPublicResourcesEntitlementSummaryRoute: typeof ApiPublicResourcesEntitlementSummaryRoute
   ApiPublicResourcesExchangeRoute: typeof ApiPublicResourcesExchangeRoute
+  ApiPublicResourcesLogoutRoute: typeof ApiPublicResourcesLogoutRoute
   ApiPublicResourcesReadRoute: typeof ApiPublicResourcesReadRoute
   ApiPublicWebhooksCommasRoute: typeof ApiPublicWebhooksCommasRoute
 }
@@ -644,6 +658,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicResourcesReadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/resources/logout': {
+      id: '/api/public/resources/logout'
+      path: '/api/public/resources/logout'
+      fullPath: '/api/public/resources/logout'
+      preLoaderRoute: typeof ApiPublicResourcesLogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/resources/exchange': {
       id: '/api/public/resources/exchange'
       path: '/api/public/resources/exchange'
@@ -704,6 +725,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicResourcesEntitlementSummaryRoute:
     ApiPublicResourcesEntitlementSummaryRoute,
   ApiPublicResourcesExchangeRoute: ApiPublicResourcesExchangeRoute,
+  ApiPublicResourcesLogoutRoute: ApiPublicResourcesLogoutRoute,
   ApiPublicResourcesReadRoute: ApiPublicResourcesReadRoute,
   ApiPublicWebhooksCommasRoute: ApiPublicWebhooksCommasRoute,
 }

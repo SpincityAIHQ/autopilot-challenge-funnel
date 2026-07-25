@@ -380,24 +380,47 @@ SELECT 'in_txn_tokens' AS what, count(*) AS n
 ROLLBACK;
 
 -- Post-rollback persistence check: MUST be zero across every QA email.
-\set qa_emails '''qa+verify@nuamenti.test'',''qa+scen-a@nuamenti.test'',''qa+scen-b@nuamenti.test'',''qa+scen-c@nuamenti.test'',''qa+scen-d@nuamenti.test'',''qa+scen-e@nuamenti.test'',''qa+scen-f@nuamenti.test'',''qa+scen-g@nuamenti.test'''
+-- This DO block RAISEs (nonzero psql exit under -v ON_ERROR_STOP=1) if
+-- any of the six protected tables retained a QA row. Printing counts is
+-- not sufficient — the release pipeline must fail loudly.
+DO $$
+DECLARE
+  qa_emails text[] := ARRAY[
+    'qa+verify@nuamenti.test',
+    'qa+scen-a@nuamenti.test',
+    'qa+scen-b@nuamenti.test',
+    'qa+scen-c@nuamenti.test',
+    'qa+scen-d@nuamenti.test',
+    'qa+scen-e@nuamenti.test',
+    'qa+scen-f@nuamenti.test',
+    'qa+scen-g@nuamenti.test'
+  ];
+  n_tokens int;
+  n_regs int;
+  n_vault int;
+  n_vipup int;
+  n_ent int;
+  n_intensive int;
+BEGIN
+  SELECT count(*) INTO n_tokens    FROM public.access_tokens         WHERE buyer_email = ANY(qa_emails);
+  SELECT count(*) INTO n_regs      FROM public.summit_registrations  WHERE email       = ANY(qa_emails);
+  SELECT count(*) INTO n_vault     FROM public.summit_vault_purchases WHERE buyer_email = ANY(qa_emails);
+  SELECT count(*) INTO n_vipup     FROM public.summit_vip_upgrades   WHERE buyer_email = ANY(qa_emails);
+  SELECT count(*) INTO n_ent       FROM public.entitlements          WHERE buyer_email = ANY(qa_emails);
+  SELECT count(*) INTO n_intensive FROM public.intensive_slots       WHERE buyer_email = ANY(qa_emails);
 
-SELECT 'persisted_tokens'   AS what, count(*) AS n
-  FROM public.access_tokens WHERE buyer_email IN (:qa_emails);
+  RAISE NOTICE 'persistence check: tokens=% regs=% vault=% vipup=% ent=% intensive=%',
+    n_tokens, n_regs, n_vault, n_vipup, n_ent, n_intensive;
 
-SELECT 'persisted_regs'     AS what, count(*) AS n
-  FROM public.summit_registrations WHERE email IN (:qa_emails);
+  IF n_tokens    <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: access_tokens leaked % QA rows',         n_tokens; END IF;
+  IF n_regs      <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: summit_registrations leaked % QA rows',  n_regs; END IF;
+  IF n_vault     <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: summit_vault_purchases leaked % QA rows', n_vault; END IF;
+  IF n_vipup     <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: summit_vip_upgrades leaked % QA rows',   n_vipup; END IF;
+  IF n_ent       <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: entitlements leaked % QA rows',          n_ent; END IF;
+  IF n_intensive <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: intensive_slots leaked % QA rows',       n_intensive; END IF;
 
-SELECT 'persisted_vault'    AS what, count(*) AS n
-  FROM public.summit_vault_purchases WHERE buyer_email IN (:qa_emails);
+  RAISE NOTICE 'PERSISTENCE OK: 0 QA rows across all protected tables';
+END $$;
 
-SELECT 'persisted_vipup'    AS what, count(*) AS n
-  FROM public.summit_vip_upgrades WHERE buyer_email IN (:qa_emails);
-
-SELECT 'persisted_ent'      AS what, count(*) AS n
-  FROM public.entitlements WHERE buyer_email IN (:qa_emails);
-
-SELECT 'persisted_intensive' AS what, count(*) AS n
-  FROM public.intensive_slots WHERE buyer_email IN (:qa_emails);
 
   

@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import { assertSameOrigin, callerId, rateLimit } from "@/lib/rate-limit";
+import { assertSameOrigin, consumeRateLimit } from "@/lib/rate-limit";
 import { CONSENT_COPY, CONSENT_COPY_VERSION } from "@/lib/consent";
 
 /**
  * Communication preferences POST endpoint.
- * - Same-origin, size-limited, rate-limited.
+ * - Same-origin required (fails closed when both Origin and Referer absent).
+ * - RATE_LIMIT_HMAC_SECRET REQUIRED (sensitive consent endpoint).
+ *   Missing → 503, refuse to process.
+ * - Size-limited, rate-limited via durable DB store.
  * - Validates input; never logs bodies.
  * - Writes one row per channel to public.marketing_consents with copy_version
  *   and (for sms/ai_call) phone.
@@ -50,7 +53,10 @@ export const Route = createFileRoute("/api/public/communication-preferences")({
     handlers: {
       POST: async ({ request }) => {
         if (!assertSameOrigin(request)) return respond(403, "Forbidden");
-        const rl = rateLimit(`commprefs:${callerId(request)}`, 10, 60);
+
+        const rlSecret = process.env.RATE_LIMIT_HMAC_SECRET ?? "";
+        if (!rlSecret) return respond(503, "Service unavailable");
+        const rl = await consumeRateLimit(request, "commprefs", 10, 60, rlSecret);
         if (!rl.ok) {
           const h = noStore();
           h.set("retry-after", String(rl.retryAfterSeconds));
@@ -71,8 +77,6 @@ export const Route = createFileRoute("/api/public/communication-preferences")({
         const { email, phone, channels } = parsed.data;
         const phoneClean = phone && phone.length > 0 ? phone : null;
 
-        // Require phone if user opted into sms/ai_call. Never store consent
-        // without contact identifier.
         if ((channels.sms || channels.ai_call) && !phoneClean) {
           return respond(400, "Bad request");
         }
@@ -95,7 +99,6 @@ export const Route = createFileRoute("/api/public/communication-preferences")({
             phone: ch === "email" ? null : phoneClean,
           };
         });
-
 
         const { error } = await supabaseAdmin
           .from("marketing_consents")
