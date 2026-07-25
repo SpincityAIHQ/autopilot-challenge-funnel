@@ -7,6 +7,7 @@ import {
 } from "@/lib/challenge-config";
 import { useIntensiveSlotsRemaining } from "@/hooks/use-intensive-slots";
 import { OfferGate } from "@/components/OfferGate";
+import { ProductThankYou } from "@/components/ProductThankYou";
 import { TestimonialSection } from "@/components/TestimonialSection";
 
 export const Route = createFileRoute("/strategy-intensive")({
