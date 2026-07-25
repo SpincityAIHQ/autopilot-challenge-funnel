@@ -8,6 +8,7 @@ import {
   isHandoffAllowed,
 } from "@/lib/challenge-config";
 import { TestimonialSection } from "@/components/TestimonialSection";
+import { useQaReviewMode } from "@/hooks/use-qa-review";
 
 /**
  * Sequential ascension funnel — checkout page.
@@ -16,8 +17,9 @@ import { TestimonialSection } from "@/components/TestimonialSection";
  * implementation experiences are offered ONLY after verified GA purchase.
  */
 const searchSchema = z.object({
-  // Accept any string so legacy links don't error; we always render GA.
+  // Accept legacy + private-preview search values without changing the offer.
   tier: z.string().optional(),
+  qaStage: z.string().optional(),
 });
 
 export const Route = createFileRoute("/checkout")({
@@ -43,15 +45,22 @@ function Checkout() {
   const t = TIER_MAP.ga;
   const checkoutUrl = resolveCheckoutUrl("ga", cfg);
   const gateAllowed = isHandoffAllowed("ga", cfg);
+  const qaReview = useQaReviewMode();
   const [legalAck, setLegalAck] = useState(false);
-  const canSubmit = gateAllowed && legalAck;
-  const buttonLabel = !gateAllowed
-    ? "Registration opening soon"
-    : !legalAck
-      ? "Acknowledge the policies to continue"
-      : `Continue to secure checkout · ${formatUsd(t.priceCents)}`;
+  const canSubmit = qaReview || (gateAllowed && legalAck);
+  const buttonLabel = qaReview
+    ? "Continue funnel preview — no payment"
+    : !gateAllowed
+      ? "Checkout link being connected"
+      : !legalAck
+        ? "Acknowledge the policies to continue"
+        : `Continue to secure checkout · ${formatUsd(t.priceCents)}`;
 
   function handleContinue() {
+    if (qaReview) {
+      window.location.href = "/confirmed?qaStage=ga";
+      return;
+    }
     if (!canSubmit || !checkoutUrl) return;
     window.location.href = checkoutUrl;
   }
@@ -67,6 +76,14 @@ function Checkout() {
         FanBasis page.
       </p>
 
+      {qaReview ? (
+        <div className="mt-6 rounded-md border border-[color:var(--gold)] bg-secondary/30 p-4 text-sm text-muted-foreground">
+          <strong className="text-foreground">Owner preview:</strong> this button
+          walks through the exact funnel without charging a card, creating an
+          order, or reserving a seat.
+        </div>
+      ) : null}
+
       <section className="mt-8 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">{t.name}</h2>
         <div className="mt-2 flex items-baseline justify-between gap-4">
@@ -81,14 +98,15 @@ function Checkout() {
           ))}
         </ul>
         <p className="mt-4 text-xs text-muted-foreground">
-          Deeper implementation experiences (VIP, Vault, Intensive) are
-          offered — one at a time — only after your seat is verified. No
-          upsells are shown here.
+          Deeper implementation experiences are offered one at a time only
+          after each prior step is confirmed.
         </p>
       </section>
 
       <section className="mt-6 surface-raised p-6">
-        <h2 className="font-heading text-lg text-foreground">How communication works</h2>
+        <h2 className="font-heading text-lg text-foreground">
+          How communication works
+        </h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Secure FanBasis checkout collects only your order details. NuAmenti
           communication preferences (email, SMS, calls) are confirmed
@@ -101,7 +119,9 @@ function Checkout() {
         <dl className="mt-4 space-y-2 text-sm">
           <div className="flex items-baseline justify-between">
             <dt className="text-muted-foreground">{t.name}</dt>
-            <dd className="font-mono text-foreground">{formatUsd(t.priceCents)}</dd>
+            <dd className="font-mono text-foreground">
+              {formatUsd(t.priceCents)}
+            </dd>
           </div>
           <div className="gold-rule my-2" />
           <div className="flex items-baseline justify-between">
@@ -112,21 +132,35 @@ function Checkout() {
           </div>
         </dl>
 
-        <label className="mt-6 flex items-start gap-3 rounded-md border border-border bg-secondary/30 p-4 text-sm text-muted-foreground">
-          <input
-            type="checkbox"
-            checked={legalAck}
-            onChange={(e) => setLegalAck(e.target.checked)}
-            className="mt-1 accent-[color:var(--gold)]"
-            aria-describedby="legal-ack-copy"
-          />
-          <span id="legal-ack-copy">
-            I have read and agree to the{" "}
-            <Link to="/terms" className="underline hover:text-foreground">Terms</Link>,{" "}
-            <Link to="/privacy" className="underline hover:text-foreground">Privacy Policy</Link>, and{" "}
-            <Link to="/refund-policy" className="underline hover:text-foreground">Refund Policy</Link>.
-          </span>
-        </label>
+        {!qaReview ? (
+          <label className="mt-6 flex items-start gap-3 rounded-md border border-border bg-secondary/30 p-4 text-sm text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={legalAck}
+              onChange={(e) => setLegalAck(e.target.checked)}
+              className="mt-1 accent-[color:var(--gold)]"
+              aria-describedby="legal-ack-copy"
+            />
+            <span id="legal-ack-copy">
+              I have read and agree to the{" "}
+              <Link to="/terms" className="underline hover:text-foreground">
+                Terms
+              </Link>
+              ,{" "}
+              <Link to="/privacy" className="underline hover:text-foreground">
+                Privacy Policy
+              </Link>
+              , and{" "}
+              <Link
+                to="/refund-policy"
+                className="underline hover:text-foreground"
+              >
+                Refund Policy
+              </Link>
+              .
+            </span>
+          </label>
+        ) : null}
 
         <button
           type="button"
@@ -140,10 +174,19 @@ function Checkout() {
           {buttonLabel}
         </button>
         <p className="mt-3 text-xs text-muted-foreground">
-          By continuing, you agree to the{" "}
-          <Link to="/terms" className="underline hover:text-foreground">Terms</Link>,{" "}
-          <Link to="/privacy" className="underline hover:text-foreground">Privacy</Link>, and{" "}
-          <Link to="/refund-policy" className="underline hover:text-foreground">Refund Policy</Link>.
+          By continuing to a live checkout, you agree to the{" "}
+          <Link to="/terms" className="underline hover:text-foreground">
+            Terms
+          </Link>
+          ,{" "}
+          <Link to="/privacy" className="underline hover:text-foreground">
+            Privacy
+          </Link>
+          , and{" "}
+          <Link to="/refund-policy" className="underline hover:text-foreground">
+            Refund Policy
+          </Link>
+          .
         </p>
       </section>
 
