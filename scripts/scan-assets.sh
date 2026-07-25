@@ -65,34 +65,42 @@ done
 [[ $leak_count -eq 0 ]] && say_pass "0 paid-content leaks in $CLIENT_DIR"
 
 # 3. Repo-wide stale public copy scan.
+# Patterns are anchored so "Aug 1" does not match "Aug 10", "Aug 2" does not
+# match "Aug 24/25/26", and legacy dates are matched by exact substring.
 STALE_PATTERNS=(
-  "AUTOPILOT Challenge"
-  "The AUTOPILOT Challenge"
-  "2026-08-01"
-  "2026-08-02"
-  "Aug 1"
-  "Aug 2"
-  "12–4"
-  "Founder Seat"
-  "one working AI-powered job"
-  "working first job, running"
-  "turn one on — live"
-  "By Sunday evening"
+  'AUTOPILOT Challenge'
+  'The AUTOPILOT Challenge'
+  '2026-08-01'
+  '2026-08-02'
+  '\bAug 1, 2026\b'
+  '\bAug 2, 2026\b'
+  '\bAug 1[–-]2\b'
+  '12[–-]4 ?PM'
+  '\bFounder Seat\b'
+  'one working AI-powered job'
+  'working first job, running'
+  'turn one on [—-] live'
+  'By Sunday evening'
 )
-ALLOW_FILES=(
-  "scripts/scan-assets.sh"
-  "scripts/verify-resource-sessions.sql"
-)
+# Files exempt from stale scan:
+#  * this scanner
+#  * SQL QA script (owns literal legacy tokens for verification)
+#  * .lovable/plan.md (historical planning notes, never user-facing)
+#  * supabase/migrations/* (immutable historical migration filenames/comments)
+#  * src/tests/* (assertions may pin legacy tokens on purpose)
+#  * src/styles.css (project header comment, never rendered)
+#  * docs/operator-launch-checklist.md (checklist for scrubbing legacy tokens)
+ALLOW_REGEX='^\./(scripts/scan-assets\.sh|scripts/verify-resource-sessions\.sql|\.lovable/plan\.md|supabase/migrations/|src/tests/|src/styles\.css|docs/operator-launch-checklist\.md)'
+
 stale_hits=0
 for pat in "${STALE_PATTERNS[@]}"; do
-  # Grep across the repo excluding node_modules, dist, build outputs, and .git.
-  if hits=$(grep -RIn -F \
+  if hits=$(grep -RIEn \
               --exclude-dir=node_modules --exclude-dir=dist \
               --exclude-dir=.output --exclude-dir=build \
               --exclude-dir=.git --exclude-dir=.vinxi \
               "$pat" . 2>/dev/null); then
     if [[ -n "$hits" ]]; then
-      filtered=$(echo "$hits" | grep -v -F -f <(printf '%s\n' "${ALLOW_FILES[@]}") || true)
+      filtered=$(echo "$hits" | grep -Ev "$ALLOW_REGEX" || true)
       if [[ -n "$filtered" ]]; then
         say_fail "stale copy '$pat':"
         echo "$filtered"
@@ -101,7 +109,8 @@ for pat in "${STALE_PATTERNS[@]}"; do
     fi
   fi
 done
-[[ $stale_hits -eq 0 ]] && say_pass "0 stale public-copy hits (allowlisted: ${ALLOW_FILES[*]})"
+[[ $stale_hits -eq 0 ]] && say_pass "0 stale public-copy hits"
+
 
 # 4. Canonical funnel route presence.
 REQUIRED_ROUTES=(
