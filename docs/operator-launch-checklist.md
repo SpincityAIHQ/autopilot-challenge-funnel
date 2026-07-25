@@ -74,8 +74,17 @@ never proves purchase.
 
 ### Content
 - [ ] Summit start times filled in (or copy remains "session times sent to registrants").
-- [ ] No stale references to Aug 1–2, Founder, Bundle, $88, $177, $333, $888, $1,111 anywhere.
+- [ ] No stale references to Aug 1–2, Founder, Bundle, $88, $177, $333, $888, $1,111, or the legacy $55 VIP-upgrade price anywhere.
+- [ ] Public landing page `/` shows NO price strings ($22 / $77 / $199 / $1,000) and NO links to `/offer/*`, `/strategy-intensive`, `/apply/mentorship`, or `/next-keynote`.
+- [ ] `/checkout` exposes only General Admission ($22); any legacy `?tier=vip` link normalizes to GA.
 - [ ] Video URLs (`VITE_SUMMIT_VIDEO_HERO`, `VITE_SUMMIT_VIDEO_THANK_YOU`) either set to approved embed URLs or left empty.
+
+### Testimonials (one slot per funnel page)
+- [ ] Real, released video/text testimonials loaded into `src/lib/testimonials.ts` with `status: "published"` — or the array left empty (nothing renders otherwise).
+- [ ] Per-page video env slots either set to an approved-host embed URL or left empty: `VITE_TESTIMONIAL_VIDEO_LANDING`, `_CHECKOUT`, `_CONFIRMED`, `_VIP`, `_VAULT`, `_INTENSIVE`.
+- [ ] Signed release on file for every published testimonial (see `docs/testimonial-scripts.md`).
+- [ ] Every numeric claim in a published testimonial is backed by client-provided evidence.
+
 
 ### Security
 - [ ] `security--run_security_scan` shows no new findings.
