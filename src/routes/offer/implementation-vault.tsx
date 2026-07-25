@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { VideoSlot } from "@/components/VideoSlot";
+import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { UPSELLS, formatUsd } from "@/lib/tiers";
 import {
   getCommasConfig,
@@ -89,12 +89,19 @@ function VaultContent() {
 
   return (
     <>
+      <FunnelVideoSlot
+        url={cfg.sectionVideos.thankYouVip}
+        label="A note from the family — VIP welcome"
+        envKey="VITE_SUMMIT_VIDEO_THANK_YOU_VIP"
+        className="mt-8"
+      />
+
       <ProductThankYou
         verified={true}
         eyebrow="Verified · VIP Implementation Experience"
         headline="Thank you, family — you added the VIP Implementation Experience."
         body="Your VIP add-on is confirmed. Below is your next optional step — the Implementation Vault."
-        videoUrl={cfg.sectionVideos.thankYouVip}
+        videoUrl={null}
         videoLabel="A note from the family — VIP welcome"
         className="mt-6 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-6"
       />
@@ -118,12 +125,6 @@ function VaultContent() {
         </div>
         <p className="mt-4 text-muted-foreground">{v.summary}</p>
       </div>
-
-      <VideoSlot
-        url={cfg.sectionVideos.hero ?? null}
-        label="Vault walkthrough"
-        className="mt-8"
-      />
 
       <section className="mt-8 surface p-6">
         <h3 className="font-heading text-lg text-foreground">
