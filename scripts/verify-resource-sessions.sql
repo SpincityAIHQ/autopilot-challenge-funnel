@@ -1,9 +1,17 @@
 -- scripts/verify-resource-sessions.sql
 --
 -- Transaction-safe QA verification of the access-token / session /
--- entitlement pipeline. All identifiers are generated inside the
--- transaction, every assertion runs in a DO block, and the transaction
--- ROLLBACKs at the end. Nothing persists.
+-- entitlement pipeline aligned to the current sequential fulfillment
+-- graph: GA ($22) -> VIP Upgrade ($77) -> Vault ($199) -> Intensive
+-- ($1000). Every scenario that needs Vault first buys VIP Upgrade;
+-- every scenario that needs Intensive first buys Vault; nothing
+-- bypasses fulfillment preconditions with manual entitlements EXCEPT
+-- the earlier token-scope unit scenarios (TEST1–TEST5) which
+-- explicitly exercise session mechanics against seeded entitlements.
+--
+-- All identifiers are generated inside the transaction, every
+-- assertion runs in a DO block, and the transaction ROLLBACKs at the
+-- end. Nothing persists.
 --
 -- REQUIRES a role with EXECUTE on public.fulfill_summit_payment /
 -- reverse_summit_payment / exchange_access_token / session_active_scopes
@@ -42,30 +50,50 @@ SELECT
   'qa_sess_d_'     || substr(md5(random()::text||random()::text),1,40) AS sess_d,
   'qa_pay_seed_ga_'    || substr(md5(random()::text||random()::text),1,40) AS pay_seed_ga,
   'qa_pay_seed_vault_' || substr(md5(random()::text||random()::text),1,40) AS pay_seed_vault,
+  -- TEST7a (email_a): GA -> VIP Upgrade -> Vault, then refund GA.
   'qa_pay_ga_a_'    || substr(md5(random()::text||random()::text),1,40) AS pay_ga_a,
+  'qa_pay_vipup_a_' || substr(md5(random()::text||random()::text),1,40) AS pay_vipup_a,
   'qa_pay_vault_a_' || substr(md5(random()::text||random()::text),1,40) AS pay_vault_a,
+  -- TEST7b (email_b): GA -> VIP Upgrade -> Vault, then refund Vault.
   'qa_pay_ga_b_'    || substr(md5(random()::text||random()::text),1,40) AS pay_ga_b,
+  'qa_pay_vipup_b_' || substr(md5(random()::text||random()::text),1,40) AS pay_vipup_b,
   'qa_pay_vault_b_' || substr(md5(random()::text||random()::text),1,40) AS pay_vault_b,
+  -- TEST8 (email_c): GA -> VIP Upgrade, then refund the upgrade.
   'qa_pay_ga_c_'    || substr(md5(random()::text||random()::text),1,40) AS pay_ga_c,
   'qa_pay_vipup_c_' || substr(md5(random()::text||random()::text),1,40) AS pay_vipup_c,
+  -- TEST6 (email_d): GA -> VIP Upgrade -> Vault, then refund GA.
   'qa_pay_ga_d_'    || substr(md5(random()::text||random()::text),1,40) AS pay_ga_d,
+  'qa_pay_vipup_d_' || substr(md5(random()::text||random()::text),1,40) AS pay_vipup_d,
   'qa_pay_vault_d_' || substr(md5(random()::text||random()::text),1,40) AS pay_vault_d,
-  -- TEST9: Vault repurchase after refund (out-of-order duplicate refund).
+  -- TEST9 (email_e): GA -> VIP Upgrade -> Vault, refund Vault, buy Vault_e2, duplicate refund.
   'qa_pay_ga_e_'      || substr(md5(random()::text||random()::text),1,40) AS pay_ga_e,
+  'qa_pay_vipup_e_'   || substr(md5(random()::text||random()::text),1,40) AS pay_vipup_e,
   'qa_pay_vault_e1_'  || substr(md5(random()::text||random()::text),1,40) AS pay_vault_e1,
   'qa_pay_vault_e2_'  || substr(md5(random()::text||random()::text),1,40) AS pay_vault_e2,
-  -- TEST10: VIP-upgrade repurchase after refund.
+  -- TEST10 (email_f): VIP-upgrade repurchase after refund.
   'qa_pay_ga_f_'      || substr(md5(random()::text||random()::text),1,40) AS pay_ga_f,
   'qa_pay_vipup_f1_'  || substr(md5(random()::text||random()::text),1,40) AS pay_vipup_f1,
   'qa_pay_vipup_f2_'  || substr(md5(random()::text||random()::text),1,40) AS pay_vipup_f2,
-  -- TEST11: Intensive repurchase after refund.
+  -- TEST11 (email_g): GA -> VIP Upgrade -> Vault -> Intensive, refund
+  -- intensive_g1, repurchase intensive_g2, then duplicate refund of g1.
   'qa_pay_ga_g_'         || substr(md5(random()::text||random()::text),1,40) AS pay_ga_g,
+  'qa_pay_vipup_g_'      || substr(md5(random()::text||random()::text),1,40) AS pay_vipup_g,
+  'qa_pay_vault_g_'      || substr(md5(random()::text||random()::text),1,40) AS pay_vault_g,
   'qa_pay_intensive_g1_' || substr(md5(random()::text||random()::text),1,40) AS pay_intensive_g1,
   'qa_pay_intensive_g2_' || substr(md5(random()::text||random()::text),1,40) AS pay_intensive_g2;
 
 
+-- Snapshot the ten seeded unclaimed intensive_slots so we can assert the
+-- transaction doesn't leave them mutated OUTSIDE the transaction after
+-- ROLLBACK. (Inside the txn, TEST11 legitimately claims and releases a
+-- slot; rollback must revert both.)
+CREATE TEMP TABLE qa_pre_intensive_unclaimed ON COMMIT DROP AS
+  SELECT slot_number FROM public.intensive_slots
+   WHERE claimed_at IS NULL;
+
 -- Seed: two independent entitlements (GA and Vault) for one buyer, each with
 -- its own source_payment_id so the new provenance model accepts them.
+-- These seeds power TEST1–TEST5 (token/session mechanics only).
 INSERT INTO public.entitlements (buyer_email, product, source_payment_id)
 SELECT email, 'ga',    pay_seed_ga    FROM qa_ids
 UNION ALL
@@ -163,16 +191,19 @@ END $$;
 -- revoked scope from an already-active session, without touching an
 -- independently paid scope for the same buyer.
 -- Uses email_d — distinct from TEST7/TEST8 so scenarios never overlap.
+-- Full current graph: GA -> VIP Upgrade -> Vault before the reversal.
 -- ------------------------------------------------------------------
 DO $$
 DECLARE r record; ids record;
 BEGIN
   SELECT * INTO ids FROM qa_ids;
 
-  -- 1. Fulfill GA + Vault for email_d (real fulfillment path, no helpers).
-  PERFORM public.fulfill_summit_payment('ga',    ids.pay_ga_d,    2200, 'USD',
+  -- 1. Real fulfillment path: GA, VIP Upgrade, Vault, in order.
+  PERFORM public.fulfill_summit_payment('ga',          ids.pay_ga_d,    2200,  'USD',
     'QA D', ids.email_d, NULL, NULL, NULL);
-  PERFORM public.fulfill_summit_payment('vault', ids.pay_vault_d, 19900, 'USD',
+  PERFORM public.fulfill_summit_payment('vip_upgrade', ids.pay_vipup_d, 7700,  'USD',
+    'QA D', ids.email_d, NULL, NULL, NULL);
+  PERFORM public.fulfill_summit_payment('vault',       ids.pay_vault_d, 19900, 'USD',
     'QA D', ids.email_d, NULL, NULL, NULL);
 
   -- 2. Mint an access token for GA scope on this buyer, then exchange it.
@@ -200,14 +231,17 @@ END $$;
 
 
 -- TEST 7a: refund of the GA admission does NOT touch an independently paid Vault.
--- Distinct QA email so no other scenario contaminates this assertion.
+-- Full current graph: GA -> VIP Upgrade -> Vault. Assertion is scoped
+-- strictly to the GA-vs-Vault relationship; VIP-upgrade rows are ignored.
 DO $$
 DECLARE ids record;
 BEGIN
   SELECT * INTO ids FROM qa_ids;
-  PERFORM public.fulfill_summit_payment('ga', ids.pay_ga_a, 2200, 'USD',
+  PERFORM public.fulfill_summit_payment('ga',          ids.pay_ga_a,    2200,  'USD',
     'QA A', ids.email_a, NULL, NULL, NULL);
-  PERFORM public.fulfill_summit_payment('vault', ids.pay_vault_a, 19900, 'USD',
+  PERFORM public.fulfill_summit_payment('vip_upgrade', ids.pay_vipup_a, 7700,  'USD',
+    'QA A', ids.email_a, NULL, NULL, NULL);
+  PERFORM public.fulfill_summit_payment('vault',       ids.pay_vault_a, 19900, 'USD',
     'QA A', ids.email_a, NULL, NULL, NULL);
   PERFORM public.reverse_summit_payment(ids.pay_ga_a);
   IF EXISTS (SELECT 1 FROM public.entitlements
@@ -224,13 +258,16 @@ BEGIN
 END $$;
 
 -- TEST 7b: refund of the Vault purchase does NOT touch GA.
+-- Full current graph: GA -> VIP Upgrade -> Vault before refund of Vault.
 DO $$
 DECLARE ids record;
 BEGIN
   SELECT * INTO ids FROM qa_ids;
-  PERFORM public.fulfill_summit_payment('ga', ids.pay_ga_b, 2200, 'USD',
+  PERFORM public.fulfill_summit_payment('ga',          ids.pay_ga_b,    2200,  'USD',
     'QA B', ids.email_b, NULL, NULL, NULL);
-  PERFORM public.fulfill_summit_payment('vault', ids.pay_vault_b, 19900, 'USD',
+  PERFORM public.fulfill_summit_payment('vip_upgrade', ids.pay_vipup_b, 7700,  'USD',
+    'QA B', ids.email_b, NULL, NULL, NULL);
+  PERFORM public.fulfill_summit_payment('vault',       ids.pay_vault_b, 19900, 'USD',
     'QA B', ids.email_b, NULL, NULL, NULL);
   PERFORM public.reverse_summit_payment(ids.pay_vault_b);
   IF NOT EXISTS (SELECT 1 FROM public.entitlements
@@ -272,20 +309,24 @@ END $$;
 
 -- ------------------------------------------------------------------
 -- TEST 9: Vault out-of-order refund.
--- Buy Vault_e1, refund Vault_e1, buy Vault_e2, then a DUPLICATE late refund
--- of Vault_e1 arrives. Vault_e2 must remain active because provenance keys
--- each grant to its exact source payment.
+-- Full graph: GA -> VIP Upgrade -> Vault_e1, refund Vault_e1, buy
+-- Vault_e2, then a DUPLICATE late refund of Vault_e1 arrives.
+-- Vault_e2 must remain active because provenance keys each grant to
+-- its exact source payment. The second Vault_e2 purchase is allowed
+-- because the VIP entitlement from vipup_e is still active.
 -- ------------------------------------------------------------------
 DO $$
 DECLARE ids record; active_ct int;
 BEGIN
   SELECT * INTO ids FROM qa_ids;
-  PERFORM public.fulfill_summit_payment('ga', ids.pay_ga_e, 2200, 'USD',
+  PERFORM public.fulfill_summit_payment('ga',          ids.pay_ga_e,     2200,  'USD',
     'QA E', ids.email_e, NULL, NULL, NULL);
-  PERFORM public.fulfill_summit_payment('vault', ids.pay_vault_e1, 19900, 'USD',
+  PERFORM public.fulfill_summit_payment('vip_upgrade', ids.pay_vipup_e,  7700,  'USD',
+    'QA E', ids.email_e, NULL, NULL, NULL);
+  PERFORM public.fulfill_summit_payment('vault',       ids.pay_vault_e1, 19900, 'USD',
     'QA E', ids.email_e, NULL, NULL, NULL);
   PERFORM public.reverse_summit_payment(ids.pay_vault_e1);
-  PERFORM public.fulfill_summit_payment('vault', ids.pay_vault_e2, 19900, 'USD',
+  PERFORM public.fulfill_summit_payment('vault',       ids.pay_vault_e2, 19900, 'USD',
     'QA E', ids.email_e, NULL, NULL, NULL);
   -- Late duplicate refund of the ORIGINAL vault payment.
   PERFORM public.reverse_summit_payment(ids.pay_vault_e1);
@@ -351,20 +392,26 @@ END $$;
 
 -- ------------------------------------------------------------------
 -- TEST 11: Intensive out-of-order refund.
--- Buy intensive_g1 (claims slot), refund g1 (releases slot), buy
--- intensive_g2 (claims a slot), then duplicate late refund of g1. The
--- intensive entitlement from g2 must remain active.
+-- Full graph: GA -> VIP Upgrade -> Vault -> Intensive_g1. Refund g1
+-- (releases slot, revokes intensive entitlement — Vault stays active
+-- so the second intensive purchase satisfies the precondition), buy
+-- Intensive_g2 (claims a slot), then a duplicate late refund of g1.
+-- The intensive entitlement from g2 must remain active.
 -- ------------------------------------------------------------------
 DO $$
 DECLARE ids record; active_int int;
 BEGIN
   SELECT * INTO ids FROM qa_ids;
-  PERFORM public.fulfill_summit_payment('ga', ids.pay_ga_g, 2200, 'USD',
+  PERFORM public.fulfill_summit_payment('ga',          ids.pay_ga_g,         2200,   'USD',
     'QA G', ids.email_g, NULL, NULL, NULL);
-  PERFORM public.fulfill_summit_payment('intensive', ids.pay_intensive_g1, 100000, 'USD',
+  PERFORM public.fulfill_summit_payment('vip_upgrade', ids.pay_vipup_g,      7700,   'USD',
+    'QA G', ids.email_g, NULL, NULL, NULL);
+  PERFORM public.fulfill_summit_payment('vault',       ids.pay_vault_g,      19900,  'USD',
+    'QA G', ids.email_g, NULL, NULL, NULL);
+  PERFORM public.fulfill_summit_payment('intensive',   ids.pay_intensive_g1, 100000, 'USD',
     'QA G', ids.email_g, NULL, NULL, NULL);
   PERFORM public.reverse_summit_payment(ids.pay_intensive_g1);
-  PERFORM public.fulfill_summit_payment('intensive', ids.pay_intensive_g2, 100000, 'USD',
+  PERFORM public.fulfill_summit_payment('intensive',   ids.pay_intensive_g2, 100000, 'USD',
     'QA G', ids.email_g, NULL, NULL, NULL);
   PERFORM public.reverse_summit_payment(ids.pay_intensive_g1);
   SELECT count(*) INTO active_int FROM public.entitlements
@@ -386,12 +433,21 @@ SELECT 'in_txn_tokens' AS what, count(*) AS n
   FROM public.access_tokens
   WHERE buyer_email = (SELECT email FROM qa_ids);
 
+-- Snapshot the intensive_slots inventory INSIDE the transaction so we
+-- can prove after ROLLBACK that the 10 seeded rows returned to the
+-- exact pre-transaction unclaimed set.
+CREATE TEMP TABLE qa_post_txn_intensive ON COMMIT DROP AS
+  SELECT slot_number, claimed_at, buyer_email, commas_payment_id
+    FROM public.intensive_slots;
+
 ROLLBACK;
 
--- Post-rollback persistence check: MUST be zero across every QA email.
--- This DO block RAISEs (nonzero psql exit under -v ON_ERROR_STOP=1) if
--- any of the six protected tables retained a QA row. Printing counts is
--- not sufficient — the release pipeline must fail loudly.
+-- ------------------------------------------------------------------
+-- Post-rollback persistence check: MUST be zero across EVERY protected
+-- table for every QA buyer/payment row this script touched. RAISEs
+-- (nonzero psql exit under -v ON_ERROR_STOP=1) if any leak is found.
+-- Also asserts the ten seeded intensive_slots rows are unclaimed.
+-- ------------------------------------------------------------------
 DO $$
 DECLARE
   qa_emails text[] := ARRAY[
@@ -404,32 +460,80 @@ DECLARE
     'qa+scen-f@nuamenti.test',
     'qa+scen-g@nuamenti.test'
   ];
-  n_tokens int;
-  n_regs int;
-  n_vault int;
-  n_vipup int;
-  n_ent int;
-  n_intensive int;
+  qa_payment_prefix text := 'qa_pay_%';
+  qa_token_prefix   text := 'qa_hash_%';
+  qa_session_prefix text := 'qa_sess_%';
+  n_tokens       int;
+  n_regs         int;
+  n_vault        int;
+  n_vipup        int;
+  n_ent          int;
+  n_intensive    int;
+  n_sessions     int;
+  n_pay_events   int;
+  n_int_elig     int;
+  n_rate_limits  int;
+  n_unclaimed    int;
 BEGIN
-  SELECT count(*) INTO n_tokens    FROM public.access_tokens         WHERE buyer_email = ANY(qa_emails);
-  SELECT count(*) INTO n_regs      FROM public.summit_registrations  WHERE email       = ANY(qa_emails);
-  SELECT count(*) INTO n_vault     FROM public.summit_vault_purchases WHERE buyer_email = ANY(qa_emails);
-  SELECT count(*) INTO n_vipup     FROM public.summit_vip_upgrades   WHERE buyer_email = ANY(qa_emails);
-  SELECT count(*) INTO n_ent       FROM public.entitlements          WHERE buyer_email = ANY(qa_emails);
-  SELECT count(*) INTO n_intensive FROM public.intensive_slots       WHERE buyer_email = ANY(qa_emails);
+  SELECT count(*) INTO n_tokens
+    FROM public.access_tokens
+    WHERE buyer_email = ANY(qa_emails) OR token_hash LIKE qa_token_prefix;
+  SELECT count(*) INTO n_regs
+    FROM public.summit_registrations
+    WHERE email = ANY(qa_emails) OR commas_payment_id LIKE qa_payment_prefix;
+  SELECT count(*) INTO n_vault
+    FROM public.summit_vault_purchases
+    WHERE buyer_email = ANY(qa_emails) OR commas_payment_id LIKE qa_payment_prefix;
+  SELECT count(*) INTO n_vipup
+    FROM public.summit_vip_upgrades
+    WHERE buyer_email = ANY(qa_emails) OR commas_payment_id LIKE qa_payment_prefix;
+  SELECT count(*) INTO n_ent
+    FROM public.entitlements
+    WHERE buyer_email = ANY(qa_emails) OR source_payment_id LIKE qa_payment_prefix;
+  SELECT count(*) INTO n_intensive
+    FROM public.intensive_slots
+    WHERE buyer_email = ANY(qa_emails) OR commas_payment_id LIKE qa_payment_prefix;
+  SELECT count(*) INTO n_sessions
+    FROM public.resource_sessions
+    WHERE buyer_email = ANY(qa_emails) OR session_hash LIKE qa_session_prefix;
+  SELECT count(*) INTO n_pay_events
+    FROM public.summit_payment_events
+    WHERE payment_id LIKE qa_payment_prefix
+       OR provider_event_id LIKE qa_payment_prefix;
+  SELECT count(*) INTO n_int_elig
+    FROM public.intensive_eligibility
+    WHERE buyer_email = ANY(qa_emails);
+  -- rate_limits QA keys: this script does not create any, but assert
+  -- zero anyway so future edits that add one are forced to clean up.
+  SELECT count(*) INTO n_rate_limits
+    FROM public.rate_limits
+    WHERE key_hash LIKE 'qa_%';
 
-  RAISE NOTICE 'persistence check: tokens=% regs=% vault=% vipup=% ent=% intensive=%',
-    n_tokens, n_regs, n_vault, n_vipup, n_ent, n_intensive;
+  SELECT count(*) INTO n_unclaimed
+    FROM public.intensive_slots
+    WHERE claimed_at IS NULL;
 
-  IF n_tokens    <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: access_tokens leaked % QA rows',         n_tokens; END IF;
-  IF n_regs      <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: summit_registrations leaked % QA rows',  n_regs; END IF;
-  IF n_vault     <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: summit_vault_purchases leaked % QA rows', n_vault; END IF;
-  IF n_vipup     <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: summit_vip_upgrades leaked % QA rows',   n_vipup; END IF;
-  IF n_ent       <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: entitlements leaked % QA rows',          n_ent; END IF;
-  IF n_intensive <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: intensive_slots leaked % QA rows',       n_intensive; END IF;
+  RAISE NOTICE 'persistence check: tokens=% regs=% vault=% vipup=% ent=% intensive=% sessions=% pay_events=% int_elig=% rate_limits=% unclaimed_intensive_slots=%',
+    n_tokens, n_regs, n_vault, n_vipup, n_ent, n_intensive,
+    n_sessions, n_pay_events, n_int_elig, n_rate_limits, n_unclaimed;
 
-  RAISE NOTICE 'PERSISTENCE OK: 0 QA rows across all protected tables';
+  IF n_tokens       <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: access_tokens leaked % QA rows',            n_tokens; END IF;
+  IF n_regs         <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: summit_registrations leaked % QA rows',     n_regs; END IF;
+  IF n_vault        <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: summit_vault_purchases leaked % QA rows',   n_vault; END IF;
+  IF n_vipup        <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: summit_vip_upgrades leaked % QA rows',      n_vipup; END IF;
+  IF n_ent          <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: entitlements leaked % QA rows',             n_ent; END IF;
+  IF n_intensive    <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: intensive_slots leaked % QA rows',          n_intensive; END IF;
+  IF n_sessions     <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: resource_sessions leaked % QA rows',        n_sessions; END IF;
+  IF n_pay_events   <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: summit_payment_events leaked % QA rows',    n_pay_events; END IF;
+  IF n_int_elig     <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: intensive_eligibility leaked % QA rows',    n_int_elig; END IF;
+  IF n_rate_limits  <> 0 THEN RAISE EXCEPTION 'PERSISTENCE FAIL: rate_limits leaked % QA keys',              n_rate_limits; END IF;
+
+  -- Inventory guarantee: the ten seeded unclaimed intensive_slots rows
+  -- must all be unclaimed again after rollback. TEST11 mutated one of
+  -- them inside the transaction; ROLLBACK must revert that mutation.
+  IF n_unclaimed <> 10 THEN
+    RAISE EXCEPTION 'PERSISTENCE FAIL: expected 10 unclaimed intensive_slots after rollback, got %', n_unclaimed;
+  END IF;
+
+  RAISE NOTICE 'PERSISTENCE OK: 0 QA rows across all protected tables; 10 unclaimed intensive_slots';
 END $$;
-
-
-  
