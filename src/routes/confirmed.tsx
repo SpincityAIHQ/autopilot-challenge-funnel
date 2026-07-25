@@ -156,7 +156,7 @@ function Confirmed() {
             See the Vault — {formatUsd(vault.priceCents)}
           </Link>
           <Link
-            to="/offer/keynote"
+            to="/next-keynote"
             className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
           >
             No thanks — take me to the next keynote
