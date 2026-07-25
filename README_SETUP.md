@@ -12,7 +12,7 @@ domains, or payment products with the NuAmenti application.
 | -------------------------------------- | --------- | ------------------------------------------------------------- |
 | General Admission (GA)                 | $22       | Two live days + Action Guide, scorecard, canvas. No recordings. |
 | VIP Experience                         | $77       | GA + 30-day recordings, VIP Implementation Lab, priority Q&A.   |
-| VIP Upgrade (GA → VIP)                 | $55       | OTO. Requires existing GA registration on same email.           |
+| VIP Upgrade (GA → VIP)                 | $77       | OTO. Requires existing GA registration on same email.           |
 | AI AutoPilot Implementation Vault      | $199      | Independent library add-on. Does NOT include admission or recordings. |
 | Strategy & Build Intensive             | $1,000    | Two-hour private session. Hard cap **10 total**, atomic inventory. |
 | Eight-Week Mentorship & Work-Along     | $8,000    | Application-based. Separate from the Intensive.                 |
