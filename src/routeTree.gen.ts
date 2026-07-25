@@ -9,19 +9,37 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VaultRouteImport } from './routes/vault'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as MentorshipRouteImport } from './routes/mentorship'
+import { Route as KeynoteRouteImport } from './routes/keynote'
+import { Route as IntensiveRouteImport } from './routes/intensive'
 import { Route as ConfirmedRouteImport } from './routes/confirmed'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
 import { Route as CalendarDay2DoticsRouteImport } from './routes/calendar.day2[.]ics'
 import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.]ics'
+import { Route as ApiPublicMentorshipApplicationRouteImport } from './routes/api/public/mentorship-application'
+import { Route as ApiPublicKeynoteWaitlistRouteImport } from './routes/api/public/keynote-waitlist'
 import { Route as ApiPublicWebhooksCommasRouteImport } from './routes/api/public/webhooks/commas'
 
+const VaultRoute = VaultRouteImport.update({
+  id: '/vault',
+  path: '/vault',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResourcesRoute = ResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RefundPolicyRoute = RefundPolicyRouteImport.update({
@@ -32,6 +50,21 @@ const RefundPolicyRoute = RefundPolicyRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MentorshipRoute = MentorshipRouteImport.update({
+  id: '/mentorship',
+  path: '/mentorship',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KeynoteRoute = KeynoteRouteImport.update({
+  id: '/keynote',
+  path: '/keynote',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntensiveRoute = IntensiveRouteImport.update({
+  id: '/intensive',
+  path: '/intensive',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConfirmedRoute = ConfirmedRouteImport.update({
@@ -49,6 +82,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ResourcesRoute,
+} as any)
 const CalendarDay2DoticsRoute = CalendarDay2DoticsRouteImport.update({
   id: '/calendar/day2.ics',
   path: '/calendar/day2.ics',
@@ -59,6 +97,18 @@ const CalendarDay1DoticsRoute = CalendarDay1DoticsRouteImport.update({
   path: '/calendar/day1.ics',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMentorshipApplicationRoute =
+  ApiPublicMentorshipApplicationRouteImport.update({
+    id: '/api/public/mentorship-application',
+    path: '/api/public/mentorship-application',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicKeynoteWaitlistRoute =
+  ApiPublicKeynoteWaitlistRouteImport.update({
+    id: '/api/public/keynote-waitlist',
+    path: '/api/public/keynote-waitlist',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicWebhooksCommasRoute = ApiPublicWebhooksCommasRouteImport.update({
   id: '/api/public/webhooks/commas',
   path: '/api/public/webhooks/commas',
@@ -69,22 +119,38 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
   '/confirmed': typeof ConfirmedRoute
+  '/intensive': typeof IntensiveRoute
+  '/keynote': typeof KeynoteRoute
+  '/mentorship': typeof MentorshipRoute
   '/privacy': typeof PrivacyRoute
   '/refund-policy': typeof RefundPolicyRoute
+  '/resources': typeof ResourcesRouteWithChildren
   '/terms': typeof TermsRoute
+  '/vault': typeof VaultRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
+  '/resources/$slug': typeof ResourcesSlugRoute
+  '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
+  '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
   '/confirmed': typeof ConfirmedRoute
+  '/intensive': typeof IntensiveRoute
+  '/keynote': typeof KeynoteRoute
+  '/mentorship': typeof MentorshipRoute
   '/privacy': typeof PrivacyRoute
   '/refund-policy': typeof RefundPolicyRoute
+  '/resources': typeof ResourcesRouteWithChildren
   '/terms': typeof TermsRoute
+  '/vault': typeof VaultRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
+  '/resources/$slug': typeof ResourcesSlugRoute
+  '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
+  '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
 }
 export interface FileRoutesById {
@@ -92,11 +158,19 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
   '/confirmed': typeof ConfirmedRoute
+  '/intensive': typeof IntensiveRoute
+  '/keynote': typeof KeynoteRoute
+  '/mentorship': typeof MentorshipRoute
   '/privacy': typeof PrivacyRoute
   '/refund-policy': typeof RefundPolicyRoute
+  '/resources': typeof ResourcesRouteWithChildren
   '/terms': typeof TermsRoute
+  '/vault': typeof VaultRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
+  '/resources/$slug': typeof ResourcesSlugRoute
+  '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
+  '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
 }
 export interface FileRouteTypes {
@@ -105,33 +179,57 @@ export interface FileRouteTypes {
     | '/'
     | '/checkout'
     | '/confirmed'
+    | '/intensive'
+    | '/keynote'
+    | '/mentorship'
     | '/privacy'
     | '/refund-policy'
+    | '/resources'
     | '/terms'
+    | '/vault'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
+    | '/resources/$slug'
+    | '/api/public/keynote-waitlist'
+    | '/api/public/mentorship-application'
     | '/api/public/webhooks/commas'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/checkout'
     | '/confirmed'
+    | '/intensive'
+    | '/keynote'
+    | '/mentorship'
     | '/privacy'
     | '/refund-policy'
+    | '/resources'
     | '/terms'
+    | '/vault'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
+    | '/resources/$slug'
+    | '/api/public/keynote-waitlist'
+    | '/api/public/mentorship-application'
     | '/api/public/webhooks/commas'
   id:
     | '__root__'
     | '/'
     | '/checkout'
     | '/confirmed'
+    | '/intensive'
+    | '/keynote'
+    | '/mentorship'
     | '/privacy'
     | '/refund-policy'
+    | '/resources'
     | '/terms'
+    | '/vault'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
+    | '/resources/$slug'
+    | '/api/public/keynote-waitlist'
+    | '/api/public/mentorship-application'
     | '/api/public/webhooks/commas'
   fileRoutesById: FileRoutesById
 }
@@ -139,21 +237,42 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckoutRoute: typeof CheckoutRoute
   ConfirmedRoute: typeof ConfirmedRoute
+  IntensiveRoute: typeof IntensiveRoute
+  KeynoteRoute: typeof KeynoteRoute
+  MentorshipRoute: typeof MentorshipRoute
   PrivacyRoute: typeof PrivacyRoute
   RefundPolicyRoute: typeof RefundPolicyRoute
+  ResourcesRoute: typeof ResourcesRouteWithChildren
   TermsRoute: typeof TermsRoute
+  VaultRoute: typeof VaultRoute
   CalendarDay1DoticsRoute: typeof CalendarDay1DoticsRoute
   CalendarDay2DoticsRoute: typeof CalendarDay2DoticsRoute
+  ApiPublicKeynoteWaitlistRoute: typeof ApiPublicKeynoteWaitlistRoute
+  ApiPublicMentorshipApplicationRoute: typeof ApiPublicMentorshipApplicationRoute
   ApiPublicWebhooksCommasRoute: typeof ApiPublicWebhooksCommasRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/vault': {
+      id: '/vault'
+      path: '/vault'
+      fullPath: '/vault'
+      preLoaderRoute: typeof VaultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resources': {
+      id: '/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof ResourcesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/refund-policy': {
@@ -168,6 +287,27 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mentorship': {
+      id: '/mentorship'
+      path: '/mentorship'
+      fullPath: '/mentorship'
+      preLoaderRoute: typeof MentorshipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/keynote': {
+      id: '/keynote'
+      path: '/keynote'
+      fullPath: '/keynote'
+      preLoaderRoute: typeof KeynoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/intensive': {
+      id: '/intensive'
+      path: '/intensive'
+      fullPath: '/intensive'
+      preLoaderRoute: typeof IntensiveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/confirmed': {
@@ -191,6 +331,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/resources/$slug': {
+      id: '/resources/$slug'
+      path: '/$slug'
+      fullPath: '/resources/$slug'
+      preLoaderRoute: typeof ResourcesSlugRouteImport
+      parentRoute: typeof ResourcesRoute
+    }
     '/calendar/day2.ics': {
       id: '/calendar/day2.ics'
       path: '/calendar/day2.ics'
@@ -205,6 +352,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CalendarDay1DoticsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/mentorship-application': {
+      id: '/api/public/mentorship-application'
+      path: '/api/public/mentorship-application'
+      fullPath: '/api/public/mentorship-application'
+      preLoaderRoute: typeof ApiPublicMentorshipApplicationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/keynote-waitlist': {
+      id: '/api/public/keynote-waitlist'
+      path: '/api/public/keynote-waitlist'
+      fullPath: '/api/public/keynote-waitlist'
+      preLoaderRoute: typeof ApiPublicKeynoteWaitlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhooks/commas': {
       id: '/api/public/webhooks/commas'
       path: '/api/public/webhooks/commas'
@@ -215,15 +376,34 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ResourcesRouteChildren {
+  ResourcesSlugRoute: typeof ResourcesSlugRoute
+}
+
+const ResourcesRouteChildren: ResourcesRouteChildren = {
+  ResourcesSlugRoute: ResourcesSlugRoute,
+}
+
+const ResourcesRouteWithChildren = ResourcesRoute._addFileChildren(
+  ResourcesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckoutRoute: CheckoutRoute,
   ConfirmedRoute: ConfirmedRoute,
+  IntensiveRoute: IntensiveRoute,
+  KeynoteRoute: KeynoteRoute,
+  MentorshipRoute: MentorshipRoute,
   PrivacyRoute: PrivacyRoute,
   RefundPolicyRoute: RefundPolicyRoute,
+  ResourcesRoute: ResourcesRouteWithChildren,
   TermsRoute: TermsRoute,
+  VaultRoute: VaultRoute,
   CalendarDay1DoticsRoute: CalendarDay1DoticsRoute,
   CalendarDay2DoticsRoute: CalendarDay2DoticsRoute,
+  ApiPublicKeynoteWaitlistRoute: ApiPublicKeynoteWaitlistRoute,
+  ApiPublicMentorshipApplicationRoute: ApiPublicMentorshipApplicationRoute,
   ApiPublicWebhooksCommasRoute: ApiPublicWebhooksCommasRoute,
 }
 export const routeTree = rootRouteImport
