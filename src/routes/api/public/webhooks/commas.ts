@@ -195,22 +195,38 @@ export const Route = createFileRoute("/api/public/webhooks/commas")({
 
         if (rpcError) {
           const msg = rpcError.message ?? "";
+          // Durable operator-action record: cap and precondition rejections
+          // MUST persist a terminal row with product + reason. If the
+          // durable write fails we return 500 so Commas retries — never a
+          // silent 200 on a paid event that leaves no operator trail.
           if (/No intensive slots remaining/i.test(msg)) {
             const err = await setTerminal(
               supabaseAdmin,
               envelope.id,
               "rejected",
               "intensive-cap",
+              product,
+              payment.paymentId,
             );
             if (err) return new Response("Server error", { status: 500 });
             return new Response("ok", { status: 200 });
           }
-          if (/requires an existing/i.test(msg) || /precondition/i.test(msg)) {
+          // Sequential-funnel precondition family: both wording variants
+          // ("requires an existing GA registration", "requires an active
+          // VIP entitlement", "requires an active Vault entitlement") are
+          // permanent for the same payment — do NOT retry indefinitely.
+          if (
+            /requires an existing/i.test(msg) ||
+            /requires an active/i.test(msg) ||
+            /precondition/i.test(msg)
+          ) {
             const err = await setTerminal(
               supabaseAdmin,
               envelope.id,
               "rejected",
               "precondition-not-met",
+              product,
+              payment.paymentId,
             );
             if (err) return new Response("Server error", { status: 500 });
             return new Response("ok", { status: 200 });
