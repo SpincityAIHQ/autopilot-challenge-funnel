@@ -89,27 +89,29 @@ Subject: Two days. Build one AI-powered job with us.
 Body:
 - The Summit is Aug 24 + 25, 2026 — live online, both days.
 - Day 1 you map three jobs AI can take this month. Day 2 you build one.
-- GA is $22. VIP is $77 with recordings + Lab.
-CTA: [https://SITE/checkout?tier=ga]
+- General Admission is the public entry point. Upgrades are offered one
+  at a time after checkout — never bundled and never sold up front.
+CTA: [https://SITE/checkout]
 
 ### 2.2 Story email (day +2)
 Subject: I stopped doing this last month
 Body: Short first-person story about handing one recurring job to AI Spin.
 No earnings claims. End with the same GA CTA.
 
-### 2.3 VIP framing (day +4)
+### 2.3 VIP framing (day +4, to LIST_INTEREST only — VIP is not sold up front)
 Subject: The difference between watching and being in the room
-Body: Explain the VIP Implementation Lab + priority Q&A. Do not imply
-"1-to-1-ish" access.
-CTA: [https://SITE/checkout?tier=vip]
+Body: Explain the VIP Implementation Lab + priority Q&A as the next step
+after Summit registration. Do not imply "1-to-1-ish" access and do not
+link a direct-VIP checkout — VIP is only offered after verified GA.
+CTA: [https://SITE/checkout]
 
 ### 2.4 Last-call email (day before Summit only, if seats remain)
 Subject: We start tomorrow — final GA seats
 Body: State the honest capacity note only if operator has real capacity
-data. No invented counters. CTA: [https://SITE/checkout?tier=ga]
+data. No invented counters. CTA: [https://SITE/checkout]
 
 ### 2.5 GA → VIP upgrade (to LIST_GA only)
-Subject: One-time GA → VIP upgrade — $77
+Subject: One-time GA → VIP upgrade
 Body: Explain what you'd add: 30-day recordings, VIP Lab, priority Q&A,
 outreach kit. Note that declining leaves your GA ticket fully valid.
 CTA: [https://SITE/offer/vip-upgrade]
@@ -145,8 +147,8 @@ buyers from further sales SMS the moment fulfillment is confirmed.
 
 - Pre-Summit reminder (24h): "AI AutoPilot Summit is tomorrow, [START_TIME] ET. Add: [DAY_1_ICS_URL]. Reply STOP to opt out; HELP for help."
 - Day-of reminder (2h): "We start in ~2h. Room link: [LINK]. Reply STOP to opt out; HELP for help."
-- GA → VIP upgrade (to LIST_GA only): "$77 GA→VIP upgrade — recordings + Lab: [SITE]/offer/vip-upgrade. Reply STOP to opt out; HELP for help."
-- Vault (post-Summit, to LIST_GA + LIST_VIP): "Implementation Vault add-on ($199): [SITE]/offer/implementation-vault. Reply STOP to opt out; HELP for help."
+- GA → VIP upgrade (to LIST_GA only): "GA to VIP upgrade — recordings + Lab: [SITE]/offer/vip-upgrade. Reply STOP to opt out; HELP for help."
+- Vault (post-Summit, to LIST_VIP): "Implementation Vault add-on: [SITE]/offer/implementation-vault. Reply STOP to opt out; HELP for help."
 
 Never SMS during buyer-local quiet hours (before 9am / after 8pm) or
 without STOP/HELP language. Never SMS a person who is not on

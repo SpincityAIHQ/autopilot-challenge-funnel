@@ -45,10 +45,14 @@ There is no `ga < vip < vault` comparison anywhere in code or docs.
    `hashToken(raw)` in `public.access_tokens` alongside `buyer_email`,
    `scope`, and `expires_at`. The raw token is NEVER stored server-side.
 2. **Delivered.** Mailchimp (planned) sends the magic link
-   `https://…/resources/{slug}?t={raw}`.
-3. **Exchanged (single use).** The client POSTs `{token}` to
-   `/api/public/resources/exchange`. That route calls the atomic
-   service-role-only RPC `exchange_access_token`, which:
+   `https://…/resources/{slug}#t={raw}`. The raw token lives ONLY in the
+   URL fragment and is therefore never transmitted to the server by the
+   browser.
+3. **Exchanged (single use).** The client reads the fragment, POSTs
+   `{token}` to `/api/public/resources/exchange`, then calls
+   `history.replaceState` to strip `#t=…` from `window.location`
+   immediately. The exchange route calls the atomic service-role-only
+   RPC `exchange_access_token`, which:
    - marks `access_tokens.used_at = now()` exactly once, requiring
      `used_at IS NULL`, `revoked_at IS NULL`, and `expires_at > now()`;
    - verifies an active entitlement for the token's scope;
@@ -57,8 +61,8 @@ There is no `ga < vip < vault` comparison anywhere in code or docs.
      hash, expiry, and an `issued_scopes` audit column.
    The raw session token is returned exclusively as
    `Set-Cookie: summit_rs=…; HttpOnly; Secure; SameSite=Lax; Max-Age=…`.
-   The JSON body contains only `{ok, expiresAt}`. The client strips
-   `?t=…` from `window.location` immediately after exchange.
+   The JSON body contains only `{ok, expiresAt}`. No response ever
+   contains the raw magic token.
 4. **Read.** `/api/public/resources/read` accepts only `{slug}`, reads
    the session cookie, calls `session_active_scopes` (which re-checks
    CURRENT active entitlements on every read — refunds/revocations block
