@@ -1,4 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { getCommasConfig } from "@/lib/challenge-config";
+import { ProductThankYou } from "@/components/ProductThankYou";
+import {
+  useEntitlementSummary,
+  derivedAccess,
+} from "@/hooks/use-entitlement-summary";
 
 export const Route = createFileRoute("/next-steps")({
   head: () => ({
