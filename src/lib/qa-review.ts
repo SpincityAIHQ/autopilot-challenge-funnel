@@ -1,18 +1,25 @@
 /**
  * Temporary browser-only funnel review mode.
  *
- * This exists so the owner can inspect the exact gated funnel copy and
- * layout without making a payment or mutating production entitlements.
- * It never changes server state, never creates a registration, never unlocks
- * paid resources, and never enables a checkout URL. The mode is controlled by
- * VITE_SUMMIT_QA_REVIEW and must be turned off before launch.
+ * This lets the owner inspect every gated funnel page without payment or
+ * production entitlement changes. It never writes server state, never creates
+ * a registration, never unlocks paid resources, and never enables checkout.
+ *
+ * Review mode is available only when either:
+ *   1) VITE_SUMMIT_QA_REVIEW=true, or
+ *   2) the app is running on Lovable's id-preview host / localhost.
+ *
+ * The published autopilot-challenge-funnel.lovable.app host does not match the
+ * preview-host rule, so this panel stays absent there unless an operator
+ * explicitly enables the environment flag.
  */
 
-export const QA_REVIEW_ENABLED =
+const QA_ENV_ENABLED =
   (import.meta.env as Record<string, string | undefined>)
     .VITE_SUMMIT_QA_REVIEW === "true";
 
 export const QA_REVIEW_STORAGE_KEY = "nuamenti:summit-qa-review-stage";
+export const QA_REVIEW_QUERY_KEY = "qaStage";
 
 export const QA_REVIEW_STAGES = {
   anonymous: [] as string[],
@@ -23,6 +30,18 @@ export const QA_REVIEW_STAGES = {
 } as const;
 
 export type QaReviewStage = keyof typeof QA_REVIEW_STAGES;
+
+export function isQaReviewRuntimeEnabled(): boolean {
+  if (QA_ENV_ENABLED) return true;
+  if (typeof window === "undefined") return false;
+
+  const host = window.location.hostname.toLowerCase();
+  return (
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host.startsWith("id-preview--")
+  );
+}
 
 export function isQaReviewStage(value: unknown): value is QaReviewStage {
   return (
@@ -36,23 +55,36 @@ export function qaScopesForStage(stage: QaReviewStage): string[] {
 }
 
 export function getQaReviewStage(): QaReviewStage | null {
-  if (!QA_REVIEW_ENABLED || typeof window === "undefined") return null;
+  if (!isQaReviewRuntimeEnabled() || typeof window === "undefined") return null;
+
+  const requested = new URL(window.location.href).searchParams.get(
+    QA_REVIEW_QUERY_KEY,
+  );
+  if (isQaReviewStage(requested)) {
+    window.sessionStorage.setItem(QA_REVIEW_STORAGE_KEY, requested);
+    return requested;
+  }
+
   const stored = window.sessionStorage.getItem(QA_REVIEW_STORAGE_KEY);
-  return isQaReviewStage(stored) ? stored : null;
+  if (isQaReviewStage(stored)) return stored;
+
+  // Preview opens fail-closed in the anonymous/gated state until the owner
+  // intentionally selects a buyer stage.
+  return "anonymous";
 }
 
 /**
  * Returns null when review mode is inactive. An empty array is a deliberate
- * anonymous review state and must be treated as an authenticated QA override
- * with no scopes by the client-side presentation layer only.
+ * anonymous review state and must be treated as a client-side QA override with
+ * no scopes. This does not create a real authenticated server session.
  */
 export function getQaReviewScopes(): string[] | null {
   const stage = getQaReviewStage();
-  return stage ? qaScopesForStage(stage) : null;
+  return stage === null ? null : qaScopesForStage(stage);
 }
 
 export function setQaReviewStage(stage: QaReviewStage): void {
-  if (!QA_REVIEW_ENABLED || typeof window === "undefined") return;
+  if (!isQaReviewRuntimeEnabled() || typeof window === "undefined") return;
   window.sessionStorage.setItem(QA_REVIEW_STORAGE_KEY, stage);
 }
 
