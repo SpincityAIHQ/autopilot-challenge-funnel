@@ -1,7 +1,7 @@
 /**
  * Substantive resource content used by /resources and /resources/$slug.
- * PUBLIC PAGES may show `preview` only. Full `content` is returned ONLY
- * by the server-validated /api/public/resources/$slug endpoint after a
+ * SERVER-ONLY: never import from public route components.
+ * by /api/public/resources/read after cookie session validation.
  * hashed unexpired entitlement token check. NEVER import `.content` into
  * a public page component; the type discourages it.
  */
