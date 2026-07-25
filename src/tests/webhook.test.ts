@@ -144,17 +144,21 @@ describe("extractPaymentIdForReversal", () => {
 describe("resolveProductFromItem", () => {
   const env = {
     COMMAS_PRODUCT_ID_GA: "prod_ga",
-    COMMAS_PRODUCT_ID_VIP: "prod_vip",
     COMMAS_PRODUCT_ID_VIP_UPGRADE: "prod_vipup",
     COMMAS_PRODUCT_ID_VAULT: "prod_vault",
     COMMAS_PRODUCT_ID_INTENSIVE: "prod_int",
   };
-  it("maps every configured id", () => {
+  it("maps every current sale product id", () => {
     expect(resolveProductFromItem("prod_ga", env)).toBe("ga");
-    expect(resolveProductFromItem("prod_vip", env)).toBe("vip");
     expect(resolveProductFromItem("prod_vipup", env)).toBe("vip_upgrade");
     expect(resolveProductFromItem("prod_vault", env)).toBe("vault");
     expect(resolveProductFromItem("prod_int", env)).toBe("intensive");
+  });
+  it("does NOT resolve legacy direct-VIP product for fulfillment", () => {
+    // Even if a stale env var were still set, direct-VIP admission is not
+    // a current sale product — payment.succeeded on it grants nothing.
+    const legacy = { ...env, COMMAS_PRODUCT_ID_VIP: "prod_vip_legacy" };
+    expect(resolveProductFromItem("prod_vip_legacy", legacy)).toBeNull();
   });
   it("returns null for unknown or missing", () => {
     expect(resolveProductFromItem("prod_other", env)).toBeNull();
@@ -168,19 +172,22 @@ describe("validateWebhookConfig", () => {
     COMMAS_WEBHOOKS_ENABLED: "true",
     COMMAS_WEBHOOK_SECRET: "x",
     COMMAS_PRODUCT_ID_GA: "a",
-    COMMAS_PRODUCT_ID_VIP: "b",
     COMMAS_PRODUCT_ID_VIP_UPGRADE: "c",
     COMMAS_PRODUCT_ID_VAULT: "d",
     COMMAS_PRODUCT_ID_INTENSIVE: "e",
   };
-  it("requires all 5 product ids, secret, and enabled=true", () => {
+  it("requires all 4 current-sale product ids, secret, and enabled=true", () => {
     expect(validateWebhookConfig(full).ok).toBe(true);
     expect(validateWebhookConfig({ ...full, COMMAS_WEBHOOKS_ENABLED: "false" }).ok).toBe(false);
     expect(validateWebhookConfig({ ...full, COMMAS_WEBHOOK_SECRET: "" }).ok).toBe(false);
     expect(validateWebhookConfig({ ...full, COMMAS_PRODUCT_ID_INTENSIVE: "" }).ok).toBe(false);
   });
   it("rejects duplicate product ids", () => {
-    expect(validateWebhookConfig({ ...full, COMMAS_PRODUCT_ID_VIP: "a" }).ok).toBe(false);
+    expect(validateWebhookConfig({ ...full, COMMAS_PRODUCT_ID_VIP_UPGRADE: "a" }).ok).toBe(false);
+  });
+  it("does not require the legacy direct-VIP product id", () => {
+    // No COMMAS_PRODUCT_ID_VIP in `full` — activation is still ok.
+    expect(validateWebhookConfig(full).ok).toBe(true);
   });
 });
 
