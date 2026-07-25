@@ -6,6 +6,24 @@ minimum bar to sell.
 
 ## P0 — must be green before publish
 
+### Legal (blocking)
+- [ ] Counsel-approved Privacy, Terms, and Refund Policy replace the pre-launch drafts at `/privacy`, `/terms`, `/refund-policy`.
+- [ ] Final per-product refund windows posted and required to be accepted at checkout before payment is possible.
+- [ ] Intensive slot-release language reflects the atomic-inventory reality (refund releases the slot back into the pool).
+
+### Verified post-purchase identity + secure offer links
+- [ ] End-to-end test: a verified GA buyer receives the NuAmenti access email, opens the magic link, lands a scoped HttpOnly session, and only then sees enabled checkout on `/offer/vip-upgrade` (and the "already have this" state after upgrading).
+- [ ] Same test for Vault and Intensive: eligibility gates on `/offer/implementation-vault` and `/strategy-intensive` fail closed when not signed in.
+- [ ] Sample without cookie hits `entitlement-summary` and receives `authenticated: false, scopes: []`.
+
+### Communication consent testing
+- [ ] `/communication-preferences` writes one `marketing_consents` row per channel with `granted_at` OR `revoked_at`, `copy_version`, `source`, and (for SMS/AI-call) `phone`.
+- [ ] SMS/AI-call submit path REJECTS when phone is missing.
+- [ ] Rate-limit + same-origin behavior verified (403 cross-origin, 429 after burst).
+- [ ] Revocation flow: resubmitting unchecked appends a revoke row without altering earlier history.
+
+
+
 ### Payments (Commas / FanBasis)
 - [ ] Live product IDs exist for GA ($22), VIP ($77), VIP Upgrade ($55), Vault ($199), Intensive ($1,000).
 - [ ] All 5 IDs set as env: `COMMAS_PRODUCT_ID_GA`, `_VIP`, `_VIP_UPGRADE`, `_VAULT`, `_INTENSIVE`.
