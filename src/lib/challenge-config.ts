@@ -7,6 +7,7 @@
  */
 
 import type { ProductId } from "./tiers";
+import { isQaReviewRuntimeEnabled } from "./qa-review";
 
 export const SUMMIT_DAY_1_ISO = "2026-08-24T00:00:00-04:00";
 export const SUMMIT_DAY_2_ISO = "2026-08-25T00:00:00-04:00";
@@ -104,9 +105,6 @@ export function getCommasConfig(): CommasConfig {
   };
 }
 
-// Duplicate readEnv/parseAllowedHosts removed below.
-
-
 export function isAllowedCheckoutUrl(
   candidate: string | undefined | null,
   allowedHosts: readonly string[] = DEFAULT_COMMAS_CHECKOUT_HOSTS,
@@ -139,11 +137,15 @@ export function resolveCheckoutUrl(
  * - vip_upgrade / vault use VITE_SUMMIT_UPSELLS_ENABLED.
  * - intensive uses VITE_SUMMIT_INTENSIVE_SALES_ENABLED.
  * The core sales gate is a required precondition for everything.
+ *
+ * Owner QA review is presentation-only. Even if live URLs are accidentally
+ * present in the preview environment, every checkout handoff stays disabled.
  */
 export function isHandoffAllowed(
   product: ProductId,
   cfg: CommasConfig = getCommasConfig(),
 ): boolean {
+  if (isQaReviewRuntimeEnabled()) return false;
   if (!cfg.salesEnabled) return false;
   if (!cfg.legalReady) return false;
   if (product === "vip_upgrade" || product === "vault") {
@@ -169,10 +171,9 @@ export function resolveKeynoteCheckoutUrl(
 export function isKeynoteHandoffAllowed(
   cfg: CommasConfig = getCommasConfig(),
 ): boolean {
+  if (isQaReviewRuntimeEnabled()) return false;
   if (!cfg.salesEnabled) return false;
   if (!cfg.legalReady) return false;
   if (!cfg.keynoteSalesEnabled) return false;
   return resolveKeynoteCheckoutUrl(cfg) !== null;
 }
-
-

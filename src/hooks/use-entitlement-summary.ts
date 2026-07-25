@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getQaReviewScopes } from "@/lib/qa-review";
 
 export type EntitlementSummary =
   | { status: "loading" }
@@ -11,12 +12,27 @@ export type EntitlementSummary =
  * session cookie. Fails closed — treats any error/loading state as
  * "cannot confirm ownership", which callers must translate to "show the
  * verified-access message" rather than "enable checkout".
+ *
+ * On the Lovable id-preview host (or when the explicit QA env flag is on),
+ * the owner may select a browser-only review stage. That stage bypasses this
+ * GET only for client-side presentation so the gated copy can be inspected.
+ * It never creates a server session, entitlement, purchase, registration, or
+ * active checkout.
  */
 export function useEntitlementSummary(): EntitlementSummary {
   const [state, setState] = useState<EntitlementSummary>({ status: "loading" });
 
   useEffect(() => {
     let alive = true;
+
+    const qaScopes = getQaReviewScopes();
+    if (qaScopes !== null) {
+      setState({ status: "ok", scopes: qaScopes });
+      return () => {
+        alive = false;
+      };
+    }
+
     (async () => {
       try {
         const res = await fetch("/api/public/resources/entitlement-summary", {
@@ -75,4 +91,3 @@ export function derivedAccess(scopes: string[]): {
     hasIntensiveEligibility: s.has("intensive_eligibility"),
   };
 }
-
