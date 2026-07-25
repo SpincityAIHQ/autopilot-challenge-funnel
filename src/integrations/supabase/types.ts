@@ -21,6 +21,7 @@ export type Database = {
           expires_at: string
           id: string
           registration_id: string | null
+          revoked_at: string | null
           scope: string
           token_hash: string
           used_at: string | null
@@ -31,6 +32,7 @@ export type Database = {
           expires_at: string
           id?: string
           registration_id?: string | null
+          revoked_at?: string | null
           scope: string
           token_hash: string
           used_at?: string | null
@@ -41,6 +43,7 @@ export type Database = {
           expires_at?: string
           id?: string
           registration_id?: string | null
+          revoked_at?: string | null
           scope?: string
           token_hash?: string
           used_at?: string | null
@@ -510,6 +513,7 @@ export type Database = {
           buyer_email: string
           created_at: string
           expires_at: string
+          issued_scopes: string[]
           revoked_at: string | null
           session_hash: string
           source_token_hash: string
@@ -518,6 +522,7 @@ export type Database = {
           buyer_email: string
           created_at?: string
           expires_at: string
+          issued_scopes?: string[]
           revoked_at?: string | null
           session_hash: string
           source_token_hash: string
@@ -526,6 +531,7 @@ export type Database = {
           buyer_email?: string
           created_at?: string
           expires_at?: string
+          issued_scopes?: string[]
           revoked_at?: string | null
           session_hash?: string
           source_token_hash?: string
@@ -573,6 +579,7 @@ export type Database = {
       }
       summit_registrations: {
         Row: {
+          admission_product: string
           ai_call_consent: boolean
           ai_call_consent_at: string | null
           amount_cents: number
@@ -596,6 +603,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          admission_product: string
           ai_call_consent?: boolean
           ai_call_consent_at?: string | null
           amount_cents: number
@@ -619,6 +627,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          admission_product?: string
           ai_call_consent?: boolean
           ai_call_consent_at?: string | null
           amount_cents?: number

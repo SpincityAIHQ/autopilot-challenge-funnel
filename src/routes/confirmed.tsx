@@ -35,6 +35,8 @@ function Confirmed() {
   const cfg = getCommasConfig();
   const thankYouUrl = cfg.sectionVideos.confirmedThankYou ?? null;
   const vault = UPSELLS.vault;
+  const showGaUpgradeChoice =
+    tier === "ga" && CONFIRMATION_CONTENT.ga.showVipUpgrade;
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-16">
@@ -46,7 +48,9 @@ function Confirmed() {
       <p className="mt-4 text-muted-foreground">
         Look for the FanBasis receipt and the NuAmenti welcome email. Your seat
         is confirmed after payment is verified. This page alone does not unlock
-        the Summit.
+        the Summit. Note: your post-payment redirect is a FanBasis / Commas
+        operator setting — the exact return URL is configured on the checkout
+        page, not in this app.
       </p>
 
       <VideoSlot
@@ -117,52 +121,62 @@ function Confirmed() {
         </ul>
       </section>
 
-      {tier === "ga" && CONFIRMATION_CONTENT.ga.showVipUpgrade ? (
+      {showGaUpgradeChoice ? (
         <section className="mt-10 surface-raised p-6 border-[color:var(--gold)]">
-          <p className="eyebrow">GA only — upgrade offer</p>
+          <p className="eyebrow">GA only — one decision</p>
           <h2 className="mt-2 font-heading text-xl text-foreground">
-            Upgrade GA → VIP — {formatUsd(UPSELLS.vip_upgrade.priceCents)}
+            Upgrade GA → VIP for {formatUsd(UPSELLS.vip_upgrade.priceCents)}, or keep GA and continue.
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            {UPSELLS.vip_upgrade.summary}
+            {UPSELLS.vip_upgrade.summary} Your GA ticket remains valid either way.
           </p>
-          <div className="mt-5">
+          <div className="mt-5 flex flex-wrap gap-3">
             <Link
               to="/offer/vip-upgrade"
               className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
             >
               Upgrade to VIP — {formatUsd(UPSELLS.vip_upgrade.priceCents)}
             </Link>
+            <Link
+              to="/offer/implementation-vault"
+              className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
+            >
+              Keep GA — continue to the Implementation Vault
+            </Link>
           </div>
         </section>
-      ) : null}
-
-      <section className="mt-10 surface-raised p-6 border-[color:var(--gold)]">
-        <p className="eyebrow">Add now — save later</p>
-        <h2 className="mt-2 font-heading text-xl text-foreground">
-          {vault.name} — {formatUsd(vault.priceCents)}
-        </h2>
-        <p className="mt-2 text-sm text-muted-foreground">{vault.summary}</p>
-        <ul className="mt-3 grid gap-1 text-sm text-muted-foreground sm:grid-cols-2">
-          {vault.bullets.map((b) => (
-            <li key={b}>· {b}</li>
-          ))}
-        </ul>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <Link
-            to="/offer/implementation-vault"
-            className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
-          >
-            See the Vault — {formatUsd(vault.priceCents)}
-          </Link>
-          <Link
-            to="/next-keynote"
-            className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
-          >
-            No thanks — take me to the next keynote
-          </Link>
-        </div>
-      </section>
+      ) : (
+        <section className="mt-10 surface-raised p-6 border-[color:var(--gold)]">
+          <p className="eyebrow">Add now — save later</p>
+          <h2 className="mt-2 font-heading text-xl text-foreground">
+            {vault.name} — {formatUsd(vault.priceCents)}
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">{vault.summary}</p>
+          <p className="mt-2 text-xs text-muted-foreground">
+            The Vault does not include admission or recordings; your VIP ticket
+            remains valid whether you add the Vault or not.
+          </p>
+          <ul className="mt-3 grid gap-1 text-sm text-muted-foreground sm:grid-cols-2">
+            {vault.bullets.map((b) => (
+              <li key={b}>· {b}</li>
+            ))}
+          </ul>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Link
+              to="/offer/implementation-vault"
+              className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+            >
+              See the Vault — {formatUsd(vault.priceCents)}
+            </Link>
+            <Link
+              to="/next-keynote"
+              className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
+            >
+              No thanks — take me to the next keynote
+            </Link>
+          </div>
+        </section>
+      )}
 
       <section className="mt-10">
         <h2 className="font-heading text-lg text-foreground">Questions?</h2>

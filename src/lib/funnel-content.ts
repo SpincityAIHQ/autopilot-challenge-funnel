@@ -29,8 +29,9 @@ export const CONFIRMATION_CONTENT: Record<AdmissionTierId, ConfirmationContent> 
       "Exact session start times are sent to registrants closer to the event.",
     ],
     notices: [
-      "GA does not include recordings. Upgrade to VIP for $55 below, or add the $199 Implementation Vault after.",
+      "GA does not include recordings. Below: upgrade to VIP for $55, or keep GA and continue to the Implementation Vault.",
     ],
+
     videoLabel: "Watch: your first move as a GA registrant",
     showVipUpgrade: true,
   },

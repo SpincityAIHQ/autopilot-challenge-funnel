@@ -46,8 +46,11 @@ function ImplementationVaultOffer() {
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">
         Your Summit ticket (GA or VIP) remains valid whether you add the Vault
-        or not. The Vault is a separate scope — it does not upgrade GA to VIP.
+        or not. The Vault does not include Summit admission, GA or VIP
+        benefits, or session recordings — it grants only the Vault library
+        listed below.
       </p>
+
       <div className="mt-6 font-display text-4xl text-[color:var(--gold)]">
         {formatUsd(v.priceCents)}
       </div>

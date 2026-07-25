@@ -27,20 +27,37 @@ function NextKeynote() {
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return;
+    setError(null);
+    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      setError("Enter a valid email address.");
+      return;
+    }
+    setSubmitting(true);
     try {
-      await fetch("/api/public/keynote-waitlist", {
+      const res = await fetch("/api/public/keynote-waitlist", {
         method: "POST",
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, email_marketing_consent: consent }),
       });
+      if (res.ok) {
+        setSubmitted(true);
+      } else if (res.status === 429) {
+        const ra = res.headers.get("Retry-After");
+        setError(`Too many attempts. Try again in ${ra ?? "60"}s.`);
+      } else {
+        setError("We couldn't save that just now. Please try again.");
+      }
     } catch {
-      // best-effort — the receipt email is the source of truth.
+      setError("Network problem. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitted(true);
   }
 
   return (
@@ -71,7 +88,10 @@ function NextKeynote() {
 
       {submitted ? (
         <div className="mt-8 space-y-4">
-          <p className="rounded-md border border-border bg-secondary/30 p-4 text-sm text-muted-foreground">
+          <p
+            role="status"
+            className="rounded-md border border-border bg-secondary/30 p-4 text-sm text-muted-foreground"
+          >
             Thank you, family — you're on the priority list.
           </p>
           <Link
@@ -105,11 +125,17 @@ function NextKeynote() {
               Optional; unsubscribe anytime from any email.
             </span>
           </label>
+          {error ? (
+            <p role="alert" className="text-sm text-[color:var(--gold)]">
+              {error}
+            </p>
+          ) : null}
           <button
             type="submit"
-            className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+            disabled={submitting}
+            className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Join the priority list
+            {submitting ? "Sending…" : "Join the priority list"}
           </button>
           <p className="text-xs text-muted-foreground">
             Not now?{" "}

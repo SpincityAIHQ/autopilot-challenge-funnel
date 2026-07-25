@@ -48,20 +48,23 @@ export function listResourceMetas(): readonly ResourceMeta[] {
 }
 
 /**
- * Entitlement model (NO ordering).
+ * Entitlement model (product rule, NOT a tier ordering).
  * - GA entitlement grants ONLY ga resources.
- * - VIP entitlement grants ONLY vip resources.
- * - Vault entitlement grants ONLY vault resources.
- * - vip_upgrade is treated as vip for gating purposes.
- * A buyer may hold multiple scopes concurrently.
+ * - VIP entitlement (also vip_upgrade) grants VIP resources AND the GA
+ *   resources bundled inside VIP admission. GA is included in VIP, so
+ *   a VIP scope reads GA guides too.
+ * - Vault entitlement grants ONLY vault resources. It is independent —
+ *   it never inherits GA or VIP.
+ * - A buyer may hold multiple scopes concurrently; access is the union.
  */
 export function canScopeAccessTier(scope: string, tier: ResourceTier): boolean {
   const s = String(scope || "").toLowerCase();
-  if (tier === "ga") return s === "ga";
+  if (tier === "ga") return s === "ga" || s === "vip" || s === "vip_upgrade";
   if (tier === "vip") return s === "vip" || s === "vip_upgrade";
   if (tier === "vault") return s === "vault";
   return false;
 }
+
 
 export function scopesGrantTier(
   scopes: readonly string[],

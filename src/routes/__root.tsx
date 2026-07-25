@@ -119,25 +119,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       meta: [
         { charSet: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
-        { title: "The AUTOPILOT Challenge — 2-Day Live Build · Aug 1–2, 2026" },
+        { title: "AI AutoPilot Summit — Live Online · Aug 24–25, 2026" },
         {
           name: "description",
           content:
-            "Build a monetizable website, launch-ready marketing assets, and an AI-powered lead and sales system with us in eight live build hours. Aug 1–2, 2026, 12–4 PM ET.",
+            "Two-day live online implementation Summit. Map three AI-assist workflow candidates and turn one on — live. Aug 24–25, 2026.",
         },
         { name: "author", content: "SpincityHQ LLC" },
         { name: "theme-color", content: "#0e0e14" },
-        { property: "og:site_name", content: "The AUTOPILOT Challenge" },
+        { property: "og:site_name", content: "AI AutoPilot Summit" },
         { property: "og:type", content: "website" },
         {
           property: "og:title",
-          content: "The AUTOPILOT Challenge — Aug 1–2, 2026",
+          content: "AI AutoPilot Summit — Aug 24–25, 2026",
         },
         {
           property: "og:description",
           content:
-            "Leave with a live monetizable site, launch marketing assets, and an automated path from lead to sale.",
+            "Live online implementation. Leave with your Autonomy Map and one working AI-powered job in your business.",
         },
+
         { name: "twitter:card", content: "summary_large_image" },
       ],
       links: [
