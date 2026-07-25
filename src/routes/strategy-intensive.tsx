@@ -6,52 +6,89 @@ import {
   isHandoffAllowed,
 } from "@/lib/challenge-config";
 import { useIntensiveSlotsRemaining } from "@/hooks/use-intensive-slots";
-import {
-  useEntitlementSummary,
-  derivedAccess,
-} from "@/hooks/use-entitlement-summary";
+import { OfferGate } from "@/components/OfferGate";
 import { TestimonialSection } from "@/components/TestimonialSection";
 
 export const Route = createFileRoute("/strategy-intensive")({
   head: () => ({
     meta: [
-      { title: "Private 1-on-1 Strategy & Build Intensive" },
+      { title: "Next step — AI AutoPilot Summit" },
       {
         name: "description",
         content:
-          "A two-hour private 1-on-1 strategy and build session. Only 10 total, exclusively for verified Vault holders and operator-approved attendees.",
+          "Verified next step for eligible Summit attendees. Sign-in from your NuAmenti access email required.",
       },
       { name: "robots", content: "noindex" },
-      { property: "og:title", content: "Private 1-on-1 Strategy & Build Intensive" },
+      { property: "og:title", content: "Next step — AI AutoPilot Summit" },
       {
         property: "og:description",
-        content:
-          "Two-hour private 1-on-1 strategy + build session. Ten slots, atomic inventory, verified Vault holders only.",
+        content: "Verified next step for eligible Summit attendees.",
       },
       { property: "og:url", content: "/strategy-intensive" },
     ],
     links: [{ rel: "canonical", href: "/strategy-intensive" }],
   }),
-  component: StrategyIntensive,
+  component: StrategyIntensiveRoute,
 });
 
-function StrategyIntensive() {
+function StrategyIntensiveRoute() {
+  return (
+    <main className="mx-auto max-w-3xl px-5 py-16">
+      <p className="eyebrow">Sequential next step</p>
+      <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
+        Your next step is inside your access email.
+      </h1>
+      <p className="mt-3 text-sm text-muted-foreground">
+        Eligibility is checked from your verified access session — never
+        from this URL. Details below only appear once we confirm your
+        Vault purchase or operator-approved eligibility.
+      </p>
+
+      <OfferGate
+        predicate={(a) => (a.hasVault || a.hasIntensiveEligibility) && !a.hasIntensive}
+        ineligibleMessage="This next step is only offered to verified Implementation Vault holders and operator-approved attendees. Open the secure Intensive link in your NuAmenti access email — signed in on the same browser."
+      >
+        <IntensiveContent />
+      </OfferGate>
+    </main>
+  );
+}
+
+function IntensiveContent() {
   const i = UPSELLS.intensive;
   const cfg = getCommasConfig();
   const url = resolveCheckoutUrl("intensive", cfg);
   const slots = useIntensiveSlotsRemaining();
   const soldOut = slots.status === "ok" && slots.remaining <= 0;
   const salesOn = isHandoffAllowed("intensive", cfg);
-  const summary = useEntitlementSummary();
+  const slotsKnown = slots.status === "ok";
+
+  let cta;
+  if (soldOut) {
+    cta = <Disabled label={`All ${i.hardCap} slots taken`} />;
+  } else if (!salesOn || !url || !slotsKnown) {
+    cta = <Disabled label="Intensive opening soon" />;
+  } else {
+    cta = (
+      <a
+        href={url}
+        className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
+        rel="noopener noreferrer"
+      >
+        Claim a slot — {formatUsd(i.priceCents)}
+      </a>
+    );
+  }
 
   return (
-    <main className="mx-auto max-w-3xl px-5 py-16">
-      <p className="eyebrow">Post-Vault · Final ascension</p>
-      <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
-        Book Your Private 1-on-1 Strategy & Build Intensive
-      </h1>
-      <div className="mt-4 font-display text-4xl text-[color:var(--gold)]">
-        {formatUsd(i.priceCents)}
+    <>
+      <div className="mt-8">
+        <h2 className="font-display text-2xl text-foreground">
+          Book Your Private 1-on-1 Strategy &amp; Build Intensive
+        </h2>
+        <div className="mt-4 font-display text-4xl text-[color:var(--gold)]">
+          {formatUsd(i.priceCents)}
+        </div>
       </div>
 
       <div className="mt-6 surface-raised p-6" aria-live="polite">
@@ -83,14 +120,14 @@ function StrategyIntensive() {
       <p className="mt-6 text-muted-foreground">{i.summary}</p>
       <p className="mt-2 text-xs text-muted-foreground">
         Your Summit ticket and Vault access stay valid whether you claim an
-        Intensive slot or not. The 8-Week Mentorship is a separate offer, not
-        this one.
+        Intensive slot or not. The 8-Week Mentorship is a separate offer,
+        not this one.
       </p>
 
       <section className="mt-8 surface p-6">
-        <h2 className="font-heading text-lg text-foreground">
+        <h3 className="font-heading text-lg text-foreground">
           What you already have vs. what the Intensive adds
-        </h2>
+        </h3>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
             <p className="label-mono">You already have</p>
@@ -110,16 +147,7 @@ function StrategyIntensive() {
         </div>
       </section>
 
-      <div className="mt-8">
-        <IntensiveCta
-          salesOn={salesOn}
-          url={url}
-          summary={summary}
-          soldOut={soldOut}
-          slotsKnown={slots.status === "ok"}
-          price={i.priceCents}
-        />
-      </div>
+      <div className="mt-8">{cta}</div>
 
       <div className="mt-6">
         <Link
@@ -135,61 +163,11 @@ function StrategyIntensive() {
         eyebrow="From Intensive alumni"
         heading="What people built in a private 1-on-1"
       />
-    </main>
+    </>
   );
 }
 
-function IntensiveCta({
-  salesOn,
-  url,
-  summary,
-  soldOut,
-  slotsKnown,
-  price,
-}: {
-  salesOn: boolean;
-  url: string | null;
-  summary: ReturnType<typeof useEntitlementSummary>;
-  soldOut: boolean;
-  slotsKnown: boolean;
-  price: number;
-}) {
-  // Sold out takes precedence over every gate — never take money for a full pool.
-  if (soldOut) return <DisabledBtn label="All 10 slots taken" />;
-  if (summary.status === "loading") {
-    return <DisabledBtn label="Checking your eligibility…" />;
-  }
-  if (summary.status === "unauthenticated" || summary.status === "error") {
-    return (
-      <SecureLinkNotice message="The Intensive is only sold to verified Vault holders (or operator-approved attendees). Open the secure Intensive link in your NuAmenti access email — verified sign-in is required." />
-    );
-  }
-  const { hasVault, hasIntensive, hasIntensiveEligibility } = derivedAccess(summary.scopes);
-  if (hasIntensive) {
-    return (
-      <AlreadyOwned message="You already hold an Intensive slot. Booking and prep details come through your NuAmenti access email." />
-    );
-  }
-  if (!hasVault && !hasIntensiveEligibility) {
-    return (
-      <SecureLinkNotice message="Intensive eligibility requires a verified Implementation Vault purchase or operator approval (e.g. NuAmenti attendees). Add the Vault first, or ask an operator to approve you, then return here." />
-    );
-  }
-  if (!salesOn || !url || !slotsKnown) {
-    return <DisabledBtn label="Intensive opening soon" />;
-  }
-  return (
-    <a
-      href={url}
-      className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
-      rel="noopener noreferrer"
-    >
-      Claim a slot — {formatUsd(price)}
-    </a>
-  );
-}
-
-function DisabledBtn({ label }: { label: string }) {
+function Disabled({ label }: { label: string }) {
   return (
     <button
       type="button"
@@ -198,22 +176,5 @@ function DisabledBtn({ label }: { label: string }) {
     >
       {label}
     </button>
-  );
-}
-
-function AlreadyOwned({ message }: { message: string }) {
-  return (
-    <div className="rounded-md border border-[color:var(--emerald-signal)]/40 bg-secondary/40 p-4 text-sm text-foreground">
-      <p className="font-heading">You already have this.</p>
-      <p className="mt-2 text-muted-foreground">{message}</p>
-    </div>
-  );
-}
-
-function SecureLinkNotice({ message }: { message: string }) {
-  return (
-    <div className="rounded-md border border-border bg-secondary/30 p-4 text-sm text-muted-foreground">
-      {message}
-    </div>
   );
 }

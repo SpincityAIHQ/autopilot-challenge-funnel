@@ -12,7 +12,7 @@ domains, or payment products with the NuAmenti application.
 | -------------------------------------- | --------- | ------------------------------------------------------------- |
 | General Admission (GA)                 | $22       | Two live days + Action Guide, scorecard, canvas. No recordings. |
 | VIP Experience                         | $77       | GA + 30-day recordings, VIP Implementation Lab, priority Q&A.   |
-| VIP Upgrade (GA → VIP)                 | $55       | OTO. Requires existing GA registration on same email.           |
+| VIP Upgrade (GA → VIP)                 | $77       | OTO. Requires existing GA registration on same email.           |
 | AI AutoPilot Implementation Vault      | $199      | Independent library add-on. Does NOT include admission or recordings. |
 | Strategy & Build Intensive             | $1,000    | Two-hour private session. Hard cap **10 total**, atomic inventory. |
 | Eight-Week Mentorship & Work-Along     | $8,000    | Application-based. Separate from the Intensive.                 |
@@ -26,7 +26,7 @@ testimonials anywhere.
 1. `/` — landing / sales
 2. `/checkout?tier=ga|vip` — order summary + FanBasis handoff (GA / VIP only)
 3. `/confirmed?tier=ga|vip` — warm truthful "we're verifying your payment" state
-4. `/offer/vip-upgrade` — GA-only $55 upgrade (eligibility-gated)
+4. `/offer/vip-upgrade` — GA-only $77 upgrade (eligibility-gated)
 5. `/offer/implementation-vault` — $199 Vault add-on (registered attendees only)
 6. `/next-keynote` — next-keynote priority-access / waitlist
 7. `/strategy-intensive` — $1,000 Intensive (10 total, verified attendees only)
@@ -54,7 +54,7 @@ allowlist (`www.fanbasis.com` plus any hosts in
 | `VITE_SUMMIT_INTENSIVE_SALES_ENABLED`   | Strategy & Build Intensive gate               |
 | `VITE_COMMAS_CHECKOUT_URL_GA`           | FanBasis GA checkout — $22                     |
 | `VITE_COMMAS_CHECKOUT_URL_VIP`          | FanBasis VIP checkout — $77                    |
-| `VITE_COMMAS_CHECKOUT_URL_VIP_UPGRADE`  | FanBasis VIP Upgrade — $55                     |
+| `VITE_COMMAS_CHECKOUT_URL_VIP_UPGRADE`  | FanBasis VIP Upgrade — $77                     |
 | `VITE_COMMAS_CHECKOUT_URL_VAULT`        | FanBasis Vault — $199                          |
 | `VITE_COMMAS_CHECKOUT_URL_INTENSIVE`    | FanBasis Intensive — $1,000                    |
 | `VITE_COMMAS_CHECKOUT_URL_KEYNOTE`      | Next keynote checkout (also needs date)       |
@@ -91,7 +91,7 @@ required variables are set. Nothing is called if any is missing.
 - `COMMAS_PRODUCT_ID_INTENSIVE`
 
 All five product IDs must be distinct. Prices reconcile in cents to $22 / $77
-/ $55 / $199 / $1,000; unknown products, mismatched totals, or non-USD grant
+/ $77 / $199 / $1,000; unknown products, mismatched totals, or non-USD grant
 nothing.
 
 Provider adapters (Mailchimp, SMS, AI-call) are **defined but disabled**.

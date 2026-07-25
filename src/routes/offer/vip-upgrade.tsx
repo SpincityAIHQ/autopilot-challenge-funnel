@@ -6,10 +6,7 @@ import {
   resolveCheckoutUrl,
   isHandoffAllowed,
 } from "@/lib/challenge-config";
-import {
-  useEntitlementSummary,
-  derivedAccess,
-} from "@/hooks/use-entitlement-summary";
+import { OfferGate } from "@/components/OfferGate";
 import { TestimonialSection } from "@/components/TestimonialSection";
 
 const product = "vip_upgrade" as const;
@@ -17,51 +14,89 @@ const product = "vip_upgrade" as const;
 export const Route = createFileRoute("/offer/vip-upgrade")({
   head: () => ({
     meta: [
-      { title: "VIP Implementation Experience · AI AutoPilot Summit" },
+      // Neutral title/description: no product name or price for anonymous
+      // visitors / social crawlers. The rich offer copy only renders after
+      // the entitlement-summary confirms a verified GA registrant.
+      { title: "Next step — AI AutoPilot Summit" },
       {
         name: "description",
         content:
-          "For verified GA registrants: the VIP Implementation Experience adds 30-day recordings, one live VIP Implementation Lab, priority Q&A, and the outreach vault.",
+          "Sequential next step for verified Summit registrants. Verified sign-in is required from your NuAmenti access email.",
       },
       { name: "robots", content: "noindex" },
-      { property: "og:title", content: "VIP Implementation Experience · AI AutoPilot Summit" },
+      { property: "og:title", content: "Next step — AI AutoPilot Summit" },
       {
         property: "og:description",
-        content:
-          "Add recordings, the VIP Implementation Lab, priority Q&A, and the outreach vault.",
+        content: "Verified next step for Summit registrants.",
       },
       { property: "og:url", content: "/offer/vip-upgrade" },
     ],
     links: [{ rel: "canonical", href: "/offer/vip-upgrade" }],
   }),
-  component: VipUpgradeOffer,
+  component: VipUpgradeRoute,
 });
 
-function VipUpgradeOffer() {
+function VipUpgradeRoute() {
+  return (
+    <main className="mx-auto max-w-3xl px-5 py-12">
+      <p className="eyebrow">Sequential next step</p>
+      <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
+        Your next step is inside your access email.
+      </h1>
+      <p className="mt-3 text-sm text-muted-foreground">
+        Eligibility for this next step is checked from your verified access
+        session — never from this URL. Details below only appear once we
+        confirm your Summit registration.
+      </p>
+
+      <OfferGate
+        predicate={(a) => a.hasGa && !a.hasVip}
+        ineligibleMessage="This next step is only offered to verified GA registrants who have not already added VIP. Open the secure upgrade link in your NuAmenti access email — signed in on the same browser."
+      >
+        <VipUpgradeContent />
+      </OfferGate>
+    </main>
+  );
+}
+
+function VipUpgradeContent() {
   const cfg = getCommasConfig();
   const upgrade = UPSELLS.vip_upgrade;
   const url = resolveCheckoutUrl(product, cfg);
   const salesOn = isHandoffAllowed(product, cfg);
-  const summary = useEntitlementSummary();
+  const cta =
+    salesOn && url ? (
+      <a
+        href={url}
+        className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+        rel="noopener noreferrer"
+      >
+        Upgrade to VIP · {formatUsd(upgrade.priceCents)}
+      </a>
+    ) : (
+      <button
+        type="button"
+        disabled
+        className="inline-flex cursor-not-allowed items-center rounded-md bg-muted px-5 py-3 font-heading text-sm font-semibold text-muted-foreground"
+      >
+        VIP upgrade opening soon
+      </button>
+    );
 
   return (
-    <main className="mx-auto max-w-3xl px-5 py-12">
-      <p className="eyebrow">Only for verified GA registrants</p>
-      <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
-        {upgrade.name} — {formatUsd(upgrade.priceCents)}
-      </h1>
-      <p className="mt-3 text-sm text-muted-foreground">
-        Eligibility is checked from your verified access session — not from
-        this URL. Open the secure upgrade link inside your NuAmenti access
-        email if you don't see checkout below.
-      </p>
+    <>
+      <div className="mt-8">
+        <h2 className="font-display text-2xl text-foreground">
+          {upgrade.name} — {formatUsd(upgrade.priceCents)}
+        </h2>
+      </div>
 
-      <VideoSlot url={cfg.sectionVideos.hero ?? null} label="VIP experience preview" className="mt-8" />
+      <VideoSlot url={cfg.sectionVideos.hero ?? null} label="VIP experience preview" className="mt-6" />
 
       <section className="mt-8 surface p-6">
-        <h2 className="font-heading text-lg text-foreground">
+        <h3 className="font-heading text-lg text-foreground">
           What you already have vs. what this adds
-        </h2>
+        </h3>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
             <p className="label-mono">You already have (GA)</p>
@@ -75,11 +110,9 @@ function VipUpgradeOffer() {
           <div>
             <p className="label-mono text-[color:var(--gold)]">VIP adds</p>
             <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-              <li>· 30-day session recordings</li>
-              <li>· One live VIP Implementation Lab</li>
-              <li>· Priority Q&A submission</li>
-              <li>· VIP Proposal + Outreach Kit</li>
-              <li>· VIP Resource Vault</li>
+              {upgrade.bullets.map((b) => (
+                <li key={b}>· {b}</li>
+              ))}
             </ul>
           </div>
         </div>
@@ -89,21 +122,13 @@ function VipUpgradeOffer() {
       </section>
 
       <section className="mt-8 surface-raised p-6">
-        <h2 className="font-heading text-lg text-foreground">{upgrade.name}</h2>
-        <p className="mt-2 text-sm text-muted-foreground">{upgrade.summary}</p>
-        <ul className="mt-4 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
-          {upgrade.bullets.map((b) => (
-            <li key={b}>· {b}</li>
-          ))}
-        </ul>
-        <div className="mt-6">
-          <UpgradeCta salesOn={salesOn} url={url} summary={summary} price={upgrade.priceCents} />
-        </div>
+        <p className="text-sm text-muted-foreground">{upgrade.summary}</p>
+        <div className="mt-6">{cta}</div>
         <p className="mt-4 text-xs text-muted-foreground">
           Fulfillment requires a verified GA registration on the same email.
-          Without a matching GA record we cannot grant VIP. Please pay with
-          the same email you used for GA, or write Info@NuAmenti.com before
-          paying if you need to change the email on your ticket.
+          Please pay with the same email you used for GA, or write
+          Info@NuAmenti.com before paying if you need to change the email
+          on your ticket.
         </p>
       </section>
 
@@ -118,77 +143,6 @@ function VipUpgradeOffer() {
           No thanks — continue with GA →
         </Link>
       </p>
-    </main>
-  );
-}
-
-function UpgradeCta({
-  salesOn,
-  url,
-  summary,
-  price,
-}: {
-  salesOn: boolean;
-  url: string | null;
-  summary: ReturnType<typeof useEntitlementSummary>;
-  price: number;
-}) {
-  if (summary.status === "loading") {
-    return <DisabledBtn label="Checking your eligibility…" />;
-  }
-  if (summary.status === "unauthenticated" || summary.status === "error") {
-    return (
-      <SecureLinkNotice message="To upgrade to VIP, open the secure upgrade link in your NuAmenti access email — verified sign-in is required. Not signed in? Reply to Info@NuAmenti.com and we'll resend it." />
-    );
-  }
-  const { hasGa, hasVip } = derivedAccess(summary.scopes);
-  if (hasVip) {
-    return (
-      <AlreadyOwned message="You already have VIP. Your NuAmenti access email is the source of truth for VIP resources and the Implementation Lab invite." />
-    );
-  }
-  if (!hasGa) {
-    return (
-      <SecureLinkNotice message="This upgrade is only available to verified GA registrants. If you already bought GA, open the secure upgrade link in your NuAmenti access email — signed in on the same browser." />
-    );
-  }
-  if (!salesOn || !url) return <DisabledBtn label="VIP upgrade opening soon" />;
-  return (
-    <a
-      href={url}
-      className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
-      rel="noopener noreferrer"
-    >
-      Upgrade to VIP · {formatUsd(price)}
-    </a>
-  );
-}
-
-function DisabledBtn({ label }: { label: string }) {
-  return (
-    <button
-      type="button"
-      disabled
-      className="inline-flex cursor-not-allowed items-center rounded-md bg-muted px-5 py-3 font-heading text-sm font-semibold text-muted-foreground"
-    >
-      {label}
-    </button>
-  );
-}
-
-function AlreadyOwned({ message }: { message: string }) {
-  return (
-    <div className="rounded-md border border-[color:var(--emerald-signal)]/40 bg-secondary/40 p-4 text-sm text-foreground">
-      <p className="font-heading">You already have this.</p>
-      <p className="mt-2 text-muted-foreground">{message}</p>
-    </div>
-  );
-}
-
-function SecureLinkNotice({ message }: { message: string }) {
-  return (
-    <div className="rounded-md border border-border bg-secondary/30 p-4 text-sm text-muted-foreground">
-      {message}
-    </div>
+    </>
   );
 }

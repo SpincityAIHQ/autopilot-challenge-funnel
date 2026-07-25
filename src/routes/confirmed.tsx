@@ -1,25 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { z } from "zod";
 import { VideoSlot } from "@/components/VideoSlot";
 import { getCommasConfig } from "@/lib/challenge-config";
-import {
-  getConfirmationContent,
-  CONFIRMATION_CONTENT,
-  type ConfirmationTier,
-} from "@/lib/funnel-content";
 import { UPSELLS, formatUsd } from "@/lib/tiers";
 import { TestimonialSection } from "@/components/TestimonialSection";
+import {
+  useEntitlementSummary,
+  derivedAccess,
+} from "@/hooks/use-entitlement-summary";
 
-const searchSchema = z.object({
-  tier: z.enum(["ga", "vip"]).optional(),
-});
-
-function isConfirmationTier(v: unknown): v is ConfirmationTier {
-  return v === "ga" || v === "vip";
-}
+/**
+ * Post-purchase confirmation.
+ *
+ * SECURITY: Downstream offer names, prices, and links are NEVER revealed
+ * from `?tier=` (which is user-controlled). We only reveal the next
+ * ascension choice after the entitlement-summary API confirms the buyer
+ * holds the required prior scope from a verified HttpOnly session.
+ *
+ * Until then this page is a warm, generic "we're verifying your payment"
+ * state with secure-access instructions and calendar files.
+ */
 
 export const Route = createFileRoute("/confirmed")({
-  validateSearch: (input) => searchSchema.parse(input),
   head: () => ({
     meta: [
       { title: "Thank you, family — AI AutoPilot Summit" },
@@ -37,38 +38,41 @@ export const Route = createFileRoute("/confirmed")({
 });
 
 function Confirmed() {
-  const search = Route.useSearch();
-  const tier: ConfirmationTier | null = isConfirmationTier(search.tier)
-    ? search.tier
-    : null;
-  const content = getConfirmationContent(tier);
   const cfg = getCommasConfig();
   const thankYouUrl = cfg.sectionVideos.confirmedThankYou ?? null;
-  const vault = UPSELLS.vault;
-  const vipUpgrade = UPSELLS.vip_upgrade;
-  const showGaUpgradeChoice =
-    tier === "ga" && CONFIRMATION_CONTENT.ga.showVipUpgrade;
-  const showVaultChoice =
-    tier === "vip" && CONFIRMATION_CONTENT.vip.showVaultOffer;
+  const summary = useEntitlementSummary();
+  const access =
+    summary.status === "ok" ? derivedAccess(summary.scopes) : null;
+
+  // Reveal rules — session-driven only. Never derived from a URL param.
+  //   GA (no VIP)  → show VIP Implementation Experience next-step block.
+  //   VIP (no Vault) → show Vault next-step block.
+  //   Everything else → no downstream offer content.
+  const showGaUpgradeChoice = Boolean(access && access.hasGa && !access.hasVip);
+  const showVaultChoice = Boolean(
+    access && access.hasVip && !access.hasVault,
+  );
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-16">
       <p className="eyebrow">We're verifying your payment</p>
       <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
-        {content?.headline ??
-          "Thank you, family. We're verifying your payment now."}
+        Thank you, family — we're verifying your payment.
       </h1>
       <p className="mt-4 text-muted-foreground">
-        Your FanBasis receipt confirms payment was received. The official
-        NuAmenti verification + access email is the authority for entry, links,
-        and resources — it usually arrives within a few hours. Check inbox,
-        Promotions, and Spam. Nothing on this page proves purchase or unlocks
-        the Summit on its own.
+        Your FanBasis receipt is proof of payment. The official NuAmenti
+        verification + access email is the authority for entry, links, and
+        resources. It is sent once our operator has verified your payment —
+        we do not advertise an automatic SLA. Check inbox, Promotions, and
+        Spam. Nothing on this page unlocks the Summit or any add-on on its
+        own.
       </p>
       <p className="mt-3 text-xs text-muted-foreground">
-        Note: your post-payment redirect is a FanBasis / Commas operator
-        setting — the exact return URL is configured on the checkout page, not
-        in this app.
+        Your post-purchase return URL is configured by our operator on the
+        FanBasis checkout page — not by this app. A redirect back to this
+        site is not authentication. Only the secure link in your NuAmenti
+        access email establishes the verified session used to unlock any
+        add-on.
       </p>
       <p className="mt-3 text-sm">
         <Link
@@ -81,7 +85,7 @@ function Confirmed() {
 
       <VideoSlot
         url={thankYouUrl}
-        label={content?.videoLabel ?? "Watch: a note from the family"}
+        label="Watch: a note from the family"
         className="mt-8"
       />
       {!thankYouUrl ? (
@@ -94,25 +98,6 @@ function Confirmed() {
             Your personal welcome from the family lands here on event day.
           </p>
         </div>
-      ) : null}
-
-      {content ? (
-        <section className="mt-10 surface-raised p-6">
-          <h2 className="font-heading text-lg text-foreground">What you have</h2>
-          <p className="mt-3 text-sm text-muted-foreground">{content.included}</p>
-          <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
-            {content.nextSteps.map((s) => (
-              <li key={s}>{s}</li>
-            ))}
-          </ol>
-          {content.notices.length ? (
-            <div className="mt-5 rounded-md border border-border bg-secondary/30 p-4 text-xs text-muted-foreground">
-              {content.notices.map((n) => (
-                <p key={n} className="mt-2 first:mt-0">{n}</p>
-              ))}
-            </div>
-          ) : null}
-        </section>
       ) : null}
 
       <section className="mt-10 surface-raised p-6">
@@ -147,64 +132,8 @@ function Confirmed() {
         </ul>
       </section>
 
-      {showGaUpgradeChoice ? (
-        <section className="mt-10 surface-raised p-6 border-[color:var(--gold)]">
-          <p className="eyebrow">Your first choice — one time only</p>
-          <h2 className="mt-2 font-heading text-xl text-foreground">
-            Add the VIP Implementation Experience for {formatUsd(vipUpgrade.priceCents)}?
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {vipUpgrade.summary} Your GA ticket remains valid either way.
-          </p>
-          <div className="mt-5 flex flex-wrap gap-3">
-            <Link
-              to="/offer/vip-upgrade"
-              className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
-            >
-              See the VIP Experience
-            </Link>
-            <Link
-              to="/next-steps"
-              className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
-            >
-              No thanks — continue with GA
-            </Link>
-          </div>
-        </section>
-      ) : null}
-
-      {showVaultChoice ? (
-        <section className="mt-10 surface-raised p-6 border-[color:var(--gold)]">
-          <p className="eyebrow">Add now — build faster</p>
-          <h2 className="mt-2 font-heading text-xl text-foreground">
-            {vault.name} — {formatUsd(vault.priceCents)}
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground">{vault.summary}</p>
-          <p className="mt-2 text-xs text-muted-foreground">
-            The Vault does not include admission or recordings; your VIP ticket
-            remains valid whether you add the Vault or not.
-          </p>
-          <ul className="mt-3 grid gap-1 text-sm text-muted-foreground sm:grid-cols-2">
-            {vault.bullets.map((b) => (
-              <li key={b}>· {b}</li>
-            ))}
-          </ul>
-          <div className="mt-5 flex flex-wrap gap-3">
-            <Link
-              to="/offer/implementation-vault"
-              className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
-            >
-              See the Vault
-            </Link>
-            <Link
-              to="/next-steps"
-              className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
-            >
-              No thanks — continue
-            </Link>
-          </div>
-        </section>
-      ) : null}
+      {showGaUpgradeChoice ? <VipUpgradeNextStep /> : null}
+      {showVaultChoice ? <VaultNextStep /> : null}
 
       <TestimonialSection
         page="confirmed"
@@ -227,5 +156,65 @@ function Confirmed() {
         ← Back to the Summit
       </Link>
     </main>
+  );
+}
+
+function VipUpgradeNextStep() {
+  const upgrade = UPSELLS.vip_upgrade;
+  return (
+    <section className="mt-10 surface-raised p-6 border-[color:var(--gold)]">
+      <p className="eyebrow">Your first choice — one time only</p>
+      <h2 className="mt-2 font-heading text-xl text-foreground">
+        Add the VIP Implementation Experience for {formatUsd(upgrade.priceCents)}?
+      </h2>
+      <p className="mt-2 text-sm text-muted-foreground">
+        {upgrade.summary} Your GA ticket remains valid either way.
+      </p>
+      <div className="mt-5 flex flex-wrap gap-3">
+        <Link
+          to="/offer/vip-upgrade"
+          className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+        >
+          See the VIP Experience
+        </Link>
+        <Link
+          to="/next-steps"
+          className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
+        >
+          No thanks — continue with GA
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function VaultNextStep() {
+  const vault = UPSELLS.vault;
+  return (
+    <section className="mt-10 surface-raised p-6 border-[color:var(--gold)]">
+      <p className="eyebrow">Add now — build faster</p>
+      <h2 className="mt-2 font-heading text-xl text-foreground">
+        {vault.name} — {formatUsd(vault.priceCents)}
+      </h2>
+      <p className="mt-2 text-sm text-muted-foreground">{vault.summary}</p>
+      <p className="mt-2 text-xs text-muted-foreground">
+        The Vault does not include admission or recordings; your VIP ticket
+        remains valid whether you add the Vault or not.
+      </p>
+      <div className="mt-5 flex flex-wrap gap-3">
+        <Link
+          to="/offer/implementation-vault"
+          className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+        >
+          See the Vault
+        </Link>
+        <Link
+          to="/next-steps"
+          className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
+        >
+          No thanks — continue
+        </Link>
+      </div>
+    </section>
   );
 }

@@ -1,4 +1,5 @@
 import { VideoSlot } from "./VideoSlot";
+import { normalizeVideoEmbedUrl } from "@/lib/video-embed";
 import {
   publishedTexts,
   testimonialVideoUrl,
@@ -25,7 +26,10 @@ export function TestimonialSection({
   heading?: string;
   className?: string;
 }) {
-  const videoUrl = testimonialVideoUrl(page);
+  // Validate the video URL BEFORE deciding whether the section has any
+  // content. A malformed/off-allowlist URL normalizes to null and MUST
+  // NOT keep an otherwise-empty section on the page.
+  const videoUrl = normalizeVideoEmbedUrl(testimonialVideoUrl(page));
   const texts = publishedTexts(page);
 
   if (!videoUrl && texts.length === 0) return null;

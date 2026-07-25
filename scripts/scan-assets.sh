@@ -87,6 +87,9 @@ STALE_PATTERNS=(
   'working first job, running'
   'turn one on [—-] live'
   'By Sunday evening'
+  '\$55\b'
+  '\$88\b'
+  '\$177\b'
 )
 # Files exempt from stale scan:
 #  * this scanner

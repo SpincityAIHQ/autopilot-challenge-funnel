@@ -9,7 +9,7 @@
  * The public landing page (/) shows NO prices and NO later-offer links.
  *
  * Legacy note:
- *   `vip_upgrade` was previously priced at the "price difference" ($55).
+ *   `vip_upgrade` was previously priced at the "price difference".
  *   In the sequential funnel it is the FULL $77 VIP Implementation
  *   Experience offered after verified GA purchase — no "difference" math,
  *   no direct VIP admission offered from the public site.

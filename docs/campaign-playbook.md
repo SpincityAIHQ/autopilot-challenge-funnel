@@ -50,7 +50,7 @@ the AI AutoPilot Summit on Aug 24 + 25, 2026 (live online).
 - Session start times are sent from this address a few days before Day 1.
 
 Optional add-ons:
-- Upgrade to VIP for $55 (recordings + VIP Lab): [https://SITE/offer/vip-upgrade]
+- Upgrade to VIP for $77 (recordings + VIP Lab): [https://SITE/offer/vip-upgrade]
 - Implementation Vault ($199, independent add-on): [https://SITE/offer/implementation-vault]
 
 Questions? Reply to this email or write Info@NuAmenti.com.
@@ -109,7 +109,7 @@ Body: State the honest capacity note only if operator has real capacity
 data. No invented counters. CTA: [https://SITE/checkout?tier=ga]
 
 ### 2.5 GA → VIP upgrade (to LIST_GA only)
-Subject: One-time GA → VIP upgrade — $55
+Subject: One-time GA → VIP upgrade — $77
 Body: Explain what you'd add: 30-day recordings, VIP Lab, priority Q&A,
 outreach kit. Note that declining leaves your GA ticket fully valid.
 CTA: [https://SITE/offer/vip-upgrade]
@@ -145,7 +145,7 @@ buyers from further sales SMS the moment fulfillment is confirmed.
 
 - Pre-Summit reminder (24h): "AI AutoPilot Summit is tomorrow, [START_TIME] ET. Add: [DAY_1_ICS_URL]. Reply STOP to opt out; HELP for help."
 - Day-of reminder (2h): "We start in ~2h. Room link: [LINK]. Reply STOP to opt out; HELP for help."
-- GA → VIP upgrade (to LIST_GA only): "$55 GA→VIP upgrade — recordings + Lab: [SITE]/offer/vip-upgrade. Reply STOP to opt out; HELP for help."
+- GA → VIP upgrade (to LIST_GA only): "$77 GA→VIP upgrade — recordings + Lab: [SITE]/offer/vip-upgrade. Reply STOP to opt out; HELP for help."
 - Vault (post-Summit, to LIST_GA + LIST_VIP): "Implementation Vault add-on ($199): [SITE]/offer/implementation-vault. Reply STOP to opt out; HELP for help."
 
 Never SMS during buyer-local quiet hours (before 9am / after 8pm) or

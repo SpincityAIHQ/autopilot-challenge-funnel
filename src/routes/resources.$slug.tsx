@@ -35,24 +35,44 @@ function ResourcePreview() {
     "idle" | "exchanging" | "loading" | "denied" | "expired" | "error"
   >("idle");
 
-  // On mount: if ?t=magic-token is present, IMMEDIATELY strip it from
-  // the visible URL (before any await, before any network call). The
-  // raw token is kept only in a local variable for the exchange POST
-  // and is never handed to analytics, logging, or history.
+  // On mount: prefer `#t=magic-token` in the URL fragment (the fragment
+  // is never sent in the initial HTTP request, so the raw token can't be
+  // leaked in server logs / referrers / TLS terminators). Legacy `?t=`
+  // is accepted for migration only — never issued. Both variants are
+  // stripped from the visible URL synchronously via history.replaceState
+  // BEFORE any await, so a screenshot/logger/beacon captured after this
+  // tick can never see the token.
   useEffect(() => {
     if (typeof window === "undefined") return;
     const url = new URL(window.location.href);
-    const t = url.searchParams.get("t");
-    if (!t || t.length < 32 || t.length > 256) {
-      // No magic token in URL — try to read directly (cookie may exist).
+
+    let t: string | null = null;
+    // Preferred: fragment `#t=<token>` (also supports #t=<token>&...).
+    const hash = window.location.hash.startsWith("#")
+      ? window.location.hash.slice(1)
+      : "";
+    if (hash) {
+      const hashParams = new URLSearchParams(hash);
+      const ht = hashParams.get("t");
+      if (ht && ht.length >= 32 && ht.length <= 256) t = ht;
+    }
+    // Legacy migration path: `?t=<token>`.
+    if (!t) {
+      const qt = url.searchParams.get("t");
+      if (qt && qt.length >= 32 && qt.length <= 256) t = qt;
+    }
+
+    // Always strip both surfaces synchronously — before any await.
+    if (url.searchParams.has("t")) url.searchParams.delete("t");
+    const strippedHref = url.toString().replace(/#.*$/, "");
+    if (strippedHref !== window.location.href) {
+      window.history.replaceState({}, "", strippedHref);
+    }
+
+    if (!t) {
       loadResource();
       return;
     }
-    // Strip ?t synchronously so a screenshot / logger / referer / analytics
-    // beacon captured after this tick can never see it. Do this BEFORE we
-    // await the exchange response.
-    url.searchParams.delete("t");
-    window.history.replaceState({}, "", url.toString());
 
     setStatus("exchanging");
     fetch("/api/public/resources/exchange", {

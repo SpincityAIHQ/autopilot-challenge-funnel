@@ -20,6 +20,7 @@ export const Route = createFileRoute("/next-keynote")({
         property: "og:description",
         content: "Priority access to the next NuAmenti keynote announcement.",
       },
+      { name: "robots", content: "noindex" },
     ],
     links: [{ rel: "canonical", href: "/next-keynote" }],
   }),

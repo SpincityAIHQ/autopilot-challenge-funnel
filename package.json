@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "bun test src/tests/",
-    "typecheck": "tsgo --noEmit",
+    "typecheck": "tsc --noEmit",
     "verify:assets": "bash scripts/scan-assets.sh",
     "release:check": "echo '── release:check ──' && bun run typecheck && bun run test && bun run build && bun run verify:assets && echo '✔ release:check PASSED (typecheck + unit tests + production build + committed scan). Run scripts/verify-resource-sessions.sql separately as service_role for DB-level QA.'",
     "release:verify": "bun run release:check"

@@ -1,29 +1,64 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { UPSELLS, formatUsd } from "@/lib/tiers";
+import { getCommasConfig } from "@/lib/challenge-config";
+import { OfferGate } from "@/components/OfferGate";
 
 export const Route = createFileRoute("/apply/mentorship")({
   head: () => ({
     meta: [
-      { title: "8-Week Mentorship & Work-Along — Application" },
+      // Neutral head: no product name, no $8,000 price, no application
+      // visible to anonymous visitors or crawlers.
+      { title: "Next step — AI AutoPilot Summit" },
       {
         name: "description",
         content:
-          "Application-based eight-week mentorship. Separate from the 10-slot Strategy Intensive. Applying does not charge a card.",
+          "Verified next step for eligible Summit attendees. Sign-in from your NuAmenti access email required.",
       },
-      { property: "og:title", content: "8-Week Mentorship — Application" },
+      { name: "robots", content: "noindex,nofollow" },
+      { property: "og:title", content: "Next step — AI AutoPilot Summit" },
       {
         property: "og:description",
-        content:
-          "Apply for the eight-week guided implementation cohort. Separate scope from the 10-slot Intensive.",
+        content: "Verified next step for Summit attendees.",
       },
     ],
     links: [{ rel: "canonical", href: "/apply/mentorship" }],
   }),
-  component: MentorshipApplication,
+  component: MentorshipRoute,
 });
 
-function MentorshipApplication() {
+function MentorshipRoute() {
+  const cfg = getCommasConfig();
+  const applicationsEnabled = cfg.mentorshipApplicationsEnabled === true;
+  return (
+    <main className="mx-auto max-w-3xl px-5 py-16">
+      <p className="eyebrow">Sequential next step</p>
+      <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
+        Your next step is inside your access email.
+      </h1>
+      <p className="mt-3 text-sm text-muted-foreground">
+        Eligibility for the Mentorship is checked from your verified access
+        session — never from this URL. The 8-Week Mentorship is separate
+        from the 10-slot Strategy Intensive.
+      </p>
+      {!applicationsEnabled ? (
+        <section className="mt-10 surface p-6 text-sm text-muted-foreground">
+          Mentorship applications are not open. When they reopen we'll
+          announce it through your NuAmenti access email.
+        </section>
+      ) : (
+        <OfferGate
+          predicate={(a) => a.hasGa}
+          ineligibleMessage="Applications are only accepted from verified Summit attendees. Open the secure link in your NuAmenti access email — signed in on the same browser."
+        >
+          <MentorshipContent />
+        </OfferGate>
+      )}
+    </main>
+  );
+}
+
+function MentorshipContent() {
   const m = UPSELLS.mentorship;
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,20 +93,19 @@ function MentorshipApplication() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-5 py-16">
-      <p className="eyebrow">Post-Summit · Ascension</p>
-      <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
-        {m.name}
-      </h1>
-      <div className="mt-4 font-display text-4xl text-[color:var(--gold)]">
-        {formatUsd(m.priceCents)}
-      </div>
-      <p className="mt-4 text-muted-foreground">{m.summary}</p>
-      <p className="mt-2 text-xs text-muted-foreground">
-        The Mentorship is a separate offer from the Strategy Intensive.
-        Applying does not reserve a seat or charge a card. Your Summit ticket
-        remains valid whether you apply or not.
-      </p>
+    <>
+      <section className="mt-10 surface-raised p-6">
+        <h2 className="font-display text-2xl text-foreground">{m.name}</h2>
+        <div className="mt-4 font-display text-4xl text-[color:var(--gold)]">
+          {formatUsd(m.priceCents)}
+        </div>
+        <p className="mt-4 text-muted-foreground">{m.summary}</p>
+        <p className="mt-2 text-xs text-muted-foreground">
+          The Mentorship is a separate offer from the Strategy Intensive.
+          Applying does not reserve a seat or charge a card. Your Summit
+          ticket remains valid whether you apply or not.
+        </p>
+      </section>
 
       {submitted ? (
         <p
@@ -123,7 +157,7 @@ function MentorshipApplication() {
       >
         ← Back to the Summit
       </Link>
-    </main>
+    </>
   );
 }
 
