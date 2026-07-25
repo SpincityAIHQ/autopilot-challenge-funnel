@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { QaReviewPanel } from "@/components/QaReviewPanel";
 
 function NotFoundComponent() {
   return (
@@ -35,7 +36,6 @@ function NotFoundComponent() {
     </div>
   );
 }
-
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
@@ -114,7 +114,6 @@ const JSON_LD_EVENT = {
   ],
 };
 
-
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   {
     head: () => ({
@@ -140,9 +139,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           content:
             "Live online implementation. Leave with a starter Autonomy Map and a first AI-assisted workflow prototype to keep building.",
         },
-
-
-
         { name: "twitter:card", content: "summary_large_image" },
       ],
       links: [
@@ -183,6 +179,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <QaReviewPanel />
     </QueryClientProvider>
   );
 }
