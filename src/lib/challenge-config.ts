@@ -20,6 +20,10 @@ export const DEFAULT_COMMAS_CHECKOUT_HOSTS: readonly string[] = [
 export interface SectionVideoUrls {
   hero?: string;
   confirmedThankYou?: string;
+  thankYouGa?: string;
+  thankYouVip?: string;
+  thankYouVault?: string;
+  thankYouIntensive?: string;
 }
 
 export interface KeynoteConfig {
