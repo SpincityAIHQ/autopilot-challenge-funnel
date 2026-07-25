@@ -28,24 +28,28 @@ describe("checkout exposes only General Admission ($22)", () => {
 });
 
 describe("private-page pricing visibility", () => {
-  it("VIP Implementation Experience page shows $77 and NOT $22/$199/$1,000", () => {
-    expect(vipUpgrade.includes("$77")).toBe(true);
+  it("VIP Implementation Experience page renders the vip_upgrade price and is noindex", () => {
+    expect(vipUpgrade.includes("UPSELLS.vip_upgrade")).toBe(true);
+    expect(vipUpgrade.includes("formatUsd")).toBe(true);
+    // No stale/legacy literal prices leaked into copy.
     for (const p of ["$22", "$199", "$1,000", "$55"]) {
       expect(vipUpgrade.includes(p)).toBe(false);
     }
     expect(vipUpgrade.includes('name: "robots", content: "noindex"')).toBe(true);
   });
 
-  it("Vault page shows $199 and NOT $22/$77/$1,000", () => {
-    expect(vault.includes("$199")).toBe(true);
+  it("Vault page renders the vault price and is noindex", () => {
+    expect(vault.includes("UPSELLS.vault")).toBe(true);
+    expect(vault.includes("formatUsd")).toBe(true);
     for (const p of ["$22", "$77", "$1,000"]) {
       expect(vault.includes(p)).toBe(false);
     }
     expect(vault.includes('name: "robots", content: "noindex"')).toBe(true);
   });
 
-  it("Strategy Intensive page shows $1,000 and NOT $22/$77/$199, and is noindex", () => {
-    expect(intensive.includes("$1,000") || intensive.includes("100000")).toBe(true);
+  it("Intensive page renders the intensive price and is noindex", () => {
+    expect(intensive.includes("UPSELLS.intensive")).toBe(true);
+    expect(intensive.includes("formatUsd")).toBe(true);
     for (const p of ["$22", "$77", "$199"]) {
       expect(intensive.includes(p)).toBe(false);
     }
