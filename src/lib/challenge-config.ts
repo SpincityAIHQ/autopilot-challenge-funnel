@@ -37,7 +37,7 @@ export interface CommasConfig {
   upsellsEnabled: boolean;
   intensiveSalesEnabled: boolean;
   keynoteSalesEnabled: boolean;
-  mentorshipApplicationsEnabled: boolean;
+  mentorshipApplicationsEnabled?: boolean;
   allowedHosts: readonly string[];
   keynote: KeynoteConfig;
 }
