@@ -252,14 +252,19 @@ async function setTerminal(
   eventId: string,
   status: string,
   error: string | null,
+  product?: string | null,
+  paymentId?: string | null,
 ): Promise<boolean> {
+  const update: Record<string, unknown> = {
+    status,
+    error,
+    processed_at: new Date().toISOString(),
+  };
+  if (product) update.product = product;
+  if (paymentId) update.payment_id = paymentId;
   const { error: e } = await admin
     .from("summit_payment_events")
-    .update({
-      status,
-      error,
-      processed_at: new Date().toISOString(),
-    })
+    .update(update)
     .eq("provider_event_id", eventId);
   return Boolean(e);
 }
