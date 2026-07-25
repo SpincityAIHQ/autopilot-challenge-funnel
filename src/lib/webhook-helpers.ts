@@ -9,10 +9,14 @@
  *
  * Product ids (env-driven, unknown → grants nothing):
  *   COMMAS_PRODUCT_ID_GA           → 'ga'          ($22)
- *   COMMAS_PRODUCT_ID_VIP          → 'vip'         ($77)
  *   COMMAS_PRODUCT_ID_VIP_UPGRADE  → 'vip_upgrade' ($77 — post-GA VIP Implementation Experience)
  *   COMMAS_PRODUCT_ID_VAULT        → 'vault'       ($199, OTO)
  *   COMMAS_PRODUCT_ID_INTENSIVE    → 'intensive'   ($1,000, cap 10)
+ *
+ * Direct-VIP admission is NOT accepted for fulfillment — the sequential
+ * funnel only sells GA up front, then vip_upgrade after verified GA.
+ * Reversal events (payment.refunded/failed/disputed) match by payment_id
+ * and therefore keep working for already-recorded legacy VIP payments.
  */
 
 import { createHmac, timingSafeEqual } from "node:crypto";
@@ -159,7 +163,6 @@ export function resolveProductFromItem(
 ): ProductId | null {
   if (!itemId) return null;
   if (itemId === env.COMMAS_PRODUCT_ID_GA) return "ga";
-  if (itemId === env.COMMAS_PRODUCT_ID_VIP) return "vip";
   if (itemId === env.COMMAS_PRODUCT_ID_VIP_UPGRADE) return "vip_upgrade";
   if (itemId === env.COMMAS_PRODUCT_ID_VAULT) return "vault";
   if (itemId === env.COMMAS_PRODUCT_ID_INTENSIVE) return "intensive";
@@ -174,8 +177,9 @@ export interface WebhookConfigResult {
 }
 
 /**
- * Webhook activation gate. Requires enabled flag, secret, and the five
- * core product IDs (GA, VIP, VIP_UPGRADE, Vault, Intensive), pairwise distinct.
+ * Webhook activation gate. Requires enabled flag, secret, and the four
+ * current sale product IDs (GA, VIP_UPGRADE, Vault, Intensive), pairwise
+ * distinct. Direct-VIP admission is not a current launch product.
  */
 export function validateWebhookConfig(
   env: Record<string, string | undefined>,
@@ -187,7 +191,6 @@ export function validateWebhookConfig(
     return { ok: false, reason: "no secret" };
   const ids = [
     env.COMMAS_PRODUCT_ID_GA,
-    env.COMMAS_PRODUCT_ID_VIP,
     env.COMMAS_PRODUCT_ID_VIP_UPGRADE,
     env.COMMAS_PRODUCT_ID_VAULT,
     env.COMMAS_PRODUCT_ID_INTENSIVE,

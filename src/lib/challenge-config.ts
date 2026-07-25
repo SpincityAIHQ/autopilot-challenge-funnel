@@ -65,9 +65,12 @@ export function getCommasConfig(): CommasConfig {
   const keynoteDate = readEnv("VITE_KEYNOTE_DATE_ISO");
   const keynotePrice = readEnv("VITE_KEYNOTE_PRICE_LABEL");
   return {
+    // Current sequential funnel: four live sale products only.
+    // Direct-VIP admission is NOT offered from the public site — VIP is
+    // sold as `vip_upgrade` after verified GA. Legacy direct-VIP
+    // purchases keep working for reversal (reversal is by payment_id).
     urls: {
       ga: readEnv("VITE_COMMAS_CHECKOUT_URL_GA"),
-      vip: readEnv("VITE_COMMAS_CHECKOUT_URL_VIP"),
       vip_upgrade: readEnv("VITE_COMMAS_CHECKOUT_URL_VIP_UPGRADE"),
       vault: readEnv("VITE_COMMAS_CHECKOUT_URL_VAULT"),
       intensive: readEnv("VITE_COMMAS_CHECKOUT_URL_INTENSIVE"),

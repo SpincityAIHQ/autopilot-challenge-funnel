@@ -23,12 +23,18 @@ import {
 export const Route = createFileRoute("/confirmed")({
   head: () => ({
     meta: [
-      { title: "Thank you, family — AI AutoPilot Summit" },
+      { title: "Next step — AI AutoPilot Summit" },
       { name: "robots", content: "noindex" },
       {
         name: "description",
         content:
-          "Thank you for registering. Check your email for your receipt and Summit access details.",
+          "Your registration is being verified by our team. Access details are sent once verification is complete — there is no fixed delivery time.",
+      },
+      { property: "og:title", content: "Next step — AI AutoPilot Summit" },
+      {
+        property: "og:description",
+        content:
+          "Registration verification for the AI AutoPilot Summit.",
       },
       { property: "og:url", content: "/confirmed" },
     ],

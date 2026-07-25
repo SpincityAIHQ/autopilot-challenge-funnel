@@ -90,16 +90,24 @@ STALE_PATTERNS=(
   '\$55\b'
   '\$88\b'
   '\$177\b'
+  # Direct-VIP activation must not appear outside allowlisted history.
+  'VITE_COMMAS_CHECKOUT_URL_VIP($|[^_A-Z])'
+  'COMMAS_PRODUCT_ID_VIP($|[^_A-Z])'
+  # Confirmed / thank-you must not be selected by tier query.
+  'confirmed\?tier='
+  # Raw query-token issuance is banned — magic links use `#t=` in the fragment.
+  '/resources/[a-z0-9_-]+\?t='
+  # tsgo has been replaced by tsc --noEmit everywhere in docs/config.
+  'bunx tsgo'
 )
 # Files exempt from stale scan:
 #  * this scanner
 #  * SQL QA script (owns literal legacy tokens for verification)
-#  * .lovable/plan.md (historical planning notes, never user-facing)
 #  * supabase/migrations/* (immutable historical migration filenames/comments)
+#  * supabase/types.gen.ts (auto-generated; may reference historical tables)
 #  * src/tests/* (assertions may pin legacy tokens on purpose)
 #  * src/styles.css (project header comment, never rendered)
-#  * docs/operator-launch-checklist.md (checklist for scrubbing legacy tokens)
-ALLOW_REGEX='^\./(scripts/scan-assets\.sh|scripts/verify-resource-sessions\.sql|\.lovable/plan\.md|supabase/migrations/|src/tests/|src/styles\.css|docs/operator-launch-checklist\.md)'
+ALLOW_REGEX='^\./(scripts/scan-assets\.sh|scripts/verify-resource-sessions\.sql|supabase/migrations/|supabase/types\.gen\.ts|src/tests/|src/styles\.css)'
 
 stale_hits=0
 for pat in "${STALE_PATTERNS[@]}"; do

@@ -17,7 +17,6 @@ const cfg = {
   keynote: { announced: false },
   urls: {
     ga: "https://www.fanbasis.com/i/ga",
-    vip: "https://www.fanbasis.com/i/vip",
     vip_upgrade: "https://evil.example.com/vip",
     vault: "http://www.fanbasis.com/i/vault",
     intensive: undefined,
@@ -42,12 +41,16 @@ describe("isAllowedCheckoutUrl", () => {
 describe("resolveCheckoutUrl", () => {
   it("returns the URL when host+scheme match", () => {
     expect(resolveCheckoutUrl("ga", cfg)).toBe("https://www.fanbasis.com/i/ga");
-    expect(resolveCheckoutUrl("vip", cfg)).toBe("https://www.fanbasis.com/i/vip");
   });
   it("fails closed on off-allowlist, http, and missing", () => {
     expect(resolveCheckoutUrl("vip_upgrade", cfg)).toBeNull();
     expect(resolveCheckoutUrl("vault", cfg)).toBeNull();
     expect(resolveCheckoutUrl("intensive", cfg)).toBeNull();
+  });
+  it("returns null for legacy direct-VIP (not a current sale product)", () => {
+    // getCommasConfig() no longer populates urls.vip — the sequential
+    // funnel sells vip only as post-GA vip_upgrade.
+    expect(resolveCheckoutUrl("vip", cfg)).toBeNull();
   });
 });
 
