@@ -39,17 +39,16 @@ export const Route = createFileRoute("/confirmed")({
 
 function Confirmed() {
   const cfg = getCommasConfig();
-  const thankYouUrl = cfg.sectionVideos.confirmedThankYou ?? null;
   const summary = useEntitlementSummary();
   const access =
     summary.status === "ok" ? derivedAccess(summary.scopes) : null;
 
   // Reveal rules — session-driven only. Never derived from a URL param.
-  //   GA (no VIP)  → show VIP Implementation Experience next-step block.
-  //   VIP (no Vault) → show Vault next-step block.
-  //   Everything else → no downstream offer content.
-  const showGaUpgradeChoice = Boolean(access && access.hasGa && !access.hasVip);
-  const showVaultChoice = Boolean(
+  //   GA verified (no VIP)  → warm GA thank-you + VIP upsell block.
+  //   VIP verified (no Vault) → warm VIP thank-you + Vault upsell block.
+  //   Anonymous / other → generic "we're verifying" copy only.
+  const verifiedGaOnly = Boolean(access && access.hasGa && !access.hasVip);
+  const verifiedVipNoVault = Boolean(
     access && access.hasVip && !access.hasVault,
   );
 
@@ -83,22 +82,23 @@ function Confirmed() {
         </Link>
       </p>
 
-      <VideoSlot
-        url={thankYouUrl}
-        label="Watch: a note from the family"
-        className="mt-8"
+      <ProductThankYou
+        verified={verifiedGaOnly}
+        eyebrow="Verified · General Admission"
+        headline="Thank you, family — you're officially registered with General Admission."
+        body="Your GA ticket is confirmed. Watch for your NuAmenti access email for entry links and resources."
+        videoUrl={cfg.sectionVideos.thankYouGa}
+        videoLabel="A note from the family — GA welcome"
       />
-      {!thankYouUrl ? (
-        <div
-          className="mt-8 aspect-video rounded-md border border-[color:var(--hairline)] bg-[color:var(--surface)] p-6"
-          aria-label="Thank-you video placeholder"
-        >
-          <p className="label-mono">Thank-you video</p>
-          <p className="mt-3 text-sm text-muted-foreground">
-            Your personal welcome from the family lands here on event day.
-          </p>
-        </div>
-      ) : null}
+
+      <ProductThankYou
+        verified={verifiedVipNoVault}
+        eyebrow="Verified · VIP Implementation Experience"
+        headline="Thank you, family — you added the VIP Implementation Experience."
+        body="Your VIP add-on is confirmed. Recordings, the VIP Implementation Lab, and priority Q&A are yours — details land in your access email."
+        videoUrl={cfg.sectionVideos.thankYouVip}
+        videoLabel="A note from the family — VIP welcome"
+      />
 
       <section className="mt-10 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">Save the dates</h2>
@@ -132,8 +132,8 @@ function Confirmed() {
         </ul>
       </section>
 
-      {showGaUpgradeChoice ? <VipUpgradeNextStep /> : null}
-      {showVaultChoice ? <VaultNextStep /> : null}
+      {verifiedGaOnly ? <VipUpgradeNextStep /> : null}
+      {verifiedVipNoVault ? <VaultNextStep /> : null}
 
       <TestimonialSection
         page="confirmed"
