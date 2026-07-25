@@ -93,20 +93,19 @@ function MentorshipContent() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-5 py-16">
-      <p className="eyebrow">Post-Summit · Ascension</p>
-      <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
-        {m.name}
-      </h1>
-      <div className="mt-4 font-display text-4xl text-[color:var(--gold)]">
-        {formatUsd(m.priceCents)}
-      </div>
-      <p className="mt-4 text-muted-foreground">{m.summary}</p>
-      <p className="mt-2 text-xs text-muted-foreground">
-        The Mentorship is a separate offer from the Strategy Intensive.
-        Applying does not reserve a seat or charge a card. Your Summit ticket
-        remains valid whether you apply or not.
-      </p>
+    <>
+      <section className="mt-10 surface-raised p-6">
+        <h2 className="font-display text-2xl text-foreground">{m.name}</h2>
+        <div className="mt-4 font-display text-4xl text-[color:var(--gold)]">
+          {formatUsd(m.priceCents)}
+        </div>
+        <p className="mt-4 text-muted-foreground">{m.summary}</p>
+        <p className="mt-2 text-xs text-muted-foreground">
+          The Mentorship is a separate offer from the Strategy Intensive.
+          Applying does not reserve a seat or charge a card. Your Summit
+          ticket remains valid whether you apply or not.
+        </p>
+      </section>
 
       {submitted ? (
         <p
