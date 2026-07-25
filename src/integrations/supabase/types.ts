@@ -505,6 +505,33 @@ export type Database = {
         }
         Relationships: []
       }
+      resource_sessions: {
+        Row: {
+          buyer_email: string
+          created_at: string
+          expires_at: string
+          revoked_at: string | null
+          session_hash: string
+          source_token_hash: string
+        }
+        Insert: {
+          buyer_email: string
+          created_at?: string
+          expires_at: string
+          revoked_at?: string | null
+          session_hash: string
+          source_token_hash: string
+        }
+        Update: {
+          buyer_email?: string
+          created_at?: string
+          expires_at?: string
+          revoked_at?: string | null
+          session_hash?: string
+          source_token_hash?: string
+        }
+        Relationships: []
+      }
       summit_payment_events: {
         Row: {
           created_at: string
@@ -731,6 +758,18 @@ export type Database = {
           used_at: string
         }[]
       }
+      exchange_access_token: {
+        Args: {
+          _session_hash: string
+          _token_hash: string
+          _ttl_seconds: number
+        }
+        Returns: {
+          buyer_email: string
+          expires_at: string
+          scopes: string[]
+        }[]
+      }
       founder_seats_remaining: { Args: never; Returns: number }
       fulfill_challenge_payment: {
         Args: {
@@ -773,6 +812,14 @@ export type Database = {
         Returns: {
           released_slot: number
           reversed_product: string
+        }[]
+      }
+      session_active_scopes: {
+        Args: { _session_hash: string }
+        Returns: {
+          buyer_email: string
+          expires_at: string
+          scopes: string[]
         }[]
       }
     }

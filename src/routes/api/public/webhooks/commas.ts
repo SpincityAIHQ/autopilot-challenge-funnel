@@ -184,6 +184,10 @@ export const Route = createFileRoute("/api/public/webhooks/commas")({
             _full_name: payment.buyer.fullName,
             _email: payment.buyer.email,
             _phone: payment.buyer.phone ?? "",
+            // ATTRIBUTION BLOCKED (see docs/operator-launch-checklist.md).
+            // The exact Commas metadata/custom-field name for first/last-touch
+            // is not yet confirmed by a signed sample payload. Until then we
+            // pass null rather than guess field names and mis-attribute.
             _first_touch: null,
             _last_touch: null,
           },
