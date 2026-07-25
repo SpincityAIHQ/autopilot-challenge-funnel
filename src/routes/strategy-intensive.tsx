@@ -9,6 +9,7 @@ import { useIntensiveSlotsRemaining } from "@/hooks/use-intensive-slots";
 import { OfferGate } from "@/components/OfferGate";
 import { ProductThankYou } from "@/components/ProductThankYou";
 import { TestimonialSection } from "@/components/TestimonialSection";
+import { useQaReviewMode } from "@/hooks/use-qa-review";
 
 export const Route = createFileRoute("/strategy-intensive")({
   head: () => ({
@@ -40,13 +41,15 @@ function StrategyIntensiveRoute() {
         Your next step is inside your access email.
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        Eligibility is checked from your verified access session — never
-        from this URL. Details below only appear once we confirm your
-        Vault purchase or operator-approved eligibility.
+        Eligibility is checked from your verified access session — never from
+        this URL. Details below only appear once we confirm your Vault purchase
+        or operator-approved eligibility.
       </p>
 
       <OfferGate
-        predicate={(a) => (a.hasVault || a.hasIntensiveEligibility) && !a.hasIntensive}
+        predicate={(a) =>
+          (a.hasVault || a.hasIntensiveEligibility) && !a.hasIntensive
+        }
         ineligibleMessage="This next step is only offered to verified Implementation Vault holders and operator-approved attendees. Open the secure Intensive link in your NuAmenti access email — signed in on the same browser."
       >
         <IntensiveContent />
@@ -63,12 +66,22 @@ function IntensiveContent() {
   const soldOut = slots.status === "ok" && slots.remaining <= 0;
   const salesOn = isHandoffAllowed("intensive", cfg);
   const slotsKnown = slots.status === "ok";
+  const qaReview = useQaReviewMode();
 
   let cta;
-  if (soldOut) {
+  if (qaReview) {
+    cta = (
+      <a
+        href="/next-steps?qaStage=intensive"
+        className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
+      >
+        Preview accepted 1-on-1 — continue without payment
+      </a>
+    );
+  } else if (soldOut) {
     cta = <Disabled label={`All ${i.hardCap} slots taken`} />;
   } else if (!salesOn || !url || !slotsKnown) {
-    cta = <Disabled label="Intensive opening soon" />;
+    cta = <Disabled label="Intensive checkout link being connected" />;
   } else {
     cta = (
       <a
@@ -93,6 +106,14 @@ function IntensiveContent() {
         className="mt-6 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-6"
       />
 
+      {qaReview ? (
+        <div className="mt-6 rounded-md border border-[color:var(--gold)] bg-secondary/30 p-4 text-sm text-muted-foreground">
+          <strong className="text-foreground">Owner preview:</strong> accepting
+          this offer moves to the final confirmation page without a charge or
+          inventory change.
+        </div>
+      ) : null}
+
       <div className="mt-8">
         <h2 className="font-display text-2xl text-foreground">
           Book Your Private 1-on-1 Strategy &amp; Build Intensive
@@ -105,7 +126,11 @@ function IntensiveContent() {
       <div className="mt-6 surface-raised p-6" aria-live="polite">
         <p className="label-mono">Live inventory</p>
         <div className="mt-2 font-display text-3xl text-foreground">
-          {slots.status === "loading" ? (
+          {qaReview ? (
+            <span className="text-muted-foreground">
+              Preview mode — live seat count connects at launch
+            </span>
+          ) : slots.status === "loading" ? (
             <span className="text-muted-foreground">Checking availability…</span>
           ) : slots.status === "ok" ? (
             soldOut ? (
@@ -131,8 +156,8 @@ function IntensiveContent() {
       <p className="mt-6 text-muted-foreground">{i.summary}</p>
       <p className="mt-2 text-xs text-muted-foreground">
         Your Summit ticket and Vault access stay valid whether you claim an
-        Intensive slot or not. The 8-Week Mentorship is a separate offer,
-        not this one.
+        Intensive slot or not. The 8-Week Mentorship is a separate offer, not
+        this one.
       </p>
 
       <section className="mt-8 surface p-6">
@@ -148,7 +173,9 @@ function IntensiveContent() {
             </ul>
           </div>
           <div>
-            <p className="label-mono text-[color:var(--gold)]">The Intensive adds</p>
+            <p className="label-mono text-[color:var(--gold)]">
+              The Intensive adds
+            </p>
             <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
               {i.bullets.map((b) => (
                 <li key={b}>· {b}</li>
