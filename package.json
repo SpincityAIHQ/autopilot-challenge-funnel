@@ -13,7 +13,8 @@
     "test": "bun test src/tests/",
     "typecheck": "tsgo --noEmit",
     "verify:assets": "bash scripts/scan-assets.sh",
-    "release:verify": "echo '── release:verify ──' && bun run typecheck && bun run test && bun run build && bun run verify:assets && echo '✔ release:verify PASSED (all: typecheck, unit tests, production build, client-bundle leak scan, stale-copy scan, canonical routes). Run scripts/verify-resource-sessions.sql separately as service_role for DB-level QA.'"
+    "release:check": "echo '── release:check ──' && bun run typecheck && bun run test && bun run build && bun run verify:assets && echo '✔ release:check PASSED (typecheck + unit tests + production build + committed scan). Run scripts/verify-resource-sessions.sql separately as service_role for DB-level QA.'",
+    "release:verify": "bun run release:check"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

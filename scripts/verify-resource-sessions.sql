@@ -312,7 +312,7 @@ END $$;
 -- of vipup_f1. VIP entitlement from vipup_f2 must remain active; GA untouched.
 -- ------------------------------------------------------------------
 DO $$
-DECLARE ids record; active_vip int;
+DECLARE ids record; active_vip int; reg_tier text;
 BEGIN
   SELECT * INTO ids FROM qa_ids;
   PERFORM public.fulfill_summit_payment('ga', ids.pay_ga_f, 2200, 'USD',
@@ -322,6 +322,7 @@ BEGIN
   PERFORM public.reverse_summit_payment(ids.pay_vipup_f1);
   PERFORM public.fulfill_summit_payment('vip_upgrade', ids.pay_vipup_f2, 5500, 'USD',
     'QA F', ids.email_f, NULL, NULL, NULL);
+  -- Duplicate/late refund of the ALREADY-refunded upgrade payment.
   PERFORM public.reverse_summit_payment(ids.pay_vipup_f1);
   SELECT count(*) INTO active_vip FROM public.entitlements
     WHERE buyer_email = ids.email_f AND product = 'vip' AND revoked_at IS NULL;
@@ -337,7 +338,15 @@ BEGIN
     WHERE buyer_email = ids.email_f AND product = 'ga' AND revoked_at IS NULL) THEN
     RAISE EXCEPTION 'TEST10 FAIL: GA collaterally revoked';
   END IF;
-  RAISE NOTICE 'TEST10 PASS out-of-order vip_upgrade refund preserves repurchase';
+  -- Registration tier must still be 'vip' — a late/duplicate refund of the
+  -- older upgrade must NOT silently downgrade a buyer who has repurchased.
+  SELECT tier INTO reg_tier FROM public.summit_registrations
+    WHERE lower(email) = lower(ids.email_f)
+      AND commas_payment_id = ids.pay_ga_f;
+  IF reg_tier <> 'vip' THEN
+    RAISE EXCEPTION 'TEST10 FAIL: registration tier downgraded to % after duplicate upgrade refund', reg_tier;
+  END IF;
+  RAISE NOTICE 'TEST10 PASS out-of-order vip_upgrade refund preserves repurchase and tier';
 END $$;
 
 -- ------------------------------------------------------------------

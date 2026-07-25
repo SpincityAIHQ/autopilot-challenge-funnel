@@ -436,39 +436,57 @@ export type Database = {
       marketing_consents: {
         Row: {
           channel: string
+          consent_text: string | null
           copy_version: string | null
           created_at: string
           granted: boolean
           granted_at: string | null
           id: string
           phone: string | null
+          request_hash: string | null
           revoked_at: string | null
+          seller: string | null
+          signer_name: string | null
           source: string | null
+          source_route: string | null
           subject_email: string
+          user_agent_hash: string | null
         }
         Insert: {
           channel: string
+          consent_text?: string | null
           copy_version?: string | null
           created_at?: string
           granted: boolean
           granted_at?: string | null
           id?: string
           phone?: string | null
+          request_hash?: string | null
           revoked_at?: string | null
+          seller?: string | null
+          signer_name?: string | null
           source?: string | null
+          source_route?: string | null
           subject_email: string
+          user_agent_hash?: string | null
         }
         Update: {
           channel?: string
+          consent_text?: string | null
           copy_version?: string | null
           created_at?: string
           granted?: boolean
           granted_at?: string | null
           id?: string
           phone?: string | null
+          request_hash?: string | null
           revoked_at?: string | null
+          seller?: string | null
+          signer_name?: string | null
           source?: string | null
+          source_route?: string | null
           subject_email?: string
+          user_agent_hash?: string | null
         }
         Relationships: []
       }
