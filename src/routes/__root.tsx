@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { BrandFrame } from "@/components/BrandFrame";
 
 function NotFoundComponent() {
   return (
@@ -87,7 +88,7 @@ const JSON_LD_EVENT = {
   eventStatus: "https://schema.org/EventScheduled",
   organizer: {
     "@type": "Organization",
-    name: "SpincityHQ LLC",
+    name: "NuAmenti × Perfect AIM",
     email: "Info@NuAmenti.com",
   },
   subEvent: [
@@ -116,24 +117,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       meta: [
         { charSet: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
-        { title: "AI AutoPilot Summit — Live Online · Aug 24–25, 2026" },
+        { title: "NuAmenti × Perfect AIM — AI AutoPilot Summit" },
         {
           name: "description",
           content:
-            "Two-day live online implementation Summit. Map three AI-assist workflow candidates and leave with a starter Autonomy Map and a first AI-assisted workflow prototype to keep building. Aug 24–25, 2026.",
+            "Two-day live online implementation Summit from NuAmenti × Perfect AIM. Map three AI-assist workflow candidates and build the first working prototype.",
         },
-        { name: "author", content: "SpincityHQ LLC" },
-        { name: "theme-color", content: "#0e0e14" },
-        { property: "og:site_name", content: "AI AutoPilot Summit" },
+        { name: "author", content: "NuAmenti × Perfect AIM" },
+        { name: "theme-color", content: "#090d12" },
+        { property: "og:site_name", content: "NuAmenti × Perfect AIM" },
         { property: "og:type", content: "website" },
         {
           property: "og:title",
-          content: "AI AutoPilot Summit — Aug 24–25, 2026",
+          content: "NuAmenti × Perfect AIM — AI AutoPilot Summit",
         },
         {
           property: "og:description",
           content:
-            "Live online implementation. Leave with a starter Autonomy Map and a first AI-assisted workflow prototype to keep building.",
+            "Map It. Build It. Put AI to work with human authority and perfect aim.",
         },
         { name: "twitter:card", content: "summary_large_image" },
       ],
@@ -174,7 +175,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <BrandFrame>
+        <Outlet />
+      </BrandFrame>
     </QueryClientProvider>
   );
 }

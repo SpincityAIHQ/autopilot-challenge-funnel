@@ -27,11 +27,11 @@ export const Route = createFileRoute("/checkout")({
   validateSearch: (input) => searchSchema.parse(input),
   head: () => ({
     meta: [
-      { title: "Reserve Your Seat — AI AutoPilot Summit" },
+      { title: "Reserve Your Seat — NuAmenti × Perfect AIM" },
       {
         name: "description",
         content:
-          "Reserve your seat for the AI AutoPilot Summit, live online Aug 24–25, 2026.",
+          "Reserve your seat for the NuAmenti × Perfect AIM AI AutoPilot Summit, live online Aug 24–25, 2026.",
       },
       { name: "robots", content: "noindex" },
       { property: "og:url", content: "/checkout" },
@@ -68,7 +68,7 @@ function Checkout() {
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-12">
-      <p className="eyebrow">Reserve your seat · AI AutoPilot Summit</p>
+      <p className="eyebrow">NuAmenti × Perfect AIM · AI AutoPilot Summit</p>
       <h1 className="mt-3 font-display text-2xl text-foreground sm:text-3xl">
         Meet us at the Summit
       </h1>
@@ -78,11 +78,18 @@ function Checkout() {
       </p>
 
       {qaReview ? (
-        <div className="mt-6 rounded-md border border-[color:var(--gold)] bg-secondary/30 p-4 text-sm text-muted-foreground">
-          <strong className="text-foreground">Owner preview:</strong> this button
-          walks through the exact funnel without charging a card, creating an
-          order, or reserving a seat.
-        </div>
+        <section className="mt-6 rounded-md border border-[color:var(--emerald-signal)]/60 bg-secondary/40 p-4 text-sm text-muted-foreground">
+          <strong className="text-foreground">Owner preview:</strong> walk the
+          full funnel without charging a card, creating an order, or reserving
+          a seat.
+          <button
+            type="button"
+            onClick={handleContinue}
+            className="mt-4 inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-3 font-heading text-base font-semibold text-primary-foreground transition hover:opacity-90"
+          >
+            Continue to GA confirmation — no payment
+          </button>
+        </section>
       ) : null}
 
       <FunnelVideoSlot
