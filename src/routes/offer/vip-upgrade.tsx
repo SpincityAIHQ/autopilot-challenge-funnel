@@ -84,9 +84,13 @@ function VipUpgradeOffer() {
 
         </div>
         <p className="mt-4 text-xs text-muted-foreground">
-          Fulfillment verifies your GA registration by email. If no GA record is
-          found, the payment is reversed automatically.
+          Fulfillment matches your VIP upgrade to an existing GA registration
+          on the same email. Without a matching GA record on file we cannot
+          grant VIP. Please pay with the same email you used for GA, or write
+          Info@NuAmenti.com before paying if you need to change the email on
+          your ticket.
         </p>
+
       </section>
     </main>
   );
