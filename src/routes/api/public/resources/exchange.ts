@@ -4,20 +4,24 @@ import {
   generateAccessToken,
   hashToken,
 } from "@/lib/access-tokens.server";
-import { assertSameOrigin, callerId, rateLimit } from "@/lib/rate-limit";
+import { assertSameOrigin, consumeRateLimit } from "@/lib/rate-limit";
 
 /**
  * Single-use magic token → session cookie exchange.
  *
- * - Marks the magic-link token used_at exactly once (atomic in the DB RPC).
- * - Issues a fresh random session token, returned ONLY as an
- *   HttpOnly; Secure; SameSite=Lax cookie. Never in the response body.
- * - The session hash + buyer email are persisted in resource_sessions.
- * - On every subsequent /read, entitlements are re-checked so refunds
- *   revoke access immediately.
- * - All response paths carry Cache-Control: private, no-store.
- * - Same-origin enforced. Best-effort rate limit per caller IP.
- * - Request bodies are never logged.
+ * Security posture:
+ *  - Same-origin required (fails closed if both Origin and Referer absent).
+ *  - RATE_LIMIT_HMAC_SECRET REQUIRED. Absent → 503, refuse the request.
+ *  - Durable DB-backed rate limiter keyed by HMAC(caller-ip); raw IP is
+ *    never persisted.
+ *  - Marks the magic-link token used_at exactly once (atomic DB RPC).
+ *  - Issues a fresh random session token, returned ONLY as an
+ *    HttpOnly; Secure; SameSite=Lax cookie. Never in the response body.
+ *  - The session hash + buyer email are persisted in resource_sessions.
+ *  - Every /read call re-checks entitlements so refunds revoke access
+ *    immediately.
+ *  - All response paths carry Cache-Control: private, no-store.
+ *  - Request bodies are never logged.
  */
 
 const SESSION_COOKIE = "summit_rs";
@@ -44,7 +48,13 @@ export const Route = createFileRoute("/api/public/resources/exchange")({
         if (!assertSameOrigin(request)) {
           return respond(403, "Forbidden");
         }
-        const rl = rateLimit(`exchange:${callerId(request)}`, 10, 60);
+
+        const rlSecret = process.env.RATE_LIMIT_HMAC_SECRET ?? "";
+        if (!rlSecret) {
+          // Sensitive endpoint: fail closed rather than degrade the limiter.
+          return respond(503, "Service unavailable");
+        }
+        const rl = await consumeRateLimit(request, "exchange", 10, 60, rlSecret);
         if (!rl.ok) {
           const h = baseHeaders();
           h.set("retry-after", String(rl.retryAfterSeconds));

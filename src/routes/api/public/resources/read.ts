@@ -6,20 +6,24 @@ import {
   getResourceMeta,
   scopesGrantTier,
 } from "@/lib/resource-metadata";
-import { assertSameOrigin, callerId, rateLimit } from "@/lib/rate-limit";
+import { assertSameOrigin, consumeRateLimit } from "@/lib/rate-limit";
 
 /**
  * Session-cookie-authenticated resource read.
- * - Reads the HttpOnly session cookie set by /exchange.
- * - Calls session_active_scopes, which returns the buyer's CURRENT active
- *   entitlement scopes (refunds/revocations block immediately).
- * - Applies the product access matrix:
+ * - Same-origin required (fails closed if both Origin and Referer absent).
+ * - Durable DB-backed rate limiter with HMAC caller id. Degrades to the
+ *   in-memory limiter is NOT permitted; missing secret → soft-fail 429
+ *   is unsafe here, so we accept requests without limiting only when the
+ *   secret is present. The read endpoint tolerates a missing secret by
+ *   returning 503 for parity with /exchange.
+ * - session_active_scopes returns the buyer's CURRENT active entitlement
+ *   scopes (refunds/revocations block immediately).
+ * - Product access matrix:
  *     ga scope             → ga resources only
  *     vip / vip_upgrade    → ga + vip resources (VIP inherits GA)
  *     vault scope          → vault resources only (independent)
  *   Multiple scopes union.
- * - Same-origin enforced. Best-effort per-IP rate limit with Retry-After.
- * - Every response path: Cache-Control: private, no-store.
+ * - Every response: Cache-Control: private, no-store.
  * - Request bodies are never logged.
  */
 
@@ -46,7 +50,10 @@ export const Route = createFileRoute("/api/public/resources/read")({
         if (!assertSameOrigin(request)) {
           return respond(403, "Forbidden");
         }
-        const rl = rateLimit(`read:${callerId(request)}`, 60, 60);
+
+        const rlSecret = process.env.RATE_LIMIT_HMAC_SECRET ?? "";
+        if (!rlSecret) return respond(503, "Service unavailable");
+        const rl = await consumeRateLimit(request, "read", 60, 60, rlSecret);
         if (!rl.ok) {
           const h = noStore();
           h.set("retry-after", String(rl.retryAfterSeconds));

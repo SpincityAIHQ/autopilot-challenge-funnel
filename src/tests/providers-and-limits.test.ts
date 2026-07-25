@@ -14,17 +14,26 @@ describe("rateLimit", () => {
   });
 });
 
-describe("assertSameOrigin", () => {
-  it("returns true when there is no origin/referer", () => {
-    expect(assertSameOrigin(new Request("http://localhost/x"))).toBe(true);
+describe("assertSameOrigin — fail-closed", () => {
+  it("returns FALSE when both Origin and Referer are absent (fail closed)", () => {
+    // A legitimate browser fetch always sends at least one of these
+    // headers on a POST; a request with neither is treated as suspicious
+    // (curl, script, non-browser client) and rejected.
+    expect(assertSameOrigin(new Request("http://localhost/x"))).toBe(false);
   });
-  it("returns true for same host", () => {
+  it("returns true when Origin matches Host", () => {
     const r = new Request("http://localhost/x", {
       headers: { origin: "http://localhost", host: "localhost" },
     });
     expect(assertSameOrigin(r)).toBe(true);
   });
-  it("returns false for different host", () => {
+  it("returns true when only Referer is present and its host matches", () => {
+    const r = new Request("http://localhost/x", {
+      headers: { referer: "http://localhost/prev", host: "localhost" },
+    });
+    expect(assertSameOrigin(r)).toBe(true);
+  });
+  it("returns false when Origin host differs from request host", () => {
     const r = new Request("http://localhost/x", {
       headers: { origin: "http://evil.com", host: "localhost" },
     });
