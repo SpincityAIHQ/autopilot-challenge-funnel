@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { VideoSlot } from "@/components/VideoSlot";
+import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { UPSELLS, formatUsd } from "@/lib/tiers";
 import {
   getCommasConfig,
@@ -98,17 +98,18 @@ function VipUpgradeContent() {
         </div>
       ) : null}
 
+      <FunnelVideoSlot
+        url={cfg.sectionVideos.vipOffer}
+        label="Watch: the VIP Implementation Experience"
+        envKey="VITE_SUMMIT_VIDEO_VIP_OFFER"
+        className="mt-8"
+      />
+
       <div className="mt-8">
         <h2 className="font-display text-2xl text-foreground">
           {upgrade.name} — {formatUsd(upgrade.priceCents)}
         </h2>
       </div>
-
-      <VideoSlot
-        url={cfg.sectionVideos.hero ?? null}
-        label="VIP experience preview"
-        className="mt-6"
-      />
 
       <section className="mt-8 surface p-6">
         <h3 className="font-heading text-lg text-foreground">
