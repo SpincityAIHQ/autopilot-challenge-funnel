@@ -3,6 +3,7 @@ import { getCommasConfig } from "@/lib/challenge-config";
 import { UPSELLS, formatUsd } from "@/lib/tiers";
 import { TestimonialSection } from "@/components/TestimonialSection";
 import { ProductThankYou } from "@/components/ProductThankYou";
+import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import {
   useEntitlementSummary,
   derivedAccess,
@@ -58,6 +59,24 @@ function Confirmed() {
     access && access.hasVip && !access.hasVault,
   );
 
+  const confirmationVideo = verifiedGaOnly
+    ? {
+        url: cfg.sectionVideos.thankYouGa,
+        label: "A note from the family — GA welcome",
+        envKey: "VITE_SUMMIT_VIDEO_THANK_YOU_GA",
+      }
+    : verifiedVipNoVault
+      ? {
+          url: cfg.sectionVideos.thankYouVip,
+          label: "A note from the family — VIP welcome",
+          envKey: "VITE_SUMMIT_VIDEO_THANK_YOU_VIP",
+        }
+      : {
+          url: cfg.sectionVideos.confirmedThankYou,
+          label: "A note from the family — payment confirmation",
+          envKey: "VITE_SUMMIT_VIDEO_THANK_YOU",
+        };
+
   return (
     <main className="mx-auto max-w-3xl px-5 py-16">
       <p className="eyebrow">We're verifying your payment</p>
@@ -88,12 +107,19 @@ function Confirmed() {
         </Link>
       </p>
 
+      <FunnelVideoSlot
+        url={confirmationVideo.url}
+        label={confirmationVideo.label}
+        envKey={confirmationVideo.envKey}
+        className="mt-8"
+      />
+
       <ProductThankYou
         verified={verifiedGaOnly}
         eyebrow="Verified · General Admission"
         headline="Thank you, family — you're officially registered with General Admission."
         body="Your GA ticket is confirmed. Watch for your NuAmenti access email for entry links and resources."
-        videoUrl={cfg.sectionVideos.thankYouGa}
+        videoUrl={null}
         videoLabel="A note from the family — GA welcome"
       />
 
@@ -102,7 +128,7 @@ function Confirmed() {
         eyebrow="Verified · VIP Implementation Experience"
         headline="Thank you, family — you added the VIP Implementation Experience."
         body="Your VIP add-on is confirmed. Recordings, the VIP Implementation Lab, and priority Q&A are yours — details land in your access email."
-        videoUrl={cfg.sectionVideos.thankYouVip}
+        videoUrl={null}
         videoLabel="A note from the family — VIP welcome"
       />
 
