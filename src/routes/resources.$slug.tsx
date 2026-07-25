@@ -1,17 +1,19 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { getResource, type ResourceContent } from "@/lib/resource-content";
+import { getResourceMeta } from "@/lib/resource-metadata";
+
+interface UnlockedContent {
+  slug: string;
+  tier: string;
+  name: string;
+  sections: { heading: string; bullets: string[] }[];
+}
 
 export const Route = createFileRoute("/resources/$slug")({
   loader: ({ params }) => {
-    const r = getResource(params.slug);
+    const r = getResourceMeta(params.slug);
     if (!r) throw notFound();
-    return {
-      slug: r.slug,
-      tier: r.tier,
-      name: r.name,
-      preview: r.preview,
-    };
+    return { slug: r.slug, tier: r.tier, name: r.name, preview: r.preview };
   },
   head: ({ loaderData }) => ({
     meta: [
@@ -28,47 +30,73 @@ export const Route = createFileRoute("/resources/$slug")({
 
 function ResourcePreview() {
   const meta = Route.useLoaderData();
-  const [token, setToken] = useState<string | null>(null);
-  const [unlocked, setUnlocked] = useState<ResourceContent | null>(null);
-  const [status, setStatus] = useState<"idle" | "loading" | "denied" | "error">(
-    "idle",
-  );
+  const [unlocked, setUnlocked] = useState<UnlockedContent | null>(null);
+  const [status, setStatus] = useState<
+    "idle" | "exchanging" | "loading" | "denied" | "expired" | "error"
+  >("idle");
 
+  // On mount: if ?t=magic-token is present, exchange it for a session
+  // cookie (single-use, HttpOnly). Then strip ?t from the address bar.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const params = new URLSearchParams(window.location.search);
-    const t = params.get("t");
-    if (t && t.length >= 32 && t.length <= 256) setToken(t);
-  }, []);
+    const url = new URL(window.location.href);
+    const t = url.searchParams.get("t");
+    if (!t || t.length < 32 || t.length > 256) {
+      // No magic token in URL — try to read directly (cookie may exist).
+      loadResource();
+      return;
+    }
+    setStatus("exchanging");
+    fetch("/api/public/resources/exchange", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: t }),
+    })
+      .then(async (res) => {
+        // Always strip ?t so the token can't be re-shared/re-tried from the URL.
+        url.searchParams.delete("t");
+        window.history.replaceState({}, "", url.toString());
+        if (res.status === 401) {
+          setStatus("denied");
+          return;
+        }
+        if (!res.ok) {
+          setStatus("error");
+          return;
+        }
+        loadResource();
+      })
+      .catch(() => {
+        url.searchParams.delete("t");
+        window.history.replaceState({}, "", url.toString());
+        setStatus("error");
+      });
+  }, [meta.slug]);
 
-  useEffect(() => {
-    if (!token) return;
-    let cancelled = false;
+  function loadResource() {
     setStatus("loading");
     fetch("/api/public/resources/read", {
       method: "POST",
+      credentials: "same-origin",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug: meta.slug, token }),
+      body: JSON.stringify({ slug: meta.slug }),
     })
       .then(async (res) => {
-        if (cancelled) return;
         if (res.status === 200) {
-          const json = (await res.json()) as ResourceContent;
+          const json = (await res.json()) as UnlockedContent;
           setUnlocked(json);
           setStatus("idle");
-        } else if (res.status === 401 || res.status === 403) {
+        } else if (res.status === 401) {
+          setStatus("expired");
+        } else if (res.status === 403) {
           setStatus("denied");
         } else {
           setStatus("error");
         }
       })
-      .catch(() => {
-        if (!cancelled) setStatus("error");
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [token, meta.slug]);
+      .catch(() => setStatus("error"));
+  }
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-16 print:py-6">
@@ -82,7 +110,9 @@ function ResourcePreview() {
         <section className="mt-8 space-y-6">
           {unlocked.sections.map((s) => (
             <div key={s.heading} className="surface p-5 print:border-0">
-              <h2 className="font-heading text-lg text-foreground">{s.heading}</h2>
+              <h2 className="font-heading text-lg text-foreground">
+                {s.heading}
+              </h2>
               <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
                 {s.bullets.map((b) => (
                   <li key={b}>· {b}</li>
@@ -93,19 +123,27 @@ function ResourcePreview() {
         </section>
       ) : (
         <section className="mt-8 surface p-6 text-sm text-muted-foreground">
-          {status === "loading" ? (
-            <p>Verifying your access link…</p>
+          {status === "exchanging" ? (
+            <p>Verifying your one-time access link…</p>
+          ) : status === "loading" ? (
+            <p>Loading your resource…</p>
           ) : status === "denied" ? (
             <p>
-              This access link is invalid, expired, or does not cover this
-              resource. Write Info@NuAmenti.com and we'll re-issue.
+              This session doesn't include access to this resource. If you
+              believe that's wrong, write Info@NuAmenti.com.
+            </p>
+          ) : status === "expired" ? (
+            <p>
+              Your access session has expired or the magic link was already
+              used. Request a fresh access email from Info@NuAmenti.com.
             </p>
           ) : status === "error" ? (
             <p>Something went wrong. Try again in a moment.</p>
           ) : (
             <p>
               This is the public preview. The full content unlocks only through
-              the secure link in your access email. URL params never unlock.
+              the secure link in your access email. Reusing a magic link never
+              unlocks anything.
             </p>
           )}
         </section>
