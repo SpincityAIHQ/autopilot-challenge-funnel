@@ -55,8 +55,8 @@ describe("landing page — no prices, no later-offer links", () => {
   });
 
   it("hero CTA is 'Reserve Your Seat' and final CTA is 'Join the Summit', both to /checkout with no tier param", () => {
-    expect(src.includes(">Reserve Your Seat<")).toBe(true);
-    expect(src.includes(">Join the Summit<")).toBe(true);
+    expect(/>\s*Reserve Your Seat\s*</.test(src)).toBe(true);
+    expect(/>\s*Join the Summit\s*</.test(src)).toBe(true);
     // No tier search param anywhere on the landing page.
     expect(src.match(/\/checkout\?/)).toBeNull();
     expect(src.match(/tier=/)).toBeNull();
