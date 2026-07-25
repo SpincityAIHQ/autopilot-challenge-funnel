@@ -164,15 +164,15 @@ function IntensiveCta({
       <SecureLinkNotice message="The Intensive is only sold to verified Vault holders (or operator-approved attendees). Open the secure Intensive link in your NuAmenti access email — verified sign-in is required." />
     );
   }
-  const { hasVault, hasIntensive } = derivedAccess(summary.scopes);
+  const { hasVault, hasIntensive, hasIntensiveEligibility } = derivedAccess(summary.scopes);
   if (hasIntensive) {
     return (
       <AlreadyOwned message="You already hold an Intensive slot. Booking and prep details come through your NuAmenti access email." />
     );
   }
-  if (!hasVault) {
+  if (!hasVault && !hasIntensiveEligibility) {
     return (
-      <SecureLinkNotice message="Intensive eligibility requires a verified Implementation Vault purchase (or operator approval). Add the Vault first, then return here." />
+      <SecureLinkNotice message="Intensive eligibility requires a verified Implementation Vault purchase or operator approval (e.g. NuAmenti attendees). Add the Vault first, or ask an operator to approve you, then return here." />
     );
   }
   if (!salesOn || !url || !slotsKnown) {
