@@ -27,19 +27,22 @@ function Refunds() {
 
       <div className="mt-8 space-y-4 text-sm leading-relaxed">
         <p>
-          Because The AUTOPILOT Challenge is a live event with limited capacity
-          (and a hard cap of 33 Founder Seats), refund windows and terms will be
-          finalized before public checkout opens.
+          The AI AutoPilot Summit is a live online event on Aug 24–25, 2026.
+          Refund windows and terms for each product (GA $22, VIP $77, VIP
+          Upgrade $55, Implementation Vault $199, Strategy &amp; Build
+          Intensive $1,000, and the application-based Mentorship $8,000) will
+          be finalized here before public checkout opens.
         </p>
         <p>
-          Founder Seat inclusions that ship later (signed founding-edition book,
-          AI+AI=AI 2 founding-edition pre-order) are covered by separate
-          shipping and fulfillment terms.
+          The Strategy &amp; Build Intensive is capped at 10 total slots with
+          atomic inventory; refund of an Intensive releases the slot back to
+          the pool.
         </p>
         <p>
           For refund questions, contact <a className="underline" href="mailto:Info@NuAmenti.com">Info@NuAmenti.com</a>.
         </p>
       </div>
+
     </main>
   );
 }
