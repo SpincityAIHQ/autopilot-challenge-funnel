@@ -295,7 +295,7 @@ function Timeline() {
 
 function FinalCta() {
   return (
-    <section className="mx-auto max-w-4xl px-5 py-16 text-center">
+    <section id="registration" className="mx-auto max-w-4xl px-5 py-16 text-center">
       <h2 className="font-display text-3xl text-foreground sm:text-4xl">
         Meet us at the Summit.
       </h2>
@@ -307,7 +307,7 @@ function FinalCta() {
           to="/checkout"
           className="inline-flex items-center rounded-md bg-primary px-6 py-3 font-heading text-base font-semibold text-primary-foreground transition hover:opacity-90"
         >
-          Reserve Your Seat
+          Join the Summit
         </Link>
       </div>
     </section>
