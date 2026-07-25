@@ -26,21 +26,35 @@ export const Route = createFileRoute("/apply/mentorship")({
 function MentorshipApplication() {
   const m = UPSELLS.mentorship;
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setError(null);
+    setSubmitting(true);
     const fd = new FormData(e.currentTarget);
     const body = Object.fromEntries(fd.entries());
     try {
-      await fetch("/api/public/mentorship-application", {
+      const res = await fetch("/api/public/mentorship-application", {
         method: "POST",
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+      if (res.ok) {
+        setSubmitted(true);
+      } else if (res.status === 429) {
+        const ra = res.headers.get("Retry-After");
+        setError(`Too many attempts. Try again in ${ra ?? "60"}s.`);
+      } else {
+        setError("We couldn't submit that just now. Please try again.");
+      }
     } catch {
-      // best-effort — operator follows up manually
+      setError("Network problem. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitted(true);
   }
 
   return (
@@ -60,7 +74,10 @@ function MentorshipApplication() {
       </p>
 
       {submitted ? (
-        <p className="mt-10 rounded-md border border-border bg-secondary/30 p-4 text-sm text-muted-foreground">
+        <p
+          role="status"
+          className="mt-10 rounded-md border border-border bg-secondary/30 p-4 text-sm text-muted-foreground"
+        >
           Thank you, family — your application is in. We'll be in touch.
         </p>
       ) : (
@@ -84,14 +101,21 @@ function MentorshipApplication() {
               ready to invest if accepted.
             </span>
           </label>
+          {error ? (
+            <p role="alert" className="text-sm text-[color:var(--gold)]">
+              {error}
+            </p>
+          ) : null}
           <button
             type="submit"
-            className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+            disabled={submitting}
+            className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Submit application
+            {submitting ? "Sending…" : "Submit application"}
           </button>
         </form>
       )}
+
 
       <Link
         to="/"

@@ -13,7 +13,6 @@ import {
   resolveCheckoutUrl,
   isHandoffAllowed,
 } from "@/lib/challenge-config";
-import { CONSENT_COPY } from "@/lib/consent";
 
 const searchSchema = z.object({
   tier: z.enum(["ga", "vip"]).optional(),
@@ -41,12 +40,6 @@ function Checkout() {
   const navigate = useNavigate();
   const initialTier: AdmissionTierId = isTierId(search.tier) ? search.tier : "ga";
   const [tier, setTier] = useState<AdmissionTierId>(initialTier);
-  const [phone, setPhone] = useState("");
-  const [consents, setConsents] = useState({
-    email: false,
-    sms: false,
-    ai_call: false,
-  });
 
   const cfg = useMemo(() => getCommasConfig(), []);
   const t = TIER_MAP[tier];
@@ -64,17 +57,6 @@ function Checkout() {
 
   function handleContinue() {
     if (!canSubmit || !checkoutUrl) return;
-    // Consent + phone stay on this side of the wall for now; on the receipt
-    // webhook we'll match by email and persist consents with copy version.
-    // Nothing here fulfills anything — the webhook does.
-    try {
-      window.sessionStorage.setItem(
-        "nu.checkout.pending",
-        JSON.stringify({ tier, phone, consents, at: new Date().toISOString() }),
-      );
-    } catch {
-      // sessionStorage unavailable — proceed anyway.
-    }
     window.location.href = checkoutUrl;
   }
 
@@ -124,42 +106,12 @@ function Checkout() {
       </section>
 
       <section className="mt-6 surface-raised p-6">
-        <h2 className="font-heading text-lg text-foreground">Optional phone</h2>
-        <p className="mt-2 text-xs text-muted-foreground">
-          Providing a phone number is optional and is NOT marketing consent.
+        <h2 className="font-heading text-lg text-foreground">How communication works</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Secure FanBasis checkout collects only your order details. NuAmenti
+          communication preferences (email, SMS, calls) are confirmed
+          separately after purchase — never bundled into buying a ticket.
         </p>
-        <input
-          type="tel"
-          inputMode="tel"
-          autoComplete="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          placeholder="+1 555 000 0000"
-          className="mt-3 w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm text-foreground"
-        />
-      </section>
-
-      <section className="mt-6 surface-raised p-6">
-        <h2 className="font-heading text-lg text-foreground">Stay in touch (optional)</h2>
-        <p className="mt-2 text-xs text-muted-foreground">
-          Each channel is separate, optional, and revocable. Marketing consent is
-          never required to buy a ticket.
-        </p>
-        <div className="mt-4 space-y-3 text-sm text-muted-foreground">
-          {(["email", "sms", "ai_call"] as const).map((k) => (
-            <label key={k} className="flex items-start gap-3">
-              <input
-                type="checkbox"
-                checked={consents[k]}
-                onChange={(e) =>
-                  setConsents((prev) => ({ ...prev, [k]: e.target.checked }))
-                }
-                className="mt-1 accent-[color:var(--gold)]"
-              />
-              <span>{CONSENT_COPY[k]}</span>
-            </label>
-          ))}
-        </div>
       </section>
 
       <section className="mt-6 surface-raised p-6">

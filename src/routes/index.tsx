@@ -158,8 +158,9 @@ function Agenda() {
           <h3 className="mt-2 font-display text-xl text-[color:var(--gold)]">MAP IT</h3>
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
             <li>· Identify the wall — where your time and revenue are stuck.</li>
-            <li>· Complete your Research / Create / Distribute Autonomy Map.</li>
-            <li>· Choose the three jobs AI can take on this month.</li>
+            <li>· Complete your starter Research / Create / Distribute Autonomy Map.</li>
+            <li>· Choose three workflow candidates for AI assist this month.</li>
+
             <li>· Finish the map together, live.</li>
           </ul>
         </article>
@@ -347,7 +348,8 @@ function Faq() {
     },
     {
       q: "Are recordings included?",
-      a: "GA is live only. VIP includes 30-day recordings. You can also add the Implementation Vault for the full toolkit.",
+      a: "GA is live only. VIP includes 30-day recordings. The $199 Vault does NOT include recordings — it's a separate implementation library.",
+
     },
     {
       q: "What happens after I pay?",

@@ -64,7 +64,11 @@ minimum bar to sell.
 ### Attribution / affiliates
 - [ ] `affiliate-registry.ts` populated with real owners; every entry either `placeholder` or `live`.
 - [ ] Live entries render with `rel="sponsored nofollow noopener noreferrer"`.
-- [ ] UTM capture verified through purchase — attribution row written on `payment.succeeded`.
+- [ ] Attribution persistence remains BLOCKED until a signed Commas sample
+      confirms the exact metadata / custom-field name for first/last-touch.
+      Client-side UTM capture + affiliate registry stay safe; server persists
+      `null` until unblocked. Do NOT check this off just because URLs contain UTMs.
+
 
 ## P2 — nice-to-have
 

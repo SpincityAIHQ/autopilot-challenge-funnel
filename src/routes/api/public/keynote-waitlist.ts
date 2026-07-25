@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { assertSameOrigin, callerId, rateLimit } from "@/lib/rate-limit";
 
 const bodySchema = z.object({
   email: z.string().trim().email().max(255),
@@ -8,22 +9,37 @@ const bodySchema = z.object({
   source: z.string().trim().max(64).optional(),
 });
 
+const NO_STORE = {
+  "Content-Type": "application/json",
+  "Cache-Control": "private, no-store",
+};
+
 export const Route = createFileRoute("/api/public/keynote-waitlist")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        if (!assertSameOrigin(request)) {
+          return new Response("Forbidden", { status: 403, headers: NO_STORE });
+        }
+        const rl = rateLimit(`keynote:${callerId(request)}`, 5, 60);
+        if (!rl.ok) {
+          return new Response("Too many requests", {
+            status: 429,
+            headers: { ...NO_STORE, "Retry-After": String(rl.retryAfterSeconds) },
+          });
+        }
         const raw = await request.text();
         if (raw.length > 8 * 1024) {
-          return new Response("Payload too large", { status: 413 });
+          return new Response("Payload too large", { status: 413, headers: NO_STORE });
         }
         let parsed: unknown;
         try {
           parsed = JSON.parse(raw);
         } catch {
-          return new Response("Bad JSON", { status: 400 });
+          return new Response("Bad JSON", { status: 400, headers: NO_STORE });
         }
         const check = bodySchema.safeParse(parsed);
-        if (!check.success) return new Response("Bad input", { status: 400 });
+        if (!check.success) return new Response("Bad input", { status: 400, headers: NO_STORE });
         const { email, full_name, email_marketing_consent, source } = check.data;
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -36,10 +52,10 @@ export const Route = createFileRoute("/api/public/keynote-waitlist")({
             email_marketing_consent_at: email_marketing_consent ? new Date().toISOString() : null,
             source: source ?? "keynote-page",
           });
-        if (error) return new Response("Server error", { status: 500 });
+        if (error) return new Response("Server error", { status: 500, headers: NO_STORE });
         return new Response(JSON.stringify({ ok: true }), {
           status: 200,
-          headers: { "Content-Type": "application/json" },
+          headers: NO_STORE,
         });
       },
     },
