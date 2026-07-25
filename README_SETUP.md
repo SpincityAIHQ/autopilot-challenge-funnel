@@ -26,7 +26,7 @@ testimonials anywhere.
 1. `/` — landing / sales
 2. `/checkout?tier=ga|vip` — order summary + FanBasis handoff (GA / VIP only)
 3. `/confirmed?tier=ga|vip` — warm truthful "we're verifying your payment" state
-4. `/offer/vip-upgrade` — GA-only $55 upgrade (eligibility-gated)
+4. `/offer/vip-upgrade` — GA-only $77 upgrade (eligibility-gated)
 5. `/offer/implementation-vault` — $199 Vault add-on (registered attendees only)
 6. `/next-keynote` — next-keynote priority-access / waitlist
 7. `/strategy-intensive` — $1,000 Intensive (10 total, verified attendees only)
