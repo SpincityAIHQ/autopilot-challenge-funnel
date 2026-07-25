@@ -20,6 +20,8 @@ export const DEFAULT_COMMAS_CHECKOUT_HOSTS: readonly string[] = [
 
 export interface SectionVideoUrls {
   hero?: string;
+  checkout?: string;
+  vipOffer?: string;
   confirmedThankYou?: string;
   thankYouGa?: string;
   thankYouVip?: string;
@@ -78,6 +80,8 @@ export function getCommasConfig(): CommasConfig {
     },
     sectionVideos: {
       hero: readEnv("VITE_SUMMIT_VIDEO_HERO"),
+      checkout: readEnv("VITE_SUMMIT_VIDEO_CHECKOUT"),
+      vipOffer: readEnv("VITE_SUMMIT_VIDEO_VIP_OFFER"),
       confirmedThankYou: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU"),
       thankYouGa: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_GA"),
       thankYouVip: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_VIP"),
