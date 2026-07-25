@@ -222,23 +222,23 @@ SELECT 'in_txn_tokens' AS what, count(*) AS n
 
 ROLLBACK;
 
--- Post-rollback persistence check: MUST be zero.
+-- Post-rollback persistence check: MUST be zero across every QA email.
 SELECT 'persisted_tokens'   AS what, count(*) AS n
   FROM public.access_tokens
-  WHERE buyer_email = 'qa+verify@nuamenti.test';
+  WHERE buyer_email IN ('qa+verify@nuamenti.test','qa+scen-a@nuamenti.test','qa+scen-b@nuamenti.test','qa+scen-c@nuamenti.test');
 
 SELECT 'persisted_regs'     AS what, count(*) AS n
   FROM public.summit_registrations
-  WHERE email = 'qa+verify@nuamenti.test';
+  WHERE email IN ('qa+verify@nuamenti.test','qa+scen-a@nuamenti.test','qa+scen-b@nuamenti.test','qa+scen-c@nuamenti.test');
 
 SELECT 'persisted_vault'    AS what, count(*) AS n
   FROM public.summit_vault_purchases
-  WHERE buyer_email = 'qa+verify@nuamenti.test';
+  WHERE buyer_email IN ('qa+verify@nuamenti.test','qa+scen-a@nuamenti.test','qa+scen-b@nuamenti.test','qa+scen-c@nuamenti.test');
 
 SELECT 'persisted_vipup'    AS what, count(*) AS n
   FROM public.summit_vip_upgrades
-  WHERE buyer_email = 'qa+verify@nuamenti.test';
+  WHERE buyer_email IN ('qa+verify@nuamenti.test','qa+scen-a@nuamenti.test','qa+scen-b@nuamenti.test','qa+scen-c@nuamenti.test');
 
 SELECT 'persisted_ent'      AS what, count(*) AS n
   FROM public.entitlements
-  WHERE buyer_email = 'qa+verify@nuamenti.test';
+  WHERE buyer_email IN ('qa+verify@nuamenti.test','qa+scen-a@nuamenti.test','qa+scen-b@nuamenti.test','qa+scen-c@nuamenti.test');
