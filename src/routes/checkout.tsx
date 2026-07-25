@@ -4,31 +4,29 @@ import { z } from "zod";
 import {
   TIERS,
   TIER_MAP,
-  GA_BUMP_COPY,
   formatUsd,
   isTierId,
-  FOUNDER_DISCLAIMER,
+  type AdmissionTierId,
 } from "@/lib/tiers";
 import {
   getCommasConfig,
   resolveCheckoutUrl,
   isHandoffAllowed,
 } from "@/lib/challenge-config";
-import { useFounderSeatsRemaining } from "@/hooks/use-founder-seats";
-import { VideoSlot } from "@/components/VideoSlot";
+import { CONSENT_COPY } from "@/lib/consent";
 
 const searchSchema = z.object({
-  tier: z.enum(["ga", "vip", "bundle", "founder"]).optional(),
+  tier: z.enum(["ga", "vip"]).optional(),
 });
 
 export const Route = createFileRoute("/checkout")({
   validateSearch: (input) => searchSchema.parse(input),
   head: () => ({
     meta: [
-      { title: "Checkout — The AUTOPILOT Challenge" },
+      { title: "Checkout — AI AutoPilot Summit" },
       {
         name: "description",
-        content: "Secure your seat for the 2-day live Challenge.",
+        content: "Secure your seat for the AI AutoPilot Summit, live online Aug 24–25, 2026.",
       },
       { name: "robots", content: "noindex" },
       { property: "og:url", content: "/checkout" },
@@ -41,33 +39,22 @@ export const Route = createFileRoute("/checkout")({
 function Checkout() {
   const search = Route.useSearch();
   const navigate = useNavigate();
-  const initialTier: import("@/lib/tiers").TierId = isTierId(search.tier)
-    ? search.tier
-    : "ga";
-  const [tier, setTier] = useState<import("@/lib/tiers").TierId>(initialTier);
+  const initialTier: AdmissionTierId = isTierId(search.tier) ? search.tier : "ga";
+  const [tier, setTier] = useState<AdmissionTierId>(initialTier);
+  const [phone, setPhone] = useState("");
+  const [consents, setConsents] = useState({
+    email: false,
+    sms: false,
+    ai_call: false,
+  });
 
   const cfg = useMemo(() => getCommasConfig(), []);
-  const seats = useFounderSeatsRemaining();
   const t = TIER_MAP[tier];
   const checkoutUrl = resolveCheckoutUrl(tier, cfg);
-  const handoffAllowed = isHandoffAllowed(tier, cfg);
-
-  // Founder-only additional gate: must have verified seats remaining > 0.
-  const founderBlocked =
-    tier === "founder" && (seats.status !== "ok" || seats.remaining <= 0);
-
-  const canSubmit = handoffAllowed && !founderBlocked;
-
-  let buttonLabel = "That ticket is not available right now";
-  if (canSubmit) {
-    buttonLabel = `Continue to secure checkout · ${formatUsd(t.priceCents)}`;
-  } else if (
-    tier === "founder" &&
-    seats.status === "ok" &&
-    seats.remaining <= 0
-  ) {
-    buttonLabel = "Founder Seats sold out";
-  }
+  const canSubmit = isHandoffAllowed(tier, cfg);
+  const buttonLabel = canSubmit
+    ? `Continue to secure checkout · ${formatUsd(t.priceCents)}`
+    : "Registration opening soon";
 
   function onTierChange(next: string) {
     if (!isTierId(next)) return;
@@ -77,24 +64,33 @@ function Checkout() {
 
   function handleContinue() {
     if (!canSubmit || !checkoutUrl) return;
-    // Redirect to Commas hosted checkout. We do NOT collect card data,
-    // buyer identity, or marketing consent on this page — Commas does.
+    // Consent + phone stay on this side of the wall for now; on the receipt
+    // webhook we'll match by email and persist consents with copy version.
+    // Nothing here fulfills anything — the webhook does.
+    try {
+      window.sessionStorage.setItem(
+        "nu.checkout.pending",
+        JSON.stringify({ tier, phone, consents, at: new Date().toISOString() }),
+      );
+    } catch {
+      // sessionStorage unavailable — proceed anyway.
+    }
     window.location.href = checkoutUrl;
   }
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-12">
-      <p className="eyebrow">Checkout</p>
+      <p className="eyebrow">Checkout · AI AutoPilot Summit</p>
       <h1 className="mt-3 font-display text-2xl text-foreground sm:text-3xl">
-        The AUTOPILOT Challenge
+        Meet us at the Summit
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Review your ticket below. When you continue, you will finish payment on
-        a secure FanBasis checkout page.
+        Aug 24–25, 2026 · live online. You'll finish payment on a secure FanBasis
+        page.
       </p>
 
       <section className="mt-8 surface-raised p-6">
-        <h2 className="font-heading text-lg text-foreground">Your tier</h2>
+        <h2 className="font-heading text-lg text-foreground">Your ticket</h2>
         <div className="mt-4 grid gap-2">
           {TIERS.map((row) => (
             <label
@@ -115,32 +111,55 @@ function Checkout() {
               />
               <div className="flex-1">
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="font-heading text-foreground">
-                    {row.name}
-                  </span>
+                  <span className="font-heading text-foreground">{row.name}</span>
                   <span className="font-mono text-sm text-foreground">
                     {formatUsd(row.priceCents)}
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {row.headline}
-                </p>
+                <p className="mt-1 text-xs text-muted-foreground">{row.headline}</p>
               </div>
             </label>
           ))}
         </div>
+      </section>
 
-        {tier === "ga" ? (
-          <p className="mt-4 rounded-md border border-border bg-secondary/30 p-3 text-xs text-muted-foreground">
-            {GA_BUMP_COPY}
-          </p>
-        ) : null}
+      <section className="mt-6 surface-raised p-6">
+        <h2 className="font-heading text-lg text-foreground">Optional phone</h2>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Providing a phone number is optional and is NOT marketing consent.
+        </p>
+        <input
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="+1 555 000 0000"
+          className="mt-3 w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm text-foreground"
+        />
+      </section>
 
-        {tier === "founder" ? (
-          <p className="mt-4 text-xs text-muted-foreground">
-            {FOUNDER_DISCLAIMER}
-          </p>
-        ) : null}
+      <section className="mt-6 surface-raised p-6">
+        <h2 className="font-heading text-lg text-foreground">Stay in touch (optional)</h2>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Each channel is separate, optional, and revocable. Marketing consent is
+          never required to buy a ticket.
+        </p>
+        <div className="mt-4 space-y-3 text-sm text-muted-foreground">
+          {(["email", "sms", "ai_call"] as const).map((k) => (
+            <label key={k} className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                checked={consents[k]}
+                onChange={(e) =>
+                  setConsents((prev) => ({ ...prev, [k]: e.target.checked }))
+                }
+                className="mt-1 accent-[color:var(--gold)]"
+              />
+              <span>{CONSENT_COPY[k]}</span>
+            </label>
+          ))}
+        </div>
       </section>
 
       <section className="mt-6 surface-raised p-6">
@@ -148,80 +167,34 @@ function Checkout() {
         <dl className="mt-4 space-y-2 text-sm">
           <div className="flex items-baseline justify-between">
             <dt className="text-muted-foreground">{t.name}</dt>
-            <dd className="font-mono text-foreground">
-              {formatUsd(t.priceCents)}
-            </dd>
+            <dd className="font-mono text-foreground">{formatUsd(t.priceCents)}</dd>
           </div>
           <div className="gold-rule my-2" />
           <div className="flex items-baseline justify-between">
-            <dt className="font-heading text-base text-foreground">Subtotal</dt>
+            <dt className="font-heading text-base text-foreground">Total</dt>
             <dd className="font-mono text-base text-foreground">
               {formatUsd(t.priceCents)}
             </dd>
           </div>
         </dl>
-        {tier === "ga" ? (
-          <p className="mt-3 text-xs text-muted-foreground">
-            You can add both recordings and the completed Autonomy Map template
-            for $22 on the next screen. Your final total will change only if you
-            add them.
-          </p>
-        ) : null}
-      </section>
-
-      <section className="mt-6 surface p-6">
-        <h2 className="font-heading text-lg text-foreground">Before you pay</h2>
-        <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-          <li>
-            · This is an eight-hour live build: Aug 1 and Aug 2 from 12–4 PM ET.
-          </li>
-          <li>
-            · We build your monetizable site, launch marketing assets, and lead
-            + sales system together.
-          </li>
-          <li>
-            · Bring a laptop, your business or offer, and your account logins.
-          </li>
-          <li>· Some outside software may have its own fee.</li>
-          <li>
-            · Your deliverables are real. Sales and income are not guaranteed.
-          </li>
-        </ul>
-      </section>
-
-      <VideoSlot
-        url={cfg.sectionVideos?.checkout ?? null}
-        label={`Watch: final truth check for ${t.name}`}
-        className="mt-6"
-      />
-
-      <div className="mt-8 flex flex-col gap-3">
         <button
           type="button"
           disabled={!canSubmit}
           onClick={handleContinue}
-          className="w-full rounded-md bg-primary px-5 py-3 font-heading text-base font-semibold text-primary-foreground shadow-lg shadow-black/40 transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           aria-disabled={!canSubmit}
+          className={`mt-6 inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-3 font-heading text-base font-semibold text-primary-foreground transition ${
+            canSubmit ? "hover:opacity-90" : "cursor-not-allowed opacity-50"
+          }`}
         >
           {buttonLabel}
         </button>
-        {!canSubmit ? (
-          <p className="text-xs text-muted-foreground">
-            {tier === "founder" && seats.status === "ok" && seats.remaining <= 0
-              ? "All 33 Founder Seats are claimed."
-              : "That ticket is not available right now. Check back soon."}
-          </p>
-        ) : null}
-        {tier === "founder" ? (
-          <p className="text-xs text-muted-foreground">{FOUNDER_DISCLAIMER}</p>
-        ) : null}
-        <Link
-          to="/"
-          className="text-center text-xs text-muted-foreground hover:text-foreground"
-        >
-          ← Back to the Challenge
-        </Link>
-      </div>
+        <p className="mt-3 text-xs text-muted-foreground">
+          By continuing, you agree to the{" "}
+          <Link to="/terms" className="underline hover:text-foreground">Terms</Link>,{" "}
+          <Link to="/privacy" className="underline hover:text-foreground">Privacy</Link>, and{" "}
+          <Link to="/refund-policy" className="underline hover:text-foreground">Refund Policy</Link>.
+        </p>
+      </section>
     </main>
   );
 }
