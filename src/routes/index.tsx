@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Countdown } from "@/components/Countdown";
-import { VideoSlot } from "@/components/VideoSlot";
+import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
+import { BrandSignature } from "@/components/BrandFrame";
 import { TestimonialSection } from "@/components/TestimonialSection";
 import { getCommasConfig } from "@/lib/challenge-config";
 import { captureAttribution } from "@/lib/attribution";
@@ -9,17 +10,20 @@ import { captureAttribution } from "@/lib/attribution";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "AI AutoPilot Summit — Aug 24–25, 2026 · Live Online" },
+      { title: "NuAmenti × Perfect AIM — AI AutoPilot Summit" },
       {
         name: "description",
         content:
-          "Two days, live online, with the NuAmenti family. Map your AI-powered revenue and operating system, then build the first working piece together.",
+          "Two days, live online, with NuAmenti × Perfect AIM. Map your AI-powered revenue and operating system, then build the first working piece together.",
       },
-      { property: "og:title", content: "AI AutoPilot Summit — Aug 24–25, 2026" },
+      {
+        property: "og:title",
+        content: "NuAmenti × Perfect AIM — AI AutoPilot Summit",
+      },
       {
         property: "og:description",
         content:
-          "Map It · Build It. Leave with a starter Autonomy Map and a first AI-assisted workflow prototype. Live online, Aug 24–25, 2026.",
+          "Map It. Build It. Put AI to work with human authority and perfect aim. Live online Aug 24–25, 2026.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -36,7 +40,6 @@ function Landing() {
 
   return (
     <main className="min-h-screen">
-      <TopBar />
       <Hero heroVideoUrl={cfg.sectionVideos.hero ?? null} />
       <Promise />
       <Agenda />
@@ -52,39 +55,34 @@ function Landing() {
   );
 }
 
-function TopBar() {
-  return (
-    <header className="mx-auto flex max-w-6xl items-center justify-between px-5 pt-5">
-      <div className="font-display text-sm tracking-[0.28em] text-[color:var(--gold)]">
-        AI AUTOPILOT SUMMIT
-      </div>
-      <nav className="hidden gap-6 text-sm text-muted-foreground sm:flex">
-        <a href="#agenda" className="hover:text-foreground">Agenda</a>
-        <a href="#experience" className="hover:text-foreground">Experience</a>
-        <a href="#faq" className="hover:text-foreground">FAQ</a>
-        <a href="#registration" className="hover:text-foreground">Registration</a>
-      </nav>
-    </header>
-  );
-}
-
 function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
   return (
-    <section className="mx-auto max-w-6xl px-5 pt-14 pb-16 sm:pt-20 sm:pb-24">
-      <p className="eyebrow">Live online · Aug 24–25, 2026</p>
-      <h1 className="rise-in mt-4 font-display text-3xl leading-tight text-foreground sm:text-5xl md:text-6xl">
-        MAP IT.
-        <span className="block text-[color:var(--gold)]">BUILD IT.</span>
-        <span className="block">TOGETHER, WITH THE FAMILY.</span>
-      </h1>
-      <p className="mt-6 max-w-2xl font-heading text-lg text-muted-foreground sm:text-xl">
-        Two days with the NuAmenti family. Map the AI-powered revenue and
-        operating system for your business, then build the first working
-        piece — live.
-      </p>
-      <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-        Live online · session start times sent to registrants by email.
-      </p>
+    <section className="mx-auto max-w-6xl px-5 pb-16 pt-10 sm:pb-24 sm:pt-16">
+      <BrandSignature />
+
+      <div className="mt-10 max-w-4xl">
+        <p className="eyebrow">Live online · Aug 24–25, 2026</p>
+        <h1 className="rise-in mt-4 font-display text-3xl leading-tight text-foreground sm:text-5xl md:text-6xl">
+          MAP IT.
+          <span className="block text-[color:var(--emerald-signal)]">BUILD IT.</span>
+          <span className="block text-[color:var(--gold)]">AIM IT AT REVENUE.</span>
+        </h1>
+        <p className="mt-6 max-w-2xl font-heading text-lg text-muted-foreground sm:text-xl">
+          Two live days with the NuAmenti × Perfect AIM family. Map the
+          AI-powered revenue and operating system for your business, then build
+          the first working piece together.
+        </p>
+        <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
+          Human authority. Governed automation. Clear commercial aim.
+        </p>
+      </div>
+
+      <FunnelVideoSlot
+        url={heroVideoUrl}
+        label="Watch the official Summit invitation"
+        envKey="VITE_SUMMIT_VIDEO_HERO"
+        className="mt-10 max-w-4xl"
+      />
 
       <div className="mt-8 max-w-md">
         <p className="label-mono mb-3">Summit week begins in</p>
@@ -100,12 +98,6 @@ function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
         </Link>
       </div>
       <div className="mt-6 gold-rule max-w-md" />
-
-      <VideoSlot
-        url={heroVideoUrl}
-        label="Watch: what we build together"
-        className="mt-10 max-w-3xl"
-      />
     </section>
   );
 }
@@ -119,13 +111,14 @@ function Promise() {
         AI-assisted workflow prototype you can keep building.
       </h2>
       <p className="mt-4 text-muted-foreground">
-        We show up as a family. You bring a real business, offer, or idea.
-        Together we identify three workflow candidates for AI assist this
-        month, set the rules, and start building one of them — live.
+        You bring a real business, offer, or idea. Together we identify three
+        workflow candidates for AI assist this month, set the rules, and start
+        building one of them live.
       </p>
 
-      <p className="mt-4 font-heading text-lg text-[color:var(--gold)]">
-        Automated where it should be. Human where it matters.
+      <p className="mt-4 font-heading text-lg text-[color:var(--emerald-signal)]">
+        Automated where it should be. Human where it matters. Aimed at a real
+        business outcome.
       </p>
       <p className="mt-3 text-xs text-muted-foreground">
         No income promises. No guaranteed business outcomes. What you build
@@ -153,9 +146,9 @@ function Agenda() {
             <li>· Finish the map together, live.</li>
           </ul>
         </article>
-        <article className="surface-raised p-6">
+        <article className="surface-raised border-[color:var(--emerald-signal)]/30 p-6">
           <p className="label-mono">Day 2 · Tue Aug 25</p>
-          <h3 className="mt-2 font-display text-xl text-[color:var(--gold)]">BUILD IT</h3>
+          <h3 className="mt-2 font-display text-xl text-[color:var(--emerald-signal)]">BUILD IT</h3>
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
             <li>· Set the fence — rules for what AI does and doesn't touch.</li>
             <li>· Start building one real AI-assisted workflow, live with the family.</li>
@@ -174,7 +167,7 @@ function Agenda() {
 function MapItBuildIt() {
   return (
     <section id="experience" className="mx-auto max-w-5xl px-5 py-16">
-      <p className="eyebrow">The map</p>
+      <p className="eyebrow">The NuAmenti operating map</p>
       <h2 className="mt-3 font-heading text-2xl text-foreground sm:text-3xl">
         Research · Create · Distribute
       </h2>
@@ -183,13 +176,15 @@ function MapItBuildIt() {
           { t: "Research", d: "AI learns your customer, market, offer, and the facts your business needs." },
           { t: "Create", d: "AI helps make the content, copy, designs, videos, and campaign assets." },
           { t: "Distribute", d: "AI helps publish, follow up, and move people back to your offer." },
-        ].map((x) => (
+        ].map((x, index) => (
           <div key={x.t} className="surface-raised p-6">
             <div
               className="mb-3 h-10 w-10 rounded-full"
               style={{
                 background:
-                  "radial-gradient(circle at 30% 30%, var(--gold), var(--gold-soft) 60%, transparent 70%)",
+                  index === 1
+                    ? "radial-gradient(circle at 30% 30%, var(--emerald-signal), color-mix(in oklab, var(--emerald-signal) 55%, transparent) 60%, transparent 70%)"
+                    : "radial-gradient(circle at 30% 30%, var(--gold), var(--gold-soft) 60%, transparent 70%)",
               }}
               aria-hidden
             />
@@ -296,11 +291,12 @@ function Timeline() {
 function FinalCta() {
   return (
     <section id="registration" className="mx-auto max-w-4xl px-5 py-16 text-center">
-      <h2 className="font-display text-3xl text-foreground sm:text-4xl">
-        Meet us at the Summit.
+      <p className="eyebrow">NuAmenti × Perfect AIM</p>
+      <h2 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
+        Map it. Build it. Aim it.
       </h2>
       <p className="mt-3 text-muted-foreground">
-        Reserve your seat and we'll take it from there.
+        Reserve your seat and bring the business you are ready to move.
       </p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         <Link
@@ -318,7 +314,7 @@ function Footer() {
   return (
     <footer className="border-t border-border py-10">
       <div className="mx-auto max-w-6xl px-5 text-xs text-muted-foreground">
-        <p>SpincityHQ LLC · Atlanta, GA · Info@NuAmenti.com</p>
+        <p>NuAmenti × Perfect AIM · SpincityHQ LLC · Atlanta, GA · Info@NuAmenti.com</p>
         <div className="mt-3 flex flex-wrap gap-4">
           <Link to="/privacy" className="hover:text-foreground">Privacy</Link>
           <Link to="/terms" className="hover:text-foreground">Terms</Link>
