@@ -76,11 +76,12 @@ function VipUpgradeOffer() {
             </button>
           )}
           <Link
-            to="/confirmed"
+            to="/offer/implementation-vault"
             className="text-sm text-muted-foreground hover:text-foreground"
           >
-            No thanks — back to confirmation
+            No thanks — keep GA and continue
           </Link>
+
         </div>
         <p className="mt-4 text-xs text-muted-foreground">
           Fulfillment verifies your GA registration by email. If no GA record is
