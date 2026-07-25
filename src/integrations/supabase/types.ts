@@ -282,6 +282,7 @@ export type Database = {
           product: string
           registration_id: string | null
           revoked_at: string | null
+          source_payment_id: string
         }
         Insert: {
           buyer_email: string
@@ -291,6 +292,7 @@ export type Database = {
           product: string
           registration_id?: string | null
           revoked_at?: string | null
+          source_payment_id: string
         }
         Update: {
           buyer_email?: string
@@ -300,6 +302,7 @@ export type Database = {
           product?: string
           registration_id?: string | null
           revoked_at?: string | null
+          source_payment_id?: string
         }
         Relationships: [
           {
