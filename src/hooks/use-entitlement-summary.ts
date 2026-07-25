@@ -60,6 +60,7 @@ export function derivedAccess(scopes: string[]): {
   hasVip: boolean;
   hasVault: boolean;
   hasIntensive: boolean;
+  hasIntensiveEligibility: boolean;
 } {
   const s = new Set(scopes);
   const hasVip = s.has("vip") || s.has("vip_upgrade");
@@ -69,5 +70,9 @@ export function derivedAccess(scopes: string[]): {
     hasVip,
     hasVault: s.has("vault"),
     hasIntensive: s.has("intensive"),
+    // Operator-approved eligibility for the $1,000 Intensive that does
+    // NOT require a prior Vault purchase (e.g. NuAmenti attendees).
+    hasIntensiveEligibility: s.has("intensive_eligibility"),
   };
 }
+

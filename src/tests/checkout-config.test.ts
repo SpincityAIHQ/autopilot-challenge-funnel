@@ -8,8 +8,10 @@ import {
 
 const cfg = {
   salesEnabled: true,
+  legalReady: true,
   upsellsEnabled: true,
   intensiveSalesEnabled: true,
+  keynoteSalesEnabled: true,
   allowedHosts: DEFAULT_COMMAS_CHECKOUT_HOSTS,
   sectionVideos: {},
   keynote: { announced: false },
@@ -50,9 +52,11 @@ describe("resolveCheckoutUrl", () => {
 });
 
 describe("isHandoffAllowed", () => {
-  it("requires salesEnabled AND resolvable URL", () => {
+  it("requires salesEnabled AND legalReady AND resolvable URL", () => {
     expect(isHandoffAllowed("ga", cfg)).toBe(true);
     expect(isHandoffAllowed("intensive", cfg)).toBe(false);
     expect(isHandoffAllowed("ga", { ...cfg, salesEnabled: false })).toBe(false);
+    expect(isHandoffAllowed("ga", { ...cfg, legalReady: false })).toBe(false);
   });
 });
+

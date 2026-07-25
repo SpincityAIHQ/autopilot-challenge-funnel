@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { getCommasConfig } from "@/lib/challenge-config";
+import {
+  getCommasConfig,
+  resolveKeynoteCheckoutUrl,
+  isKeynoteHandoffAllowed,
+} from "@/lib/challenge-config";
 
 export const Route = createFileRoute("/next-keynote")({
   head: () => ({
@@ -24,6 +28,8 @@ export const Route = createFileRoute("/next-keynote")({
 
 function NextKeynote() {
   const cfg = getCommasConfig();
+  const keynoteUrl = resolveKeynoteCheckoutUrl(cfg);
+  const keynoteHandoffOn = isKeynoteHandoffAllowed(cfg);
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -35,6 +41,15 @@ function NextKeynote() {
     setError(null);
     if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
       setError("Enter a valid email address.");
+      return;
+    }
+    // Consent is the announcement request — we don't add anyone to a
+    // notification list without an explicit, checked opt-in for this
+    // single, transactional keynote-announcement message.
+    if (!consent) {
+      setError(
+        "Please check the box to request the one keynote-announcement message.",
+      );
       return;
     }
     setSubmitting(true);
@@ -68,21 +83,25 @@ function NextKeynote() {
       </h1>
       <p className="mt-3 text-muted-foreground">
         We don't have a public date, price, or checkout for the next keynote
-        yet. Add your email and we'll notify the family first. Skipping this
+        yet. If you check the box below, we'll send you one transactional
+        announcement message when it's live — nothing else. Skipping this
         list does not affect your Summit ticket or Vault access.
       </p>
 
-      {cfg.keynote.announced ? (
+      {cfg.keynote.announced && keynoteHandoffOn && keynoteUrl ? (
         <p className="mt-4 rounded-md border border-[color:var(--gold)] bg-secondary/30 p-4 text-sm text-foreground">
           Announced for {cfg.keynote.dateIso} — {cfg.keynote.price ?? ""}.{" "}
-          {cfg.keynote.checkoutUrl ? (
-            <a
-              href={cfg.keynote.checkoutUrl}
-              className="underline text-[color:var(--gold)]"
-            >
-              Reserve your seat →
-            </a>
-          ) : null}
+          <a
+            href={keynoteUrl}
+            className="underline text-[color:var(--gold)]"
+            rel="noopener noreferrer"
+          >
+            Reserve your seat →
+          </a>
+        </p>
+      ) : cfg.keynote.announced ? (
+        <p className="mt-4 rounded-md border border-border bg-secondary/20 p-4 text-xs text-muted-foreground">
+          Reservations open once the keynote checkout is finalized.
         </p>
       ) : null}
 
@@ -92,7 +111,14 @@ function NextKeynote() {
             role="status"
             className="rounded-md border border-border bg-secondary/30 p-4 text-sm text-muted-foreground"
           >
-            Thank you, family — you're on the priority list.
+            Thank you, family — your request is recorded. When the next
+            keynote is announced, we'll send you the single announcement
+            message you asked for and nothing else. Broader marketing is
+            separate and always optional on{" "}
+            <Link to="/communication-preferences" className="underline">
+              your communication preferences
+            </Link>
+            .
           </p>
           <Link
             to="/next-steps"
@@ -116,13 +142,17 @@ function NextKeynote() {
           <label className="flex items-start gap-2 text-xs text-muted-foreground">
             <input
               type="checkbox"
+              required
               checked={consent}
               onChange={(e) => setConsent(e.target.checked)}
               className="mt-1 accent-[color:var(--gold)]"
+              aria-describedby="keynote-consent-copy"
             />
-            <span>
-              I want NuAmenti to email me when the next keynote is announced.
-              Optional; unsubscribe anytime from any email.
+            <span id="keynote-consent-copy">
+              Please send me the one keynote-announcement message when the
+              next NuAmenti keynote is live. This is a single transactional
+              message tied to this request — it is not broader marketing,
+              and it is not required to keep your Summit ticket.
             </span>
           </label>
           {error ? (

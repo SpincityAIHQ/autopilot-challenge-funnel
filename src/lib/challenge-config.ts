@@ -33,8 +33,10 @@ export interface CommasConfig {
   urls: Partial<Record<ProductId, string>>;
   sectionVideos: SectionVideoUrls;
   salesEnabled: boolean;
+  legalReady: boolean;
   upsellsEnabled: boolean;
   intensiveSalesEnabled: boolean;
+  keynoteSalesEnabled: boolean;
   allowedHosts: readonly string[];
   keynote: KeynoteConfig;
 }
@@ -70,9 +72,12 @@ export function getCommasConfig(): CommasConfig {
       confirmedThankYou: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU"),
     },
     salesEnabled: readEnv("VITE_SUMMIT_SALES_ENABLED") === "true",
+    legalReady: readEnv("VITE_SUMMIT_LEGAL_READY") === "true",
     upsellsEnabled: readEnv("VITE_SUMMIT_UPSELLS_ENABLED") === "true",
     intensiveSalesEnabled:
       readEnv("VITE_SUMMIT_INTENSIVE_SALES_ENABLED") === "true",
+    keynoteSalesEnabled:
+      readEnv("VITE_SUMMIT_KEYNOTE_SALES_ENABLED") === "true",
     allowedHosts: parseAllowedHosts(
       readEnv("VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS"),
     ),
@@ -84,6 +89,8 @@ export function getCommasConfig(): CommasConfig {
     },
   };
 }
+
+// Duplicate readEnv/parseAllowedHosts removed below.
 
 
 export function isAllowedCheckoutUrl(
@@ -124,6 +131,7 @@ export function isHandoffAllowed(
   cfg: CommasConfig = getCommasConfig(),
 ): boolean {
   if (!cfg.salesEnabled) return false;
+  if (!cfg.legalReady) return false;
   if (product === "vip_upgrade" || product === "vault") {
     if (!cfg.upsellsEnabled) return false;
   } else if (product === "intensive") {
@@ -131,4 +139,26 @@ export function isHandoffAllowed(
   }
   return resolveCheckoutUrl(product, cfg) !== null;
 }
+
+/**
+ * Keynote checkout — the raw env URL must pass the same HTTPS allowlist
+ * as every other CTA. Never renders `cfg.keynote.checkoutUrl` directly.
+ */
+export function resolveKeynoteCheckoutUrl(
+  cfg: CommasConfig = getCommasConfig(),
+): string | null {
+  const raw = cfg.keynote.checkoutUrl;
+  const hosts = cfg.allowedHosts ?? DEFAULT_COMMAS_CHECKOUT_HOSTS;
+  return isAllowedCheckoutUrl(raw, hosts) ? (raw as string) : null;
+}
+
+export function isKeynoteHandoffAllowed(
+  cfg: CommasConfig = getCommasConfig(),
+): boolean {
+  if (!cfg.salesEnabled) return false;
+  if (!cfg.legalReady) return false;
+  if (!cfg.keynoteSalesEnabled) return false;
+  return resolveKeynoteCheckoutUrl(cfg) !== null;
+}
+
 

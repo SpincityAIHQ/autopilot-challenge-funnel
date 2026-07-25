@@ -85,16 +85,26 @@ function NextSteps() {
           Resource access
         </h2>
         <p className="mt-3 text-sm text-muted-foreground">
-          Every resource is behind a secure single-use link we email after
-          verified payment. Opening the link drops a private, HttpOnly session
-          cookie for a few hours — during which you can browse everything you
-          actually own. Sharing or re-opening the link never works twice, and
-          refunds revoke access immediately.
+          Every resource lives behind a secure single-use link. Once our
+          transactional email provider is configured, the link is delivered
+          automatically after verified payment; until then, an operator
+          issues the link directly. Opening it drops a private, HttpOnly
+          session cookie for a few hours — during which you can browse the
+          resources you actually own. Sharing or re-opening the link never
+          works twice, and refunds revoke access immediately.
         </p>
         <p className="mt-3 text-sm text-muted-foreground">
-          Missing the email? Write{" "}
-          <span className="text-foreground">Info@NuAmenti.com</span> and we'll
-          re-issue.
+          Missing your link? Write{" "}
+          <span className="text-foreground">Info@NuAmenti.com</span> from
+          the address you used at registration and we'll re-issue.
+        </p>
+        <p className="mt-3 text-sm text-muted-foreground">
+          You can adjust email / SMS / AI-call marketing consent any time
+          on your{" "}
+          <Link to="/communication-preferences" className="underline">
+            communication preferences
+          </Link>
+          . Transactional access messages remain separate.
         </p>
       </section>
 
