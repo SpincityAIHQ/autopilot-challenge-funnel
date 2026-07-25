@@ -19,18 +19,24 @@ SELECT
   'qa+scen-a@nuamenti.test'                    AS email_a,
   'qa+scen-b@nuamenti.test'                    AS email_b,
   'qa+scen-c@nuamenti.test'                    AS email_c,
+  'qa+scen-d@nuamenti.test'                    AS email_d,
   'qa_hash_ga_'    || substr(md5(random()::text||random()::text),1,40) AS tok_ga,
   'qa_hash_vault_' || substr(md5(random()::text||random()::text),1,40) AS tok_vault,
   'qa_hash_exp_'   || substr(md5(random()::text||random()::text),1,40) AS tok_expired,
   'qa_hash_rev_'   || substr(md5(random()::text||random()::text),1,40) AS tok_revoked,
+  'qa_hash_ga_d_'  || substr(md5(random()::text||random()::text),1,40) AS tok_ga_d,
   'qa_sess_a_'     || substr(md5(random()::text||random()::text),1,40) AS sess_a,
   'qa_sess_m_'     || substr(md5(random()::text||random()::text),1,40) AS sess_multi,
+  'qa_sess_d_'     || substr(md5(random()::text||random()::text),1,40) AS sess_d,
   'qa_pay_ga_a_'    || substr(md5(random()::text||random()::text),1,40) AS pay_ga_a,
   'qa_pay_vault_a_' || substr(md5(random()::text||random()::text),1,40) AS pay_vault_a,
   'qa_pay_ga_b_'    || substr(md5(random()::text||random()::text),1,40) AS pay_ga_b,
   'qa_pay_vault_b_' || substr(md5(random()::text||random()::text),1,40) AS pay_vault_b,
   'qa_pay_ga_c_'    || substr(md5(random()::text||random()::text),1,40) AS pay_ga_c,
-  'qa_pay_vipup_c_' || substr(md5(random()::text||random()::text),1,40) AS pay_vipup_c;
+  'qa_pay_vipup_c_' || substr(md5(random()::text||random()::text),1,40) AS pay_vipup_c,
+  'qa_pay_ga_d_'    || substr(md5(random()::text||random()::text),1,40) AS pay_ga_d,
+  'qa_pay_vault_d_' || substr(md5(random()::text||random()::text),1,40) AS pay_vault_d;
+
 
 -- Seed: two independent entitlements (GA and Vault) for one buyer.
 INSERT INTO public.entitlements (buyer_email, product)
@@ -124,23 +130,45 @@ BEGIN
   RAISE NOTICE 'TEST5 PASS multi-scope session scopes=%', r.scopes;
 END $$;
 
--- TEST 6: revoking GA entitlement removes it from current session scopes.
-SELECT public._qa_toggle_entitlement((SELECT email FROM qa_ids), 'ga', true);
+-- ------------------------------------------------------------------
+-- TEST 6: revocation via the production reversal path removes the
+-- revoked scope from an already-active session, without touching an
+-- independently paid scope for the same buyer.
+-- Uses email_d — distinct from TEST7/TEST8 so scenarios never overlap.
+-- ------------------------------------------------------------------
 DO $$
 DECLARE r record; ids record;
 BEGIN
   SELECT * INTO ids FROM qa_ids;
-  SELECT * INTO r FROM public.session_active_scopes(ids.sess_multi);
+
+  -- 1. Fulfill GA + Vault for email_d (real fulfillment path, no helpers).
+  PERFORM public.fulfill_summit_payment('ga',    ids.pay_ga_d,    2200, 'USD',
+    'QA D', ids.email_d, NULL, NULL, NULL);
+  PERFORM public.fulfill_summit_payment('vault', ids.pay_vault_d, 19900, 'USD',
+    'QA D', ids.email_d, NULL, NULL, NULL);
+
+  -- 2. Mint an access token for GA scope on this buyer, then exchange it.
+  INSERT INTO public.access_tokens (token_hash, buyer_email, scope, expires_at)
+  VALUES (ids.tok_ga_d, ids.email_d, 'ga', now() + interval '1 hour');
+  SELECT * INTO r FROM public.exchange_access_token(ids.tok_ga_d, ids.sess_d, 3600);
+  IF NOT (r.scopes @> ARRAY['ga','vault']) THEN
+    RAISE EXCEPTION 'TEST6 FAIL pre-revoke scopes=%', r.scopes;
+  END IF;
+
+  -- 3. Reverse the GA payment through the production reversal RPC.
+  PERFORM public.reverse_summit_payment(ids.pay_ga_d);
+
+  -- 4. Re-read the same session; GA must be gone, Vault must remain.
+  SELECT * INTO r FROM public.session_active_scopes(ids.sess_d);
   IF 'ga' = ANY(r.scopes) THEN
     RAISE EXCEPTION 'TEST6 FAIL: revoked GA still visible: %', r.scopes;
   END IF;
   IF NOT ('vault' = ANY(r.scopes)) THEN
-    RAISE EXCEPTION 'TEST6 FAIL: vault gone: %', r.scopes;
+    RAISE EXCEPTION 'TEST6 FAIL: independent Vault gone: %', r.scopes;
   END IF;
-  RAISE NOTICE 'TEST6 PASS post-revoke scopes=%', r.scopes;
+  RAISE NOTICE 'TEST6 PASS post-revoke session scopes=%', r.scopes;
 END $$;
--- Reactivate GA for the refund tests below.
-SELECT public._qa_toggle_entitlement((SELECT email FROM qa_ids), 'ga', false);
+
 
 
 -- TEST 7a: refund of the GA admission does NOT touch an independently paid Vault.
