@@ -112,14 +112,16 @@ done
 [[ $stale_hits -eq 0 ]] && say_pass "0 stale public-copy hits"
 
 
-# 4. Canonical funnel route presence.
+# 4. Canonical funnel route presence — the actual six user-facing funnel
+#    routes plus the private resource API endpoints. Legacy redirect aliases
+#    like /offer/keynote and /offer/mentorship are NOT substitutes.
 REQUIRED_ROUTES=(
   "src/routes/offer/vip-upgrade.tsx"
   "src/routes/offer/implementation-vault.tsx"
-  "src/routes/strategy-intensive.tsx"
-  "src/routes/offer/mentorship.tsx"
-  "src/routes/offer/keynote.tsx"
   "src/routes/next-keynote.tsx"
+  "src/routes/next-steps.tsx"
+  "src/routes/apply/mentorship.tsx"
+  "src/routes/strategy-intensive.tsx"
   "src/routes/api/public/resources/exchange.ts"
   "src/routes/api/public/resources/read.ts"
   "src/routes/api/public/resources/logout.ts"
