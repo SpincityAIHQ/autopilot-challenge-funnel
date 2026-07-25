@@ -25,7 +25,19 @@ describe("checkout exposes only General Admission ($22)", () => {
       expect(checkout.includes(p)).toBe(false);
     }
   });
+  it("hard-codes GA and normalizes any legacy ?tier=vip search param", () => {
+    // Tier is not read from search; it is hard-coded to GA.
+    expect(checkout.includes("TIER_MAP.ga")).toBe(true);
+    expect(checkout.includes('resolveCheckoutUrl("ga"')).toBe(true);
+    expect(checkout.includes('isHandoffAllowed("ga"')).toBe(true);
+    // No dynamic tier lookup like TIER_MAP[search.tier] that would honor ?tier=vip.
+    expect(checkout.match(/TIER_MAP\[[^\]]*(search|tier)[^\]]*\]/)).toBeNull();
+  });
+  it("declares the GA-only intent in a source comment", () => {
+    expect(checkout.includes("Only General Admission ($22)")).toBe(true);
+  });
 });
+
 
 describe("private-page pricing visibility", () => {
   it("VIP Implementation Experience page renders the vip_upgrade price and is noindex", () => {
