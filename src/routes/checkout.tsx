@@ -42,10 +42,14 @@ function Checkout() {
   const cfg = useMemo(() => getCommasConfig(), []);
   const t = TIER_MAP.ga;
   const checkoutUrl = resolveCheckoutUrl("ga", cfg);
-  const canSubmit = isHandoffAllowed("ga", cfg);
-  const buttonLabel = canSubmit
-    ? `Continue to secure checkout · ${formatUsd(t.priceCents)}`
-    : "Registration opening soon";
+  const gateAllowed = isHandoffAllowed("ga", cfg);
+  const [legalAck, setLegalAck] = useState(false);
+  const canSubmit = gateAllowed && legalAck;
+  const buttonLabel = !gateAllowed
+    ? "Registration opening soon"
+    : !legalAck
+      ? "Acknowledge the policies to continue"
+      : `Continue to secure checkout · ${formatUsd(t.priceCents)}`;
 
   function handleContinue() {
     if (!canSubmit || !checkoutUrl) return;
