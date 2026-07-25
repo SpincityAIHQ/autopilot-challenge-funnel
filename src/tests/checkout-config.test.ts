@@ -8,6 +8,8 @@ import {
 
 const cfg = {
   salesEnabled: true,
+  upsellsEnabled: true,
+  intensiveSalesEnabled: true,
   allowedHosts: DEFAULT_COMMAS_CHECKOUT_HOSTS,
   sectionVideos: {},
   keynote: { announced: false },
@@ -19,6 +21,7 @@ const cfg = {
     intensive: undefined,
   },
 } as const;
+
 
 describe("isAllowedCheckoutUrl", () => {
   it("accepts https on allowlisted host", () => {

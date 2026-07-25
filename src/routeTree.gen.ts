@@ -21,6 +21,7 @@ import { Route as MentorshipRouteImport } from './routes/mentorship'
 import { Route as KeynoteRouteImport } from './routes/keynote'
 import { Route as IntensiveRouteImport } from './routes/intensive'
 import { Route as ConfirmedRouteImport } from './routes/confirmed'
+import { Route as CommunicationPreferencesRouteImport } from './routes/communication-preferences'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
@@ -34,9 +35,11 @@ import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.
 import { Route as ApplyMentorshipRouteImport } from './routes/apply.mentorship'
 import { Route as ApiPublicMentorshipApplicationRouteImport } from './routes/api/public/mentorship-application'
 import { Route as ApiPublicKeynoteWaitlistRouteImport } from './routes/api/public/keynote-waitlist'
+import { Route as ApiPublicCommunicationPreferencesRouteImport } from './routes/api/public/communication-preferences'
 import { Route as ApiPublicWebhooksCommasRouteImport } from './routes/api/public/webhooks/commas'
 import { Route as ApiPublicResourcesReadRouteImport } from './routes/api/public/resources/read'
 import { Route as ApiPublicResourcesExchangeRouteImport } from './routes/api/public/resources/exchange'
+import { Route as ApiPublicResourcesEntitlementSummaryRouteImport } from './routes/api/public/resources/entitlement-summary'
 
 const VaultRoute = VaultRouteImport.update({
   id: '/vault',
@@ -98,6 +101,12 @@ const ConfirmedRoute = ConfirmedRouteImport.update({
   path: '/confirmed',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommunicationPreferencesRoute =
+  CommunicationPreferencesRouteImport.update({
+    id: '/communication-preferences',
+    path: '/communication-preferences',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
@@ -166,6 +175,12 @@ const ApiPublicKeynoteWaitlistRoute =
     path: '/api/public/keynote-waitlist',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicCommunicationPreferencesRoute =
+  ApiPublicCommunicationPreferencesRouteImport.update({
+    id: '/api/public/communication-preferences',
+    path: '/api/public/communication-preferences',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicWebhooksCommasRoute = ApiPublicWebhooksCommasRouteImport.update({
   id: '/api/public/webhooks/commas',
   path: '/api/public/webhooks/commas',
@@ -182,10 +197,17 @@ const ApiPublicResourcesExchangeRoute =
     path: '/api/public/resources/exchange',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicResourcesEntitlementSummaryRoute =
+  ApiPublicResourcesEntitlementSummaryRouteImport.update({
+    id: '/api/public/resources/entitlement-summary',
+    path: '/api/public/resources/entitlement-summary',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
+  '/communication-preferences': typeof CommunicationPreferencesRoute
   '/confirmed': typeof ConfirmedRoute
   '/intensive': typeof IntensiveRoute
   '/keynote': typeof KeynoteRoute
@@ -207,8 +229,10 @@ export interface FileRoutesByFullPath {
   '/offer/strategy-intensive': typeof OfferStrategyIntensiveRoute
   '/offer/vip-upgrade': typeof OfferVipUpgradeRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/api/public/communication-preferences': typeof ApiPublicCommunicationPreferencesRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
@@ -216,6 +240,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
+  '/communication-preferences': typeof CommunicationPreferencesRoute
   '/confirmed': typeof ConfirmedRoute
   '/intensive': typeof IntensiveRoute
   '/keynote': typeof KeynoteRoute
@@ -237,8 +262,10 @@ export interface FileRoutesByTo {
   '/offer/strategy-intensive': typeof OfferStrategyIntensiveRoute
   '/offer/vip-upgrade': typeof OfferVipUpgradeRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/api/public/communication-preferences': typeof ApiPublicCommunicationPreferencesRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
@@ -247,6 +274,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/checkout': typeof CheckoutRoute
+  '/communication-preferences': typeof CommunicationPreferencesRoute
   '/confirmed': typeof ConfirmedRoute
   '/intensive': typeof IntensiveRoute
   '/keynote': typeof KeynoteRoute
@@ -268,8 +296,10 @@ export interface FileRoutesById {
   '/offer/strategy-intensive': typeof OfferStrategyIntensiveRoute
   '/offer/vip-upgrade': typeof OfferVipUpgradeRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/api/public/communication-preferences': typeof ApiPublicCommunicationPreferencesRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
@@ -279,6 +309,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/checkout'
+    | '/communication-preferences'
     | '/confirmed'
     | '/intensive'
     | '/keynote'
@@ -300,8 +331,10 @@ export interface FileRouteTypes {
     | '/offer/strategy-intensive'
     | '/offer/vip-upgrade'
     | '/resources/$slug'
+    | '/api/public/communication-preferences'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
@@ -309,6 +342,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/checkout'
+    | '/communication-preferences'
     | '/confirmed'
     | '/intensive'
     | '/keynote'
@@ -330,8 +364,10 @@ export interface FileRouteTypes {
     | '/offer/strategy-intensive'
     | '/offer/vip-upgrade'
     | '/resources/$slug'
+    | '/api/public/communication-preferences'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
@@ -339,6 +375,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/checkout'
+    | '/communication-preferences'
     | '/confirmed'
     | '/intensive'
     | '/keynote'
@@ -360,8 +397,10 @@ export interface FileRouteTypes {
     | '/offer/strategy-intensive'
     | '/offer/vip-upgrade'
     | '/resources/$slug'
+    | '/api/public/communication-preferences'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
@@ -370,6 +409,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckoutRoute: typeof CheckoutRoute
+  CommunicationPreferencesRoute: typeof CommunicationPreferencesRoute
   ConfirmedRoute: typeof ConfirmedRoute
   IntensiveRoute: typeof IntensiveRoute
   KeynoteRoute: typeof KeynoteRoute
@@ -390,8 +430,10 @@ export interface RootRouteChildren {
   OfferMentorshipRoute: typeof OfferMentorshipRoute
   OfferStrategyIntensiveRoute: typeof OfferStrategyIntensiveRoute
   OfferVipUpgradeRoute: typeof OfferVipUpgradeRoute
+  ApiPublicCommunicationPreferencesRoute: typeof ApiPublicCommunicationPreferencesRoute
   ApiPublicKeynoteWaitlistRoute: typeof ApiPublicKeynoteWaitlistRoute
   ApiPublicMentorshipApplicationRoute: typeof ApiPublicMentorshipApplicationRoute
+  ApiPublicResourcesEntitlementSummaryRoute: typeof ApiPublicResourcesEntitlementSummaryRoute
   ApiPublicResourcesExchangeRoute: typeof ApiPublicResourcesExchangeRoute
   ApiPublicResourcesReadRoute: typeof ApiPublicResourcesReadRoute
   ApiPublicWebhooksCommasRoute: typeof ApiPublicWebhooksCommasRoute
@@ -481,6 +523,13 @@ declare module '@tanstack/react-router' {
       path: '/confirmed'
       fullPath: '/confirmed'
       preLoaderRoute: typeof ConfirmedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/communication-preferences': {
+      id: '/communication-preferences'
+      path: '/communication-preferences'
+      fullPath: '/communication-preferences'
+      preLoaderRoute: typeof CommunicationPreferencesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -574,6 +623,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicKeynoteWaitlistRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/communication-preferences': {
+      id: '/api/public/communication-preferences'
+      path: '/api/public/communication-preferences'
+      fullPath: '/api/public/communication-preferences'
+      preLoaderRoute: typeof ApiPublicCommunicationPreferencesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhooks/commas': {
       id: '/api/public/webhooks/commas'
       path: '/api/public/webhooks/commas'
@@ -595,6 +651,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicResourcesExchangeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/resources/entitlement-summary': {
+      id: '/api/public/resources/entitlement-summary'
+      path: '/api/public/resources/entitlement-summary'
+      fullPath: '/api/public/resources/entitlement-summary'
+      preLoaderRoute: typeof ApiPublicResourcesEntitlementSummaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -613,6 +676,7 @@ const ResourcesRouteWithChildren = ResourcesRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckoutRoute: CheckoutRoute,
+  CommunicationPreferencesRoute: CommunicationPreferencesRoute,
   ConfirmedRoute: ConfirmedRoute,
   IntensiveRoute: IntensiveRoute,
   KeynoteRoute: KeynoteRoute,
@@ -633,8 +697,12 @@ const rootRouteChildren: RootRouteChildren = {
   OfferMentorshipRoute: OfferMentorshipRoute,
   OfferStrategyIntensiveRoute: OfferStrategyIntensiveRoute,
   OfferVipUpgradeRoute: OfferVipUpgradeRoute,
+  ApiPublicCommunicationPreferencesRoute:
+    ApiPublicCommunicationPreferencesRoute,
   ApiPublicKeynoteWaitlistRoute: ApiPublicKeynoteWaitlistRoute,
   ApiPublicMentorshipApplicationRoute: ApiPublicMentorshipApplicationRoute,
+  ApiPublicResourcesEntitlementSummaryRoute:
+    ApiPublicResourcesEntitlementSummaryRoute,
   ApiPublicResourcesExchangeRoute: ApiPublicResourcesExchangeRoute,
   ApiPublicResourcesReadRoute: ApiPublicResourcesReadRoute,
   ApiPublicWebhooksCommasRoute: ApiPublicWebhooksCommasRoute,

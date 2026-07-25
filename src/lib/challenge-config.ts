@@ -33,6 +33,8 @@ export interface CommasConfig {
   urls: Partial<Record<ProductId, string>>;
   sectionVideos: SectionVideoUrls;
   salesEnabled: boolean;
+  upsellsEnabled: boolean;
+  intensiveSalesEnabled: boolean;
   allowedHosts: readonly string[];
   keynote: KeynoteConfig;
 }
@@ -68,6 +70,9 @@ export function getCommasConfig(): CommasConfig {
       confirmedThankYou: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU"),
     },
     salesEnabled: readEnv("VITE_SUMMIT_SALES_ENABLED") === "true",
+    upsellsEnabled: readEnv("VITE_SUMMIT_UPSELLS_ENABLED") === "true",
+    intensiveSalesEnabled:
+      readEnv("VITE_SUMMIT_INTENSIVE_SALES_ENABLED") === "true",
     allowedHosts: parseAllowedHosts(
       readEnv("VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS"),
     ),
@@ -79,6 +84,7 @@ export function getCommasConfig(): CommasConfig {
     },
   };
 }
+
 
 export function isAllowedCheckoutUrl(
   candidate: string | undefined | null,
@@ -106,10 +112,23 @@ export function resolveCheckoutUrl(
   return raw as string;
 }
 
+/**
+ * Product-specific gate check.
+ * - ga / vip use VITE_SUMMIT_SALES_ENABLED.
+ * - vip_upgrade / vault use VITE_SUMMIT_UPSELLS_ENABLED.
+ * - intensive uses VITE_SUMMIT_INTENSIVE_SALES_ENABLED.
+ * The core sales gate is a required precondition for everything.
+ */
 export function isHandoffAllowed(
   product: ProductId,
   cfg: CommasConfig = getCommasConfig(),
 ): boolean {
   if (!cfg.salesEnabled) return false;
+  if (product === "vip_upgrade" || product === "vault") {
+    if (!cfg.upsellsEnabled) return false;
+  } else if (product === "intensive") {
+    if (!cfg.intensiveSalesEnabled) return false;
+  }
   return resolveCheckoutUrl(product, cfg) !== null;
 }
+

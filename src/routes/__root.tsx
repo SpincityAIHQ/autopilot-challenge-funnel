@@ -21,7 +21,7 @@ function NotFoundComponent() {
           Off route
         </h1>
         <p className="mt-4 text-sm text-muted-foreground">
-          The page you're looking for isn't part of the Challenge.
+          The page you're looking for isn't part of the Summit.
         </p>
         <div className="mt-6">
           <Link
@@ -35,6 +35,7 @@ function NotFoundComponent() {
     </div>
   );
 }
+
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
@@ -124,7 +125,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         {
           name: "description",
           content:
-            "Two-day live online implementation Summit. Map three AI-assist workflow candidates and turn one on — live. Aug 24–25, 2026.",
+            "Two-day live online implementation Summit. Map three AI-assist workflow candidates and leave with a starter Autonomy Map and a first AI-assisted workflow prototype to keep building. Aug 24–25, 2026.",
         },
         { name: "author", content: "SpincityHQ LLC" },
         { name: "theme-color", content: "#0e0e14" },
@@ -137,8 +138,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         {
           property: "og:description",
           content:
-            "Live online implementation. Leave with a starter Autonomy Map and a first AI-assisted workflow to keep building.",
+            "Live online implementation. Leave with a starter Autonomy Map and a first AI-assisted workflow prototype to keep building.",
         },
+
 
 
         { name: "twitter:card", content: "summary_large_image" },

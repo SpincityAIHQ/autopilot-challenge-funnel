@@ -40,18 +40,32 @@ function Confirmed() {
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-16">
-      <p className="eyebrow">You're in</p>
+      <p className="eyebrow">We're verifying your payment</p>
       <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
         {content?.headline ??
-          "Thank you, family — we're checking your registration."}
+          "Thank you, family. We're verifying your payment now."}
       </h1>
       <p className="mt-4 text-muted-foreground">
-        Look for the FanBasis receipt and the NuAmenti welcome email. Your seat
-        is confirmed after payment is verified. This page alone does not unlock
-        the Summit. Note: your post-payment redirect is a FanBasis / Commas
-        operator setting — the exact return URL is configured on the checkout
-        page, not in this app.
+        Your FanBasis receipt confirms payment was received. The official
+        NuAmenti verification + access email is the authority for entry, links,
+        and resources — it usually arrives within a few hours. Check inbox,
+        Promotions, and Spam. Nothing on this page proves purchase or unlocks
+        the Summit on its own.
       </p>
+      <p className="mt-3 text-xs text-muted-foreground">
+        Note: your post-payment redirect is a FanBasis / Commas operator
+        setting — the exact return URL is configured on the checkout page, not
+        in this app.
+      </p>
+      <p className="mt-3 text-sm">
+        <Link
+          to="/communication-preferences"
+          className="text-[color:var(--emerald-signal)] underline decoration-dotted underline-offset-4 hover:opacity-80"
+        >
+          Manage your communication preferences →
+        </Link>
+      </p>
+
 
       <VideoSlot
         url={thankYouUrl}
