@@ -10,7 +10,7 @@
  * Product ids (env-driven, unknown → grants nothing):
  *   COMMAS_PRODUCT_ID_GA           → 'ga'          ($22)
  *   COMMAS_PRODUCT_ID_VIP          → 'vip'         ($77)
- *   COMMAS_PRODUCT_ID_VIP_UPGRADE  → 'vip_upgrade' ($55)
+ *   COMMAS_PRODUCT_ID_VIP_UPGRADE  → 'vip_upgrade' ($77 — post-GA VIP Implementation Experience)
  *   COMMAS_PRODUCT_ID_VAULT        → 'vault'       ($199, OTO)
  *   COMMAS_PRODUCT_ID_INTENSIVE    → 'intensive'   ($1,000, cap 10)
  */
