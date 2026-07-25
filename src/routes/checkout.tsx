@@ -8,6 +8,7 @@ import {
   isHandoffAllowed,
 } from "@/lib/challenge-config";
 import { TestimonialSection } from "@/components/TestimonialSection";
+import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { useQaReviewMode } from "@/hooks/use-qa-review";
 
 /**
@@ -83,6 +84,13 @@ function Checkout() {
           order, or reserving a seat.
         </div>
       ) : null}
+
+      <FunnelVideoSlot
+        url={cfg.sectionVideos.checkout}
+        label="Watch before you reserve your seat"
+        envKey="VITE_SUMMIT_VIDEO_CHECKOUT"
+        className="mt-8"
+      />
 
       <section className="mt-8 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">{t.name}</h2>

@@ -9,6 +9,7 @@ import { useIntensiveSlotsRemaining } from "@/hooks/use-intensive-slots";
 import { OfferGate } from "@/components/OfferGate";
 import { ProductThankYou } from "@/components/ProductThankYou";
 import { TestimonialSection } from "@/components/TestimonialSection";
+import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { useQaReviewMode } from "@/hooks/use-qa-review";
 
 export const Route = createFileRoute("/strategy-intensive")({
@@ -96,12 +97,19 @@ function IntensiveContent() {
 
   return (
     <>
+      <FunnelVideoSlot
+        url={cfg.sectionVideos.thankYouVault}
+        label="A note from the family — Vault welcome"
+        envKey="VITE_SUMMIT_VIDEO_THANK_YOU_VAULT"
+        className="mt-8"
+      />
+
       <ProductThankYou
         verified={true}
         eyebrow="Verified · Implementation Vault"
         headline="Thank you, family — you added the Implementation Vault."
         body="Your Vault access is confirmed. Below is your next optional step — the private 1-on-1 Strategy & Build Intensive."
-        videoUrl={cfg.sectionVideos.thankYouVault}
+        videoUrl={null}
         videoLabel="A note from the family — Vault welcome"
         className="mt-6 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-6"
       />
