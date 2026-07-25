@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — The AUTOPILOT Challenge" },
+      { title: "Privacy Policy — AI AutoPilot Summit" },
       { name: "robots", content: "noindex,nofollow" },
       {
         name: "description",
@@ -37,7 +37,7 @@ function Privacy() {
       <div className="prose prose-invert mt-8 max-w-none text-sm leading-relaxed">
         <p>
           SpincityHQ LLC ("we") collects the information FanBasis passes to us
-          for verified paid registrations to The AUTOPILOT Challenge. Payment
+          for verified paid registrations to AI AutoPilot Summit. Payment
           card information is collected and processed by FanBasis — never by
           this website.
         </p>

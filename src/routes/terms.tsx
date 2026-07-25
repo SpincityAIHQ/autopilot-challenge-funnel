@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "Terms — The AUTOPILOT Challenge" },
+      { title: "Terms — AI AutoPilot Summit" },
       { name: "robots", content: "noindex,nofollow" },
       {
         name: "description",
