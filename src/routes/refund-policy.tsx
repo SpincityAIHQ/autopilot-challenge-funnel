@@ -42,14 +42,14 @@ function Refunds() {
         <h2 className="mt-6 font-heading text-base text-foreground">
           Products in scope
         </h2>
-        <ul className="list-disc space-y-1 pl-5">
-          <li>General Admission — $22</li>
-          <li>VIP Experience — $77</li>
-          <li>VIP Upgrade (GA → VIP) — $55</li>
-          <li>AI AutoPilot Implementation Vault — $199</li>
-          <li>Strategy &amp; Build Intensive — $1,000 (10 total slots)</li>
-          <li>Eight-Week Mentorship &amp; Work-Along — $8,000 (application)</li>
-        </ul>
+        <p>
+          This policy applies to every product offered by the AI AutoPilot
+          Summit funnel. The exact price of any given purchase — including
+          any add-on, upgrade, or private engagement — is the amount shown
+          and accepted on the FanBasis checkout page you completed for that
+          purchase, and appears on your receipt. Nothing on this page sets
+          or overrides that price.
+        </p>
 
         <h2 className="mt-6 font-heading text-base text-foreground">
           Current behavior
