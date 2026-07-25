@@ -391,4 +391,4 @@ SELECT 'persisted_ent'      AS what, count(*) AS n
 SELECT 'persisted_intensive' AS what, count(*) AS n
   FROM public.intensive_slots WHERE buyer_email IN (:qa_emails);
 
-  WHERE buyer_email IN ('qa+verify@nuamenti.test','qa+scen-a@nuamenti.test','qa+scen-b@nuamenti.test','qa+scen-c@nuamenti.test','qa+scen-d@nuamenti.test');
+  
