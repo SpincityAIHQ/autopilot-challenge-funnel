@@ -62,6 +62,7 @@ function TopBar() {
         <a href="#agenda" className="hover:text-foreground">Agenda</a>
         <a href="#experience" className="hover:text-foreground">Experience</a>
         <a href="#faq" className="hover:text-foreground">FAQ</a>
+        <a href="#registration" className="hover:text-foreground">Registration</a>
       </nav>
     </header>
   );
