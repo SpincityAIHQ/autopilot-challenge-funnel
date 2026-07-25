@@ -91,7 +91,7 @@ required variables are set. Nothing is called if any is missing.
 - `COMMAS_PRODUCT_ID_INTENSIVE`
 
 All five product IDs must be distinct. Prices reconcile in cents to $22 / $77
-/ $55 / $199 / $1,000; unknown products, mismatched totals, or non-USD grant
+/ $77 / $199 / $1,000; unknown products, mismatched totals, or non-USD grant
 nothing.
 
 Provider adapters (Mailchimp, SMS, AI-call) are **defined but disabled**.
