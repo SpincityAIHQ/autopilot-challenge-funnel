@@ -8,15 +8,13 @@ import {
 } from "@/lib/challenge-config";
 import { OfferGate } from "@/components/OfferGate";
 import { TestimonialSection } from "@/components/TestimonialSection";
+import { useQaReviewMode } from "@/hooks/use-qa-review";
 
 const product = "vip_upgrade" as const;
 
 export const Route = createFileRoute("/offer/vip-upgrade")({
   head: () => ({
     meta: [
-      // Neutral title/description: no product name or price for anonymous
-      // visitors / social crawlers. The rich offer copy only renders after
-      // the entitlement-summary confirms a verified GA registrant.
       { title: "Next step — AI AutoPilot Summit" },
       {
         name: "description",
@@ -64,34 +62,53 @@ function VipUpgradeContent() {
   const upgrade = UPSELLS.vip_upgrade;
   const url = resolveCheckoutUrl(product, cfg);
   const salesOn = isHandoffAllowed(product, cfg);
-  const cta =
-    salesOn && url ? (
-      <a
-        href={url}
-        className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
-        rel="noopener noreferrer"
-      >
-        Upgrade to VIP · {formatUsd(upgrade.priceCents)}
-      </a>
-    ) : (
-      <button
-        type="button"
-        disabled
-        className="inline-flex cursor-not-allowed items-center rounded-md bg-muted px-5 py-3 font-heading text-sm font-semibold text-muted-foreground"
-      >
-        VIP upgrade opening soon
-      </button>
-    );
+  const qaReview = useQaReviewMode();
+  const cta = qaReview ? (
+    <a
+      href="/offer/implementation-vault?qaStage=vip"
+      className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+    >
+      Preview accepted VIP — continue without payment
+    </a>
+  ) : salesOn && url ? (
+    <a
+      href={url}
+      className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+      rel="noopener noreferrer"
+    >
+      Upgrade to VIP · {formatUsd(upgrade.priceCents)}
+    </a>
+  ) : (
+    <button
+      type="button"
+      disabled
+      className="inline-flex cursor-not-allowed items-center rounded-md bg-muted px-5 py-3 font-heading text-sm font-semibold text-muted-foreground"
+    >
+      VIP checkout link being connected
+    </button>
+  );
 
   return (
     <>
+      {qaReview ? (
+        <div className="mt-6 rounded-md border border-[color:var(--gold)] bg-secondary/30 p-4 text-sm text-muted-foreground">
+          <strong className="text-foreground">Owner preview:</strong> accepting
+          this offer moves to the VIP confirmation and Vault page without a
+          charge.
+        </div>
+      ) : null}
+
       <div className="mt-8">
         <h2 className="font-display text-2xl text-foreground">
           {upgrade.name} — {formatUsd(upgrade.priceCents)}
         </h2>
       </div>
 
-      <VideoSlot url={cfg.sectionVideos.hero ?? null} label="VIP experience preview" className="mt-6" />
+      <VideoSlot
+        url={cfg.sectionVideos.hero ?? null}
+        label="VIP experience preview"
+        className="mt-6"
+      />
 
       <section className="mt-8 surface p-6">
         <h3 className="font-heading text-lg text-foreground">
@@ -117,7 +134,8 @@ function VipUpgradeContent() {
           </div>
         </div>
         <p className="mt-4 text-xs text-muted-foreground">
-          This is additive. Your GA ticket remains valid whether you add VIP or not.
+          This is additive. Your GA ticket remains valid whether you add VIP or
+          not.
         </p>
       </section>
 
@@ -125,10 +143,9 @@ function VipUpgradeContent() {
         <p className="text-sm text-muted-foreground">{upgrade.summary}</p>
         <div className="mt-6">{cta}</div>
         <p className="mt-4 text-xs text-muted-foreground">
-          Fulfillment requires a verified GA registration on the same email.
-          Please pay with the same email you used for GA, or write
-          Info@NuAmenti.com before paying if you need to change the email
-          on your ticket.
+          Live fulfillment requires a verified GA registration on the same
+          email. Please pay with the same email you used for GA, or write
+          Info@NuAmenti.com before paying if you need to change it.
         </p>
       </section>
 
