@@ -5,8 +5,17 @@
 -- transaction, every assertion runs in a DO block, and the transaction
 -- ROLLBACKs at the end. Nothing persists.
 --
+-- REQUIRES a role with EXECUTE on public.fulfill_summit_payment /
+-- reverse_summit_payment / exchange_access_token / session_active_scopes
+-- and DML on the private entitlement / token / registration tables.
+-- After the sandbox-exec lockdown migration, only service_role (or a
+-- managed superuser used by Lovable QA) satisfies this. The exec-tool
+-- sandbox_exec role has been intentionally denied and can no longer
+-- run this script; that denial is verification of the lockdown.
+--
 -- Run with:
 --   psql -v ON_ERROR_STOP=1 -f scripts/verify-resource-sessions.sql
+
 
 \set ON_ERROR_STOP on
 \timing off
