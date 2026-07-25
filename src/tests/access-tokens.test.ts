@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { hashToken, generateAccessToken } from "@/lib/access-tokens.server";
 
 describe("access token hashing", () => {

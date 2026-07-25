@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { RESOURCE_INDEX, getResource, listResourceMetas } from "@/lib/resource-content";
 
 describe("resource content library", () => {

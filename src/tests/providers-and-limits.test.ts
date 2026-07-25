@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { rateLimit, assertSameOrigin } from "@/lib/rate-limit";
 import { isMailchimpReady } from "@/lib/mailchimp";
 import { isSmsReady, isStopKeyword, isHelpKeyword } from "@/lib/sms";
