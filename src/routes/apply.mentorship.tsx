@@ -157,7 +157,7 @@ function MentorshipContent() {
       >
         ← Back to the Summit
       </Link>
-    </main>
+    </>
   );
 }
 
