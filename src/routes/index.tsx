@@ -280,13 +280,13 @@ function IntensiveTeaser() {
       <p className="mt-3 text-sm text-muted-foreground">{i.summary}</p>
       <div className="mt-4 flex flex-wrap gap-3">
         <Link
-          to="/intensive"
+          to="/strategy-intensive"
           className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
         >
           See the Intensive
         </Link>
         <Link
-          to="/mentorship"
+          to="/apply/mentorship"
           className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
         >
           8-Week Mentorship (application)
