@@ -261,6 +261,107 @@ BEGIN
 END $$;
 
 
+-- ------------------------------------------------------------------
+-- TEST 9: Vault out-of-order refund.
+-- Buy Vault_e1, refund Vault_e1, buy Vault_e2, then a DUPLICATE late refund
+-- of Vault_e1 arrives. Vault_e2 must remain active because provenance keys
+-- each grant to its exact source payment.
+-- ------------------------------------------------------------------
+DO $$
+DECLARE ids record; active_ct int;
+BEGIN
+  SELECT * INTO ids FROM qa_ids;
+  PERFORM public.fulfill_summit_payment('ga', ids.pay_ga_e, 2200, 'USD',
+    'QA E', ids.email_e, NULL, NULL, NULL);
+  PERFORM public.fulfill_summit_payment('vault', ids.pay_vault_e1, 19900, 'USD',
+    'QA E', ids.email_e, NULL, NULL, NULL);
+  PERFORM public.reverse_summit_payment(ids.pay_vault_e1);
+  PERFORM public.fulfill_summit_payment('vault', ids.pay_vault_e2, 19900, 'USD',
+    'QA E', ids.email_e, NULL, NULL, NULL);
+  -- Late duplicate refund of the ORIGINAL vault payment.
+  PERFORM public.reverse_summit_payment(ids.pay_vault_e1);
+  SELECT count(*) INTO active_ct FROM public.entitlements
+    WHERE buyer_email = ids.email_e AND product = 'vault' AND revoked_at IS NULL;
+  IF active_ct <> 1 THEN
+    RAISE EXCEPTION 'TEST9 FAIL: expected exactly 1 active vault after duplicate refund, got %', active_ct;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.entitlements
+    WHERE buyer_email = ids.email_e AND product = 'vault'
+      AND source_payment_id = ids.pay_vault_e2 AND revoked_at IS NULL) THEN
+    RAISE EXCEPTION 'TEST9 FAIL: repurchased Vault_e2 not active';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.entitlements
+    WHERE buyer_email = ids.email_e AND product = 'ga' AND revoked_at IS NULL) THEN
+    RAISE EXCEPTION 'TEST9 FAIL: GA collaterally revoked';
+  END IF;
+  RAISE NOTICE 'TEST9 PASS out-of-order vault refund preserves repurchase';
+END $$;
+
+-- ------------------------------------------------------------------
+-- TEST 10: VIP-upgrade out-of-order refund.
+-- Buy vipup_f1, refund vipup_f1, buy vipup_f2, then duplicate late refund
+-- of vipup_f1. VIP entitlement from vipup_f2 must remain active; GA untouched.
+-- ------------------------------------------------------------------
+DO $$
+DECLARE ids record; active_vip int;
+BEGIN
+  SELECT * INTO ids FROM qa_ids;
+  PERFORM public.fulfill_summit_payment('ga', ids.pay_ga_f, 2200, 'USD',
+    'QA F', ids.email_f, NULL, NULL, NULL);
+  PERFORM public.fulfill_summit_payment('vip_upgrade', ids.pay_vipup_f1, 5500, 'USD',
+    'QA F', ids.email_f, NULL, NULL, NULL);
+  PERFORM public.reverse_summit_payment(ids.pay_vipup_f1);
+  PERFORM public.fulfill_summit_payment('vip_upgrade', ids.pay_vipup_f2, 5500, 'USD',
+    'QA F', ids.email_f, NULL, NULL, NULL);
+  PERFORM public.reverse_summit_payment(ids.pay_vipup_f1);
+  SELECT count(*) INTO active_vip FROM public.entitlements
+    WHERE buyer_email = ids.email_f AND product = 'vip' AND revoked_at IS NULL;
+  IF active_vip <> 1 THEN
+    RAISE EXCEPTION 'TEST10 FAIL: expected 1 active vip after duplicate upgrade refund, got %', active_vip;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.entitlements
+    WHERE buyer_email = ids.email_f AND product = 'vip'
+      AND source_payment_id = ids.pay_vipup_f2 AND revoked_at IS NULL) THEN
+    RAISE EXCEPTION 'TEST10 FAIL: repurchased vip_upgrade (vip row) not active';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.entitlements
+    WHERE buyer_email = ids.email_f AND product = 'ga' AND revoked_at IS NULL) THEN
+    RAISE EXCEPTION 'TEST10 FAIL: GA collaterally revoked';
+  END IF;
+  RAISE NOTICE 'TEST10 PASS out-of-order vip_upgrade refund preserves repurchase';
+END $$;
+
+-- ------------------------------------------------------------------
+-- TEST 11: Intensive out-of-order refund.
+-- Buy intensive_g1 (claims slot), refund g1 (releases slot), buy
+-- intensive_g2 (claims a slot), then duplicate late refund of g1. The
+-- intensive entitlement from g2 must remain active.
+-- ------------------------------------------------------------------
+DO $$
+DECLARE ids record; active_int int;
+BEGIN
+  SELECT * INTO ids FROM qa_ids;
+  PERFORM public.fulfill_summit_payment('ga', ids.pay_ga_g, 2200, 'USD',
+    'QA G', ids.email_g, NULL, NULL, NULL);
+  PERFORM public.fulfill_summit_payment('intensive', ids.pay_intensive_g1, 100000, 'USD',
+    'QA G', ids.email_g, NULL, NULL, NULL);
+  PERFORM public.reverse_summit_payment(ids.pay_intensive_g1);
+  PERFORM public.fulfill_summit_payment('intensive', ids.pay_intensive_g2, 100000, 'USD',
+    'QA G', ids.email_g, NULL, NULL, NULL);
+  PERFORM public.reverse_summit_payment(ids.pay_intensive_g1);
+  SELECT count(*) INTO active_int FROM public.entitlements
+    WHERE buyer_email = ids.email_g AND product = 'intensive' AND revoked_at IS NULL;
+  IF active_int <> 1 THEN
+    RAISE EXCEPTION 'TEST11 FAIL: expected 1 active intensive after duplicate refund, got %', active_int;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.entitlements
+    WHERE buyer_email = ids.email_g AND product = 'intensive'
+      AND source_payment_id = ids.pay_intensive_g2 AND revoked_at IS NULL) THEN
+    RAISE EXCEPTION 'TEST11 FAIL: repurchased intensive_g2 not active';
+  END IF;
+  RAISE NOTICE 'TEST11 PASS out-of-order intensive refund preserves repurchase';
+END $$;
+
 
 -- Sanity check in-transaction row visibility.
 SELECT 'in_txn_tokens' AS what, count(*) AS n
@@ -270,22 +371,24 @@ SELECT 'in_txn_tokens' AS what, count(*) AS n
 ROLLBACK;
 
 -- Post-rollback persistence check: MUST be zero across every QA email.
+\set qa_emails '''qa+verify@nuamenti.test'',''qa+scen-a@nuamenti.test'',''qa+scen-b@nuamenti.test'',''qa+scen-c@nuamenti.test'',''qa+scen-d@nuamenti.test'',''qa+scen-e@nuamenti.test'',''qa+scen-f@nuamenti.test'',''qa+scen-g@nuamenti.test'''
+
 SELECT 'persisted_tokens'   AS what, count(*) AS n
-  FROM public.access_tokens
-  WHERE buyer_email IN ('qa+verify@nuamenti.test','qa+scen-a@nuamenti.test','qa+scen-b@nuamenti.test','qa+scen-c@nuamenti.test','qa+scen-d@nuamenti.test');
+  FROM public.access_tokens WHERE buyer_email IN (:qa_emails);
 
 SELECT 'persisted_regs'     AS what, count(*) AS n
-  FROM public.summit_registrations
-  WHERE email IN ('qa+verify@nuamenti.test','qa+scen-a@nuamenti.test','qa+scen-b@nuamenti.test','qa+scen-c@nuamenti.test','qa+scen-d@nuamenti.test');
+  FROM public.summit_registrations WHERE email IN (:qa_emails);
 
 SELECT 'persisted_vault'    AS what, count(*) AS n
-  FROM public.summit_vault_purchases
-  WHERE buyer_email IN ('qa+verify@nuamenti.test','qa+scen-a@nuamenti.test','qa+scen-b@nuamenti.test','qa+scen-c@nuamenti.test','qa+scen-d@nuamenti.test');
+  FROM public.summit_vault_purchases WHERE buyer_email IN (:qa_emails);
 
 SELECT 'persisted_vipup'    AS what, count(*) AS n
-  FROM public.summit_vip_upgrades
-  WHERE buyer_email IN ('qa+verify@nuamenti.test','qa+scen-a@nuamenti.test','qa+scen-b@nuamenti.test','qa+scen-c@nuamenti.test','qa+scen-d@nuamenti.test');
+  FROM public.summit_vip_upgrades WHERE buyer_email IN (:qa_emails);
 
 SELECT 'persisted_ent'      AS what, count(*) AS n
-  FROM public.entitlements
+  FROM public.entitlements WHERE buyer_email IN (:qa_emails);
+
+SELECT 'persisted_intensive' AS what, count(*) AS n
+  FROM public.intensive_slots WHERE buyer_email IN (:qa_emails);
+
   WHERE buyer_email IN ('qa+verify@nuamenti.test','qa+scen-a@nuamenti.test','qa+scen-b@nuamenti.test','qa+scen-c@nuamenti.test','qa+scen-d@nuamenti.test');
