@@ -38,14 +38,16 @@ const REDIRECT_ONLY_ROUTES = [
 describe("canonical routes in generated route tree", () => {
   for (const path of CANONICAL_ROUTES) {
     it(`contains ${path}`, () => {
-      // The generated tree stores path strings as string literals.
-      const needle = `"${path}"`;
-      expect(routeTree.includes(needle)).toBe(true);
+      expect(
+        routeTree.includes(`'${path}'`) || routeTree.includes(`"${path}"`),
+      ).toBe(true);
     });
   }
   for (const path of REDIRECT_ONLY_ROUTES) {
     it(`still resolves ${path} (redirect stub)`, () => {
-      expect(routeTree.includes(`"${path}"`)).toBe(true);
+      expect(
+        routeTree.includes(`'${path}'`) || routeTree.includes(`"${path}"`),
+      ).toBe(true);
     });
   }
 });
