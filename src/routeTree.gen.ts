@@ -31,7 +31,8 @@ import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.
 import { Route as ApiPublicMentorshipApplicationRouteImport } from './routes/api/public/mentorship-application'
 import { Route as ApiPublicKeynoteWaitlistRouteImport } from './routes/api/public/keynote-waitlist'
 import { Route as ApiPublicWebhooksCommasRouteImport } from './routes/api/public/webhooks/commas'
-import { Route as ApiPublicResourcesReadRouteImport } from './routes/api/public/resources.read'
+import { Route as ApiPublicResourcesReadRouteImport } from './routes/api/public/resources/read'
+import { Route as ApiPublicResourcesExchangeRouteImport } from './routes/api/public/resources/exchange'
 
 const VaultRoute = VaultRouteImport.update({
   id: '/vault',
@@ -151,6 +152,12 @@ const ApiPublicResourcesReadRoute = ApiPublicResourcesReadRouteImport.update({
   path: '/api/public/resources/read',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicResourcesExchangeRoute =
+  ApiPublicResourcesExchangeRouteImport.update({
+    id: '/api/public/resources/exchange',
+    path: '/api/public/resources/exchange',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
 }
@@ -199,6 +207,7 @@ export interface FileRoutesByTo {
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
 }
@@ -225,6 +234,7 @@ export interface FileRoutesById {
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
 }
@@ -252,6 +262,7 @@ export interface FileRouteTypes {
     | '/resources/$slug'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/resources/exchange'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
   fileRoutesByTo: FileRoutesByTo
@@ -277,6 +288,7 @@ export interface FileRouteTypes {
     | '/resources/$slug'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/resources/exchange'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
   id:
@@ -302,6 +314,7 @@ export interface FileRouteTypes {
     | '/resources/$slug'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/resources/exchange'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
   fileRoutesById: FileRoutesById
@@ -327,6 +340,7 @@ export interface RootRouteChildren {
   OfferVipUpgradeRoute: typeof OfferVipUpgradeRoute
   ApiPublicKeynoteWaitlistRoute: typeof ApiPublicKeynoteWaitlistRoute
   ApiPublicMentorshipApplicationRoute: typeof ApiPublicMentorshipApplicationRoute
+  ApiPublicResourcesExchangeRoute: typeof ApiPublicResourcesExchangeRoute
   ApiPublicResourcesReadRoute: typeof ApiPublicResourcesReadRoute
   ApiPublicWebhooksCommasRoute: typeof ApiPublicWebhooksCommasRoute
 }
@@ -494,6 +508,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicResourcesReadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/resources/exchange': {
+      id: '/api/public/resources/exchange'
+      path: '/api/public/resources/exchange'
+      fullPath: '/api/public/resources/exchange'
+      preLoaderRoute: typeof ApiPublicResourcesExchangeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -530,6 +551,7 @@ const rootRouteChildren: RootRouteChildren = {
   OfferVipUpgradeRoute: OfferVipUpgradeRoute,
   ApiPublicKeynoteWaitlistRoute: ApiPublicKeynoteWaitlistRoute,
   ApiPublicMentorshipApplicationRoute: ApiPublicMentorshipApplicationRoute,
+  ApiPublicResourcesExchangeRoute: ApiPublicResourcesExchangeRoute,
   ApiPublicResourcesReadRoute: ApiPublicResourcesReadRoute,
   ApiPublicWebhooksCommasRoute: ApiPublicWebhooksCommasRoute,
 }
