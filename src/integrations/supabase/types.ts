@@ -514,6 +514,27 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          count: number
+          expires_at: string
+          key_hash: string
+          window_start: string
+        }
+        Insert: {
+          count?: number
+          expires_at?: string
+          key_hash: string
+          window_start?: string
+        }
+        Update: {
+          count?: number
+          expires_at?: string
+          key_hash?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       resource_sessions: {
         Row: {
           buyer_email: string
@@ -762,6 +783,13 @@ export type Database = {
         Args: { _buyer_email: string; _commas_payment_id: string }
         Returns: number
       }
+      consume_rate_limit: {
+        Args: { _key_hash: string; _limit: number; _window_seconds: number }
+        Returns: {
+          ok: boolean
+          retry_after: number
+        }[]
+      }
       entitlement_by_token_hash: {
         Args: { _token_hash: string }
         Returns: {
@@ -828,6 +856,10 @@ export type Database = {
           released_slot: number
           reversed_product: string
         }[]
+      }
+      revoke_resource_session: {
+        Args: { _session_hash: string }
+        Returns: boolean
       }
       session_active_scopes: {
         Args: { _session_hash: string }
