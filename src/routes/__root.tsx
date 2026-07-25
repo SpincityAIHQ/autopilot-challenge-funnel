@@ -137,8 +137,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         {
           property: "og:description",
           content:
-            "Live online implementation. Leave with your Autonomy Map and one working AI-powered job in your business.",
+            "Live online implementation. Leave with a starter Autonomy Map and a first AI-assisted workflow to keep building.",
         },
+
 
         { name: "twitter:card", content: "summary_large_image" },
       ],
