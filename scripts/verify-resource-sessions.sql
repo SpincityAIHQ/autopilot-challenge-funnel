@@ -16,15 +16,15 @@ BEGIN;
 CREATE TEMP TABLE qa_ids ON COMMIT DROP AS
 SELECT
   'qa+verify@nuamenti.test'                    AS email,
-  'qa_hash_ga_'    || substr(md5(random()::text),1,20) AS tok_ga,
-  'qa_hash_vault_' || substr(md5(random()::text),1,20) AS tok_vault,
-  'qa_hash_exp_'   || substr(md5(random()::text),1,20) AS tok_expired,
-  'qa_hash_rev_'   || substr(md5(random()::text),1,20) AS tok_revoked,
-  'qa_sess_a_'     || substr(md5(random()::text),1,20) AS sess_a,
-  'qa_sess_m_'     || substr(md5(random()::text),1,20) AS sess_multi,
-  'qa_pay_ga_'     || substr(md5(random()::text),1,20) AS pay_ga,
-  'qa_pay_vault_'  || substr(md5(random()::text),1,20) AS pay_vault,
-  'qa_pay_vipup_'  || substr(md5(random()::text),1,20) AS pay_vipup;
+  'qa_hash_ga_'    || substr(md5(random()::text||random()::text),1,40) AS tok_ga,
+  'qa_hash_vault_' || substr(md5(random()::text||random()::text),1,40) AS tok_vault,
+  'qa_hash_exp_'   || substr(md5(random()::text||random()::text),1,40) AS tok_expired,
+  'qa_hash_rev_'   || substr(md5(random()::text||random()::text),1,40) AS tok_revoked,
+  'qa_sess_a_'     || substr(md5(random()::text||random()::text),1,40) AS sess_a,
+  'qa_sess_m_'     || substr(md5(random()::text||random()::text),1,40) AS sess_multi,
+  'qa_pay_ga_'     || substr(md5(random()::text||random()::text),1,40) AS pay_ga,
+  'qa_pay_vault_'  || substr(md5(random()::text||random()::text),1,40) AS pay_vault,
+  'qa_pay_vipup_'  || substr(md5(random()::text||random()::text),1,40) AS pay_vipup;
 
 -- Seed: two independent entitlements (GA and Vault) for one buyer.
 INSERT INTO public.entitlements (buyer_email, product)
