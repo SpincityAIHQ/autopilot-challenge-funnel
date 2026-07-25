@@ -163,7 +163,6 @@ export function resolveProductFromItem(
 ): ProductId | null {
   if (!itemId) return null;
   if (itemId === env.COMMAS_PRODUCT_ID_GA) return "ga";
-  if (itemId === env.COMMAS_PRODUCT_ID_VIP) return "vip";
   if (itemId === env.COMMAS_PRODUCT_ID_VIP_UPGRADE) return "vip_upgrade";
   if (itemId === env.COMMAS_PRODUCT_ID_VAULT) return "vault";
   if (itemId === env.COMMAS_PRODUCT_ID_INTENSIVE) return "intensive";
