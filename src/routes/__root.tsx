@@ -11,7 +11,6 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { QaReviewPanel } from "@/components/QaReviewPanel";
 
 function NotFoundComponent() {
   return (
@@ -76,9 +75,6 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
-// Two live sessions represented as a parent Event with subEvents. Times
-// have not been finalized publicly, so date-only values are used until
-// exact session times are announced to registrants.
 const JSON_LD_EVENT = {
   "@context": "https://schema.org",
   "@type": "Event",
@@ -179,7 +175,6 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
-      <QaReviewPanel />
     </QueryClientProvider>
   );
 }

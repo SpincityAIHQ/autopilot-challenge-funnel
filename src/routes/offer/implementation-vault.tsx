@@ -9,6 +9,7 @@ import {
 import { OfferGate } from "@/components/OfferGate";
 import { ProductThankYou } from "@/components/ProductThankYou";
 import { TestimonialSection } from "@/components/TestimonialSection";
+import { useQaReviewMode } from "@/hooks/use-qa-review";
 
 export const Route = createFileRoute("/offer/implementation-vault")({
   head: () => ({
@@ -40,8 +41,8 @@ function VaultRoute() {
         Your next step is inside your access email.
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        Eligibility is checked from your verified access session — never
-        from this URL. Details below only appear once we confirm your VIP
+        Eligibility is checked from your verified access session — never from
+        this URL. Details below only appear once we confirm your VIP
         registration.
       </p>
 
@@ -60,24 +61,32 @@ function VaultContent() {
   const cfg = getCommasConfig();
   const url = resolveCheckoutUrl("vault", cfg);
   const salesOn = isHandoffAllowed("vault", cfg);
-  const cta =
-    salesOn && url ? (
-      <a
-        href={url}
-        className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
-        rel="noopener noreferrer"
-      >
-        Add the Vault — {formatUsd(v.priceCents)}
-      </a>
-    ) : (
-      <button
-        type="button"
-        disabled
-        className="inline-flex cursor-not-allowed items-center rounded-md bg-muted px-5 py-3 font-heading text-base font-semibold text-muted-foreground"
-      >
-        Vault opening soon
-      </button>
-    );
+  const qaReview = useQaReviewMode();
+  const cta = qaReview ? (
+    <a
+      href="/strategy-intensive?qaStage=vault"
+      className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
+    >
+      Preview accepted Vault — continue without payment
+    </a>
+  ) : salesOn && url ? (
+    <a
+      href={url}
+      className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
+      rel="noopener noreferrer"
+    >
+      Add the Vault — {formatUsd(v.priceCents)}
+    </a>
+  ) : (
+    <button
+      type="button"
+      disabled
+      className="inline-flex cursor-not-allowed items-center rounded-md bg-muted px-5 py-3 font-heading text-base font-semibold text-muted-foreground"
+    >
+      Vault checkout link being connected
+    </button>
+  );
+
   return (
     <>
       <ProductThankYou
@@ -90,13 +99,19 @@ function VaultContent() {
         className="mt-6 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-6"
       />
 
+      {qaReview ? (
+        <div className="mt-6 rounded-md border border-[color:var(--gold)] bg-secondary/30 p-4 text-sm text-muted-foreground">
+          <strong className="text-foreground">Owner preview:</strong> accepting
+          this offer moves to the Vault confirmation and private 1-on-1 page
+          without a charge.
+        </div>
+      ) : null}
+
       <div className="mt-8">
         <h2 className="font-display text-2xl text-foreground">{v.name}</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          The Vault is an independent library. It does NOT include Summit
-          admission, GA or VIP benefits, or session recordings — it grants
-          only the Vault items below. Your Summit ticket stays valid whether
-          you add the Vault or not.
+          The Vault is an independent library. It does not replace your Summit
+          admission or VIP experience. It adds the implementation items below.
         </p>
         <div className="mt-4 font-display text-4xl text-[color:var(--gold)]">
           {formatUsd(v.priceCents)}
@@ -104,7 +119,11 @@ function VaultContent() {
         <p className="mt-4 text-muted-foreground">{v.summary}</p>
       </div>
 
-      <VideoSlot url={cfg.sectionVideos.hero ?? null} label="Vault walkthrough" className="mt-8" />
+      <VideoSlot
+        url={cfg.sectionVideos.hero ?? null}
+        label="Vault walkthrough"
+        className="mt-8"
+      />
 
       <section className="mt-8 surface p-6">
         <h3 className="font-heading text-lg text-foreground">
@@ -121,7 +140,9 @@ function VaultContent() {
             </ul>
           </div>
           <div>
-            <p className="label-mono text-[color:var(--gold)]">The Vault adds</p>
+            <p className="label-mono text-[color:var(--gold)]">
+              The Vault adds
+            </p>
             <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
               {v.bullets.map((b) => (
                 <li key={b}>· {b}</li>
@@ -129,9 +150,6 @@ function VaultContent() {
             </ul>
           </div>
         </div>
-        <p className="mt-4 text-xs text-muted-foreground">
-          The Vault does not include admission or recordings.
-        </p>
       </section>
 
       <div className="mt-8">{cta}</div>
