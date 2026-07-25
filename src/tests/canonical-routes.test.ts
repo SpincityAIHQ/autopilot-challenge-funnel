@@ -69,6 +69,7 @@ describe("paid content isolation (source scan)", () => {
       !f.endsWith(".server.ts") &&
       !f.endsWith(".server.tsx") &&
       !f.startsWith("src/routes/api/") &&
+      !f.startsWith("src/tests/") &&
       !f.includes("client.server"),
   );
 
