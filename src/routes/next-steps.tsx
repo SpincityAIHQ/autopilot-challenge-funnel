@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { getCommasConfig } from "@/lib/challenge-config";
 import { ProductThankYou } from "@/components/ProductThankYou";
+import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import {
   useEntitlementSummary,
   derivedAccess,
@@ -45,16 +46,21 @@ function NextSteps() {
         bring to Day 1.
       </p>
 
+      <FunnelVideoSlot
+        url={cfg.sectionVideos.thankYouIntensive}
+        label="A note from the family — Intensive welcome"
+        envKey="VITE_SUMMIT_VIDEO_THANK_YOU_INTENSIVE"
+        className="mt-8"
+      />
+
       <ProductThankYou
         verified={verifiedIntensive}
         eyebrow="Verified · Strategy & Build Intensive"
         headline="Thank you, family — you purchased the Strategy & Build Intensive."
         body="Your private 1-on-1 is confirmed. Our team will reach out from Info@NuAmenti.com with a scheduling link so you can pick a time that works. If you don't see it within one business day, reply to your receipt from the same email."
-        videoUrl={cfg.sectionVideos.thankYouIntensive}
+        videoUrl={null}
         videoLabel="A note from the family — Intensive welcome"
       />
-
-
 
       <section className="mt-10 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">Save the dates</h2>
