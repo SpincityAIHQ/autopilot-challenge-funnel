@@ -10,22 +10,23 @@ import {
   useEntitlementSummary,
   derivedAccess,
 } from "@/hooks/use-entitlement-summary";
+import { TestimonialSection } from "@/components/TestimonialSection";
 
 export const Route = createFileRoute("/offer/implementation-vault")({
   head: () => ({
     meta: [
-      { title: "AI AutoPilot Implementation Vault — $199 add-on" },
+      { title: "AI AutoPilot Implementation Vault" },
       {
         name: "description",
         content:
-          "Optional Vault add-on for verified Summit registrants. Independent scope; does not include Summit admission or recordings.",
+          "Optional Vault add-on for verified VIP registrants. Independent scope; does not include Summit admission or recordings.",
       },
       { name: "robots", content: "noindex" },
-      { property: "og:title", content: "AI AutoPilot Implementation Vault — $199" },
+      { property: "og:title", content: "AI AutoPilot Implementation Vault" },
       {
         property: "og:description",
         content:
-          "Optional Vault add-on. Independent from GA/VIP. Purchased separately, unlocked separately.",
+          "Optional Vault add-on. Independent from admission. Purchased separately, unlocked separately.",
       },
       { property: "og:url", content: "/offer/implementation-vault" },
     ],
@@ -43,7 +44,7 @@ function ImplementationVaultOffer() {
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-16">
-      <p className="eyebrow">Post-registration add-on</p>
+      <p className="eyebrow">Post-VIP add-on</p>
       <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
         {v.name}
       </h1>
@@ -61,11 +62,33 @@ function ImplementationVaultOffer() {
 
       <VideoSlot url={cfg.sectionVideos.hero ?? null} label="Vault walkthrough" className="mt-8" />
 
-      <ul className="mt-6 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
-        {v.bullets.map((b) => (
-          <li key={b}>· {b}</li>
-        ))}
-      </ul>
+      <section className="mt-8 surface p-6">
+        <h2 className="font-heading text-lg text-foreground">
+          What you already have vs. what the Vault adds
+        </h2>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div>
+            <p className="label-mono">You already have (VIP)</p>
+            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+              <li>· Both live Summit days</li>
+              <li>· 30-day session recordings</li>
+              <li>· VIP Implementation Lab + priority Q&A</li>
+              <li>· VIP Proposal + Outreach Kit</li>
+            </ul>
+          </div>
+          <div>
+            <p className="label-mono text-[color:var(--gold)]">The Vault adds</p>
+            <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+              {v.bullets.map((b) => (
+                <li key={b}>· {b}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <p className="mt-4 text-xs text-muted-foreground">
+          The Vault does not include admission or recordings.
+        </p>
+      </section>
 
       <div className="mt-8">
         <VaultCta salesOn={salesOn} url={url} summary={summary} price={v.priceCents} />
@@ -73,10 +96,10 @@ function ImplementationVaultOffer() {
 
       <div className="mt-6">
         <Link
-          to="/next-keynote"
+          to="/next-steps"
           className="text-sm text-muted-foreground hover:text-foreground underline"
         >
-          No thanks — take me to the next keynote →
+          No thanks — continue to next steps →
         </Link>
       </div>
 
@@ -84,6 +107,12 @@ function ImplementationVaultOffer() {
         Declining the Vault does not affect your Summit ticket. Every
         affiliate/tool link inside the Vault carries a clear disclosure.
       </p>
+
+      <TestimonialSection
+        page="vault"
+        eyebrow="From Vault users"
+        heading="What people built with the Vault"
+      />
     </main>
   );
 }
@@ -104,18 +133,18 @@ function VaultCta({
   }
   if (summary.status === "unauthenticated" || summary.status === "error") {
     return (
-      <SecureLinkNotice message="The Vault is available to verified Summit registrants. Open the secure Vault link in your NuAmenti access email — verified sign-in is required." />
+      <SecureLinkNotice message="The Vault is available to verified VIP registrants. Open the secure Vault link in your NuAmenti access email — verified sign-in is required." />
     );
   }
-  const { hasGa, hasVault } = derivedAccess(summary.scopes);
+  const { hasVip, hasVault } = derivedAccess(summary.scopes);
   if (hasVault) {
     return (
       <AlreadyOwned message="You already have the Implementation Vault. Access it from the secure link in your NuAmenti access email." />
     );
   }
-  if (!hasGa) {
+  if (!hasVip) {
     return (
-      <SecureLinkNotice message="The Vault is only sold to verified GA or VIP registrants. If you already registered, open the secure Vault link in your NuAmenti access email." />
+      <SecureLinkNotice message="The Vault is offered to verified VIP registrants. Add the VIP Implementation Experience first, then return here." />
     );
   }
   if (!salesOn || !url) return <DisabledBtn label="Vault opening soon" />;
