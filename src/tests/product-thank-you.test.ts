@@ -127,7 +127,10 @@ describe("ProductThankYou component — non-disclosure to anonymous / ineligible
         videoLabel: "welcome",
       }),
     );
-    expect(html).toContain(GA_THANKS);
+    // renderToStaticMarkup HTML-encodes the apostrophe; check the
+    // stable substring on either side of it.
+    expect(html).toContain("Thank you, family");
+    expect(html).toContain("officially registered with General Admission.");
     expect(html).toContain('data-testid="product-thank-you"');
   });
 
@@ -141,9 +144,8 @@ describe("ProductThankYou component — non-disclosure to anonymous / ineligible
         videoLabel: "welcome",
       }),
     );
-    expect(html).toContain(GA_THANKS);
+    expect(html).toContain("officially registered with General Admission.");
     expect(html).not.toContain("<iframe");
-    // No "coming soon" / placeholder text.
     expect(html).not.toContain("coming soon");
     expect(html).not.toContain("placeholder");
   });
@@ -158,10 +160,11 @@ describe("ProductThankYou component — non-disclosure to anonymous / ineligible
         videoLabel: "welcome",
       }),
     );
-    expect(html).toContain(GA_THANKS);
+    expect(html).toContain("officially registered with General Admission.");
     expect(html).not.toContain("<iframe");
     expect(html).not.toContain("evil.example.com");
   });
+
 });
 
 describe("per-product optional video slot config", () => {
