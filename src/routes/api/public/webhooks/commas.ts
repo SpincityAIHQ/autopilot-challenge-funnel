@@ -3,7 +3,9 @@ import {
   verifyCommasSignature,
   parseCommasEnvelope,
   isSupportedEvent,
+  isReversalEvent,
   extractPayment,
+  extractPaymentIdForReversal,
   resolveProductFromItem,
   redactEventPayload,
   expectedTotalCents,
@@ -14,21 +16,27 @@ import {
 /**
  * Commas webhook — AI AutoPilot Summit.
  *
- * Rules:
- *  - 503 unless enabled + secret set + all four core product IDs present
- *    and pairwise distinct.
- *  - HMAC-SHA256 over exact raw body vs x-webhook-signature.
- *  - Canonical fulfillment: `payment.succeeded` (data.status === "succeeded").
+ * Enable/gate rules:
+ *  - 503 unless enabled + secret set + 5 core product ids present and distinct.
+ *  - HMAC-SHA256 over the exact raw body vs x-webhook-signature.
+ *  - 413 for bodies over 64KB.
+ *
+ * Event handling:
+ *  - `payment.succeeded` is the canonical fulfillment path.
  *  - `product.purchased` is audit-only. Never fulfills.
- *  - Refund and failure events revoke the matching entitlement.
+ *  - `payment.refunded` | `payment.failed` | `payment.disputed` → atomic reversal
+ *     via reverse_summit_payment RPC (revokes entitlements, releases intensive slot).
+ *
+ * Fulfillment guarantees:
  *  - Monetary values are decimal DOLLARS → Math.round(v*100) → cents.
- *  - Currency REQUIRED; USD only.
+ *  - Currency REQUIRED and MUST be USD.
  *  - amountCents MUST equal expected total for the mapped product.
- *  - Idempotent by provider event id AND commas_payment_id (RPC-side).
+ *  - Idempotent by provider_event_id AND commas_payment_id (RPC-side).
  *  - Payload stored redacted (no buyer PII in audit).
  *  - Unknown products grant nothing.
- *  - Terminal state updates checked; failed persistence → 500 (Commas retries).
- *  - Genuine Intensive-cap failure → deterministic 200.
+ *  - VIP-upgrade + Vault require an existing GA or VIP (enforced in RPC).
+ *  - Terminal state persist failure → 500 (Commas retries).
+ *  - Genuine Intensive-cap failure → deterministic 200 (no retry, no seat).
  */
 
 const MAX_BODY_BYTES = 64 * 1024;
@@ -57,9 +65,10 @@ export const Route = createFileRoute("/api/public/webhooks/commas")({
           return new Response("Ignored", { status: 200 });
         }
 
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { supabaseAdmin } = await import(
+          "@/integrations/supabase/client.server"
+        );
 
-        // Store redacted audit envelope up front (idempotent on provider_event_id).
         const auditPayload = redactEventPayload(envelope);
         const auditInsert = await supabaseAdmin
           .from("summit_payment_events")
@@ -77,59 +86,95 @@ export const Route = createFileRoute("/api/public/webhooks/commas")({
           return new Response("Server error", { status: 500 });
         }
 
-        // Only payment.succeeded fulfills. Everything else is audit-only.
-        if (envelope.type !== CANONICAL_FULFILLMENT_EVENT) {
-          // Handle refund/failure by revoking entitlement (best-effort).
-          if (envelope.type === "payment.refunded" || envelope.type === "payment.failed") {
-            const pid = auditPayload.payment_id as string | null;
-            if (pid) {
-              await supabaseAdmin
-                .from("entitlements")
-                .update({ revoked_at: new Date().toISOString() })
-                .in(
-                  "registration_id",
-                  // subquery-ish: fetch reg ids by payment id in two steps
-                  (
-                    await supabaseAdmin
-                      .from("summit_registrations")
-                      .select("id")
-                      .eq("commas_payment_id", pid)
-                  ).data?.map((r) => r.id) ?? [],
-                );
-            }
+        // Reversal branch — refund / failed / disputed all revoke atomically.
+        if (isReversalEvent(envelope.type)) {
+          const pid = extractPaymentIdForReversal(envelope);
+          if (!pid) {
+            const err = await setTerminal(
+              supabaseAdmin,
+              envelope.id,
+              "rejected",
+              "reversal-no-payment-id",
+            );
+            if (err) return new Response("Server error", { status: 500 });
+            return new Response("Ignored", { status: 200 });
           }
-          await setTerminal(supabaseAdmin, envelope.id, "audited", null);
+          const { error: revErr } = await supabaseAdmin.rpc(
+            "reverse_summit_payment",
+            { _commas_payment_id: pid },
+          );
+          if (revErr) {
+            return new Response("Server error", { status: 500 });
+          }
+          const err = await setTerminal(
+            supabaseAdmin,
+            envelope.id,
+            "reversed",
+            null,
+          );
+          if (err) return new Response("Server error", { status: 500 });
+          return new Response("ok", { status: 200 });
+        }
+
+        // product.purchased is audit-only.
+        if (envelope.type !== CANONICAL_FULFILLMENT_EVENT) {
+          const err = await setTerminal(
+            supabaseAdmin,
+            envelope.id,
+            "audited",
+            null,
+          );
+          if (err) return new Response("Server error", { status: 500 });
           return new Response("ok", { status: 200 });
         }
 
         const payment = extractPayment(envelope);
         if (!payment) {
-          const err = await setTerminal(supabaseAdmin, envelope.id, "rejected", "malformed");
+          const err = await setTerminal(
+            supabaseAdmin,
+            envelope.id,
+            "rejected",
+            "malformed",
+          );
           if (err) return new Response("Server error", { status: 500 });
           return new Response("Ignored", { status: 200 });
         }
         if (payment.currency !== "USD") {
-          const err = await setTerminal(supabaseAdmin, envelope.id, "rejected", "non-usd");
+          const err = await setTerminal(
+            supabaseAdmin,
+            envelope.id,
+            "rejected",
+            "non-usd",
+          );
           if (err) return new Response("Server error", { status: 500 });
           return new Response("Ignored", { status: 200 });
         }
 
         const product = resolveProductFromItem(payment.baseItemId, env);
         if (!product) {
-          const err = await setTerminal(supabaseAdmin, envelope.id, "rejected", "unknown-product");
+          const err = await setTerminal(
+            supabaseAdmin,
+            envelope.id,
+            "rejected",
+            "unknown-product",
+          );
           if (err) return new Response("Server error", { status: 500 });
           return new Response("Ignored", { status: 200 });
         }
 
         const expected = expectedTotalCents(product);
         if (payment.amountCents !== expected) {
-          const err = await setTerminal(supabaseAdmin, envelope.id, "rejected", "amount-mismatch");
+          const err = await setTerminal(
+            supabaseAdmin,
+            envelope.id,
+            "rejected",
+            "amount-mismatch",
+          );
           if (err) return new Response("Server error", { status: 500 });
           return new Response("Ignored", { status: 200 });
         }
 
-        // Fulfill atomically via RPC.
-        const { data: rpcData, error: rpcError } = await supabaseAdmin.rpc(
+        const { error: rpcError } = await supabaseAdmin.rpc(
           "fulfill_summit_payment",
           {
             _product: product,
@@ -145,19 +190,36 @@ export const Route = createFileRoute("/api/public/webhooks/commas")({
         );
 
         if (rpcError) {
-          // Distinguish cap-exhaustion (P0001) from transient errors.
-          const isCap = /No intensive slots remaining/i.test(rpcError.message);
-          if (isCap) {
-            const err = await setTerminal(supabaseAdmin, envelope.id, "rejected", "intensive-cap");
+          const msg = rpcError.message ?? "";
+          if (/No intensive slots remaining/i.test(msg)) {
+            const err = await setTerminal(
+              supabaseAdmin,
+              envelope.id,
+              "rejected",
+              "intensive-cap",
+            );
+            if (err) return new Response("Server error", { status: 500 });
+            return new Response("ok", { status: 200 });
+          }
+          if (/requires an existing/i.test(msg) || /precondition/i.test(msg)) {
+            const err = await setTerminal(
+              supabaseAdmin,
+              envelope.id,
+              "rejected",
+              "precondition-not-met",
+            );
             if (err) return new Response("Server error", { status: 500 });
             return new Response("ok", { status: 200 });
           }
           return new Response("Server error", { status: 500 });
         }
 
-        void rpcData; // fulfillment succeeded
-
-        const err = await setTerminal(supabaseAdmin, envelope.id, "fulfilled", null);
+        const err = await setTerminal(
+          supabaseAdmin,
+          envelope.id,
+          "fulfilled",
+          null,
+        );
         if (err) return new Response("Server error", { status: 500 });
         return new Response("ok", { status: 200 });
       },
@@ -166,18 +228,11 @@ export const Route = createFileRoute("/api/public/webhooks/commas")({
 });
 
 async function setTerminal(
-  admin: Awaited<
-    ReturnType<
-      typeof import("@/integrations/supabase/client.server").supabaseAdmin.from
-    >
-  > extends unknown
-    ? typeof import("@/integrations/supabase/client.server").supabaseAdmin
-    : never,
+  admin: typeof import("@/integrations/supabase/client.server").supabaseAdmin,
   eventId: string,
   status: string,
   error: string | null,
 ): Promise<boolean> {
-  // returns true if the update failed
   const { error: e } = await admin
     .from("summit_payment_events")
     .update({
