@@ -138,23 +138,16 @@ SELECT public._qa_toggle_entitlement((SELECT email FROM qa_ids), 'ga', false);
 
 
 -- TEST 7: refund of the Vault purchase does NOT touch GA.
-INSERT INTO public.summit_registrations
-  (full_name, email, phone, tier, admission_product, amount_cents, currency,
-   commas_payment_id, status, payment_status)
-SELECT 'QA GA', email, NULL, 'ga', 'ga', 2200, 'USD',
-       pay_ga, 'confirmed', 'confirmed' FROM qa_ids;
-
-INSERT INTO public.summit_vault_purchases
-  (registration_id, buyer_email, amount_cents, currency, commas_payment_id, payment_status)
-SELECT (SELECT id FROM public.summit_registrations
-         WHERE commas_payment_id = q.pay_ga),
-       q.email, 19900, 'USD', q.pay_vault, 'confirmed'
-FROM qa_ids q;
-
+-- Use fulfill_summit_payment (security definer) so all writes go through
+-- the same code path production fulfills through.
 DO $$
 DECLARE ids record;
 BEGIN
   SELECT * INTO ids FROM qa_ids;
+  PERFORM public.fulfill_summit_payment('ga', ids.pay_ga, 2200, 'USD',
+    'QA GA', ids.email, NULL, NULL, NULL);
+  PERFORM public.fulfill_summit_payment('vault', ids.pay_vault, 19900, 'USD',
+    'QA GA', ids.email, NULL, NULL, NULL);
   PERFORM public.reverse_summit_payment(ids.pay_vault);
   IF NOT EXISTS (SELECT 1 FROM public.entitlements
                  WHERE buyer_email = ids.email
@@ -170,24 +163,12 @@ BEGIN
 END $$;
 
 -- TEST 8: VIP-upgrade refund preserves GA.
-INSERT INTO public.summit_vip_upgrades
-  (registration_id, buyer_email, amount_cents, currency, commas_payment_id, payment_status)
-SELECT (SELECT id FROM public.summit_registrations
-         WHERE commas_payment_id = q.pay_ga),
-       q.email, 5500, 'USD', q.pay_vipup, 'confirmed'
-FROM qa_ids q;
-
-UPDATE public.summit_registrations SET tier = 'vip'
-  WHERE commas_payment_id = (SELECT pay_ga FROM qa_ids);
-
-INSERT INTO public.entitlements (buyer_email, product)
-SELECT email, 'vip' FROM qa_ids
-ON CONFLICT (buyer_email, product) DO UPDATE SET revoked_at = NULL;
-
 DO $$
 DECLARE ids record;
 BEGIN
   SELECT * INTO ids FROM qa_ids;
+  PERFORM public.fulfill_summit_payment('vip_upgrade', ids.pay_vipup, 5500, 'USD',
+    'QA GA', ids.email, NULL, NULL, NULL);
   PERFORM public.reverse_summit_payment(ids.pay_vipup);
   IF NOT EXISTS (SELECT 1 FROM public.entitlements
                  WHERE buyer_email = ids.email
@@ -201,6 +182,8 @@ BEGIN
   END IF;
   RAISE NOTICE 'TEST8 PASS vip-upgrade refund preserves GA';
 END $$;
+
+
 
 -- Sanity check in-transaction row visibility.
 SELECT 'in_txn_tokens' AS what, count(*) AS n
