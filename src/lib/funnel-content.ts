@@ -15,6 +15,9 @@ export interface ConfirmationContent {
   videoLabel: string;
 }
 
+const VIDEO_LABEL_GA = "Watch: your first move as a GA registrant";
+const VIDEO_LABEL_VIP = "Watch: your VIP welcome from the family";
+
 export const CONFIRMATION_CONTENT: Record<AdmissionTierId, ConfirmationContent> =
   {
     ga: {
