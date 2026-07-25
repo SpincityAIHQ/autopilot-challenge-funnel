@@ -1,113 +1,129 @@
 /**
- * Tier catalog for The AUTOPILOT Challenge.
- * Prices are the public source of truth for display and math.
- * Payment collection happens through Commas — this app never charges cards.
+ * AI AutoPilot Summit — product catalog.
  *
- * The $22 GA recordings bump is a NATIVE Commas order bump inside the GA
- * checkout. It does NOT change the pre-Commas total shown on this site.
+ * Public admission has TWO tiers only: GA ($22) and VIP ($77).
+ * The $199 Implementation Vault is a post-purchase OTO/add-on, NOT
+ * a third admission ticket. The $1,000 Strategy & Build Intensive and
+ * the $8,000 Mentorship are separate post-Summit offers.
+ *
+ * All money in cents. Payment collection lives on Commas; this app
+ * never handles card data and never fulfills from URL query strings.
  */
 
-export type TierId = "ga" | "vip" | "bundle" | "founder";
+export type AdmissionTierId = "ga" | "vip";
+export type ProductId = "ga" | "vip" | "vault" | "intensive" | "mentorship";
+
+// Backwards-compat name for older imports still in the tree.
+export type TierId = AdmissionTierId;
 
 export interface Tier {
-  id: TierId;
+  id: AdmissionTierId;
   name: string;
+  shortName: string;
   priceCents: number;
   headline: string;
   bullets: string[];
-  hardCap?: number;
 }
-
-export const GA_BUMP_CENTS = 2200;
-export const GA_BUMP_LABEL = "Recordings + completed-map template — forever";
-export const GA_BUMP_COPY =
-  "Recordings are not included. Add both replays and the completed Autonomy Map template for $22 during checkout.";
 
 export const TIERS: readonly Tier[] = [
   {
     id: "ga",
-    name: "GA Ticket",
-    priceCents: 7700,
+    name: "General Admission",
+    shortName: "GA Ticket",
+    priceCents: 2200,
     headline:
-      "Build your monetizable site, launch assets, and lead + sales system during both live days.",
+      "Live online access to both Summit days plus the core implementation toolkit.",
     bullets: [
-      "Sat Aug 1 + Sun Aug 2 · 12–4 PM ET",
-      "Eight-hour live business build",
-      "Companion workbook",
+      "Live online access · Aug 24 + Aug 25, 2026",
+      "Digital Summit Action Guide",
+      "AI Readiness Scorecard",
+      "Buyer + Offer Canvas",
+      "Live prompt drops and implementation notes",
+      "GA does not include session recordings",
     ],
   },
   {
     id: "vip",
-    name: "VIP",
-    priceCents: 17700,
+    name: "VIP Experience",
+    shortName: "VIP Ticket",
+    priceCents: 7700,
     headline:
-      "Everything in GA + recordings + one group VIP hour after each day.",
+      "Everything in GA plus recordings, a VIP Implementation Lab, priority Q&A, and the outreach vault.",
     bullets: [
       "Everything in GA",
-      "Group VIP Hour after Day 1 and Day 2",
-      "Selected businesses receive a live hot seat; a personal turn is not guaranteed",
-      "Recordings included",
+      "30-day session recordings",
+      "One live VIP Implementation Lab",
+      "Priority Q&A submission",
+      "VIP Proposal + Outreach Kit",
+      "VIP Resource Vault",
     ],
-  },
-  {
-    id: "bundle",
-    name: "The Bundle",
-    priceCents: 33300,
-    headline:
-      "VIP + AI+AI=AI 2 founding-edition pre-order + companion PDF workbook now + 60 days NuAmenti Gold activating Aug 10.",
-    bullets: [
-      "Everything in VIP",
-      "AI+AI=AI 2 founding-edition pre-order (ships Q4 2026)",
-      "Companion PDF workbook — delivered now",
-      "60 days of NuAmenti Gold, activating Aug 10",
-    ],
-  },
-  {
-    id: "founder",
-    name: "Founder Seat",
-    priceCents: 111100,
-    headline:
-      "Everything in the Bundle + 3 months NuAmenti Diamond + Founder access, recognition, meetup, and early MCP beta access.",
-    bullets: [
-      "Everything in The Bundle",
-      "3 months of NuAmenti Diamond at launch",
-      "Founding Credits Wall recognition",
-      "Signed founding-edition book",
-      "Private Founders room in the InnerCITY",
-      "Founders Meetup — Sat Aug 8, InvestFest, Atlanta",
-      "InvestFest admission, travel, lodging, meals, and transportation are not included",
-      "First MCP beta access",
-    ],
-    hardCap: 33,
   },
 ] as const;
 
-export const TIER_MAP: Record<TierId, Tier> = TIERS.reduce(
+export const TIER_MAP: Record<AdmissionTierId, Tier> = TIERS.reduce(
   (acc, t) => {
     acc[t.id] = t;
     return acc;
   },
-  {} as Record<TierId, Tier>,
+  {} as Record<AdmissionTierId, Tier>,
 );
 
-export function isTierId(value: unknown): value is TierId {
-  return (
-    value === "ga" ||
-    value === "vip" ||
-    value === "bundle" ||
-    value === "founder"
-  );
+export function isTierId(value: unknown): value is AdmissionTierId {
+  return value === "ga" || value === "vip";
 }
 
-/**
- * Server-side total in cents. Bump is ONLY valid on GA. Kept for webhook
- * reconciliation math; the public site never shows a bumped total.
- */
-export function computeTotalCents(tier: TierId, bump: boolean): number {
-  const base = TIER_MAP[tier].priceCents;
-  const bumpAmount = tier === "ga" && bump ? GA_BUMP_CENTS : 0;
-  return base + bumpAmount;
+/** Post-purchase and post-Summit products (not admission tickets). */
+export interface UpsellProduct {
+  id: Exclude<ProductId, "ga" | "vip">;
+  name: string;
+  priceCents: number;
+  summary: string;
+  bullets: string[];
+  hardCap?: number;
 }
+
+export const UPSELLS: Record<UpsellProduct["id"], UpsellProduct> = {
+  vault: {
+    id: "vault",
+    name: "AI AutoPilot Implementation Vault",
+    priceCents: 19900,
+    summary:
+      "The full implementation stack: prompts, blueprints, calendar, and proposal builder. Post-purchase add-on — admission is purchased separately.",
+    bullets: [
+      "Company Brain Starter Kit",
+      "AI sales and follow-up agent prompt stack",
+      "Lovable funnel and site blueprint",
+      "30-day campaign calendar",
+      "Corporate proposal builder",
+      "Autonomy Map and SOP templates",
+      "Curated tool-stack and affiliate directory with clear disclosures",
+    ],
+  },
+  intensive: {
+    id: "intensive",
+    name: "Strategy & Build Intensive",
+    priceCents: 100000,
+    summary:
+      "A two-hour private session. Only 10 total, exclusively for NuAmenti and Summit attendees.",
+    bullets: [
+      "Two-hour private strategy + build session",
+      "10 total slots · atomic inventory",
+      "For NuAmenti and Summit attendees only",
+    ],
+    hardCap: 10,
+  },
+  mentorship: {
+    id: "mentorship",
+    name: "8-Week Mentorship & Work-Along",
+    priceCents: 800000,
+    summary:
+      "Application-based. Eight weeks of guided implementation alongside the NuAmenti team.",
+    bullets: [
+      "Eight-week guided implementation",
+      "Application-based; separate from the 10 intensive slots",
+    ],
+  },
+};
 
 export function formatUsd(cents: number): string {
   return `$${(cents / 100).toLocaleString("en-US", {
@@ -116,6 +132,19 @@ export function formatUsd(cents: number): string {
   })}`;
 }
 
-export const FOUNDER_HARD_CAP = 33;
-export const FOUNDER_DISCLAIMER =
-  "The Founder Seat is a founding-member package — not equity, shares, an investment, profit participation, or profit-sharing.";
+/** Expected total for a Summit product. Bumps do not exist in the new model. */
+export function expectedTotalCents(product: ProductId): number {
+  switch (product) {
+    case "ga":
+    case "vip":
+      return TIER_MAP[product].priceCents;
+    case "vault":
+      return UPSELLS.vault.priceCents;
+    case "intensive":
+      return UPSELLS.intensive.priceCents;
+    case "mentorship":
+      return UPSELLS.mentorship.priceCents;
+  }
+}
+
+export const INTENSIVE_HARD_CAP = UPSELLS.intensive.hardCap!;

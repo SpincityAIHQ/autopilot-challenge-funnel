@@ -1,30 +1,22 @@
 /**
- * Server-only helpers for the Commas webhook.
+ * Server-only helpers for the Commas webhook — Summit product graph.
  *
- * Contract (current Commas):
- *   Envelope: { id: string, type: string, data: { ... } }
- *   Monetary fields are DECIMAL DOLLARS. Convert to cents with
- *   Math.round(value * 100). Never assume cents on the wire.
+ * Envelope: { id, type, data: { ... } }
+ * Monetary fields are DECIMAL DOLLARS. Convert with Math.round(v * 100).
+ * Canonical fulfillment event: `payment.succeeded` (data.status === "succeeded").
+ * `product.purchased` fires in addition and is audit-only — NEVER fulfills.
  *
- *   Canonical fulfillment event: `payment.succeeded` (data.status === "succeeded").
- *   `product.purchased` fires in addition and is audit-only — NEVER fulfills.
- *
- *   Base product id:  data.item.id
- *   Order bumps:      data.order_bumps[].item.id
- *   Buyer identity:   data.buyer.{name,email,phone,id}
- *   Amount:           data.amount  (dollars)
- *   Currency:         data.currency  (required; must equal USD after normalization)
- *   Payment id:       data.payment_id
+ * Product graph (env-driven, unknown → grants nothing):
+ *   COMMAS_PRODUCT_ID_GA        → 'ga'         ($22)
+ *   COMMAS_PRODUCT_ID_VIP       → 'vip'        ($77)
+ *   COMMAS_PRODUCT_ID_VAULT     → 'vault'      ($199, OTO)
+ *   COMMAS_PRODUCT_ID_INTENSIVE → 'intensive'  ($1,000, cap 10)
+ *   COMMAS_PRODUCT_ID_KEYNOTE   → 'keynote'    (optional; audit-only until wired)
  */
 
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { computeTotalCents, type TierId } from "./tiers";
+import { expectedTotalCents, type ProductId } from "./tiers";
 
-/**
- * Verify HMAC-SHA256 signature over the EXACT raw body.
- * Accepts the header value with or without a "sha256=" prefix.
- * Constant-time compare; never throws for malformed input.
- */
 export function verifyCommasSignature(
   rawBody: string,
   headerSignature: string | null | undefined,
@@ -34,9 +26,7 @@ export function verifyCommasSignature(
   const provided = headerSignature.startsWith("sha256=")
     ? headerSignature.slice("sha256=".length)
     : headerSignature;
-
   if (!/^[a-f0-9]{64}$/i.test(provided)) return false;
-
   const expected = createHmac("sha256", secret).update(rawBody, "utf8").digest("hex");
   const a = Buffer.from(provided.toLowerCase(), "utf8");
   const b = Buffer.from(expected.toLowerCase(), "utf8");
@@ -75,17 +65,22 @@ export function parseCommasEnvelope(rawBody: string): CommasEnvelope | null {
   }
 }
 
-export type SupportedEvent = "payment.succeeded" | "product.purchased";
+export type SupportedEvent =
+  | "payment.succeeded"
+  | "product.purchased"
+  | "payment.refunded"
+  | "payment.failed";
 export const CANONICAL_FULFILLMENT_EVENT: SupportedEvent = "payment.succeeded";
 
 export function isSupportedEvent(t: string): t is SupportedEvent {
-  return t === "payment.succeeded" || t === "product.purchased";
+  return (
+    t === "payment.succeeded" ||
+    t === "product.purchased" ||
+    t === "payment.refunded" ||
+    t === "payment.failed"
+  );
 }
 
-/**
- * Convert Commas decimal-DOLLAR amounts to integer cents.
- * Returns null for anything not a finite non-negative number.
- */
 export function dollarsToCents(value: unknown): number | null {
   if (typeof value !== "number" || !Number.isFinite(value) || value < 0) return null;
   return Math.round(value * 100);
@@ -95,9 +90,8 @@ export interface ExtractedPayment {
   paymentId: string;
   status: string;
   baseItemId: string;
-  bumpItemIds: string[];
   amountCents: number;
-  currency: string; // normalized uppercase; guaranteed non-empty
+  currency: string;
   buyer: {
     fullName: string;
     email: string;
@@ -106,33 +100,20 @@ export interface ExtractedPayment {
   };
 }
 
-/**
- * Strict extraction for `payment.succeeded`. Returns null unless every
- * required field is present with the right shape. Never fabricates data.
- * Currency MUST be present (nonempty string); normalized to uppercase.
- * Fulfillment enforcement (USD-only, amount match) lives at the call site.
- */
 export function extractPayment(env: CommasEnvelope): ExtractedPayment | null {
   const d = env.data as Record<string, unknown>;
-
   const status = typeof d.status === "string" ? d.status : "";
   if (status !== "succeeded") return null;
-
   const paymentId = typeof d.payment_id === "string" ? d.payment_id : "";
   if (!paymentId) return null;
-
   const item = (d.item ?? {}) as Record<string, unknown>;
   const baseItemId = typeof item.id === "string" ? item.id : "";
   if (!baseItemId) return null;
-
   const amountCents = dollarsToCents(d.amount);
   if (amountCents === null || amountCents <= 0) return null;
-
-  // Currency is REQUIRED. Never default a missing value to USD.
   const rawCurrency = typeof d.currency === "string" ? d.currency.trim() : "";
   if (!rawCurrency) return null;
   const currency = rawCurrency.toUpperCase();
-
   const buyer = (d.buyer ?? {}) as Record<string, unknown>;
   const email = typeof buyer.email === "string" ? buyer.email.trim() : "";
   const fullName =
@@ -140,82 +121,43 @@ export function extractPayment(env: CommasEnvelope): ExtractedPayment | null {
     (typeof buyer.full_name === "string" && (buyer.full_name as string).trim()) ||
     "";
   if (!email || !fullName) return null;
-
   const phone = typeof buyer.phone === "string" && buyer.phone ? buyer.phone : null;
   const providerId = typeof buyer.id === "string" && buyer.id ? buyer.id : null;
-
-  const bumps = Array.isArray(d.order_bumps) ? (d.order_bumps as unknown[]) : [];
-  const bumpItemIds: string[] = [];
-  for (const b of bumps) {
-    if (b && typeof b === "object") {
-      const bi = (b as Record<string, unknown>).item as Record<string, unknown> | undefined;
-      const id = bi && typeof bi.id === "string" ? bi.id : null;
-      if (id) bumpItemIds.push(id);
-    }
-  }
-
   return {
     paymentId,
     status,
     baseItemId,
-    bumpItemIds,
     amountCents,
     currency,
     buyer: { fullName, email, phone, providerId },
   };
 }
 
-/** Env-driven product-id → tier mapping. Unknown ids grant nothing. */
-export function resolveTierFromProduct(
-  productId: string | null,
+/** Env-driven product id → Summit product mapping. */
+export function resolveProductFromItem(
+  itemId: string | null,
   env: Record<string, string | undefined>,
-): { tier: TierId } | null {
-  if (!productId) return null;
-  if (productId === env.COMMAS_PRODUCT_ID_GA) return { tier: "ga" };
-  if (productId === env.COMMAS_PRODUCT_ID_VIP) return { tier: "vip" };
-  if (productId === env.COMMAS_PRODUCT_ID_BUNDLE) return { tier: "bundle" };
-  if (productId === env.COMMAS_PRODUCT_ID_FOUNDER) return { tier: "founder" };
+): ProductId | null {
+  if (!itemId) return null;
+  if (itemId === env.COMMAS_PRODUCT_ID_GA) return "ga";
+  if (itemId === env.COMMAS_PRODUCT_ID_VIP) return "vip";
+  if (itemId === env.COMMAS_PRODUCT_ID_VAULT) return "vault";
+  if (itemId === env.COMMAS_PRODUCT_ID_INTENSIVE) return "intensive";
   return null;
 }
 
-/**
- * True iff the GA recordings bump product id appears in order_bumps.
- * Non-GA tiers cannot bump; callers must enforce that separately.
- */
-export function detectGaBump(
-  bumpItemIds: string[],
-  env: Record<string, string | undefined>,
-): boolean {
-  const bumpId = env.COMMAS_PRODUCT_ID_GA_BUMP;
-  if (!bumpId) return false;
-  return bumpItemIds.includes(bumpId);
-}
+export { expectedTotalCents };
 
-/**
- * Expected total cents for a verified payment. Delegates to the single
- * public tier source of truth so prices cannot drift server-side.
- *
- *   GA           7700
- *   GA + bump    9900
- *   VIP         17700
- *   Bundle      33300
- *   Founder    111100
- */
-export function expectedTotalCents(tier: TierId, bump: boolean): number {
-  return computeTotalCents(tier, bump);
-}
-
-/**
- * Webhook activation gate. Returns { ok: true } only when the webhook is
- * enabled AND the secret is set AND all five product IDs are nonempty and
- * pairwise distinct. Otherwise returns { ok: false } and the handler
- * responds 503. Never leak the reason externally.
- */
 export interface WebhookConfigResult {
   ok: boolean;
   reason?: string;
 }
 
+/**
+ * Webhook activation gate. Requires enabled flag, secret, and at least the
+ * four core product IDs (GA, VIP, Vault, Intensive), pairwise distinct.
+ * Keynote id is optional until announced.
+ */
 export function validateWebhookConfig(
   env: Record<string, string | undefined>,
 ): WebhookConfigResult {
@@ -224,10 +166,9 @@ export function validateWebhookConfig(
   if (!secret || secret.trim() === "") return { ok: false, reason: "no secret" };
   const ids = [
     env.COMMAS_PRODUCT_ID_GA,
-    env.COMMAS_PRODUCT_ID_GA_BUMP,
     env.COMMAS_PRODUCT_ID_VIP,
-    env.COMMAS_PRODUCT_ID_BUNDLE,
-    env.COMMAS_PRODUCT_ID_FOUNDER,
+    env.COMMAS_PRODUCT_ID_VAULT,
+    env.COMMAS_PRODUCT_ID_INTENSIVE,
   ];
   for (const id of ids) {
     if (!id || typeof id !== "string" || id.trim() === "") {
@@ -239,24 +180,11 @@ export function validateWebhookConfig(
   return { ok: true };
 }
 
-/**
- * Redacted audit payload for challenge_payment_events. Excludes buyer PII
- * (name, email, phone, address, arbitrary metadata). Buyer provider id is
- * kept because it is a non-PII correlation handle.
- */
+/** Redacted audit payload. Excludes buyer name, email, phone, address, metadata. */
 export function redactEventPayload(env: CommasEnvelope): Record<string, unknown> {
   const d = (env.data ?? {}) as Record<string, unknown>;
   const item = (d.item ?? {}) as Record<string, unknown>;
   const buyer = (d.buyer ?? {}) as Record<string, unknown>;
-  const bumps = Array.isArray(d.order_bumps) ? (d.order_bumps as unknown[]) : [];
-  const bumpIds: string[] = [];
-  for (const b of bumps) {
-    if (b && typeof b === "object") {
-      const bi = (b as Record<string, unknown>).item as Record<string, unknown> | undefined;
-      const id = bi && typeof bi.id === "string" ? bi.id : null;
-      if (id) bumpIds.push(id);
-    }
-  }
   return {
     event_id: env.id,
     event_type: env.type,
@@ -266,7 +194,6 @@ export function redactEventPayload(env: CommasEnvelope): Record<string, unknown>
     currency: typeof d.currency === "string" ? d.currency : null,
     base_item_id: typeof item.id === "string" ? item.id : null,
     base_item_title: typeof item.title === "string" ? item.title : null,
-    bump_item_ids: bumpIds,
     buyer_provider_id: typeof buyer.id === "string" ? buyer.id : null,
   };
 }

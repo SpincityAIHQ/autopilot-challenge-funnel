@@ -1,4 +1,4 @@
-import { CHALLENGE_START_ISO } from "./challenge-config";
+import { SUMMIT_START_ISO } from "./challenge-config";
 
 export interface CountdownState {
   started: boolean;
@@ -10,7 +10,7 @@ export interface CountdownState {
 
 export function computeCountdown(
   now: number,
-  targetIso: string = CHALLENGE_START_ISO,
+  targetIso: string = SUMMIT_START_ISO,
 ): CountdownState {
   const target = new Date(targetIso).getTime();
   const diffMs = target - now;

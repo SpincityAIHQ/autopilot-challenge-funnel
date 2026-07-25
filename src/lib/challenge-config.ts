@@ -1,45 +1,52 @@
 /**
- * Public, environment-driven configuration for the funnel.
+ * AI AutoPilot Summit — environment-driven configuration.
  *
  * Rules:
- *  - Commas checkout URLs come from env. Missing URL for the selected tier
- *    → final pay button MUST be disabled and read "Registration opening soon."
- *  - The $22 GA recordings bump is a NATIVE Commas order bump inside the
- *    GA checkout. This app never fabricates a $99 URL or GA-bump path.
- *  - The overall sales gate `VITE_CHALLENGE_SALES_ENABLED` must be the
- *    literal string "true" for any handoff button to enable.
- *  - Checkout URLs are validated against a strict host allowlist. Anything
- *    non-HTTPS, malformed, credentials-in-URL, or off-allowlist fails closed.
+ *  - Commas checkout URLs come from env. Missing/invalid URL for a product
+ *    → the corresponding CTA MUST be disabled and read "Registration opening soon."
+ *  - Sales gate `VITE_SUMMIT_SALES_ENABLED` must be the literal string "true"
+ *    for any handoff button to enable.
+ *  - Checkout URLs are validated against a strict host allowlist.
+ *  - Anything non-HTTPS, malformed, with embedded credentials, or off-allowlist
+ *    fails closed with no leak of the reason.
+ *  - Dates are stable public facts; exact daily session times are operator-
+ *    configured. If not set, the UI shows a graceful "session times sent to
+ *    registrants" state — never an invented clock time.
  */
 
-import type { TierId } from "./tiers";
+import type { ProductId } from "./tiers";
 
-export const CHALLENGE_START_ISO = "2026-08-01T12:00:00-04:00";
-export const CHALLENGE_END_ISO = "2026-08-02T16:00:00-04:00";
+/** Summit dates (public). Exact daily start/end times are operator-configured. */
+export const SUMMIT_DAY_1_ISO = "2026-08-24T00:00:00-04:00";
+export const SUMMIT_DAY_2_ISO = "2026-08-25T00:00:00-04:00";
+export const SUMMIT_START_ISO = SUMMIT_DAY_1_ISO;
 
-/**
- * Default approved official Commas hosted-checkout host. Extra verified
- * hosts can be added via `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS` (comma-
- * separated). Exact host match only; no suffix tricks.
- */
+// Backwards-compat alias for older imports.
+export const CHALLENGE_START_ISO = SUMMIT_START_ISO;
+
 export const DEFAULT_COMMAS_CHECKOUT_HOSTS: readonly string[] = [
   "www.fanbasis.com",
 ];
 
 export interface SectionVideoUrls {
   hero?: string;
-  checkout?: string;
-  confirmed?: string;
-  offerVideos?: Partial<Record<TierId, string>>;
-  confirmedVideos?: Partial<Record<TierId, string>>;
+  confirmedThankYou?: string; // HeyGen thank-you video
 }
 
 export interface CommasConfig {
-  urls: Partial<Record<TierId, string>>;
-  videoUrl: string | undefined;
-  sectionVideos?: SectionVideoUrls;
+  urls: Partial<Record<ProductId, string>>;
+  sectionVideos: SectionVideoUrls;
   salesEnabled: boolean;
   allowedHosts: readonly string[];
+  keynote: KeynoteConfig;
+}
+
+/** Next NuAmenti keynote — priority-access handoff (details not yet supplied). */
+export interface KeynoteConfig {
+  announced: boolean; // false until operator sets date/checkout URL
+  dateIso?: string;
+  price?: string;
+  checkoutUrl?: string;
 }
 
 function readEnv(key: string): string | undefined {
@@ -58,48 +65,36 @@ function parseAllowedHosts(raw: string | undefined): readonly string[] {
 }
 
 export function getCommasConfig(): CommasConfig {
+  const keynoteUrl = readEnv("VITE_COMMAS_CHECKOUT_URL_KEYNOTE");
+  const keynoteDate = readEnv("VITE_KEYNOTE_DATE_ISO");
+  const keynotePrice = readEnv("VITE_KEYNOTE_PRICE_LABEL");
   return {
     urls: {
       ga: readEnv("VITE_COMMAS_CHECKOUT_URL_GA"),
       vip: readEnv("VITE_COMMAS_CHECKOUT_URL_VIP"),
-      bundle: readEnv("VITE_COMMAS_CHECKOUT_URL_BUNDLE"),
-      founder: readEnv("VITE_COMMAS_CHECKOUT_URL_FOUNDER"),
+      vault: readEnv("VITE_COMMAS_CHECKOUT_URL_VAULT"),
+      intensive: readEnv("VITE_COMMAS_CHECKOUT_URL_INTENSIVE"),
     },
-    videoUrl: readEnv("VITE_CHALLENGE_PREVIEW_VIDEO_URL"),
-    // Only videos that add value stay in the funnel. Missing videos render
-    // nothing, so customers never see internal placeholders. There are no
-    // Day 1, Day 2, or recordings-add-on video slots.
     sectionVideos: {
-      hero: readEnv("VITE_CHALLENGE_VIDEO_HERO"),
-      checkout: readEnv("VITE_CHALLENGE_VIDEO_CHECKOUT"),
-      confirmed: readEnv("VITE_CHALLENGE_VIDEO_CONFIRMED"),
-      offerVideos: {
-        ga: readEnv("VITE_CHALLENGE_VIDEO_OFFER_GA"),
-        vip: readEnv("VITE_CHALLENGE_VIDEO_OFFER_VIP"),
-        bundle: readEnv("VITE_CHALLENGE_VIDEO_OFFER_BUNDLE"),
-        founder: readEnv("VITE_CHALLENGE_VIDEO_OFFER_FOUNDER"),
-      },
-      confirmedVideos: {
-        ga: readEnv("VITE_CHALLENGE_VIDEO_CONFIRMED_GA"),
-        vip: readEnv("VITE_CHALLENGE_VIDEO_CONFIRMED_VIP"),
-        bundle: readEnv("VITE_CHALLENGE_VIDEO_CONFIRMED_BUNDLE"),
-        founder: readEnv("VITE_CHALLENGE_VIDEO_CONFIRMED_FOUNDER"),
-      },
+      hero: readEnv("VITE_SUMMIT_VIDEO_HERO"),
+      confirmedThankYou: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU"),
     },
-    salesEnabled: readEnv("VITE_CHALLENGE_SALES_ENABLED") === "true",
+    salesEnabled: readEnv("VITE_SUMMIT_SALES_ENABLED") === "true",
     allowedHosts: parseAllowedHosts(
       readEnv("VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS"),
     ),
+    keynote: {
+      announced: Boolean(keynoteUrl && keynoteDate),
+      dateIso: keynoteDate,
+      price: keynotePrice,
+      checkoutUrl: keynoteUrl,
+    },
   };
 }
 
 /**
- * Strict validator for a candidate checkout URL. Rejects:
- *  - non-string / empty
- *  - unparseable URL
- *  - non-https
- *  - embedded username/password (credentials-in-URL)
- *  - hosts not on the exact-match allowlist
+ * Strict validator for a candidate checkout URL. Rejects non-HTTPS,
+ * malformed, credential-embedded, or off-allowlist URLs.
  */
 export function isAllowedCheckoutUrl(
   candidate: string | undefined | null,
@@ -118,32 +113,28 @@ export function isAllowedCheckoutUrl(
   return allowedHosts.includes(host);
 }
 
-/**
- * Returns the Commas checkout URL for the selected tier, or null when
- * missing OR when it fails the allowlist. There is no GA-bump URL — the
- * bump lives INSIDE the GA checkout.
- */
+/** Returns a validated checkout URL for the product, or null. */
 export function resolveCheckoutUrl(
-  tier: TierId,
+  product: ProductId,
   cfg: CommasConfig = getCommasConfig(),
 ): string | null {
-  const raw = cfg.urls[tier];
+  const raw = cfg.urls[product];
   const hosts = cfg.allowedHosts ?? DEFAULT_COMMAS_CHECKOUT_HOSTS;
   if (!isAllowedCheckoutUrl(raw, hosts)) return null;
   return raw as string;
 }
 
 /**
- * Overall handoff gate. A tier's pay button may only be enabled when:
- *  - salesEnabled === true (env-configured), AND
- *  - the tier's Commas URL is present AND passes the allowlist.
- * Founder additionally requires verified seats-remaining > 0 (enforced by
- * the availability hook at call sites).
+ * Handoff gate. A product's pay button may only be enabled when:
+ *  - salesEnabled === true, AND
+ *  - its Commas URL passes the allowlist.
+ * Intensive additionally requires verified slots-remaining > 0 (enforced at
+ * the call site via the intensive-slots hook).
  */
 export function isHandoffAllowed(
-  tier: TierId,
+  product: ProductId,
   cfg: CommasConfig = getCommasConfig(),
 ): boolean {
   if (!cfg.salesEnabled) return false;
-  return resolveCheckoutUrl(tier, cfg) !== null;
+  return resolveCheckoutUrl(product, cfg) !== null;
 }
