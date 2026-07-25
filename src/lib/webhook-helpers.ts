@@ -177,8 +177,9 @@ export interface WebhookConfigResult {
 }
 
 /**
- * Webhook activation gate. Requires enabled flag, secret, and the five
- * core product IDs (GA, VIP, VIP_UPGRADE, Vault, Intensive), pairwise distinct.
+ * Webhook activation gate. Requires enabled flag, secret, and the four
+ * current sale product IDs (GA, VIP_UPGRADE, Vault, Intensive), pairwise
+ * distinct. Direct-VIP admission is not a current launch product.
  */
 export function validateWebhookConfig(
   env: Record<string, string | undefined>,
@@ -190,7 +191,6 @@ export function validateWebhookConfig(
     return { ok: false, reason: "no secret" };
   const ids = [
     env.COMMAS_PRODUCT_ID_GA,
-    env.COMMAS_PRODUCT_ID_VIP,
     env.COMMAS_PRODUCT_ID_VIP_UPGRADE,
     env.COMMAS_PRODUCT_ID_VAULT,
     env.COMMAS_PRODUCT_ID_INTENSIVE,
