@@ -9,6 +9,7 @@ import type { ProductId } from "./tiers";
  * CURRENT-level tag is active at a time.
  */
 export type SummitBuyerLevel = "ga" | "vip" | "vault" | "intensive";
+export type SummitFunnelProductId = Exclude<ProductId, "mentorship">;
 
 export const SUMMIT_EMAIL_TAGS = {
   buyer: "AAS26 · BUYER",
@@ -38,7 +39,9 @@ export interface SummitEmailSegmentUpdate {
   deactivateTags: string[];
 }
 
-export function buyerLevelForProduct(product: ProductId): SummitBuyerLevel {
+export function buyerLevelForProduct(
+  product: SummitFunnelProductId,
+): SummitBuyerLevel {
   switch (product) {
     case "ga":
       return "ga";
@@ -61,7 +64,7 @@ export function buyerLevelForProduct(product: ProductId): SummitBuyerLevel {
  * history for support and reporting.
  */
 export function emailSegmentUpdateForProduct(
-  product: ProductId,
+  product: SummitFunnelProductId,
 ): SummitEmailSegmentUpdate {
   const level = buyerLevelForProduct(product);
   const purchasedTags = [SUMMIT_EMAIL_TAGS.buyer, SUMMIT_EMAIL_TAGS.ga];
