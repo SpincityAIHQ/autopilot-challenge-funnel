@@ -8,7 +8,7 @@ export function BrandFrame({ children }: { children: ReactNode }) {
         aria-hidden
         className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
       >
-        <div className="absolute -right-28 top-16 h-80 w-80 rounded-full bg-[color:var(--emerald-signal)]/12 blur-3xl sm:h-[34rem] sm:w-[34rem]" />
+        <div className="absolute -right-28 top-16 h-80 w-80 rounded-full bg-[color:var(--emerald-signal)]/10 blur-3xl sm:h-[34rem] sm:w-[34rem]" />
         <img
           src={NUAMENTI_MARK_DATA_URI}
           alt=""
@@ -18,7 +18,7 @@ export function BrandFrame({ children }: { children: ReactNode }) {
         <div className="absolute left-1/2 top-[34rem] h-px w-[80vw] -translate-x-1/2 bg-gradient-to-r from-transparent via-[color:var(--gold)]/20 to-transparent" />
       </div>
 
-      <header className="relative z-20 border-b border-[color:var(--hairline)] bg-background/88 backdrop-blur-xl">
+      <header className="relative z-20 border-b border-[color:var(--hairline)] bg-background/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-5">
           <a href="/" className="flex min-w-0 items-center gap-3">
             <img
@@ -40,7 +40,7 @@ export function BrandFrame({ children }: { children: ReactNode }) {
             aria-hidden
             className="relative hidden h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[color:var(--gold)]/70 shadow-[0_0_24px_rgba(48,214,139,0.18)] sm:flex"
           >
-            <div className="absolute inset-1.5 rounded-full border border-[color:var(--gold-soft)]/55" />
+            <div className="absolute inset-1.5 rounded-full border border-[color:var(--gold-soft)]/50" />
             <div className="absolute inset-3 rounded-full border border-[color:var(--emerald-signal)]/50" />
             <div className="h-2.5 w-2.5 rotate-45 border border-[color:var(--gold)] bg-[color:var(--emerald-signal)] shadow-[0_0_16px_rgba(48,214,139,0.7)]" />
           </div>
@@ -54,7 +54,7 @@ export function BrandFrame({ children }: { children: ReactNode }) {
 
 export function BrandSignature() {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-[color:var(--gold-soft)]/40 bg-[color:var(--surface-1)]/85 p-3 shadow-2xl backdrop-blur sm:max-w-md">
+    <div className="flex items-center gap-3 rounded-xl border border-[color:var(--gold-soft)]/40 bg-[color:var(--surface-1)]/80 p-3 shadow-2xl backdrop-blur sm:max-w-md">
       <img
         src={NUAMENTI_MARK_DATA_URI}
         alt="NuAmenti"
