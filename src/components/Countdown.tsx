@@ -5,6 +5,8 @@ import {
   SUMMIT_DAY_1_END_ISO,
   SUMMIT_DAY_2_ISO,
   SUMMIT_DAY_2_END_ISO,
+  VIP_LAB_START_ISO,
+  VIP_LAB_END_ISO,
 } from "@/lib/challenge-config";
 
 export function Countdown() {
@@ -32,6 +34,8 @@ export function Countdown() {
   const day1End = new Date(SUMMIT_DAY_1_END_ISO).getTime();
   const day2Start = new Date(SUMMIT_DAY_2_ISO).getTime();
   const day2End = new Date(SUMMIT_DAY_2_END_ISO).getTime();
+  const vipStart = new Date(VIP_LAB_START_ISO).getTime();
+  const vipEnd = new Date(VIP_LAB_END_ISO).getTime();
 
   if (countdown.started) {
     if (now >= day1Start && now < day1End) {
@@ -46,6 +50,20 @@ export function Countdown() {
     }
     if (now >= day2Start && now < day2End) {
       return <LiveStatus>Day 2 is live now — check your NuAmenti access email.</LiveStatus>;
+    }
+    if (now >= day2End && now < vipStart) {
+      return (
+        <LiveStatus>
+          The main Summit is complete. The VIP Build Lab begins at 4:15 PM Eastern.
+        </LiveStatus>
+      );
+    }
+    if (now >= vipStart && now < vipEnd) {
+      return (
+        <LiveStatus>
+          The VIP Build Lab is live now — verified VIP buyers should use their access link.
+        </LiveStatus>
+      );
     }
     return (
       <LiveStatus>
