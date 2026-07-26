@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { readFileSync } from "node:fs";
 
 const COMPONENT = readFileSync("src/components/FunnelVideoSlot.tsx", "utf8");
+const VIDEO_SLOT = readFileSync("src/components/VideoSlot.tsx", "utf8");
 const CHECKOUT = readFileSync("src/routes/checkout.tsx", "utf8");
 const CONFIRMED = readFileSync("src/routes/confirmed.tsx", "utf8");
 const VIP = readFileSync("src/routes/offer/vip-upgrade.tsx", "utf8");
@@ -21,6 +22,14 @@ describe("mobile funnel video slots", () => {
   it("renders empty placeholders only in private owner review", () => {
     expect(COMPONENT).toContain("useQaReviewMode");
     expect(COMPONENT).toContain("if (!qaReview) return null");
+  });
+
+  it("autoplays funnel videos muted and inline with visible controls", () => {
+    expect(COMPONENT).toContain("autoplay = true");
+    expect(COMPONENT).toContain("muted={autoplay}");
+    expect(COMPONENT).toContain("tap the player for sound");
+    expect(VIDEO_SLOT).toContain('allow="autoplay; fullscreen');
+    expect(VIDEO_SLOT).toContain("configureVideoPlayback");
   });
 
   it("adds a funnel video slot to every paid funnel page", () => {
