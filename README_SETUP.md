@@ -5,7 +5,7 @@ The AI AutoPilot Summit is a two-day live online implementation event:
 - **Day 1:** Saturday, August 29, 2026 · **1:00–4:00 PM Eastern**
 - **Day 2:** Sunday, August 30, 2026 · **1:00–4:00 PM Eastern**
 - **Room opens:** 12:45 PM Eastern both days
-- **VIP Build Lab:** Thursday, September 3, 2026 · **7:00–9:00 PM Eastern**
+- **VIP Build Lab:** Sunday, August 30, 2026 · **4:15–5:45 PM Eastern**, immediately after Day 2
 
 This app is a standalone Lovable Cloud project — it does not share code,
 routes, tables, domains, or payment products with the NuAmenti application.
@@ -15,7 +15,7 @@ routes, tables, domains, or payment products with the NuAmenti application.
 | Product                                | Price     | Notes                                                         |
 | -------------------------------------- | --------- | ------------------------------------------------------------- |
 | General Admission (GA)                 | $22       | Public `/checkout`. Both live Summit days, maps, workbook, and build plan. |
-| VIP Implementation Experience          | $77       | Post-GA at `/offer/vip-upgrade`. 30-day recordings, VIP Build Lab Sep 3 at 7–9 PM ET, priority Q&A. |
+| VIP Implementation Experience          | $77       | Post-GA at `/offer/vip-upgrade`. 30-day recordings, VIP Build Lab right after Day 2, priority Q&A. |
 | AI AutoPilot Implementation Vault      | $199      | Post-VIP at `/offer/implementation-vault`. Reusable operating library. |
 | Strategy & Build Intensive             | $1,000    | Post-Vault at `/strategy-intensive`. Two-hour private session; **cap 10 total**, atomic inventory. |
 | Eight-Week Mentorship & Work-Along     | $8,000    | Application-based at `/apply/mentorship`. Separate from the Intensive. |
@@ -66,12 +66,15 @@ NuAmenti verification + access email plus the resulting HttpOnly session.
 - 2:00 — Workflows and improvement loops
 - 2:40 — Ten-minute break
 - 2:50 — Marketing, follow-up, sales, and monetization
-- 3:30 — 30-day build order and Q&A
+- 3:30 — 30-day build order, Q&A, and live next-step close
+- 4:00 — Main Summit ends; 15-minute reset and upgrade window
 
-### VIP Build Lab — Thursday, September 3 · 7:00–9:00 PM Eastern
+### VIP Build Lab — Sunday, August 30 · 4:15–5:45 PM Eastern
 
-VIP buyers return after several days of implementation. The Lab focuses on
-real bottlenecks, corrections, questions, and next-step builds.
+The Lab begins immediately after Day 2 while the ideas, questions, and buying
+energy are still warm. GA buyers can upgrade live before leaving the room.
+VIP buyers stay for implementation help. The Vault is presented during the
+final part of the Lab, and Vault buyers continue to the private Intensive page.
 
 ## Browser-visible environment (all default OFF)
 
@@ -98,10 +101,14 @@ allowlist (`www.fanbasis.com` plus any hosts in
 | `VITE_SUMMIT_VIDEO_HERO`                | Landing-page VSL embed URL                    |
 | `VITE_SUMMIT_VIDEO_CHECKOUT`            | GA checkout reassurance video                 |
 | `VITE_SUMMIT_VIDEO_VIP_OFFER`           | VIP offer video                               |
-| `VITE_SUMMIT_VIDEO_THANK_YOU_GA`        | GA confirmation video                         |
-| `VITE_SUMMIT_VIDEO_THANK_YOU_VIP`       | VIP confirmation video                        |
-| `VITE_SUMMIT_VIDEO_THANK_YOU_VAULT`     | Vault confirmation video                      |
-| `VITE_SUMMIT_VIDEO_THANK_YOU_INTENSIVE` | Final Intensive confirmation video            |
+| `VITE_SUMMIT_VIDEO_THANK_YOU_GA`        | GA purchase + VIP introduction video          |
+| `VITE_SUMMIT_VIDEO_THANK_YOU_VIP`       | VIP purchase + Vault introduction video       |
+| `VITE_SUMMIT_VIDEO_THANK_YOU_VAULT`     | Vault purchase + Intensive introduction video |
+| `VITE_SUMMIT_VIDEO_THANK_YOU_INTENSIVE` | Intensive purchase video                      |
+| `VITE_SUMMIT_VIDEO_EXIT_GA`             | GA-only final confirmation video              |
+| `VITE_SUMMIT_VIDEO_EXIT_VIP`            | VIP-only final confirmation video             |
+| `VITE_SUMMIT_VIDEO_EXIT_VAULT`          | Vault-only final confirmation video           |
+| `VITE_SUMMIT_VIDEO_EXIT_INTENSIVE`      | Full-path final confirmation video            |
 
 The legacy direct-VIP browser env var and product ID are intentionally
 **removed** from current activation. Anything still set in the environment
@@ -186,7 +193,9 @@ after the entitlement summary confirms the required prior scope.
 
 - [ ] **Schedule:** all visible pages, metadata, email templates, SMS, call
       scripts, calendar files, and videos say Aug 29–30 at 1:00–4:00 PM ET;
-      VIP materials say Sep 3 at 7:00–9:00 PM ET.
+      VIP materials say Sun Aug 30 at 4:15–5:45 PM ET immediately after Day 2.
+- [ ] **Live conversion:** VIP checkout link is ready in the Day 2 room, email,
+      and SMS before the 3:30 PM close; Vault and Intensive paths are tested.
 - [ ] **Legal:** finalize and publish counsel-approved privacy, terms, and
       refund window at `/privacy`, `/terms`, `/refund-policy`; flip
       `VITE_SUMMIT_LEGAL_READY=true`.
