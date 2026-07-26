@@ -16,7 +16,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Build the foundation for a business that uses AI agents, apps, workflows, and loops to handle research, numbers, follow-up, marketing, and daily work.",
+          "Build a business system powered by AI agents, apps, workflows, and loops. Live online Saturday, August 29 and Sunday, August 30 from 1:00–4:00 PM Eastern.",
       },
       {
         property: "og:title",
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/")({
       {
         property: "og:description",
         content:
-          "Stop just prompting. Build the business system, hire the AI team, and put repeatable work on autopilot. Live online Aug 24–25, 2026.",
+          "Stop just prompting. Build the business system, hire the AI team, and put repeatable work on autopilot. Live online Aug 29–30, 2026, 1:00–4:00 PM Eastern.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -64,7 +64,9 @@ function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
       <BrandSignature />
 
       <div className="mt-10 max-w-5xl">
-        <p className="eyebrow">Live online · Aug 24–25, 2026</p>
+        <p className="eyebrow">
+          Live online · Sat Aug 29 + Sun Aug 30 · 1:00–4:00 PM Eastern
+        </p>
         <h1 className="rise-in mt-4 font-display text-3xl leading-tight text-foreground sm:text-5xl md:text-6xl">
           BUILD THE BUSINESS.
           <span className="block text-[color:var(--emerald-signal)]">
@@ -93,8 +95,29 @@ function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
         className="mt-10 max-w-4xl"
       />
 
+      <div className="mt-8 grid max-w-4xl gap-4 sm:grid-cols-2">
+        <article className="surface-raised border-[color:var(--gold)]/40 p-5">
+          <p className="label-mono">Day 1 · Saturday, August 29</p>
+          <p className="mt-2 font-display text-lg text-[color:var(--gold)]">
+            1:00–4:00 PM Eastern
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Build the business foundation. Room opens at 12:45 PM Eastern.
+          </p>
+        </article>
+        <article className="surface-raised border-[color:var(--emerald-signal)]/40 p-5">
+          <p className="label-mono">Day 2 · Sunday, August 30</p>
+          <p className="mt-2 font-display text-lg text-[color:var(--emerald-signal)]">
+            1:00–4:00 PM Eastern
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Hire the AI team and connect the work. Room opens at 12:45 PM Eastern.
+          </p>
+        </article>
+      </div>
+
       <div className="mt-8 max-w-md">
-        <p className="label-mono mb-3">Summit week begins in</p>
+        <p className="label-mono mb-3">Day 1 begins in</p>
         <Countdown />
       </div>
 
@@ -188,46 +211,45 @@ function Agenda() {
     <section id="agenda" className="mx-auto max-w-5xl px-5 py-16">
       <p className="eyebrow">Two days · one connected build</p>
       <h2 className="mt-3 font-heading text-2xl text-foreground sm:text-3xl">
-        What we build, day by day
+        What we build, hour by hour
       </h2>
 
       <div className="mt-8 grid gap-5 md:grid-cols-2">
         <article className="surface-raised p-6">
-          <p className="label-mono">Day 1 · Build the foundation</p>
+          <p className="label-mono">Day 1 · Sat Aug 29 · 1:00–4:00 PM ET</p>
           <h3 className="mt-2 font-display text-xl text-[color:var(--gold)]">
-            BUSINESS FIRST
+            BUILD THE BUSINESS FOUNDATION
           </h3>
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-            <li>· Choose the niche and problem you want to serve.</li>
-            <li>· Map the customer, offer, tasks, and numbers.</li>
-            <li>· Build your business infrastructure map.</li>
-            <li>· Plan or begin your internal business app.</li>
-            <li>
-              · Set up your AI Business GPS so every tool knows the goal,
-              rules, facts, and next move.
-            </li>
-            <li>· Pick the first jobs to take off your plate.</li>
+            <li>· 12:45 — Room opens.</li>
+            <li>· 1:00 — Welcome, goals, and build setup.</li>
+            <li>· 1:20 — Choose the niche and problem you want to serve.</li>
+            <li>· 2:00 — Map the customer, offer, price, and business numbers.</li>
+            <li>· 2:40 — Ten-minute break.</li>
+            <li>· 2:50 — Map your business infrastructure and internal app.</li>
+            <li>· 3:25 — Set up your AI Business GPS and Day 1 homework.</li>
           </ul>
         </article>
 
         <article className="surface-raised border-[color:var(--emerald-signal)]/35 p-6">
-          <p className="label-mono">Day 2 · Hire the AI team</p>
+          <p className="label-mono">Day 2 · Sun Aug 30 · 1:00–4:00 PM ET</p>
           <h3 className="mt-2 font-display text-xl text-[color:var(--emerald-signal)]">
-            AGENTS + GROWTH
+            HIRE THE AI TEAM
           </h3>
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-            <li>· Build your AI team chart and job descriptions.</li>
-            <li>· Learn where and how to hire or build skilled AI agents.</li>
-            <li>· Connect agents into workflows that pass work forward.</li>
-            <li>· Build loops that check results and improve the next run.</li>
-            <li>· Set up marketing, follow-up, and monetization.</li>
-            <li>· Leave with your 30-day build order.</li>
+            <li>· 12:45 — Room opens.</li>
+            <li>· 1:00 — Day 1 recap and system check.</li>
+            <li>· 1:20 — Build AI agent roles, jobs, tools, and rules.</li>
+            <li>· 2:00 — Connect agents into workflows and improvement loops.</li>
+            <li>· 2:40 — Ten-minute break.</li>
+            <li>· 2:50 — Set up marketing, follow-up, sales, and monetization.</li>
+            <li>· 3:30 — Finish the 30-day build order and live Q&amp;A.</li>
           </ul>
         </article>
       </div>
 
       <p className="mt-6 text-xs text-muted-foreground">
-        Exact session start times are sent to registrants by email.
+        All times are Eastern. Your access email will include the private room link.
       </p>
     </section>
   );
@@ -431,8 +453,8 @@ function Faq() {
       a: "Not every part should run without a human. We show you what can be automated, what needs review, and where you must stay in control.",
     },
     {
-      q: "Where is the Summit?",
-      a: "It is 100% live online. Access details and session times are sent to registrants by email.",
+      q: "When and where is the Summit?",
+      a: "It is live online Saturday, August 29 and Sunday, August 30 from 1:00–4:00 PM Eastern. The room opens at 12:45 PM both days.",
     },
     {
       q: "Are recordings included?",
@@ -440,7 +462,7 @@ function Faq() {
     },
     {
       q: "What happens after I pay?",
-      a: "You receive a FanBasis receipt and a NuAmenti welcome email. Check your inbox, Promotions, and Spam folders.",
+      a: "You receive a FanBasis receipt and a NuAmenti welcome email with calendar links, preparation steps, and the private room link.",
     },
     {
       q: "What is the refund policy?",
@@ -466,8 +488,8 @@ function Faq() {
 function BuildPath() {
   const path = [
     ["Before the Summit", "Bring one business, skill, offer, or clear idea."],
-    ["Day 1", "Build the business foundation, internal app plan, and AI Business GPS."],
-    ["Day 2", "Set the AI team, workflows, marketing, and money path."],
+    ["Sat Aug 29", "Build the business foundation, internal app plan, and AI Business GPS."],
+    ["Sun Aug 30", "Set the AI team, workflows, marketing, and money path."],
     ["After the Summit", "Follow your 30-day build order and keep improving the loops."],
   ] as const;
 
@@ -502,7 +524,7 @@ function FinalCta() {
         Stop doing every business task by hand.
       </h2>
       <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-        Build the system. Hire the AI team. Keep the human control.
+        Join us live Saturday, August 29 and Sunday, August 30 from 1:00–4:00 PM Eastern.
       </p>
       <div className="mt-7 flex flex-wrap justify-center gap-3">
         <Link
