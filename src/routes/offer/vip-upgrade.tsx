@@ -15,18 +15,15 @@ const product = "vip_upgrade" as const;
 export const Route = createFileRoute("/offer/vip-upgrade")({
   head: () => ({
     meta: [
-      { title: "Next step — AI AutoPilot Summit" },
+      { title: "Your VIP Option — AI AutoPilot 2-Day Summit" },
       {
         name: "description",
         content:
-          "Sequential next step for verified Summit registrants. Verified sign-in is required from your NuAmenti access email.",
+          "A private next step for confirmed AI AutoPilot Summit registrants.",
       },
       { name: "robots", content: "noindex" },
       { property: "og:title", content: "Next step — AI AutoPilot Summit" },
-      {
-        property: "og:description",
-        content: "Verified next step for Summit registrants.",
-      },
+      { property: "og:description", content: "Verified Summit next step." },
       { property: "og:url", content: "/offer/vip-upgrade" },
     ],
     links: [{ rel: "canonical", href: "/offer/vip-upgrade" }],
@@ -37,19 +34,18 @@ export const Route = createFileRoute("/offer/vip-upgrade")({
 function VipUpgradeRoute() {
   return (
     <main className="mx-auto max-w-3xl px-5 py-12">
-      <p className="eyebrow">Sequential next step</p>
+      <p className="eyebrow">Your next build option</p>
       <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
-        Your next step is inside your access email.
+        Go deeper with the VIP Implementation Experience
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        Eligibility for this next step is checked from your verified access
-        session — never from this URL. Details below only appear once we
-        confirm your Summit registration.
+        This page opens only after your General Admission ticket is confirmed.
+        Use the secure link in your NuAmenti email.
       </p>
 
       <OfferGate
-        predicate={(a) => a.hasGa && !a.hasVip}
-        ineligibleMessage="This next step is only offered to verified GA registrants who have not already added VIP. Open the secure upgrade link in your NuAmenti access email — signed in on the same browser."
+        predicate={(access) => access.hasGa && !access.hasVip}
+        ineligibleMessage="This option is only for confirmed General Admission buyers who have not added VIP. Open the secure link in your NuAmenti email on the same browser."
       >
         <VipUpgradeContent />
       </OfferGate>
@@ -76,7 +72,7 @@ function VipUpgradeContent() {
       className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
       rel="noopener noreferrer"
     >
-      Upgrade to VIP · {formatUsd(upgrade.priceCents)}
+      Add VIP · {formatUsd(upgrade.priceCents)}
     </a>
   ) : (
     <button
@@ -93,7 +89,7 @@ function VipUpgradeContent() {
       {qaReview ? (
         <div className="mt-6 rounded-md border border-[color:var(--gold)] bg-secondary/30 p-4 text-sm text-muted-foreground">
           <strong className="text-foreground">Owner preview:</strong> accepting
-          this offer moves to the VIP confirmation and Vault page without a
+          this option moves to the VIP confirmation and Vault page without a
           charge.
         </div>
       ) : null}
@@ -113,30 +109,32 @@ function VipUpgradeContent() {
 
       <section className="mt-8 surface p-6">
         <h3 className="font-heading text-lg text-foreground">
-          What you already have vs. what this adds
+          What you already have and what VIP adds
         </h3>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
-            <p className="label-mono">You already have (GA)</p>
+            <p className="label-mono">You already have</p>
             <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-              <li>· Live online access · Aug 24 + Aug 25</li>
-              <li>· Digital Summit Action Guide</li>
-              <li>· AI Readiness Scorecard</li>
-              <li>· Buyer + Offer Canvas</li>
+              <li>· Both live Summit days</li>
+              <li>· Niche + Offer Map</li>
+              <li>· Business Infrastructure Map</li>
+              <li>· AI Business GPS workbook</li>
+              <li>· AI Agent Team Chart</li>
+              <li>· First Workflow + Loop Builder</li>
             </ul>
           </div>
           <div>
             <p className="label-mono text-[color:var(--gold)]">VIP adds</p>
             <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-              {upgrade.bullets.map((b) => (
-                <li key={b}>· {b}</li>
+              {upgrade.bullets.map((bullet) => (
+                <li key={bullet}>· {bullet}</li>
               ))}
             </ul>
           </div>
         </div>
         <p className="mt-4 text-xs text-muted-foreground">
-          This is additive. Your GA ticket remains valid whether you add VIP or
-          not.
+          VIP adds more support. Your General Admission ticket still works if
+          you skip this option.
         </p>
       </section>
 
@@ -144,9 +142,8 @@ function VipUpgradeContent() {
         <p className="text-sm text-muted-foreground">{upgrade.summary}</p>
         <div className="mt-6">{cta}</div>
         <p className="mt-4 text-xs text-muted-foreground">
-          Live fulfillment requires a verified GA registration on the same
-          email. Please pay with the same email you used for GA, or write
-          Info@NuAmenti.com before paying if you need to change it.
+          Use the same email you used for General Admission. Write
+          Info@NuAmenti.com before paying if that email must change.
         </p>
       </section>
 
@@ -158,7 +155,7 @@ function VipUpgradeContent() {
 
       <p className="mt-6 text-xs text-muted-foreground">
         <Link to="/next-steps" className="underline">
-          No thanks — continue with GA →
+          No thanks — continue with General Admission →
         </Link>
       </p>
     </>
