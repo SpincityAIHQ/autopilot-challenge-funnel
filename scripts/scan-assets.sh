@@ -78,6 +78,16 @@ STALE_PATTERNS=(
   '\bAug 1, 2026\b'
   '\bAug 2, 2026\b'
   '\bAug 1[–-]2\b'
+  # Rejected Monday/Tuesday schedule.
+  '2026-08-24'
+  '2026-08-25'
+  '\bAug 24[–-]25\b'
+  '\bMon Aug 24\b'
+  '\bTue Aug 25\b'
+  # Rejected separate-day VIP Lab.
+  '2026-09-03T19:00:00-04:00'
+  'Thursday, September 3'
+  'Thu Sep 3'
   '12[–-]4 ?PM'
   '\bFounder Seat\b'
   '\bBundle Tier\b'
