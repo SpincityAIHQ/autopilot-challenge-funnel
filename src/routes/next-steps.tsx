@@ -10,14 +10,17 @@ import {
 export const Route = createFileRoute("/next-steps")({
   head: () => ({
     meta: [
-      { title: "Your next steps — AI AutoPilot Summit" },
+      { title: "Your Next Steps — AI AutoPilot 2-Day Summit" },
       { name: "robots", content: "noindex" },
       {
         name: "description",
         content:
-          "Final calendars, inbox/text expectations, resource access instructions, and what to bring to the Summit.",
+          "Save the dates, check your NuAmenti email, gather your business information, and prepare for the AI AutoPilot 2-Day Summit.",
       },
-      { property: "og:title", content: "Your next steps — AI AutoPilot Summit" },
+      {
+        property: "og:title",
+        content: "Your next steps — AI AutoPilot 2-Day Summit",
+      },
       {
         property: "og:description",
         content: "Everything you need to prepare for Aug 24–25.",
@@ -42,8 +45,8 @@ function NextSteps() {
         Your next steps
       </h1>
       <p className="mt-3 text-muted-foreground">
-        Save the dates, watch for our emails and texts, and gather what you'll
-        bring to Day 1.
+        Save the dates, watch for your NuAmenti email, and gather the business
+        information you will bring to Day 1.
       </p>
 
       <FunnelVideoSlot
@@ -56,8 +59,8 @@ function NextSteps() {
       <ProductThankYou
         verified={verifiedIntensive}
         eyebrow="Verified · Strategy & Build Intensive"
-        headline="Thank you, family — you purchased the Strategy & Build Intensive."
-        body="Your private 1-on-1 is confirmed. Our team will reach out from Info@NuAmenti.com with a scheduling link so you can pick a time that works. If you don't see it within one business day, reply to your receipt from the same email."
+        headline="Thank you, family — your private Strategy & Build Intensive is confirmed."
+        body="Our team will email you from Info@NuAmenti.com with the scheduling link. Reply to your receipt if you need help."
         videoUrl={null}
         videoLabel="A note from the family — Intensive welcome"
       />
@@ -65,9 +68,8 @@ function NextSteps() {
       <section className="mt-10 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">Save the dates</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          These calendar files are intentionally all-day placeholders until
-          exact session times are locked. Exact start times are sent to
-          registrants closer to the event via your access email.
+          Add both days to your calendar now. Exact start times are sent by
+          email before the Summit.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <a
@@ -87,67 +89,54 @@ function NextSteps() {
 
       <section className="mt-8 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">
-          Inbox + text expectations
+          Watch your inbox
         </h2>
         <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+          <li>· Keep your FanBasis receipt.</li>
           <li>
-            · Look for the FanBasis receipt and the NuAmenti welcome email
-            first.
+            · Look for the NuAmenti welcome email from{" "}
+            <span className="text-foreground">Info@NuAmenti.com</span>.
           </li>
+          <li>· Check Promotions and Spam if you do not see it.</li>
           <li>
-            · Whitelist <span className="text-foreground">Info@NuAmenti.com</span>.
-            Check Promotions and Spam.
-          </li>
-          <li>
-            · SMS (if you opted in): reply <span className="text-foreground">HELP</span> for
-            help or <span className="text-foreground">STOP</span> to opt out at any time.
-          </li>
-          <li>
-            · Email: use the unsubscribe link in the footer to opt out of
-            marketing emails. Transactional Summit access emails are separate.
+            · If you joined text updates, reply HELP for help or STOP to leave.
           </li>
         </ul>
       </section>
 
       <section className="mt-8 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">
-          Resource access
+          Your secure resources
         </h2>
         <p className="mt-3 text-sm text-muted-foreground">
-          Every resource lives behind a secure single-use link. Once our
-          transactional email provider is configured, the link is delivered
-          automatically after verified payment; until then, an operator
-          issues the link directly. Opening it drops a private, HttpOnly
-          session cookie for a few hours — during which you can browse the
-          resources you actually own. Sharing or re-opening the link never
-          works twice, and refunds revoke access immediately.
+          Your NuAmenti email contains a private access link. That link opens
+          only the resources tied to your purchase. Do not share it.
         </p>
         <p className="mt-3 text-sm text-muted-foreground">
-          Missing your link? Write{" "}
-          <span className="text-foreground">Info@NuAmenti.com</span> from
-          the address you used at registration and we'll re-issue.
+          Missing your link? Email{" "}
+          <span className="text-foreground">Info@NuAmenti.com</span> from the
+          same address you used to buy.
         </p>
         <p className="mt-3 text-sm text-muted-foreground">
-          You can adjust email / SMS / AI-call marketing consent any time
-          on your{" "}
+          Change your email, text, or call choices on the{" "}
           <Link to="/communication-preferences" className="underline">
-            communication preferences
+            communication preferences page
           </Link>
-          . Transactional access messages remain separate.
+          .
         </p>
       </section>
 
       <section className="mt-8 surface p-6">
-        <h2 className="font-heading text-lg text-foreground">What to bring</h2>
+        <h2 className="font-heading text-lg text-foreground">
+          Bring this to Day 1
+        </h2>
         <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-          <li>· One business, offer, or idea you're ready to map.</li>
-          <li>· A laptop and focused hours across both days.</li>
-          <li>
-            · Your logo, photos, brand files, and short videos if you have them.
-          </li>
-          <li>
-            · Never paste passwords or private client data into shared chats.
-          </li>
+          <li>· One business, skill, offer, or clear idea.</li>
+          <li>· A list of the tasks that take too much time.</li>
+          <li>· Your current prices, goals, and basic numbers.</li>
+          <li>· A laptop and focused time on both days.</li>
+          <li>· Your logo and brand files if you have them.</li>
+          <li>· Never share passwords or private client data in group chats.</li>
         </ul>
       </section>
 
