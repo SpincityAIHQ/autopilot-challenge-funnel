@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
+import { OfferPurchaseAction } from "@/components/OfferPurchaseAction";
 import { UPSELLS, formatUsd } from "@/lib/tiers";
 import {
   getCommasConfig,
@@ -8,7 +9,6 @@ import {
 } from "@/lib/challenge-config";
 import { OfferGate } from "@/components/OfferGate";
 import { TestimonialSection } from "@/components/TestimonialSection";
-import { useQaReviewMode } from "@/hooks/use-qa-review";
 
 const product = "vip_upgrade" as const;
 
@@ -57,33 +57,6 @@ function VipUpgradeRoute() {
 function VipUpgradeContent() {
   const cfg = getCommasConfig();
   const upgrade = UPSELLS.vip_upgrade;
-  const url = resolveCheckoutUrl(product, cfg);
-  const salesOn = isHandoffAllowed(product, cfg);
-  const qaReview = useQaReviewMode();
-  const cta = qaReview ? (
-    <a
-      href="/offer/implementation-vault?qaStage=vip"
-      className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
-    >
-      Preview accepted VIP — no payment
-    </a>
-  ) : salesOn && url ? (
-    <a
-      href={url}
-      className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
-      rel="noopener noreferrer"
-    >
-      Add VIP · {formatUsd(upgrade.priceCents)}
-    </a>
-  ) : (
-    <button
-      type="button"
-      disabled
-      className="inline-flex w-full cursor-not-allowed items-center justify-center rounded-md bg-muted px-5 py-3.5 font-heading text-base font-semibold text-muted-foreground"
-    >
-      VIP checkout link being connected
-    </button>
-  );
 
   return (
     <>
@@ -95,25 +68,24 @@ function VipUpgradeContent() {
       />
 
       <section className="mt-5 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-4 sm:p-5">
-        <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
-          {cta}
-          <Link
-            to="/next-steps"
-            className="inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary sm:w-auto"
-          >
-            No thanks
-          </Link>
-        </div>
+        <OfferPurchaseAction
+          product="vip_upgrade"
+          productName="VIP"
+          priceCents={upgrade.priceCents}
+          fallbackUrl={resolveCheckoutUrl(product, cfg)}
+          fallbackAllowed={isHandoffAllowed(product, cfg)}
+          qaHref="/offer/implementation-vault?qaStage=vip"
+          qaLabel="Preview accepted VIP — no payment"
+        />
+        <Link
+          to="/next-steps"
+          className="mt-3 inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary"
+        >
+          No thanks — keep General Admission
+        </Link>
         <p className="mt-3 text-center text-xs text-muted-foreground">
           Your General Admission ticket remains active either way.
         </p>
-        {qaReview ? (
-          <p className="mt-3 text-sm text-muted-foreground">
-            <strong className="text-foreground">Owner preview:</strong> the
-            primary button advances to the VIP confirmation and Vault page
-            without charging a card.
-          </p>
-        ) : null}
       </section>
 
       <div className="mt-8">
