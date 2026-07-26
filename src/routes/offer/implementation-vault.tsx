@@ -61,23 +61,23 @@ function VaultContent() {
   const cta = qaReview ? (
     <a
       href="/strategy-intensive?qaStage=vault"
-      className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
+      className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
     >
-      Preview accepted Vault — continue without payment
+      Preview accepted Vault — no payment
     </a>
   ) : salesOn && url ? (
     <a
       href={url}
-      className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
+      className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
       rel="noopener noreferrer"
     >
-      Add the Vault — {formatUsd(vault.priceCents)}
+      Add the Vault · {formatUsd(vault.priceCents)}
     </a>
   ) : (
     <button
       type="button"
       disabled
-      className="inline-flex cursor-not-allowed items-center rounded-md bg-muted px-5 py-3 font-heading text-base font-semibold text-muted-foreground"
+      className="inline-flex w-full cursor-not-allowed items-center justify-center rounded-md bg-muted px-5 py-3.5 font-heading text-base font-semibold text-muted-foreground"
     >
       Vault checkout link being connected
     </button>
@@ -89,8 +89,30 @@ function VaultContent() {
         url={cfg.sectionVideos.thankYouVip}
         label="A note from the family — VIP welcome"
         envKey="VITE_SUMMIT_VIDEO_THANK_YOU_VIP"
-        className="mt-8"
+        className="mt-7"
       />
+
+      <section className="mt-5 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-4 sm:p-5">
+        <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+          {cta}
+          <Link
+            to="/next-steps"
+            className="inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary sm:w-auto"
+          >
+            No thanks
+          </Link>
+        </div>
+        <p className="mt-3 text-center text-xs text-muted-foreground">
+          Your Summit and VIP access remain active either way.
+        </p>
+        {qaReview ? (
+          <p className="mt-3 text-sm text-muted-foreground">
+            <strong className="text-foreground">Owner preview:</strong> the
+            primary button advances to the Vault confirmation and private
+            1-on-1 page without charging a card.
+          </p>
+        ) : null}
+      </section>
 
       <ProductThankYou
         verified={true}
@@ -101,14 +123,6 @@ function VaultContent() {
         videoLabel="A note from the family — VIP welcome"
         className="mt-6 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-6"
       />
-
-      {qaReview ? (
-        <div className="mt-6 rounded-md border border-[color:var(--gold)] bg-secondary/30 p-4 text-sm text-muted-foreground">
-          <strong className="text-foreground">Owner preview:</strong> accepting
-          this option moves to the Vault confirmation and private 1-on-1 page
-          without a charge.
-        </div>
-      ) : null}
 
       <div className="mt-8">
         <h2 className="font-display text-2xl text-foreground">
@@ -152,20 +166,8 @@ function VaultContent() {
         </div>
       </section>
 
-      <div className="mt-8">{cta}</div>
-
-      <div className="mt-6">
-        <Link
-          to="/next-steps"
-          className="text-sm text-muted-foreground underline hover:text-foreground"
-        >
-          No thanks — continue to next steps →
-        </Link>
-      </div>
-
       <p className="mt-6 text-xs text-muted-foreground">
-        Skipping the Vault does not change your Summit or VIP access. Tool links
-        inside the Vault carry clear affiliate notices when needed.
+        Tool links inside the Vault carry clear affiliate notices when needed.
       </p>
 
       <TestimonialSection
