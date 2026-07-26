@@ -73,11 +73,12 @@ export const VIP_SPEC = {
   shortName: "VIP Access",
   priceCents: 7700,
   headline:
-    "Add recordings, a live build lab, priority questions, and deeper agent and workflow tools.",
+    "Add recordings, a live build lab right after Day 2, priority questions, and deeper agent and workflow tools.",
   bullets: [
     "Everything in General Admission",
     "30-day session recordings",
-    "VIP Build Lab · Thu Sep 3 · 7:00–9:00 PM Eastern",
+    "VIP Build Lab · Sun Aug 30 · 4:15–5:45 PM Eastern",
+    "Join the Lab right after the main Summit ends",
     "Priority question submission",
     "AI Agent Hiring + Workflow Kit",
     "VIP Implementation Resources",
@@ -106,11 +107,12 @@ export const UPSELLS: Record<UpsellProduct["id"], UpsellProduct> = {
     name: "VIP Implementation Experience",
     priceCents: 7700,
     summary:
-      "Go back through the full Summit for 30 days, return for the live VIP Build Lab on Thursday, September 3, ask priority questions, and use deeper tools for your AI agents and workflows.",
+      "Keep the momentum going when Day 2 ends. Stay for the live VIP Build Lab from 4:15–5:45 PM Eastern, get 30-day recordings, ask priority questions, and use deeper tools for your AI agents and workflows.",
     bullets: [
       "Requires verified General Admission on the same email",
       "30-day session recordings",
-      "VIP Build Lab · Thu Sep 3 · 7:00–9:00 PM Eastern",
+      "VIP Build Lab · Sun Aug 30 · 4:15–5:45 PM Eastern",
+      "Join the Lab right after the main Summit ends",
       "Priority questions",
       "AI Agent Hiring + Workflow Kit",
       "VIP Implementation Resources",
