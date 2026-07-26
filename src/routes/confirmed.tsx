@@ -92,8 +92,11 @@ function Confirmed() {
         url={confirmationVideo.url}
         label={confirmationVideo.label}
         envKey={confirmationVideo.envKey}
-        className="mt-8"
+        className="mt-7"
       />
+
+      {verifiedGaOnly ? <VipUpgradeNextStep /> : null}
+      {verifiedVipNoVault ? <VaultNextStep /> : null}
 
       <ProductThankYou
         verified={verifiedGaOnly}
@@ -122,13 +125,13 @@ function Confirmed() {
         <div className="mt-5 flex flex-wrap gap-3">
           <a
             href="/calendar/day1.ics"
-            className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+            className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90 sm:w-auto"
           >
             Day 1 — Sat Aug 29 · 1–4 PM ET
           </a>
           <a
             href="/calendar/day2.ics"
-            className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+            className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90 sm:w-auto"
           >
             Day 2 — Sun Aug 30 · 1–4 PM ET
           </a>
@@ -154,9 +157,6 @@ function Confirmed() {
           <li>· Never share passwords or private client data in a group chat.</li>
         </ul>
       </section>
-
-      {verifiedGaOnly ? <VipUpgradeNextStep /> : null}
-      {verifiedVipNoVault ? <VaultNextStep /> : null}
 
       <TestimonialSection
         page="confirmed"
@@ -185,29 +185,26 @@ function Confirmed() {
 function VipUpgradeNextStep() {
   const upgrade = UPSELLS.vip_upgrade;
   return (
-    <section className="mt-10 surface-raised border-[color:var(--gold)] p-6">
+    <section className="mt-5 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-4 sm:p-5">
       <p className="eyebrow">Optional next step</p>
-      <h2 className="mt-2 font-heading text-xl text-foreground">
-        Add the VIP Implementation Experience for {formatUsd(upgrade.priceCents)}?
-      </h2>
-      <p className="mt-2 text-sm text-muted-foreground">
-        {upgrade.summary} Your General Admission ticket stays active if you
-        skip it.
-      </p>
-      <div className="mt-5 flex flex-wrap gap-3">
+      <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto]">
         <Link
           to="/offer/vip-upgrade"
-          className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+          className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
         >
-          See the VIP Experience
+          Add VIP · {formatUsd(upgrade.priceCents)}
         </Link>
         <Link
           to="/next-steps"
-          className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
+          className="inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary sm:w-auto"
         >
-          No thanks — continue with General Admission
+          No thanks
         </Link>
       </div>
+      <p className="mt-4 text-sm text-muted-foreground">
+        {upgrade.summary} Your General Admission ticket stays active if you
+        skip it.
+      </p>
     </section>
   );
 }
@@ -215,29 +212,25 @@ function VipUpgradeNextStep() {
 function VaultNextStep() {
   const vault = UPSELLS.vault;
   return (
-    <section className="mt-10 surface-raised border-[color:var(--gold)] p-6">
+    <section className="mt-5 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-4 sm:p-5">
       <p className="eyebrow">Optional next step</p>
-      <h2 className="mt-2 font-heading text-xl text-foreground">
-        {vault.name} — {formatUsd(vault.priceCents)}
-      </h2>
-      <p className="mt-2 text-sm text-muted-foreground">{vault.summary}</p>
-      <p className="mt-2 text-xs text-muted-foreground">
-        Your VIP access stays active if you skip the Vault.
-      </p>
-      <div className="mt-5 flex flex-wrap gap-3">
+      <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto]">
         <Link
           to="/offer/implementation-vault"
-          className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+          className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
         >
-          See the Vault
+          Add the Vault · {formatUsd(vault.priceCents)}
         </Link>
         <Link
           to="/next-steps"
-          className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
+          className="inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary sm:w-auto"
         >
-          No thanks — continue
+          No thanks
         </Link>
       </div>
+      <p className="mt-4 text-sm text-muted-foreground">
+        {vault.summary} Your VIP access stays active if you skip it.
+      </p>
     </section>
   );
 }
