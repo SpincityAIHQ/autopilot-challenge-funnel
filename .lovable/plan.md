@@ -109,3 +109,7 @@ immutable audit history only.
   exercises fulfillment, refund reversal (by `source_payment_id`), and
   session lifecycle in a transaction that rolls back.
 - `bun run release:check` runs all of the above.
+
+## Preview recovery
+
+- A documentation-only GitHub sync may be used to restart the private Lovable preview viewer without changing production code or consuming Lovable AI-agent credits.
