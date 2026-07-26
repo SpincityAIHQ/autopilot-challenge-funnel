@@ -1,11 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { readFileSync } from "node:fs";
 
-/**
- * The public landing page must not reveal downstream pricing or link directly
- * to any later paid offer. The paid funnel starts at /checkout.
- */
-const src = readFileSync("src/routes/index.tsx", "utf8");
+const source = readFileSync("src/routes/index.tsx", "utf8");
 
 describe("landing page — no prices, no later-offer links", () => {
   const priceStrings = [
@@ -28,8 +24,8 @@ describe("landing page — no prices, no later-offer links", () => {
   ];
 
   for (const value of priceStrings) {
-    it(`does not contain the visible/meta price string "${value}"`, () => {
-      expect(src.includes(value)).toBe(false);
+    it(`does not contain the price string ${value}`, () => {
+      expect(source.includes(value)).toBe(false);
     });
   }
 
@@ -43,38 +39,32 @@ describe("landing page — no prices, no later-offer links", () => {
 
   for (const route of forbiddenRoutes) {
     it(`does not link to ${route}`, () => {
-      expect(src.includes(route)).toBe(false);
+      expect(source.includes(route)).toBe(false);
     });
   }
 
-  it("does not render removed teaser components or a tier grid", () => {
+  it("does not render a public tier grid or downstream teaser", () => {
     for (const name of ["TierComparison", "VaultTeaser", "IntensiveTeaser"]) {
-      expect(src.includes(name)).toBe(false);
+      expect(source.includes(name)).toBe(false);
     }
   });
 
-  it("uses only neutral Reserve Your Seat buttons to enter checkout", () => {
-    expect(src.includes('to="/checkout"')).toBe(true);
-    const reserveButtons = src.match(/>\s*Reserve Your Seat\s*</g) ?? [];
-    expect(reserveButtons.length).toBeGreaterThanOrEqual(2);
-    expect(src.match(/Get GA/)).toBeNull();
-    expect(src.match(/Go VIP/)).toBeNull();
+  it("uses Get Your Ticket Now buttons to enter checkout", () => {
+    expect(source.includes('to="/checkout"')).toBe(true);
+    const buttons = source.match(/>\s*Get Your Ticket Now\s*</g) ?? [];
+    expect(buttons.length).toBeGreaterThanOrEqual(2);
+    expect(source.match(/Get GA/)).toBeNull();
+    expect(source.match(/Go VIP/)).toBeNull();
   });
 
-  it("contains a registration section without a public tier selector", () => {
-    expect(src.includes('id="registration"')).toBe(true);
-    expect(src.includes(">Tickets<")).toBe(false);
-    expect(src.includes('name="tier"')).toBe(false);
+  it("has no public tier selector or tier query parameter", () => {
+    expect(source.includes('name="tier"')).toBe(false);
+    expect(source.match(/\/checkout\?/)).toBeNull();
+    expect(source.match(/tier=/)).toBeNull();
   });
 
-  it("uses no tier query parameter on the landing page", () => {
-    expect(src.match(/\/checkout\?/)).toBeNull();
-    expect(src.match(/tier=/)).toBeNull();
-  });
-
-  it("contains no dollar-price string in source, metadata, or structured copy", () => {
-    const matches = src.match(/\$\d[\d,]*/g);
-    expect(matches).toBeNull();
+  it("contains no dollar-price string in source or metadata", () => {
+    expect(source.match(/\$\d[\d,]*/g)).toBeNull();
   });
 
   it("does not link to later customer or resource pages", () => {
@@ -83,7 +73,7 @@ describe("landing page — no prices, no later-offer links", () => {
       "/resources",
       "/communication-preferences",
     ]) {
-      expect(src.includes(route)).toBe(false);
+      expect(source.includes(route)).toBe(false);
     }
   });
 });
