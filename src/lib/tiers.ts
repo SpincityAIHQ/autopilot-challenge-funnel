@@ -40,7 +40,8 @@ export const TIERS: readonly Tier[] = [
     headline:
       "Join both live days and build the foundation for your AI-powered business.",
     bullets: [
-      "Live online access · Aug 24 + Aug 25, 2026",
+      "Live online · Sat Aug 29 + Sun Aug 30 · 1:00–4:00 PM Eastern",
+      "Room opens at 12:45 PM Eastern both days",
       "Niche + Offer Map",
       "Business Infrastructure Map",
       "AI Business GPS workbook",
@@ -76,7 +77,7 @@ export const VIP_SPEC = {
   bullets: [
     "Everything in General Admission",
     "30-day session recordings",
-    "One live VIP Build Lab",
+    "VIP Build Lab · Thu Sep 3 · 7:00–9:00 PM Eastern",
     "Priority question submission",
     "AI Agent Hiring + Workflow Kit",
     "VIP Implementation Resources",
@@ -105,11 +106,11 @@ export const UPSELLS: Record<UpsellProduct["id"], UpsellProduct> = {
     name: "VIP Implementation Experience",
     priceCents: 7700,
     summary:
-      "Go back through the full Summit for 30 days, join a live build lab, ask priority questions, and use deeper tools for your AI agents and workflows.",
+      "Go back through the full Summit for 30 days, return for the live VIP Build Lab on Thursday, September 3, ask priority questions, and use deeper tools for your AI agents and workflows.",
     bullets: [
       "Requires verified General Admission on the same email",
       "30-day session recordings",
-      "One live VIP Build Lab",
+      "VIP Build Lab · Thu Sep 3 · 7:00–9:00 PM Eastern",
       "Priority questions",
       "AI Agent Hiring + Workflow Kit",
       "VIP Implementation Resources",
