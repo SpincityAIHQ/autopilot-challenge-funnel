@@ -24,37 +24,37 @@ const VIDEO_FIRST_PAGES = [
   {
     name: "landing page",
     source: LANDING,
-    nextAction: "Reserve Your Seat",
+    nextAction: 'to="/checkout"',
   },
   {
-    name: "checkout owner preview",
+    name: "checkout",
     source: CHECKOUT,
-    nextAction: "Continue to GA confirmation — no payment",
+    nextAction: '<section className="mt-5 rounded-md',
+  },
+  {
+    name: "GA/VIP confirmation",
+    source: CONFIRMED,
+    nextAction: "<VipUpgradeNextStep",
   },
   {
     name: "VIP offer",
     source: VIP_UPGRADE,
-    nextAction: '<div className="mt-6">{cta}</div>',
+    nextAction: "<OfferPurchaseAction",
   },
   {
     name: "Implementation Vault offer",
     source: VAULT_OFFER,
-    nextAction: '<div className="mt-8">{cta}</div>',
+    nextAction: "<OfferPurchaseAction",
   },
   {
     name: "Strategy Intensive offer",
     source: STRATEGY_INTENSIVE,
-    nextAction: '<div className="mt-8">{cta}</div>',
-  },
-  {
-    name: "confirmation page",
-    source: CONFIRMED,
-    nextAction: "Day 1 — Sat Aug 29 · 1–4 PM ET",
+    nextAction: '<section className="mt-5 rounded-md',
   },
   {
     name: "next-steps page",
     source: NEXT_STEPS,
-    nextAction: "Day 1 — Sat Aug 29 · 1–4 PM ET",
+    nextAction: "<ProductThankYou",
   },
 ] as const;
 
@@ -102,7 +102,7 @@ describe("SpinCityHQ and NuAmenti Summit branding", () => {
 
 describe("video-first funnel order", () => {
   for (const page of VIDEO_FIRST_PAGES) {
-    it(`${page.name} renders its video before the next button or CTA`, () => {
+    it(`${page.name} renders its video before the next action`, () => {
       const video = page.source.indexOf("<FunnelVideoSlot");
       const nextAction = page.source.indexOf(page.nextAction, video + 1);
 
@@ -110,6 +110,16 @@ describe("video-first funnel order", () => {
       expect(nextAction).toBeGreaterThan(video);
     });
   }
+
+  it("landing page places video and CTA before the supporting paragraph", () => {
+    const headline = LANDING.indexOf("BUILD THE BUSINESS");
+    const video = LANDING.indexOf("<FunnelVideoSlot", headline);
+    const cta = LANDING.indexOf('to="/checkout"', video);
+    const supportingCopy = LANDING.indexOf("In two live days", cta);
+    expect(video).toBeGreaterThan(headline);
+    expect(cta).toBeGreaterThan(video);
+    expect(supportingCopy).toBeGreaterThan(cta);
+  });
 });
 
 describe("checkout owner walkthrough", () => {
