@@ -108,7 +108,7 @@ function Confirmed() {
         verified={verifiedVipNoVault}
         eyebrow="Verified · VIP Implementation Experience"
         headline="Thank you, family — your VIP access is confirmed."
-        body="You have both live Summit days, 30-day recordings, priority questions, and the VIP Build Lab on Thursday, September 3 from 7:00–9:00 PM Eastern."
+        body="You have both live Summit days, 30-day recordings, priority questions, and the VIP Build Lab immediately after Day 2 on Sunday, August 30 from 4:15–5:45 PM Eastern."
         videoUrl={null}
         videoLabel="A note from the family — VIP welcome"
       />
@@ -135,8 +135,8 @@ function Confirmed() {
         </div>
         {verifiedVipNoVault ? (
           <p className="mt-4 text-sm text-muted-foreground">
-            VIP Build Lab: Thursday, September 3 · 7:00–9:00 PM Eastern. Your
-            VIP email will include the private Lab link and calendar reminder.
+            VIP Build Lab: Sunday, August 30 · 4:15–5:45 PM Eastern, immediately
+            after Day 2. Stay in the room or use the private VIP link in your email.
           </p>
         ) : null}
       </section>
