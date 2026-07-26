@@ -6,9 +6,11 @@ grant access.
 
 ## Event
 
-- Two-day live online implementation event: **Aug 24–25, 2026**.
-- Exact daily start times are announced to registrants and are never
-  invented in code.
+- Day 1: **Saturday, August 29, 2026 · 1:00–4:00 PM Eastern**.
+- Day 2: **Sunday, August 30, 2026 · 1:00–4:00 PM Eastern**.
+- The live room opens at **12:45 PM Eastern** both days.
+- VIP Build Lab: **Thursday, September 3, 2026 · 7:00–9:00 PM Eastern**.
+- The Summit schedule takes priority over normal recurring work blocks.
 
 ## Sale products (four, sequential — no bundles, no tier picker)
 
@@ -27,7 +29,7 @@ Separate gated path (not part of the four-product ascension):
 
 Direct-VIP admission is **not** sold. Legacy Founder, Bundle, GA/VIP
 public tier picker, price-difference VIP upgrade math, raw query-token
-magic links, placeholder videos, and pre-August-24 dates are removed
+magic links, placeholder videos, and stale event dates are removed
 from the current funnel. Historical DB migrations remain in place as
 immutable audit history only.
 
