@@ -71,9 +71,9 @@ function IntensiveContent() {
     cta = (
       <a
         href="/next-steps?qaStage=intensive"
-        className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
+        className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
       >
-        Preview accepted 1-on-1 — continue without payment
+        Preview accepted 1-on-1 — no payment
       </a>
     );
   } else if (soldOut) {
@@ -84,10 +84,10 @@ function IntensiveContent() {
     cta = (
       <a
         href={url}
-        className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
+        className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
         rel="noopener noreferrer"
       >
-        Claim a slot — {formatUsd(intensive.priceCents)}
+        Claim a slot · {formatUsd(intensive.priceCents)}
       </a>
     );
   }
@@ -98,8 +98,54 @@ function IntensiveContent() {
         url={cfg.sectionVideos.thankYouVault}
         label="A note from the family — Vault welcome"
         envKey="VITE_SUMMIT_VIDEO_THANK_YOU_VAULT"
-        className="mt-8"
+        className="mt-7"
       />
+
+      <section className="mt-5 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-4 sm:p-5" aria-live="polite">
+        <div className="mb-4 flex items-end justify-between gap-4">
+          <div>
+            <p className="label-mono">Live seat count</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              A seat counts only after payment is confirmed.
+            </p>
+          </div>
+          <div className="text-right font-display text-xl text-[color:var(--emerald-signal)] sm:text-2xl">
+            {qaReview ? (
+              <span>Preview</span>
+            ) : slots.status === "loading" ? (
+              <span>Checking…</span>
+            ) : slots.status === "ok" ? (
+              soldOut ? (
+                <span>Sold out</span>
+              ) : (
+                <span>
+                  {slots.remaining}/{intensive.hardCap}
+                </span>
+              )
+            ) : (
+              <span>Checking…</span>
+            )}
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+          {cta}
+          <Link
+            to="/next-steps"
+            className="inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary sm:w-auto"
+          >
+            No thanks
+          </Link>
+        </div>
+
+        {qaReview ? (
+          <p className="mt-3 text-sm text-muted-foreground">
+            <strong className="text-foreground">Owner preview:</strong> the
+            primary button advances to the final confirmation without a charge
+            or seat change.
+          </p>
+        ) : null}
+      </section>
 
       <ProductThankYou
         verified={true}
@@ -111,14 +157,6 @@ function IntensiveContent() {
         className="mt-6 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-6"
       />
 
-      {qaReview ? (
-        <div className="mt-6 rounded-md border border-[color:var(--gold)] bg-secondary/30 p-4 text-sm text-muted-foreground">
-          <strong className="text-foreground">Owner preview:</strong> accepting
-          this option moves to the final confirmation page without a charge or
-          seat change.
-        </div>
-      ) : null}
-
       <div className="mt-8">
         <h2 className="font-display text-2xl text-foreground">
           Private Strategy &amp; Build Intensive
@@ -127,35 +165,6 @@ function IntensiveContent() {
           {formatUsd(intensive.priceCents)}
         </div>
         <p className="mt-5 text-muted-foreground">{intensive.summary}</p>
-      </div>
-
-      <div className="mt-6 surface-raised p-6" aria-live="polite">
-        <p className="label-mono">Live seat count</p>
-        <div className="mt-2 font-display text-3xl text-foreground">
-          {qaReview ? (
-            <span className="text-muted-foreground">
-              Preview mode — live seat count connects at launch
-            </span>
-          ) : slots.status === "loading" ? (
-            <span className="text-muted-foreground">Checking availability…</span>
-          ) : slots.status === "ok" ? (
-            soldOut ? (
-              <span>All {intensive.hardCap} slots taken</span>
-            ) : (
-              <span>
-                {slots.remaining}
-                <span className="ml-2 text-base text-muted-foreground">
-                  of {intensive.hardCap} slots remaining
-                </span>
-              </span>
-            )
-          ) : (
-            <span className="text-muted-foreground">Checking availability…</span>
-          )}
-        </div>
-        <p className="mt-3 text-xs text-muted-foreground">
-          A seat is counted only after the payment is confirmed.
-        </p>
       </div>
 
       <section className="mt-8 surface p-6">
@@ -183,17 +192,6 @@ function IntensiveContent() {
         </div>
       </section>
 
-      <div className="mt-8">{cta}</div>
-
-      <div className="mt-6">
-        <Link
-          to="/next-steps"
-          className="text-sm text-muted-foreground underline hover:text-foreground"
-        >
-          No thanks — continue to next steps →
-        </Link>
-      </div>
-
       <TestimonialSection
         page="intensive"
         eyebrow="From Intensive buyers"
@@ -208,7 +206,7 @@ function Disabled({ label }: { label: string }) {
     <button
       type="button"
       disabled
-      className="inline-flex cursor-not-allowed items-center rounded-md bg-muted px-5 py-3 font-heading text-base font-semibold text-muted-foreground"
+      className="inline-flex w-full cursor-not-allowed items-center justify-center rounded-md bg-muted px-5 py-3.5 font-heading text-base font-semibold text-muted-foreground"
     >
       {label}
     </button>
