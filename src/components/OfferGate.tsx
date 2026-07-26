@@ -6,16 +6,8 @@ import {
 } from "@/hooks/use-entitlement-summary";
 
 /**
- * OfferGate — full-page content gate for sequential-ascension offer pages.
- *
- * Anonymous and ineligible visitors NEVER see the offer name, price,
- * benefits, video, testimonials, or offer-specific metadata. Instead they
- * see a warm "verified access required" state that points them back to
- * the secure link inside their NuAmenti access email.
- *
- * `predicate` receives derived access booleans and returns true only when
- * the visitor holds the required prior scope (e.g. GA for VIP-upgrade,
- * VIP for Vault, Vault/eligibility for Intensive).
+ * Keeps each paid offer private until the secure session proves the buyer owns
+ * the step before it. A page URL alone never reveals the price or offer.
  */
 export function OfferGate({
   eligibleMessage,
@@ -25,25 +17,28 @@ export function OfferGate({
 }: {
   eligibleMessage?: string;
   ineligibleMessage: string;
-  predicate: (a: ReturnType<typeof derivedAccess>) => boolean;
+  predicate: (access: ReturnType<typeof derivedAccess>) => boolean;
   children: ReactNode;
 }) {
   const summary = useEntitlementSummary();
 
   if (summary.status === "loading") {
-    return <PendingPanel label="Verifying your access…" />;
+    return <PendingPanel label="Checking your access…" />;
   }
+
   if (summary.status === "unauthenticated" || summary.status === "error") {
     return (
       <SecureLinkPanel
-        message="This next step is only available to verified Summit registrants. Open the secure link in your NuAmenti access email — verified sign-in is required. If you can't find it, write Info@NuAmenti.com."
+        message="This page is only for confirmed Summit buyers. Open the secure link in your NuAmenti email. If you cannot find it, email Info@NuAmenti.com."
       />
     );
   }
+
   const access = derivedAccess(summary.scopes);
   if (!predicate(access)) {
     return <SecureLinkPanel message={ineligibleMessage} />;
   }
+
   return (
     <>
       {eligibleMessage ? (
@@ -65,9 +60,9 @@ function PendingPanel({ label }: { label: string }) {
 function SecureLinkPanel({ message }: { message: string }) {
   return (
     <section className="mt-10 surface-raised p-6">
-      <p className="eyebrow">Verified access required</p>
+      <p className="eyebrow">Secure access required</p>
       <h2 className="mt-3 font-heading text-lg text-foreground">
-        Your next step is inside your NuAmenti access email.
+        Open the link in your NuAmenti email
       </h2>
       <p className="mt-3 text-sm text-muted-foreground">{message}</p>
       <div className="mt-6 flex flex-wrap gap-3">
@@ -75,7 +70,7 @@ function SecureLinkPanel({ message }: { message: string }) {
           to="/next-steps"
           className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm text-foreground hover:bg-secondary"
         >
-          See secure next-steps
+          See your next steps
         </Link>
         <a
           href="mailto:Info@NuAmenti.com"
@@ -85,8 +80,8 @@ function SecureLinkPanel({ message }: { message: string }) {
         </a>
       </div>
       <p className="mt-4 text-xs text-muted-foreground">
-        A plain FanBasis redirect is not authentication. Only the secure
-        link in your NuAmenti access email establishes a verified session.
+        A return page from FanBasis does not prove a purchase. The private link
+        in your NuAmenti email confirms what you can open.
       </p>
     </section>
   );
