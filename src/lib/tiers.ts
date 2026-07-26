@@ -1,21 +1,14 @@
 /**
- * AI AutoPilot Summit — product catalog (SEQUENTIAL ASCENSION FUNNEL).
+ * AI AutoPilot 2-Day Summit — product catalog.
  *
  * Public price visibility rule:
- *   $22 GA        — visible ONLY on /checkout (first funnel offer page).
- *   $77 VIP        — visible ONLY on the post-GA offer page (/offer/vip-upgrade).
- *   $199 Vault    — visible ONLY on /offer/implementation-vault (noindex).
- *   $1,000 Intensive — visible ONLY on /strategy-intensive (noindex).
- * The public landing page (/) shows NO prices and NO later-offer links.
+ *   $22 GA        — visible only on /checkout.
+ *   $77 VIP       — visible only after verified GA.
+ *   $199 Vault    — visible only after verified VIP.
+ *   $1,000 Intensive — visible only after verified Vault access.
  *
- * Legacy note:
- *   `vip_upgrade` was previously priced at the "price difference".
- *   In the sequential funnel it is the FULL $77 VIP Implementation
- *   Experience offered after verified GA purchase — no "difference" math,
- *   no direct VIP admission offered from the public site.
- *
- * All money in cents. Payment collection lives on Commas/FanBasis; this
- * app never handles card data and never fulfills from URL query strings.
+ * All money is stored in cents. Payment collection lives on Commas/FanBasis;
+ * this app never handles card data and never fulfills from URL query strings.
  */
 
 export type AdmissionTierId = "ga";
@@ -38,10 +31,6 @@ export interface Tier {
   bullets: string[];
 }
 
-/**
- * Public tier catalog. Only General Admission is a public purchase — every
- * later offer is post-verification, gated to its own private funnel page.
- */
 export const TIERS: readonly Tier[] = [
   {
     id: "ga",
@@ -49,21 +38,22 @@ export const TIERS: readonly Tier[] = [
     shortName: "GA Ticket",
     priceCents: 2200,
     headline:
-      "Live online access to both Summit days plus the core implementation toolkit.",
+      "Join both live days and build the foundation for your AI-powered business.",
     bullets: [
       "Live online access · Aug 24 + Aug 25, 2026",
-      "Digital Summit Action Guide",
-      "AI Readiness Scorecard",
-      "Buyer + Offer Canvas",
-      "Live prompt drops and implementation notes",
+      "Niche + Offer Map",
+      "Business Infrastructure Map",
+      "AI Business GPS workbook",
+      "AI Agent Team Chart",
+      "First Workflow + Loop Builder",
       "GA does not include session recordings",
     ],
   },
 ] as const;
 
 export const TIER_MAP: Record<AdmissionTierId, Tier> = TIERS.reduce(
-  (acc, t) => {
-    acc[t.id] = t;
+  (acc, tier) => {
+    acc[tier.id] = tier;
     return acc;
   },
   {} as Record<AdmissionTierId, Tier>,
@@ -74,27 +64,25 @@ export function isTierId(value: unknown): value is AdmissionTierId {
 }
 
 /**
- * VIP admission spec — kept as a catalog entry (not a public tier) so the
- * webhook, entitlements, and the $77 VIP Implementation Experience page can
- * reference the same benefit set. Not offered as a direct public purchase.
+ * VIP stays in the catalog so the private offer page, webhook, and entitlement
+ * model all use the same benefit set. It is not a direct public ticket.
  */
 export const VIP_SPEC = {
-  name: "VIP Experience",
-  shortName: "VIP Ticket",
+  name: "VIP Implementation Experience",
+  shortName: "VIP Access",
   priceCents: 7700,
   headline:
-    "Everything in GA plus recordings, a VIP Implementation Lab, priority Q&A, and the outreach vault.",
+    "Add recordings, a live build lab, priority questions, and deeper agent and workflow tools.",
   bullets: [
-    "Everything in GA",
+    "Everything in General Admission",
     "30-day session recordings",
-    "One live VIP Implementation Lab",
-    "Priority Q&A submission",
-    "VIP Proposal + Outreach Kit",
-    "VIP Resource Vault",
+    "One live VIP Build Lab",
+    "Priority question submission",
+    "AI Agent Hiring + Workflow Kit",
+    "VIP Implementation Resources",
   ],
 } as const;
 
-/** Post-purchase and post-Summit products (not admission tickets). */
 export interface UpsellProduct {
   id: Exclude<ProductId, "ga">;
   name: string;
@@ -115,16 +103,16 @@ export const UPSELLS: Record<UpsellProduct["id"], UpsellProduct> = {
   vip_upgrade: {
     id: "vip_upgrade",
     name: "VIP Implementation Experience",
-    // Sequential funnel: full $77 VIP price for GA holders — NOT a difference.
     priceCents: 7700,
     summary:
-      "The full VIP Implementation Experience for verified GA registrants. Adds 30-day session recordings, one live VIP Implementation Lab, priority Q&A, the VIP Proposal + Outreach Kit, and the VIP Resource Vault.",
+      "Go back through the full Summit for 30 days, join a live build lab, ask priority questions, and use deeper tools for your AI agents and workflows.",
     bullets: [
-      "Requires a verified GA registration on the same email",
+      "Requires verified General Admission on the same email",
       "30-day session recordings",
-      "One live VIP Implementation Lab",
-      "Priority Q&A + VIP Resource Vault",
-      "VIP Proposal + Outreach Kit",
+      "One live VIP Build Lab",
+      "Priority questions",
+      "AI Agent Hiring + Workflow Kit",
+      "VIP Implementation Resources",
     ],
   },
   vault: {
@@ -132,15 +120,15 @@ export const UPSELLS: Record<UpsellProduct["id"], UpsellProduct> = {
     name: "AI AutoPilot Implementation Vault",
     priceCents: 19900,
     summary:
-      "The full implementation stack: prompts, blueprints, calendar, and proposal builder. Post-VIP add-on — admission and recordings are purchased separately.",
+      "Keep building after the Summit with ready-to-use maps, agent job sheets, app plans, workflows, loops, and marketing tools.",
     bullets: [
-      "Company Brain Starter Kit",
-      "AI sales and follow-up agent prompt stack",
-      "Lovable funnel and site blueprint",
-      "30-day campaign calendar",
-      "Corporate proposal builder",
-      "Autonomy Map and SOP templates",
-      "Curated tool-stack and affiliate directory with clear disclosures",
+      "AI Business GPS starter kit",
+      "AI agent job descriptions + hiring scorecards",
+      "Research, analysis, math, sales, and marketing workflow templates",
+      "Internal business app blueprint",
+      "30-day marketing + monetization calendar",
+      "SOP + improvement loop templates",
+      "Curated AI tool and agent directory with clear disclosures",
     ],
   },
   intensive: {
@@ -148,11 +136,12 @@ export const UPSELLS: Record<UpsellProduct["id"], UpsellProduct> = {
     name: "Strategy & Build Intensive",
     priceCents: 100000,
     summary:
-      "A two-hour private 1-on-1 session. Only 10 total, exclusively for verified Vault holders and operator-approved attendees.",
+      "A private two-hour session to find the main bottleneck, design the right system, and build the next working piece with Spin.",
     bullets: [
-      "Two-hour private 1-on-1 strategy + build session",
-      "10 total slots · atomic inventory",
-      "For verified Vault holders and operator-approved attendees",
+      "Two-hour private strategy + build session",
+      "One clear system or workflow built around your business",
+      "Only 10 total slots",
+      "For verified Vault holders and approved attendees",
     ],
     hardCap: 10,
   },
@@ -161,10 +150,11 @@ export const UPSELLS: Record<UpsellProduct["id"], UpsellProduct> = {
     name: "8-Week Mentorship & Work-Along",
     priceCents: 800000,
     summary:
-      "Application-based. Eight weeks of guided implementation alongside the NuAmenti team.",
+      "Eight weeks of guided building with the NuAmenti team for approved applicants.",
     bullets: [
       "Eight-week guided implementation",
-      "Application-based; separate from the 10 intensive slots",
+      "Application required",
+      "Separate from the private Intensive",
     ],
   },
 };
@@ -176,7 +166,6 @@ export function formatUsd(cents: number): string {
   })}`;
 }
 
-/** Expected total for a Summit product. */
 export function expectedTotalCents(product: ProductId): number {
   switch (product) {
     case "ga":

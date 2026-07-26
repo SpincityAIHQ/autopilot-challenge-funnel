@@ -15,10 +15,9 @@ import { useQaReviewMode } from "@/hooks/use-qa-review";
  * Sequential ascension funnel — checkout page.
  * Only General Admission ($22) is offered here. Any legacy ?tier=vip URL is
  * safely normalized to GA so visitors cannot skip the sequence. Deeper
- * implementation experiences are offered ONLY after verified GA purchase.
+ * implementation experiences are offered only after verified GA purchase.
  */
 const searchSchema = z.object({
-  // Accept legacy + private-preview search values without changing the offer.
   tier: z.string().optional(),
   qaStage: z.string().optional(),
 });
@@ -27,11 +26,11 @@ export const Route = createFileRoute("/checkout")({
   validateSearch: (input) => searchSchema.parse(input),
   head: () => ({
     meta: [
-      { title: "Reserve Your Seat — NuAmenti × Perfect AIM" },
+      { title: "Reserve Your Seat — AI AutoPilot 2-Day Summit" },
       {
         name: "description",
         content:
-          "Reserve your seat for the NuAmenti × Perfect AIM AI AutoPilot Summit, live online Aug 24–25, 2026.",
+          "Join the AI AutoPilot 2-Day Summit and build the foundation for a business powered by AI agents, apps, workflows, and loops.",
       },
       { name: "robots", content: "noindex" },
       { property: "og:url", content: "/checkout" },
@@ -43,7 +42,7 @@ export const Route = createFileRoute("/checkout")({
 
 function Checkout() {
   const cfg = useMemo(() => getCommasConfig(), []);
-  const t = TIER_MAP.ga;
+  const tier = TIER_MAP.ga;
   const checkoutUrl = resolveCheckoutUrl("ga", cfg);
   const gateAllowed = isHandoffAllowed("ga", cfg);
   const qaReview = useQaReviewMode();
@@ -55,7 +54,7 @@ function Checkout() {
       ? "Checkout link being connected"
       : !legalAck
         ? "Acknowledge the policies to continue"
-        : `Continue to secure checkout · ${formatUsd(t.priceCents)}`;
+        : `Continue to secure checkout · ${formatUsd(tier.priceCents)}`;
 
   function handleContinue() {
     if (qaReview) {
@@ -68,13 +67,16 @@ function Checkout() {
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-12">
-      <p className="eyebrow">NuAmenti × Perfect AIM · AI AutoPilot Summit</p>
+      <p className="eyebrow">
+        SpinCityHQ &amp; NuAmenti present · AI AutoPilot 2-Day Summit
+      </p>
       <h1 className="mt-3 font-display text-2xl text-foreground sm:text-3xl">
-        Meet us at the Summit
+        Start building your AI-powered business
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Aug 24–25, 2026 · live online. You'll finish payment on a secure
-        FanBasis page.
+        Two live days to map your niche, build the core system, and structure
+        your first AI agent team. Payment is completed on a secure FanBasis
+        page.
       </p>
 
       {qaReview ? (
@@ -100,21 +102,21 @@ function Checkout() {
       />
 
       <section className="mt-8 surface-raised p-6">
-        <h2 className="font-heading text-lg text-foreground">{t.name}</h2>
+        <h2 className="font-heading text-lg text-foreground">{tier.name}</h2>
         <div className="mt-2 flex items-baseline justify-between gap-4">
-          <p className="text-sm text-muted-foreground">{t.headline}</p>
+          <p className="text-sm text-muted-foreground">{tier.headline}</p>
           <span className="font-mono text-lg text-foreground">
-            {formatUsd(t.priceCents)}
+            {formatUsd(tier.priceCents)}
           </span>
         </div>
         <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-          {t.bullets.map((b) => (
-            <li key={b}>· {b}</li>
+          {tier.bullets.map((bullet) => (
+            <li key={bullet}>· {bullet}</li>
           ))}
         </ul>
         <p className="mt-4 text-xs text-muted-foreground">
-          Deeper implementation experiences are offered one at a time only
-          after each prior step is confirmed.
+          Deeper build support is offered one step at a time only after each
+          earlier step is confirmed.
         </p>
       </section>
 
@@ -123,9 +125,8 @@ function Checkout() {
           How communication works
         </h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Secure FanBasis checkout collects only your order details. NuAmenti
-          communication preferences (email, SMS, calls) are confirmed
-          separately after purchase — never bundled into buying a ticket.
+          Secure FanBasis checkout collects your order details. NuAmenti email,
+          text, and call preferences are confirmed separately after purchase.
         </p>
       </section>
 
@@ -133,16 +134,16 @@ function Checkout() {
         <h2 className="font-heading text-lg text-foreground">Order summary</h2>
         <dl className="mt-4 space-y-2 text-sm">
           <div className="flex items-baseline justify-between">
-            <dt className="text-muted-foreground">{t.name}</dt>
+            <dt className="text-muted-foreground">{tier.name}</dt>
             <dd className="font-mono text-foreground">
-              {formatUsd(t.priceCents)}
+              {formatUsd(tier.priceCents)}
             </dd>
           </div>
           <div className="gold-rule my-2" />
           <div className="flex items-baseline justify-between">
             <dt className="font-heading text-base text-foreground">Total</dt>
             <dd className="font-mono text-base text-foreground">
-              {formatUsd(t.priceCents)}
+              {formatUsd(tier.priceCents)}
             </dd>
           </div>
         </dl>
@@ -152,7 +153,7 @@ function Checkout() {
             <input
               type="checkbox"
               checked={legalAck}
-              onChange={(e) => setLegalAck(e.target.checked)}
+              onChange={(event) => setLegalAck(event.target.checked)}
               className="mt-1 accent-[color:var(--gold)]"
               aria-describedby="legal-ack-copy"
             />

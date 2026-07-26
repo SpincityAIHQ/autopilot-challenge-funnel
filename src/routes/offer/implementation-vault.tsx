@@ -14,18 +14,15 @@ import { useQaReviewMode } from "@/hooks/use-qa-review";
 export const Route = createFileRoute("/offer/implementation-vault")({
   head: () => ({
     meta: [
-      { title: "Next step — AI AutoPilot Summit" },
+      { title: "Implementation Vault — AI AutoPilot 2-Day Summit" },
       {
         name: "description",
         content:
-          "Verified next step for Summit VIP registrants. Sign-in from your NuAmenti access email required.",
+          "A private next step for confirmed VIP registrants who want ready-to-use AI business tools.",
       },
       { name: "robots", content: "noindex" },
       { property: "og:title", content: "Next step — AI AutoPilot Summit" },
-      {
-        property: "og:description",
-        content: "Verified next step for Summit VIP registrants.",
-      },
+      { property: "og:description", content: "Verified VIP next step." },
       { property: "og:url", content: "/offer/implementation-vault" },
     ],
     links: [{ rel: "canonical", href: "/offer/implementation-vault" }],
@@ -36,19 +33,18 @@ export const Route = createFileRoute("/offer/implementation-vault")({
 function VaultRoute() {
   return (
     <main className="mx-auto max-w-3xl px-5 py-16">
-      <p className="eyebrow">Sequential next step</p>
+      <p className="eyebrow">Your next build option</p>
       <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
-        Your next step is inside your access email.
+        Keep building with the Implementation Vault
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        Eligibility is checked from your verified access session — never from
-        this URL. Details below only appear once we confirm your VIP
-        registration.
+        This page opens only after your VIP purchase is confirmed. Use the
+        secure link in your NuAmenti email.
       </p>
 
       <OfferGate
-        predicate={(a) => a.hasVip && !a.hasVault}
-        ineligibleMessage="This next step is only offered to verified VIP registrants who have not yet added the Implementation Vault. Open the secure Vault link in your NuAmenti access email — signed in on the same browser."
+        predicate={(access) => access.hasVip && !access.hasVault}
+        ineligibleMessage="This option is only for confirmed VIP buyers who have not added the Implementation Vault. Open the secure link in your NuAmenti email on the same browser."
       >
         <VaultContent />
       </OfferGate>
@@ -57,7 +53,7 @@ function VaultRoute() {
 }
 
 function VaultContent() {
-  const v = UPSELLS.vault;
+  const vault = UPSELLS.vault;
   const cfg = getCommasConfig();
   const url = resolveCheckoutUrl("vault", cfg);
   const salesOn = isHandoffAllowed("vault", cfg);
@@ -75,7 +71,7 @@ function VaultContent() {
       className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
       rel="noopener noreferrer"
     >
-      Add the Vault — {formatUsd(v.priceCents)}
+      Add the Vault — {formatUsd(vault.priceCents)}
     </a>
   ) : (
     <button
@@ -99,8 +95,8 @@ function VaultContent() {
       <ProductThankYou
         verified={true}
         eyebrow="Verified · VIP Implementation Experience"
-        headline="Thank you, family — you added the VIP Implementation Experience."
-        body="Your VIP add-on is confirmed. Below is your next optional step — the Implementation Vault."
+        headline="Thank you, family — your VIP access is confirmed."
+        body="You now have recordings, the VIP Build Lab, priority questions, and deeper agent and workflow tools. The Vault below is an optional next step."
         videoUrl={null}
         videoLabel="A note from the family — VIP welcome"
         className="mt-6 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-6"
@@ -109,35 +105,38 @@ function VaultContent() {
       {qaReview ? (
         <div className="mt-6 rounded-md border border-[color:var(--gold)] bg-secondary/30 p-4 text-sm text-muted-foreground">
           <strong className="text-foreground">Owner preview:</strong> accepting
-          this offer moves to the Vault confirmation and private 1-on-1 page
+          this option moves to the Vault confirmation and private 1-on-1 page
           without a charge.
         </div>
       ) : null}
 
       <div className="mt-8">
-        <h2 className="font-display text-2xl text-foreground">{v.name}</h2>
+        <h2 className="font-display text-2xl text-foreground">
+          {vault.name}
+        </h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          The Vault is an independent library. It does not replace your Summit
-          admission or VIP experience. It adds the implementation items below.
+          The Vault does not replace your Summit or VIP access. It gives you
+          ready-to-use tools so you can keep building after the live event.
         </p>
         <div className="mt-4 font-display text-4xl text-[color:var(--gold)]">
-          {formatUsd(v.priceCents)}
+          {formatUsd(vault.priceCents)}
         </div>
-        <p className="mt-4 text-muted-foreground">{v.summary}</p>
+        <p className="mt-4 text-muted-foreground">{vault.summary}</p>
       </div>
 
       <section className="mt-8 surface p-6">
         <h3 className="font-heading text-lg text-foreground">
-          What you already have vs. what the Vault adds
+          What you already have and what the Vault adds
         </h3>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
-            <p className="label-mono">You already have (VIP)</p>
+            <p className="label-mono">You already have</p>
             <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
               <li>· Both live Summit days</li>
               <li>· 30-day session recordings</li>
-              <li>· VIP Implementation Lab + priority Q&A</li>
-              <li>· VIP Proposal + Outreach Kit</li>
+              <li>· One live VIP Build Lab</li>
+              <li>· Priority questions</li>
+              <li>· AI Agent Hiring + Workflow Kit</li>
             </ul>
           </div>
           <div>
@@ -145,8 +144,8 @@ function VaultContent() {
               The Vault adds
             </p>
             <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-              {v.bullets.map((b) => (
-                <li key={b}>· {b}</li>
+              {vault.bullets.map((bullet) => (
+                <li key={bullet}>· {bullet}</li>
               ))}
             </ul>
           </div>
@@ -158,15 +157,15 @@ function VaultContent() {
       <div className="mt-6">
         <Link
           to="/next-steps"
-          className="text-sm text-muted-foreground hover:text-foreground underline"
+          className="text-sm text-muted-foreground underline hover:text-foreground"
         >
           No thanks — continue to next steps →
         </Link>
       </div>
 
       <p className="mt-6 text-xs text-muted-foreground">
-        Declining the Vault does not affect your Summit ticket. Every
-        affiliate/tool link inside the Vault carries a clear disclosure.
+        Skipping the Vault does not change your Summit or VIP access. Tool links
+        inside the Vault carry clear affiliate notices when needed.
       </p>
 
       <TestimonialSection
