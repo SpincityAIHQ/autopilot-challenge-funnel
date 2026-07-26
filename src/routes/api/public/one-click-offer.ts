@@ -7,7 +7,7 @@ import { expectedTotalCents } from "@/lib/tiers";
 
 const SESSION_COOKIE = "summit_rs";
 const bodySchema = z.object({
-  product: z.enum(["vip_upgrade", "vault", "intensive"]),
+  product: z.enum(["vip_upgrade", "vault"]),
   confirmed: z.literal(true),
 });
 
@@ -40,7 +40,9 @@ async function verifiedIdentity() {
   return {
     buyerEmail: row.buyer_email.trim().toLowerCase(),
     scopes: Array.isArray(row.scopes)
-      ? row.scopes.filter((scope): scope is string => typeof scope === "string")
+      ? row.scopes.filter(
+          (scope): scope is string => typeof scope === "string",
+        )
       : [],
   };
 }
@@ -158,7 +160,9 @@ export const Route = createFileRoute("/api/public/one-click-offer")({
         } catch {
           return json(500, { ok: false, reason: "server-error" });
         }
-        if (!identity) return json(401, { ok: false, reason: "not-authenticated" });
+        if (!identity) {
+          return json(401, { ok: false, reason: "not-authenticated" });
+        }
 
         const eligibility = server.oneClickEligibility(
           identity.scopes,
@@ -197,7 +201,9 @@ export const Route = createFileRoute("/api/public/one-click-offer")({
             _card_last4: card.last4,
           },
         );
-        if (reserve.error) return json(500, { ok: false, reason: "server-error" });
+        if (reserve.error) {
+          return json(500, { ok: false, reason: "server-error" });
+        }
         const attempt = Array.isArray(reserve.data) ? reserve.data[0] : null;
         if (!attempt || typeof attempt.attempt_id !== "string") {
           return json(500, { ok: false, reason: "server-error" });
@@ -213,23 +219,69 @@ export const Route = createFileRoute("/api/public/one-click-offer")({
         }
 
         try {
-          const result = await server.chargeSavedCard({
+          const charge = await server.chargeSavedCard({
             cfg,
             product: parsedBody.product,
             card,
             idempotencyKey,
           });
+
+          // Fulfill immediately so the buyer can move through the funnel without
+          // waiting for the webhook. The webhook will call the same idempotent
+          // RPC again when Commas delivers payment.succeeded.
+          const registration = await supabaseAdmin
+            .from("summit_registrations")
+            .select("full_name, phone")
+            .ilike("email", identity.buyerEmail)
+            .eq("payment_status", "confirmed")
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          const profile = registration.data;
+          const fulfillment = await (supabaseAdmin as any).rpc(
+            "fulfill_summit_payment",
+            {
+              _product: parsedBody.product,
+              _commas_payment_id: charge.chargeId,
+              _amount_cents: expectedTotalCents(parsedBody.product),
+              _currency: "USD",
+              _full_name:
+                typeof profile?.full_name === "string" && profile.full_name
+                  ? profile.full_name
+                  : "Summit Buyer",
+              _email: identity.buyerEmail,
+              _phone:
+                typeof profile?.phone === "string" ? profile.phone : "",
+              _first_touch: null,
+              _last_touch: null,
+            },
+          );
+
+          if (fulfillment.error) {
+            await (supabaseAdmin as any).rpc("finish_one_click_charge", {
+              _attempt_id: attempt.attempt_id,
+              _status: "unknown",
+              _provider_charge_id: charge.chargeId,
+              _error_code: "payment-received-fulfillment-pending",
+            });
+            return json(202, {
+              ok: false,
+              paid: true,
+              reason: "payment-received-pending",
+            });
+          }
+
           await (supabaseAdmin as any).rpc("finish_one_click_charge", {
             _attempt_id: attempt.attempt_id,
             _status: "succeeded",
-            _provider_charge_id: result.chargeId,
+            _provider_charge_id: charge.chargeId,
             _error_code: null,
           });
 
           return json(200, {
             ok: true,
             product: parsedBody.product,
-            chargeId: result.chargeId,
             successPath: server.ONE_CLICK_SUCCESS_PATH[parsedBody.product],
           });
         } catch (error) {
