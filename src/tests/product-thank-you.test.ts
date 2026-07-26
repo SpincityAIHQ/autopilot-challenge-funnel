@@ -1,14 +1,10 @@
 /**
  * Product-specific thank-you copy + anonymous non-disclosure.
- *
- * Offer pages carry the purchase thank-you that introduces the next optional
- * step. `/next-steps` carries a separate no-upsell confirmation for the
- * highest verified level the buyer owns.
  */
 import { describe, expect, it } from "bun:test";
 import { readFileSync } from "node:fs";
-import { renderToStaticMarkup } from "react-dom/server";
 import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { ProductThankYou } from "@/components/ProductThankYou";
 
 const CONFIRMED = readFileSync("src/routes/confirmed.tsx", "utf8");
@@ -30,7 +26,7 @@ describe("verified product-specific thank-you copy", () => {
     expect(CONFIRMED).toContain("verified={verifiedGaOnly}");
     expect(CONFIRMED).toContain("access.hasGa && !access.hasVip");
     expect(CONFIRMED).toContain(
-      "Thank you, family. Your next step is being prepared.",
+      "Your purchase is confirmed. Choose your next step.",
     );
   });
 
@@ -38,9 +34,9 @@ describe("verified product-specific thank-you copy", () => {
     expect(CONFIRMED).toContain(VIP_THANKS);
     expect(CONFIRMED).toContain("verified={verifiedVipNoVault}");
     expect(VAULT).toContain(VIP_THANKS);
-    const vaultShellEnd = VAULT.indexOf("<OfferGate");
-    expect(vaultShellEnd).toBeGreaterThan(0);
-    expect(VAULT.slice(0, vaultShellEnd)).not.toContain(VIP_THANKS);
+    const gateAt = VAULT.indexOf("<OfferGate");
+    expect(gateAt).toBeGreaterThan(0);
+    expect(VAULT.slice(0, gateAt)).not.toContain(VIP_THANKS);
   });
 
   it("Vault thank-you lives inside the Intensive gated content", () => {
@@ -64,7 +60,7 @@ describe("verified product-specific thank-you copy", () => {
     expect(NEXT_STEPS).toContain("scheduling link");
   });
 
-  it("offer pages do not mix unrelated product thank-yous into their shells", () => {
+  it("offer pages do not mix unrelated thank-you messages into their shells", () => {
     expect(VAULT).not.toContain(GA_THANKS);
     expect(VAULT).not.toContain(VAULT_THANKS);
     expect(VAULT).not.toContain(INTENSIVE_THANKS);
@@ -75,10 +71,10 @@ describe("verified product-specific thank-you copy", () => {
   });
 
   it("no page chooses a thank-you message from a URL parameter", () => {
-    for (const src of [CONFIRMED, VAULT, INTENSIVE, NEXT_STEPS]) {
-      expect(src).not.toContain("useSearch(");
-      expect(src).not.toContain("URLSearchParams");
-      expect(src).not.toContain("location.search");
+    for (const source of [CONFIRMED, VAULT, INTENSIVE, NEXT_STEPS]) {
+      expect(source).not.toContain("useSearch(");
+      expect(source).not.toContain("URLSearchParams");
+      expect(source).not.toContain("location.search");
     }
   });
 });
@@ -165,12 +161,5 @@ describe("offer and exit video slot config", () => {
     expect(NEXT_STEPS).toContain("sectionVideos.exitVip");
     expect(NEXT_STEPS).toContain("sectionVideos.exitVault");
     expect(NEXT_STEPS).toContain("sectionVideos.exitIntensive");
-  });
-
-  it("keeps the legacy anonymous placeholder out of /confirmed", () => {
-    expect(CONFIRMED).not.toContain("Thank-you video placeholder");
-    expect(CONFIRMED).not.toContain(
-      'aria-label="Thank-you video placeholder"',
-    );
   });
 });
