@@ -1,6 +1,5 @@
 import { VideoSlot } from "./VideoSlot";
 import { normalizeVideoEmbedUrl } from "@/lib/video-embed";
-import { useQaReviewMode } from "@/hooks/use-qa-review";
 
 interface FunnelVideoSlotProps {
   url: string | null | undefined;
@@ -13,9 +12,14 @@ interface FunnelVideoSlotProps {
 /**
  * Mobile-first VSL slot used throughout the funnel.
  *
- * Real videos request muted inline autoplay and keep controls visible. Empty
- * slots stay hidden publicly and remain visible only in the private owner QA
- * walkthrough so placement can be reviewed before video URLs are connected.
+ * Real videos request muted inline autoplay and keep controls visible, so the
+ * player starts on mobile and the viewer taps it for sound.
+ *
+ * When a slot has no configured URL it renders a visible placeholder rather
+ * than collapsing to nothing, so the owner can confirm placement everywhere —
+ * including the published preview — while the videos are still being produced.
+ * The placeholder names the environment key it is waiting for, so every slot
+ * must have a real URL configured before launch.
  */
 export function FunnelVideoSlot({
   url,
@@ -24,7 +28,6 @@ export function FunnelVideoSlot({
   className,
   autoplay = true,
 }: FunnelVideoSlotProps) {
-  const qaReview = useQaReviewMode();
   const safeUrl = normalizeVideoEmbedUrl(url ?? null);
 
   if (safeUrl) {
@@ -47,8 +50,6 @@ export function FunnelVideoSlot({
     );
   }
 
-  void qaReview;
-
   return (
     <section className={`w-full ${className ?? ""}`} aria-label={label}>
       <p className="label-mono mb-2">{label}</p>
@@ -61,8 +62,7 @@ export function FunnelVideoSlot({
             {envKey}
           </p>
           <p className="mt-2 text-[10px] text-muted-foreground sm:text-xs">
-            Responsive 16:9 · autoplay muted · tap for sound · hidden publicly
-            until a valid URL is added
+            Responsive 16:9 · autoplay muted · tap for sound · connect this key before launch
           </p>
         </div>
       </div>

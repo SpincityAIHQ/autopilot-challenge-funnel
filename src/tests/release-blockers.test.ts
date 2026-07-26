@@ -127,8 +127,24 @@ describe("checkout requires explicit legal-policy acknowledgement", () => {
   const src = readFileSync("src/routes/checkout.tsx", "utf8");
   it("adds a legal-ack checkbox gated with `legalAck`", () => {
     expect(src.includes("legalAck")).toBe(true);
-    expect(src.includes("I have read and agree to the")).toBe(true);
-    // Submit computed from BOTH the gate and the ack.
-    expect(src.includes("gateAllowed && legalAck")).toBe(true);
+    const copy = src.replace(/\s+/g, " ");
+    expect(copy).toContain("I agree to the");
+    // The three policies must all be linked from the acknowledgement.
+    expect(copy).toContain('to="/terms"');
+    expect(copy).toContain('to="/privacy"');
+    expect(copy).toContain('to="/refund-policy"');
+  });
+
+  it("cannot hand off to Commas until the gate AND the ack both pass", () => {
+    // Order matters: the sales gate is checked first, then the legal ack, and
+    // only then is the checkout URL navigated to. Either guard returning early
+    // means no handoff happens.
+    const gate = src.indexOf("if (!gateAllowed || !checkoutUrl) return;");
+    const ack = src.indexOf("if (!legalAck) {", gate);
+    const handoff = src.indexOf("window.location.href = checkoutUrl;", ack);
+
+    expect(gate).toBeGreaterThan(-1);
+    expect(ack).toBeGreaterThan(gate);
+    expect(handoff).toBeGreaterThan(ack);
   });
 });

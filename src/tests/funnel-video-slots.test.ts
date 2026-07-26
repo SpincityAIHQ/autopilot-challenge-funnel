@@ -18,9 +18,12 @@ describe("mobile funnel video slots", () => {
     expect(COMPONENT).toContain("Responsive 16:9");
   });
 
-  it("renders empty placeholders only in private owner review", () => {
-    expect(COMPONENT).toContain("useQaReviewMode");
-    expect(COMPONENT).toContain("if (!qaReview) return null");
+  it("always renders a placeholder for an unconfigured slot", () => {
+    // A slot with no URL must stay visible rather than collapsing, so missing
+    // videos are obvious on every host instead of silently leaving a gap.
+    expect(COMPONENT).toContain("Autoplay video embed slot");
+    expect(COMPONENT).toContain("{envKey}");
+    expect(COMPONENT).not.toContain("return null");
   });
 
   it("adds a funnel video slot to every paid funnel page", () => {
