@@ -67,7 +67,10 @@ export function emailSegmentUpdateForProduct(
   product: SummitFunnelProductId,
 ): SummitEmailSegmentUpdate {
   const level = buyerLevelForProduct(product);
-  const purchasedTags = [SUMMIT_EMAIL_TAGS.buyer, SUMMIT_EMAIL_TAGS.ga];
+  const purchasedTags: string[] = [
+    SUMMIT_EMAIL_TAGS.buyer,
+    SUMMIT_EMAIL_TAGS.ga,
+  ];
 
   if (level === "vip" || level === "vault" || level === "intensive") {
     purchasedTags.push(SUMMIT_EMAIL_TAGS.vip);
