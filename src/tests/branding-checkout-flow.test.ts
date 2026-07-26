@@ -4,10 +4,59 @@ import { readFileSync } from "node:fs";
 const ROOT = readFileSync("src/routes/__root.tsx", "utf8");
 const LANDING = readFileSync("src/routes/index.tsx", "utf8");
 const CHECKOUT = readFileSync("src/routes/checkout.tsx", "utf8");
+const CONFIRMED = readFileSync("src/routes/confirmed.tsx", "utf8");
+const VIP_UPGRADE = readFileSync("src/routes/offer/vip-upgrade.tsx", "utf8");
+const VAULT_OFFER = readFileSync(
+  "src/routes/offer/implementation-vault.tsx",
+  "utf8",
+);
+const STRATEGY_INTENSIVE = readFileSync(
+  "src/routes/strategy-intensive.tsx",
+  "utf8",
+);
+const NEXT_STEPS = readFileSync("src/routes/next-steps.tsx", "utf8");
 const BRAND = readFileSync("src/components/BrandFrame.tsx", "utf8");
 const TIERS = readFileSync("src/lib/tiers.ts", "utf8");
 
 const CUSTOMER_COPY = [ROOT, LANDING, CHECKOUT, BRAND, TIERS].join("\n");
+
+const VIDEO_FIRST_PAGES = [
+  {
+    name: "landing page",
+    source: LANDING,
+    nextAction: "Reserve Your Seat",
+  },
+  {
+    name: "checkout owner preview",
+    source: CHECKOUT,
+    nextAction: "Continue to GA confirmation — no payment",
+  },
+  {
+    name: "VIP offer",
+    source: VIP_UPGRADE,
+    nextAction: '<div className="mt-6">{cta}</div>',
+  },
+  {
+    name: "Implementation Vault offer",
+    source: VAULT_OFFER,
+    nextAction: '<div className="mt-8">{cta}</div>',
+  },
+  {
+    name: "Strategy Intensive offer",
+    source: STRATEGY_INTENSIVE,
+    nextAction: '<div className="mt-8">{cta}</div>',
+  },
+  {
+    name: "confirmation page",
+    source: CONFIRMED,
+    nextAction: "Day 1 — Mon Aug 24, 2026",
+  },
+  {
+    name: "next-steps page",
+    source: NEXT_STEPS,
+    nextAction: "Day 1 — Mon Aug 24, 2026",
+  },
+] as const;
 
 describe("SpinCityHQ and NuAmenti Summit branding", () => {
   it("wraps every route in the shared brand frame", () => {
@@ -44,14 +93,19 @@ describe("SpinCityHQ and NuAmenti Summit branding", () => {
   });
 });
 
-describe("checkout owner walkthrough", () => {
-  it("puts a no-payment continue action above the checkout video", () => {
-    const button = CHECKOUT.indexOf("Continue to GA confirmation — no payment");
-    const video = CHECKOUT.indexOf("<FunnelVideoSlot");
-    expect(button).toBeGreaterThan(-1);
-    expect(video).toBeGreaterThan(button);
-  });
+describe("video-first funnel order", () => {
+  for (const page of VIDEO_FIRST_PAGES) {
+    it(`${page.name} renders its video before the next button or CTA`, () => {
+      const video = page.source.indexOf("<FunnelVideoSlot");
+      const nextAction = page.source.indexOf(page.nextAction, video + 1);
 
+      expect(video).toBeGreaterThan(-1);
+      expect(nextAction).toBeGreaterThan(video);
+    });
+  }
+});
+
+describe("checkout owner walkthrough", () => {
   it("continues to the GA confirmation in QA mode", () => {
     expect(CHECKOUT).toContain(
       'window.location.href = "/confirmed?qaStage=ga"',
