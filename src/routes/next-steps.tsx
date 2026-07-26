@@ -15,7 +15,7 @@ export const Route = createFileRoute("/next-steps")({
       {
         name: "description",
         content:
-          "Your confirmed Summit access, calendar links, inbox instructions, resources, and preparation steps for Aug 24–25.",
+          "Your confirmed Summit access, calendar links, inbox instructions, resources, and preparation steps for August 29–30.",
       },
       {
         property: "og:title",
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/next-steps")({
       },
       {
         property: "og:description",
-        content: "Everything you need to prepare for Aug 24–25.",
+        content: "Everything you need to prepare for August 29–30.",
       },
     ],
     links: [{ rel: "canonical", href: "/next-steps" }],
@@ -86,23 +86,32 @@ function NextSteps() {
       <section className="mt-10 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">Save the dates</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Add both days to your calendar now. Exact start times are sent by
-          email before the Summit.
+          Both Summit days run from 1:00–4:00 PM Eastern. The room opens at
+          12:45 PM Eastern.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <a
             href="/calendar/day1.ics"
             className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
           >
-            Day 1 — Mon Aug 24, 2026
+            Day 1 — Sat Aug 29 · 1–4 PM ET
           </a>
           <a
             href="/calendar/day2.ics"
             className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
           >
-            Day 2 — Tue Aug 25, 2026
+            Day 2 — Sun Aug 30 · 1–4 PM ET
           </a>
         </div>
+        {access?.hasVip ? (
+          <div className="mt-5 rounded-md border border-[color:var(--emerald-signal)]/40 bg-secondary/30 p-4">
+            <p className="label-mono">VIP Build Lab</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Thursday, September 3 · 7:00–9:00 PM Eastern. Your VIP email will
+              include the private Lab link and calendar reminder.
+            </p>
+          </div>
+        ) : null}
       </section>
 
       <section className="mt-8 surface-raised p-6">
@@ -194,7 +203,7 @@ function getExitConfirmation(
       eyebrow: "Verified · Full Summit Path + Strategy & Build Intensive",
       headline:
         "Thank you, family — your private Strategy & Build Intensive is confirmed.",
-      body: "You have the full Summit path, including the Implementation Vault and your private session. Our team will email you from Info@NuAmenti.com with the scheduling link. Reply to your receipt if you need help.",
+      body: "You have the full Summit path, including the live sessions on August 29–30, the VIP Build Lab on September 3, the Implementation Vault, and your private session. Our team will email you from Info@NuAmenti.com with the scheduling link.",
     };
   }
 
@@ -207,7 +216,7 @@ function getExitConfirmation(
       eyebrow: "Verified · Implementation Vault",
       headline:
         "Thank you, family — your Summit, VIP, and Implementation Vault access are confirmed.",
-      body: "You are all set. Your NuAmenti email will include your Summit access, VIP details, and the secure route to your Vault maps, agent sheets, app plans, workflow templates, and marketing tools.",
+      body: "You are all set for the live Summit on August 29–30, the VIP Build Lab on September 3, and the Vault. Your NuAmenti email will include the secure route to your maps, agent sheets, app plans, workflow templates, and marketing tools.",
     };
   }
 
@@ -220,7 +229,7 @@ function getExitConfirmation(
       eyebrow: "Verified · VIP Implementation Experience",
       headline:
         "Thank you, family — your General Admission and VIP access are confirmed.",
-      body: "You are all set for both live days, 30-day recordings, the VIP Build Lab, priority questions, and the deeper AI agent and workflow resources connected to VIP.",
+      body: "You are all set for the live Summit on August 29–30 from 1:00–4:00 PM Eastern, 30-day recordings, and the VIP Build Lab on Thursday, September 3 from 7:00–9:00 PM Eastern.",
     };
   }
 
@@ -233,7 +242,7 @@ function getExitConfirmation(
       eyebrow: "Verified · General Admission",
       headline:
         "Thank you, family — your General Admission seat is confirmed.",
-      body: "You are all set for both live Summit days and the core build resources connected to General Admission. Your ticket stays complete even when you pass on every optional upgrade.",
+      body: "You are all set for Saturday, August 29 and Sunday, August 30 from 1:00–4:00 PM Eastern. The room opens at 12:45 PM both days. Your ticket stays complete even when you pass on every optional upgrade.",
     };
   }
 
@@ -248,7 +257,9 @@ function VerificationNotice({
   const loading = status === "loading";
   return (
     <section className="mt-8 rounded-md border border-[color:var(--gold)]/60 bg-[color:var(--surface)] p-6">
-      <p className="eyebrow">{loading ? "Checking your access" : "Secure confirmation needed"}</p>
+      <p className="eyebrow">
+        {loading ? "Checking your access" : "Secure confirmation needed"}
+      </p>
       <h2 className="mt-2 font-display text-2xl text-foreground">
         {loading
           ? "We are loading your exact ticket confirmation."
