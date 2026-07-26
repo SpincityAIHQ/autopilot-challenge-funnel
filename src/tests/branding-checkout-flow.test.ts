@@ -5,7 +5,6 @@ const ROOT = readFileSync("src/routes/__root.tsx", "utf8");
 const LANDING = readFileSync("src/routes/index.tsx", "utf8");
 const CHECKOUT = readFileSync("src/routes/checkout.tsx", "utf8");
 const BRAND = readFileSync("src/components/BrandFrame.tsx", "utf8");
-const ASSETS = readFileSync("src/lib/brand-assets.ts", "utf8");
 const TIERS = readFileSync("src/lib/tiers.ts", "utf8");
 
 const CUSTOMER_COPY = [ROOT, LANDING, CHECKOUT, BRAND, TIERS].join("\n");
@@ -18,10 +17,11 @@ describe("SpinCityHQ and NuAmenti Summit branding", () => {
     expect(BRAND).toContain("AI AutoPilot 2-Day Summit");
   });
 
-  it("uses only the NuAmenti brand asset", () => {
-    expect(BRAND).toContain("NUAMENTI_MARK_DATA_URI");
-    expect(ASSETS).toContain("data:image/webp;base64,");
-    expect(ASSETS).not.toContain("PERFECT_AIM");
+  it("uses a lightweight CSS-only NuAmenti mark in the global shell", () => {
+    expect(BRAND).toContain("function NuAmentiMark");
+    expect(BRAND).not.toContain("brand-assets");
+    expect(BRAND).not.toContain("data:image");
+    expect(BRAND).not.toContain("NUAMENTI_MARK_DATA_URI");
   });
 
   it("contains no Perfect Aim branding in customer-facing Summit copy", () => {
