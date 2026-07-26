@@ -56,9 +56,9 @@ describe("locked AI AutoPilot Summit schedule", () => {
 
     for (const file of FILES) {
       for (const phrase of rejected) {
-        expect(file.text, `${file.path} contains stale phrase: ${phrase}`).not.toContain(
-          phrase,
-        );
+        if (file.text.includes(phrase)) {
+          throw new Error(`${file.path} contains stale phrase: ${phrase}`);
+        }
       }
     }
   });
