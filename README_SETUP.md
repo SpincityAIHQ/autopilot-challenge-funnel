@@ -1,228 +1,229 @@
 # AI AutoPilot Summit — Operator Setup
 
-The AI AutoPilot Summit is a two-day live online implementation event:
+## Locked event
 
 - **Day 1:** Saturday, August 29, 2026 · **1:00–4:00 PM Eastern**
 - **Day 2:** Sunday, August 30, 2026 · **1:00–4:00 PM Eastern**
 - **Room opens:** 12:45 PM Eastern both days
-- **VIP Build Lab:** Sunday, August 30, 2026 · **4:15–5:45 PM Eastern**, immediately after Day 2
+- **VIP Build Lab:** Sunday, August 30 · **4:15–5:45 PM Eastern**, immediately after Day 2
 
-This app is a standalone Lovable Cloud project — it does not share code,
-routes, tables, domains, or payment products with the NuAmenti application.
+## Product ladder
 
-## Product catalog (sequential ascension funnel)
+| Product | Price | Entry rule |
+|---|---:|---|
+| General Admission | $22 | Public `/checkout` |
+| VIP Implementation Experience | $77 | Verified GA required |
+| AI AutoPilot Implementation Vault | $199 | Verified VIP required |
+| Strategy & Build Intensive | $1,000 | Verified Vault/approved eligibility; 10 real slots |
 
-| Product                                | Price     | Notes                                                         |
-| -------------------------------------- | --------- | ------------------------------------------------------------- |
-| General Admission (GA)                 | $22       | Public `/checkout`. Both live Summit days, maps, workbook, and build plan. |
-| VIP Implementation Experience          | $77       | Post-GA at `/offer/vip-upgrade`. 30-day recordings, VIP Build Lab right after Day 2, priority Q&A. |
-| AI AutoPilot Implementation Vault      | $199      | Post-VIP at `/offer/implementation-vault`. Reusable operating library. |
-| Strategy & Build Intensive             | $1,000    | Post-Vault at `/strategy-intensive`. Two-hour private session; **cap 10 total**, atomic inventory. |
-| Eight-Week Mentorship & Work-Along     | $8,000    | Application-based at `/apply/mentorship`. Separate from the Intensive. |
-| Next NuAmenti Keynote                  | TBA       | Priority-access waitlist at `/next-keynote`. Rendered as "coming soon" until configured. |
+The public landing page shows no prices. Each paid option appears only after the
+previous purchase is verified.
 
-Direct-VIP admission is **not** a current sale product. VIP is only sold as
-the sequential `vip_upgrade` after a verified GA purchase.
+## Video-first page order
 
-No income promises, no guaranteed business outcomes, no fake scarcity or
-testimonials anywhere.
+Every funnel page is mobile-first:
 
-## Public funnel
+1. Headline
+2. Responsive 16:9 video
+3. Join or upgrade action directly under the video
+4. Respectful “No thanks” action on optional offers
+5. Detailed copy, benefits, proof, and FAQs below
 
-1. `/` — landing / sales (no prices, no downstream links)
-2. `/checkout` — GA only ($22); any legacy `?tier=vip` is ignored and normalized to GA
-3. `/confirmed` — payment-check state; product gratitude only after a verified HttpOnly session
-4. `/offer/vip-upgrade` — $77 VIP Implementation Experience (verified GA required)
-5. `/offer/implementation-vault` — $199 Vault add-on (verified VIP required)
-6. `/strategy-intensive` — $1,000 Intensive (verified Vault required, cap 10)
-7. `/next-steps` — exact GA, VIP, Vault, or Intensive confirmation based on verified access
-8. `/apply/mentorship` — $8,000 application (separate from Intensive)
-9. `/next-keynote` — next-keynote priority-access / waitlist
-10. `/communication-preferences` — three separate opt-in channels
-11. `/privacy`, `/terms`, `/refund-policy` — pre-launch drafts (noindex)
-12. `/resources` — server-validated resource hub gated by HttpOnly session
+The landing hero is specifically:
 
-`?tier=` in the URL is display context only. It never proves purchase or
-unlocks anything. Authority for entry, links, and paid resources is the
-NuAmenti verification + access email plus the resulting HttpOnly session.
+`headline → VSL → Reserve Your Seat → supporting copy`
 
-## Locked event flow
+Funnel videos request muted autoplay and inline playback. Controls stay visible
+so the viewer can tap for sound. Empty video slots are hidden publicly and
+shown only as labeled placeholders in private owner QA.
 
-### Day 1 — Saturday, August 29 · 1:00–4:00 PM Eastern
+## Public routes
 
-- 12:45 — Room opens
-- 1:00 — Welcome, goals, and build setup
-- 1:20 — Niche and pressing problem
-- 2:00 — Customer, offer, price, and business math
-- 2:40 — Ten-minute break
-- 2:50 — Business infrastructure and internal app plan
-- 3:25 — AI Business GPS and Day 1 homework
+1. `/` — no-price landing page
+2. `/checkout` — $22 GA only
+3. `/confirmed` — verified GA/VIP welcome and direct next action
+4. `/offer/vip-upgrade` — full $77 VIP page
+5. `/offer/implementation-vault` — verified VIP welcome + $199 Vault
+6. `/strategy-intensive` — verified Vault welcome + $1,000 full checkout
+7. `/next-steps` — exact GA, VIP, Vault, or Intensive confirmation
+8. `/resources` — verified resource hub
+9. `/communication-preferences` — separate email/SMS/AI-call preferences
+10. `/privacy`, `/terms`, `/refund-policy`
 
-### Day 2 — Sunday, August 30 · 1:00–4:00 PM Eastern
+A URL, query parameter, or redirect never proves purchase. Product visibility,
+one-click eligibility, and resources come from the verified HttpOnly Summit
+session and active entitlements.
 
-- 12:45 — Room opens
-- 1:00 — Day 1 recap and system check
-- 1:20 — AI agent roles, jobs, tools, and rules
-- 2:00 — Workflows and improvement loops
-- 2:40 — Ten-minute break
-- 2:50 — Marketing, follow-up, sales, and monetization
-- 3:30 — 30-day build order, Q&A, and live next-step close
-- 4:00 — Main Summit ends; 15-minute reset and upgrade window
+## Commas payment behavior
 
-### VIP Build Lab — Sunday, August 30 · 4:15–5:45 PM Eastern
+### GA — normal checkout
 
-The Lab begins immediately after Day 2 while the ideas, questions, and buying
-energy are still warm. GA buyers can upgrade live before leaving the room.
-VIP buyers stay for implementation help. The Vault is presented during the
-final part of the Lab, and Vault buyers continue to the private Intensive page.
+GA always uses a secure Commas checkout link. This is where the customer enters
+contact and card information.
 
-## Browser-visible environment (all default OFF)
+### VIP and Vault — one click when eligible
 
-Sales gates fail closed — the app does not present checkout unless the
-corresponding gate is `true` **and** the checkout URL passes the HTTPS
-allowlist (`www.fanbasis.com` plus any hosts in
-`VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS`).
+Commas supports charging an existing customer’s saved payment method directly.
+This funnel uses that capability only for:
 
-| Variable                                | Purpose                                       |
-| --------------------------------------- | --------------------------------------------- |
-| `VITE_SUMMIT_SALES_ENABLED`             | GA checkout master gate                       |
-| `VITE_SUMMIT_LEGAL_READY`               | Independent legal gate — must be `true`        |
-| `VITE_SUMMIT_UPSELLS_ENABLED`           | VIP Upgrade + Vault gate                      |
-| `VITE_SUMMIT_INTENSIVE_SALES_ENABLED`   | Strategy & Build Intensive gate               |
-| `VITE_SUMMIT_MENTORSHIP_APPLICATIONS_ENABLED` | Mentorship application gate             |
-| `VITE_COMMAS_CHECKOUT_URL_GA`           | FanBasis GA checkout — $22                     |
-| `VITE_COMMAS_CHECKOUT_URL_VIP_UPGRADE`  | FanBasis VIP Implementation Experience — $77   |
-| `VITE_COMMAS_CHECKOUT_URL_VAULT`        | FanBasis Vault — $199                          |
-| `VITE_COMMAS_CHECKOUT_URL_INTENSIVE`    | FanBasis Intensive — $1,000                    |
-| `VITE_COMMAS_CHECKOUT_URL_KEYNOTE`      | Next keynote checkout (also needs date)       |
-| `VITE_KEYNOTE_DATE_ISO`                 | Next keynote date (enables the `/next-keynote` card) |
-| `VITE_KEYNOTE_PRICE_LABEL`              | Optional display price for keynote            |
-| `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS`    | Comma-separated extra allowlisted hosts       |
-| `VITE_SUMMIT_VIDEO_HERO`                | Landing-page VSL embed URL                    |
-| `VITE_SUMMIT_VIDEO_CHECKOUT`            | GA checkout reassurance video                 |
-| `VITE_SUMMIT_VIDEO_VIP_OFFER`           | VIP offer video                               |
-| `VITE_SUMMIT_VIDEO_THANK_YOU_GA`        | GA purchase + VIP introduction video          |
-| `VITE_SUMMIT_VIDEO_THANK_YOU_VIP`       | VIP purchase + Vault introduction video       |
-| `VITE_SUMMIT_VIDEO_THANK_YOU_VAULT`     | Vault purchase + Intensive introduction video |
-| `VITE_SUMMIT_VIDEO_THANK_YOU_INTENSIVE` | Intensive purchase video                      |
-| `VITE_SUMMIT_VIDEO_EXIT_GA`             | GA-only final confirmation video              |
-| `VITE_SUMMIT_VIDEO_EXIT_VIP`            | VIP-only final confirmation video             |
-| `VITE_SUMMIT_VIDEO_EXIT_VAULT`          | Vault-only final confirmation video           |
-| `VITE_SUMMIT_VIDEO_EXIT_INTENSIVE`      | Full-path final confirmation video            |
+- VIP — $77
+- Vault — $199
 
-The legacy direct-VIP browser env var and product ID are intentionally
-**removed** from current activation. Anything still set in the environment
-is ignored by `getCommasConfig()` and by `resolveProductFromItem()`.
+The button shows the exact amount and safe card label before the buyer clicks:
 
-FanBasis product-success return URLs (configured inside FanBasis, not here):
+`Add VIP · $77 with Visa •••• 4242`
+
+That one click is the explicit authorization for the displayed one-time charge.
+The browser never receives the Commas API key, customer ID, payment-method ID,
+buyer email, amount authority, or full card data.
+
+When no saved card is available, the API is unavailable, or a saved-card charge
+is declined, the normal Commas checkout link remains the fallback.
+
+### Intensive — full checkout only
+
+The $1,000 Intensive never uses one-click charging. It keeps a full Commas
+checkout because it has hard-cap seat inventory and materially higher
+chargeback risk.
+
+## Checkout URLs and success returns
+
+| Product | Browser env | Success return |
+|---|---|---|
+| GA | `VITE_COMMAS_CHECKOUT_URL_GA` | `/confirmed` |
+| VIP | `VITE_COMMAS_CHECKOUT_URL_VIP_UPGRADE` | `/offer/implementation-vault` |
+| Vault | `VITE_COMMAS_CHECKOUT_URL_VAULT` | `/strategy-intensive` |
+| Intensive | `VITE_COMMAS_CHECKOUT_URL_INTENSIVE` | `/next-steps` |
+
+The VIP and Vault links remain required even when one-click is enabled because
+they are the secure fallback.
+
+## Browser-visible environment
 
 ```text
-GA:            https://<domain>/confirmed
-VIP Upgrade:   https://<domain>/offer/implementation-vault
-Vault:         https://<domain>/strategy-intensive
-Intensive:     https://<domain>/next-steps
+VITE_SUMMIT_SALES_ENABLED=false
+VITE_SUMMIT_LEGAL_READY=false
+VITE_SUMMIT_UPSELLS_ENABLED=false
+VITE_SUMMIT_INTENSIVE_SALES_ENABLED=false
+VITE_SUMMIT_QA_REVIEW=false
+
+VITE_COMMAS_CHECKOUT_URL_GA=
+VITE_COMMAS_CHECKOUT_URL_VIP_UPGRADE=
+VITE_COMMAS_CHECKOUT_URL_VAULT=
+VITE_COMMAS_CHECKOUT_URL_INTENSIVE=
 ```
 
-None of these URLs prove purchase; they are display redirects only. Actual
-fulfillment happens via the signed `payment.succeeded` webhook.
+### Funnel video slots
 
-Set the Intensive inventory to exactly **10** at FanBasis. The database cap
-protects fulfillment, but the provider cap prevents an 11th purchase.
+```text
+VITE_SUMMIT_VIDEO_HERO=
+VITE_SUMMIT_VIDEO_CHECKOUT=
+VITE_SUMMIT_VIDEO_VIP_OFFER=
+VITE_SUMMIT_VIDEO_THANK_YOU=
+VITE_SUMMIT_VIDEO_THANK_YOU_GA=
+VITE_SUMMIT_VIDEO_THANK_YOU_VIP=
+VITE_SUMMIT_VIDEO_THANK_YOU_VAULT=
+VITE_SUMMIT_VIDEO_THANK_YOU_INTENSIVE=
+VITE_SUMMIT_VIDEO_EXIT_GA=
+VITE_SUMMIT_VIDEO_EXIT_VIP=
+VITE_SUMMIT_VIDEO_EXIT_VAULT=
+VITE_SUMMIT_VIDEO_EXIT_INTENSIVE=
+```
+
+Only approved YouTube or Vimeo HTTPS URLs render.
 
 ## Server-only environment
 
-Payment webhook and Supabase server client. Webhook remains OFF until all
-required variables are set. Nothing is called if any is missing.
+### Signed webhook
 
-- `COMMAS_WEBHOOKS_ENABLED=true`
-- `COMMAS_WEBHOOK_SECRET`
-- `COMMAS_PRODUCT_ID_GA`
-- `COMMAS_PRODUCT_ID_VIP_UPGRADE`
-- `COMMAS_PRODUCT_ID_VAULT`
-- `COMMAS_PRODUCT_ID_INTENSIVE`
+```text
+COMMAS_WEBHOOKS_ENABLED=false
+COMMAS_WEBHOOK_SECRET=
+COMMAS_PRODUCT_ID_GA=
+COMMAS_PRODUCT_ID_VIP_UPGRADE=
+COMMAS_PRODUCT_ID_VAULT=
+COMMAS_PRODUCT_ID_INTENSIVE=
+RATE_LIMIT_HMAC_SECRET=
+```
 
-All four product IDs must be distinct. Server-side prices reconcile in cents
-to $22 / $77 / $199 / $1,000; unknown products, mismatched totals, or
-non-USD grant nothing. Legacy direct-VIP `payment.succeeded` events do not
-fulfill — reversal (`payment.refunded/failed/disputed`) is matched by
-`payment_id` and remains available for already-recorded legacy VIP rows.
+### Saved-card one click
 
-Signed-return bridge (redirect state signing on the way back from FanBasis)
-is **BLOCKED** until FanBasis confirms the exact metadata / custom-field
-name used for first- and last-touch attribution. Until then the server
-persists `null` for attribution and never trusts query-string state.
+```text
+COMMAS_ONE_CLICK_ENABLED=false
+COMMAS_API_ENV=sandbox
+COMMAS_API_KEY=
+```
 
-Provider adapters (Mailchimp, SMS, AI-call) are **defined but disabled**.
-They only take effect after operator-supplied credentials and template IDs
-are added and verified. This app does not send emails, texts, or calls until
-that step is complete.
+The service IDs come from `COMMAS_PRODUCT_ID_VIP_UPGRADE` and
+`COMMAS_PRODUCT_ID_VAULT`.
 
-## Communication preferences
+Start in sandbox. The one-click route:
 
-`/communication-preferences` derives identity from the HttpOnly session and
-writes one row per channel to `public.marketing_consents` (email, SMS,
-AI-assisted/prerecorded calls). Each row records `granted`, `granted_at`,
-`revoked_at`, `source`, `copy_version` (`2026-07-25-v1`), and (for SMS/AI-call)
-`phone`. AI-call opt-in requires an e-signature. Marketing consent is never
-a condition of purchase. Transactional access messages are separate.
+1. Requires same-origin request and rate limit.
+2. Derives buyer identity from the HttpOnly session.
+3. Checks prior entitlements.
+4. Finds the exact Commas customer and default saved card.
+5. Returns only brand + last four for display.
+6. Reserves a duplicate-safe attempt in Supabase.
+7. Charges Commas with an `Idempotency-Key`.
+8. Immediately calls the same idempotent `fulfill_summit_payment` RPC used by
+   the signed webhook.
+9. Treats the later webhook as a safe replay of the same payment ID.
+
+Unknown charge status blocks another attempt and tells the buyer not to retry.
+
+See `docs/video-first-and-one-click-setup.md` for the full sandbox matrix.
 
 ## Verified access model
 
-- Fulfillment (`fulfill_summit_payment`) creates the registration and grants
-  scoped entitlements tagged with `source_payment_id`. VIP upgrade requires
-  an existing GA on the same email; Vault requires an active VIP scope;
-  Intensive requires an active Vault scope (or an operator-listed
-  eligibility row).
-- Access tokens are single-use hashed magic links stored in `access_tokens`.
-- The magic-link URL format is `https://<domain>/resources/<slug>#t=<raw>`.
-  Raw tokens live only in the fragment and are stripped from
-  `window.location` immediately after the client POSTs them to
-  `/api/public/resources/exchange`.
-- Exchange mints a short-lived hashed `resource_sessions` row; the raw
-  session token is returned exclusively as an HttpOnly cookie.
-- `session_active_scopes` returns the buyer's currently active scopes so
-  refunds and revocations take effect immediately.
-- Refunds (`reverse_summit_payment`) revoke only the entitlement tied to the
-  reversed `source_payment_id`. Independent purchases are preserved.
+- `fulfill_summit_payment` grants the purchased entitlement and enforces the
+  GA → VIP → Vault → Intensive graph.
+- Single-use access links exchange into a short-lived HttpOnly `summit_rs`
+  session cookie.
+- `session_active_scopes` rechecks current access on every protected action.
+- Refunds revoke only the entitlement tied to the reversed payment ID.
+- One-click audit rows are server-only and protected by RLS.
 
-Confirmed / OTO / Intensive pages render generic operator-verification copy
-for anonymous visitors and only reveal product-specific thank-you content
-after the entitlement summary confirms the required prior scope.
+## Email segmentation
 
-## Pre-launch checklist (P0)
+Mailchimp uses one audience, `SUMMITLVL`, cumulative purchase tags, and one
+active `CURRENT` tag:
 
-- [ ] **Schedule:** all visible pages, metadata, email templates, SMS, call
-      scripts, calendar files, and videos say Aug 29–30 at 1:00–4:00 PM ET;
-      VIP materials say Sun Aug 30 at 4:15–5:45 PM ET immediately after Day 2.
-- [ ] **Live conversion:** VIP checkout link is ready in the Day 2 room, email,
-      and SMS before the 3:30 PM close; Vault and Intensive paths are tested.
-- [ ] **Legal:** finalize and publish counsel-approved privacy, terms, and
-      refund window at `/privacy`, `/terms`, `/refund-policy`; flip
-      `VITE_SUMMIT_LEGAL_READY=true`.
-- [ ] **Payments:** create the four current FanBasis products, distinct IDs,
-      exact success returns, inventory cap 10 on Intensive, one full signed
-      webhook round-trip per product.
-- [ ] **Verified access:** send and receive a real NuAmenti access email
-      end-to-end for GA, VIP Upgrade, Vault, and Intensive; verify the
-      magic-link (`#t=`) exchange lands a scoped HttpOnly session.
-- [ ] **Communication preferences:** test opt-in, opt-out, phone-required
-      logic for SMS and AI-call (with e-signature), STOP/HELP wiring, and
-      that revocation writes a new row rather than deleting history.
-- [ ] **Adapters:** Mailchimp audience/tags, SMS provider, AI-call provider
-      credentials verified before flipping any sender ON.
-- [ ] **QA scripts:** run `bun test`, `bunx tsc --noEmit`, `bun run build`,
-      `psql -v ON_ERROR_STOP=1 -f scripts/verify-resource-sessions.sql`,
-      and `scripts/scan-assets.sh` — all green.
-- [ ] **Domain + mobile:** attach domain to this project only; test every
-      route on desktop and a real phone with reduced-motion enabled.
-- [ ] Republish only after all of the above pass.
+- `CURRENT · GA`
+- `CURRENT · VIP`
+- `CURRENT · VAULT`
+- `CURRENT · INTENSIVE`
+
+A verified purchase stops sales messages for products the buyer already owns.
+
+## Private QA
+
+Open the private preview with:
+
+`/?qaStage=anonymous`
+
+The browser-only QA path walks the full funnel without calling Commas, creating
+orders, granting entitlements, or changing seat inventory.
+
+## P0 launch sequence
+
+1. Final legal review.
+2. Create all four Commas products and success returns.
+3. Configure and test signed webhooks.
+4. Configure verified access email/session flow.
+5. Apply the one-click audit migration.
+6. Test GA → VIP → Vault in Commas sandbox, including duplicate and failure cases.
+7. Test Intensive full checkout and real 10-seat inventory.
+8. Test every final video on real iPhone and Android devices.
+9. Configure Mailchimp, SMS, and AI-call systems only after consent requirements are complete.
+10. Run one controlled internal live purchase before public launch.
 
 ## Validation
 
-```text
-bun test                              → all tests pass
-bunx tsc --noEmit                     → clean
-bun run build                         → clean
-scripts/scan-assets.sh                → 0 paid-content leaks, 0 stale hits
-scripts/verify-resource-sessions.sql  → all scenarios pass, 0 rows persisted
+```bash
+bun test src/tests/
+bunx tsc --noEmit
+bun run build
+scripts/scan-assets.sh
+psql -v ON_ERROR_STOP=1 -f scripts/verify-resource-sessions.sql
 ```
