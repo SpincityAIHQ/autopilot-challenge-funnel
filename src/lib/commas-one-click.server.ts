@@ -1,7 +1,12 @@
 import { createHash, randomUUID } from "node:crypto";
 import { expectedTotalCents } from "./tiers";
 
-export type OneClickProduct = "vip_upgrade" | "vault" | "intensive";
+/**
+ * One-click is intentionally limited to the two small post-purchase steps.
+ * The $1,000 Intensive keeps a full provider checkout because it has hard-cap
+ * inventory and materially higher chargeback risk.
+ */
+export type OneClickProduct = "vip_upgrade" | "vault";
 
 export interface OneClickCard {
   customerId: string;
@@ -39,23 +44,20 @@ export class CommasOneClickError extends Error {
 const PRODUCT_ENV: Record<OneClickProduct, string> = {
   vip_upgrade: "COMMAS_PRODUCT_ID_VIP_UPGRADE",
   vault: "COMMAS_PRODUCT_ID_VAULT",
-  intensive: "COMMAS_PRODUCT_ID_INTENSIVE",
 };
 
 const PRODUCT_DESCRIPTION: Record<OneClickProduct, string> = {
   vip_upgrade: "AI AutoPilot Summit — VIP Implementation Experience",
   vault: "AI AutoPilot Summit — Implementation Vault",
-  intensive: "AI AutoPilot Summit — Strategy & Build Intensive",
 };
 
 export const ONE_CLICK_SUCCESS_PATH: Record<OneClickProduct, string> = {
   vip_upgrade: "/offer/implementation-vault",
   vault: "/strategy-intensive",
-  intensive: "/next-steps",
 };
 
 export function isOneClickProduct(value: unknown): value is OneClickProduct {
-  return value === "vip_upgrade" || value === "vault" || value === "intensive";
+  return value === "vip_upgrade" || value === "vault";
 }
 
 export function getOneClickConfig(
@@ -91,22 +93,14 @@ export function oneClickEligibility(
   scopes: readonly string[],
   product: OneClickProduct,
 ): { eligible: boolean; alreadyOwned: boolean } {
-  const hasGa = scopes.includes("ga") || scopes.includes("vip") || scopes.includes("vip_upgrade");
   const hasVip = scopes.includes("vip") || scopes.includes("vip_upgrade");
+  const hasGa = scopes.includes("ga") || hasVip;
   const hasVault = scopes.includes("vault");
-  const hasIntensive = scopes.includes("intensive");
-  const hasIntensiveEligibility = scopes.includes("intensive_eligibility");
 
   if (product === "vip_upgrade") {
     return { eligible: hasGa && !hasVip, alreadyOwned: hasVip };
   }
-  if (product === "vault") {
-    return { eligible: hasVip && !hasVault, alreadyOwned: hasVault };
-  }
-  return {
-    eligible: (hasVault || hasIntensiveEligibility) && !hasIntensive,
-    alreadyOwned: hasIntensive,
-  };
+  return { eligible: hasVip && !hasVault, alreadyOwned: hasVault };
 }
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -131,9 +125,10 @@ async function fetchJson(
     }
     return { response, json };
   } catch (error) {
-    const code = error instanceof Error && error.name === "AbortError"
-      ? "commas-timeout"
-      : "commas-network";
+    const code =
+      error instanceof Error && error.name === "AbortError"
+        ? "commas-timeout"
+        : "commas-network";
     throw new CommasOneClickError(code, "Commas could not be reached", true);
   } finally {
     clearTimeout(timer);
@@ -177,16 +172,21 @@ export async function findSavedCard(
         row.email.trim().toLowerCase() === normalizedEmail,
     )
     .sort((a, b) => {
-      const at = typeof a.last_transaction_date === "string"
-        ? Date.parse(a.last_transaction_date)
-        : 0;
-      const bt = typeof b.last_transaction_date === "string"
-        ? Date.parse(b.last_transaction_date)
-        : 0;
+      const at =
+        typeof a.last_transaction_date === "string"
+          ? Date.parse(a.last_transaction_date)
+          : 0;
+      const bt =
+        typeof b.last_transaction_date === "string"
+          ? Date.parse(b.last_transaction_date)
+          : 0;
       return bt - at;
     })[0];
 
-  if (!exact || (typeof exact.id !== "string" && typeof exact.id !== "number")) {
+  if (
+    !exact ||
+    (typeof exact.id !== "string" && typeof exact.id !== "number")
+  ) {
     return null;
   }
 
@@ -222,7 +222,8 @@ export async function findSavedCard(
         row.type === "card" &&
         typeof row.last4 === "string" &&
         /^[0-9]{4}$/.test(row.last4) &&
-        (typeof row.id === "string" || typeof row.payment_method_uuid === "string"),
+        (typeof row.id === "string" ||
+          typeof row.payment_method_uuid === "string"),
     );
 
   const card = cards.find((row) => row.is_default === true) ?? cards[0];
@@ -230,14 +231,13 @@ export async function findSavedCard(
 
   const metadata = asRecord(card.metadata);
   const metadataData = asRecord(metadata?.data);
-  const rawBrand = typeof metadataData?.card_type === "string"
-    ? metadataData.card_type
-    : "card";
+  const rawBrand =
+    typeof metadataData?.card_type === "string"
+      ? metadataData.card_type
+      : "card";
 
   const paymentMethodId =
-    typeof card.id === "string"
-      ? card.id
-      : String(card.payment_method_uuid);
+    typeof card.id === "string" ? card.id : String(card.payment_method_uuid);
 
   return {
     customerId,
@@ -283,8 +283,14 @@ export async function chargeSavedCard(params: {
   const status = typeof data?.status === "string" ? data.status : "unknown";
   const chargeId = typeof data?.charge_id === "string" ? data.charge_id : "";
 
-  if (!result.response.ok || root?.status !== "success" || status !== "succeeded" || !chargeId) {
-    const uncertain = result.response.status === 409 || result.response.status >= 500;
+  if (
+    !result.response.ok ||
+    root?.status !== "success" ||
+    status !== "succeeded" ||
+    !chargeId
+  ) {
+    const uncertain =
+      result.response.status === 409 || result.response.status >= 500;
     throw new CommasOneClickError(
       `charge-${result.response.status || "unknown"}`,
       "Saved-card charge did not succeed",
