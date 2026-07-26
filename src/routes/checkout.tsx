@@ -79,6 +79,13 @@ function Checkout() {
         page.
       </p>
 
+      <FunnelVideoSlot
+        url={cfg.sectionVideos.checkout}
+        label="Watch before you reserve your seat"
+        envKey="VITE_SUMMIT_VIDEO_CHECKOUT"
+        className="mt-8"
+      />
+
       {qaReview ? (
         <section className="mt-6 rounded-md border border-[color:var(--emerald-signal)]/60 bg-secondary/40 p-4 text-sm text-muted-foreground">
           <strong className="text-foreground">Owner preview:</strong> walk the
@@ -93,13 +100,6 @@ function Checkout() {
           </button>
         </section>
       ) : null}
-
-      <FunnelVideoSlot
-        url={cfg.sectionVideos.checkout}
-        label="Watch before you reserve your seat"
-        envKey="VITE_SUMMIT_VIDEO_CHECKOUT"
-        className="mt-8"
-      />
 
       <section className="mt-8 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">{tier.name}</h2>
