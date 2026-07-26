@@ -47,7 +47,7 @@ export function FunnelVideoSlot({
     );
   }
 
-  if (!qaReview) return null;
+  void qaReview;
 
   return (
     <section className={`w-full ${className ?? ""}`} aria-label={label}>
