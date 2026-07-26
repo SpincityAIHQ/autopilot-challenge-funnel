@@ -49,12 +49,12 @@ const VIDEO_FIRST_PAGES = [
   {
     name: "confirmation page",
     source: CONFIRMED,
-    nextAction: "Day 1 — Mon Aug 24, 2026",
+    nextAction: "Day 1 — Sat Aug 29 · 1–4 PM ET",
   },
   {
     name: "next-steps page",
     source: NEXT_STEPS,
-    nextAction: "Day 1 — Mon Aug 24, 2026",
+    nextAction: "Day 1 — Sat Aug 29 · 1–4 PM ET",
   },
 ] as const;
 
@@ -90,6 +90,13 @@ describe("SpinCityHQ and NuAmenti Summit branding", () => {
     expect(LANDING).toContain("AI Business GPS");
     expect(LANDING).toContain("internal business app");
     expect(LANDING).toContain("Do the Math");
+  });
+
+  it("locks the customer-facing schedule to the weekend build", () => {
+    expect(LANDING).toContain("Saturday, August 29");
+    expect(LANDING).toContain("Sunday, August 30");
+    expect(LANDING).toContain("1:00–4:00 PM Eastern");
+    expect(VIP_UPGRADE).toContain("4:15–5:45 PM Eastern");
   });
 });
 

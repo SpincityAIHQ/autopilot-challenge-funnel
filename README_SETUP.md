@@ -1,21 +1,25 @@
 # AI AutoPilot Summit — Operator Setup
 
-The AI AutoPilot Summit is a two-day live online implementation event on
-**August 24 and 25, 2026**. Exact session start times are announced to
-registrants closer to the event and are never invented in code. This app is a
-standalone Lovable Cloud project — it does not share code, routes, tables,
-domains, or payment products with the NuAmenti application.
+The AI AutoPilot Summit is a two-day live online implementation event:
+
+- **Day 1:** Saturday, August 29, 2026 · **1:00–4:00 PM Eastern**
+- **Day 2:** Sunday, August 30, 2026 · **1:00–4:00 PM Eastern**
+- **Room opens:** 12:45 PM Eastern both days
+- **VIP Build Lab:** Sunday, August 30, 2026 · **4:15–5:45 PM Eastern**, immediately after Day 2
+
+This app is a standalone Lovable Cloud project — it does not share code,
+routes, tables, domains, or payment products with the NuAmenti application.
 
 ## Product catalog (sequential ascension funnel)
 
 | Product                                | Price     | Notes                                                         |
 | -------------------------------------- | --------- | ------------------------------------------------------------- |
-| General Admission (GA)                 | $22       | Public /checkout. Two live days + Action Guide, scorecard, canvas. |
-| VIP Implementation Experience          | $77       | Post-GA at /offer/vip-upgrade. 30-day recordings, VIP Lab, priority Q&A. |
-| AI AutoPilot Implementation Vault      | $199      | Post-VIP at /offer/implementation-vault. Independent library add-on. |
-| Strategy & Build Intensive             | $1,000    | Post-Vault at /strategy-intensive. Two-hour private session; **cap 10 total**, atomic inventory. |
-| Eight-Week Mentorship & Work-Along     | $8,000    | Application-based at /apply/mentorship. Separate from the Intensive. |
-| Next NuAmenti Keynote                  | TBA       | Priority-access waitlist at /next-keynote. Rendered as "coming soon" until configured. |
+| General Admission (GA)                 | $22       | Public `/checkout`. Both live Summit days, maps, workbook, and build plan. |
+| VIP Implementation Experience          | $77       | Post-GA at `/offer/vip-upgrade`. 30-day recordings, VIP Build Lab right after Day 2, priority Q&A. |
+| AI AutoPilot Implementation Vault      | $199      | Post-VIP at `/offer/implementation-vault`. Reusable operating library. |
+| Strategy & Build Intensive             | $1,000    | Post-Vault at `/strategy-intensive`. Two-hour private session; **cap 10 total**, atomic inventory. |
+| Eight-Week Mentorship & Work-Along     | $8,000    | Application-based at `/apply/mentorship`. Separate from the Intensive. |
+| Next NuAmenti Keynote                  | TBA       | Priority-access waitlist at `/next-keynote`. Rendered as "coming soon" until configured. |
 
 Direct-VIP admission is **not** a current sale product. VIP is only sold as
 the sequential `vip_upgrade` after a verified GA purchase.
@@ -27,19 +31,50 @@ testimonials anywhere.
 
 1. `/` — landing / sales (no prices, no downstream links)
 2. `/checkout` — GA only ($22); any legacy `?tier=vip` is ignored and normalized to GA
-3. `/confirmed` — warm truthful "we are verifying your payment" state; product-specific gratitude only after a verified HttpOnly session
+3. `/confirmed` — payment-check state; product gratitude only after a verified HttpOnly session
 4. `/offer/vip-upgrade` — $77 VIP Implementation Experience (verified GA required)
 5. `/offer/implementation-vault` — $199 Vault add-on (verified VIP required)
 6. `/strategy-intensive` — $1,000 Intensive (verified Vault required, cap 10)
-7. `/apply/mentorship` — $8,000 application (separate from Intensive)
-8. `/next-keynote` — next-keynote priority-access / waitlist
-9. `/communication-preferences` — three separate opt-in channels
-10. `/privacy`, `/terms`, `/refund-policy` — pre-launch drafts (noindex)
-11. `/resources` — server-validated resource hub gated by HttpOnly session
+7. `/next-steps` — exact GA, VIP, Vault, or Intensive confirmation based on verified access
+8. `/apply/mentorship` — $8,000 application (separate from Intensive)
+9. `/next-keynote` — next-keynote priority-access / waitlist
+10. `/communication-preferences` — three separate opt-in channels
+11. `/privacy`, `/terms`, `/refund-policy` — pre-launch drafts (noindex)
+12. `/resources` — server-validated resource hub gated by HttpOnly session
 
 `?tier=` in the URL is display context only. It never proves purchase or
 unlocks anything. Authority for entry, links, and paid resources is the
 NuAmenti verification + access email plus the resulting HttpOnly session.
+
+## Locked event flow
+
+### Day 1 — Saturday, August 29 · 1:00–4:00 PM Eastern
+
+- 12:45 — Room opens
+- 1:00 — Welcome, goals, and build setup
+- 1:20 — Niche and pressing problem
+- 2:00 — Customer, offer, price, and business math
+- 2:40 — Ten-minute break
+- 2:50 — Business infrastructure and internal app plan
+- 3:25 — AI Business GPS and Day 1 homework
+
+### Day 2 — Sunday, August 30 · 1:00–4:00 PM Eastern
+
+- 12:45 — Room opens
+- 1:00 — Day 1 recap and system check
+- 1:20 — AI agent roles, jobs, tools, and rules
+- 2:00 — Workflows and improvement loops
+- 2:40 — Ten-minute break
+- 2:50 — Marketing, follow-up, sales, and monetization
+- 3:30 — 30-day build order, Q&A, and live next-step close
+- 4:00 — Main Summit ends; 15-minute reset and upgrade window
+
+### VIP Build Lab — Sunday, August 30 · 4:15–5:45 PM Eastern
+
+The Lab begins immediately after Day 2 while the ideas, questions, and buying
+energy are still warm. GA buyers can upgrade live before leaving the room.
+VIP buyers stay for implementation help. The Vault is presented during the
+final part of the Lab, and Vault buyers continue to the private Intensive page.
 
 ## Browser-visible environment (all default OFF)
 
@@ -60,12 +95,20 @@ allowlist (`www.fanbasis.com` plus any hosts in
 | `VITE_COMMAS_CHECKOUT_URL_VAULT`        | FanBasis Vault — $199                          |
 | `VITE_COMMAS_CHECKOUT_URL_INTENSIVE`    | FanBasis Intensive — $1,000                    |
 | `VITE_COMMAS_CHECKOUT_URL_KEYNOTE`      | Next keynote checkout (also needs date)       |
-| `VITE_KEYNOTE_DATE_ISO`                 | Next keynote date (enables the /next-keynote card) |
+| `VITE_KEYNOTE_DATE_ISO`                 | Next keynote date (enables the `/next-keynote` card) |
 | `VITE_KEYNOTE_PRICE_LABEL`              | Optional display price for keynote            |
 | `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS`    | Comma-separated extra allowlisted hosts       |
-| `VITE_SUMMIT_VIDEO_HERO`                | Approved hero VSL embed URL                   |
-| `VITE_SUMMIT_VIDEO_THANK_YOU`           | Approved confirmation thank-you embed URL     |
-| `VITE_SUMMIT_VIDEO_THANK_YOU_GA` / `_VIP` / `_VAULT` / `_INTENSIVE` | Optional per-product verified-only thank-you videos |
+| `VITE_SUMMIT_VIDEO_HERO`                | Landing-page VSL embed URL                    |
+| `VITE_SUMMIT_VIDEO_CHECKOUT`            | GA checkout reassurance video                 |
+| `VITE_SUMMIT_VIDEO_VIP_OFFER`           | VIP offer video                               |
+| `VITE_SUMMIT_VIDEO_THANK_YOU_GA`        | GA purchase + VIP introduction video          |
+| `VITE_SUMMIT_VIDEO_THANK_YOU_VIP`       | VIP purchase + Vault introduction video       |
+| `VITE_SUMMIT_VIDEO_THANK_YOU_VAULT`     | Vault purchase + Intensive introduction video |
+| `VITE_SUMMIT_VIDEO_THANK_YOU_INTENSIVE` | Intensive purchase video                      |
+| `VITE_SUMMIT_VIDEO_EXIT_GA`             | GA-only final confirmation video              |
+| `VITE_SUMMIT_VIDEO_EXIT_VIP`            | VIP-only final confirmation video             |
+| `VITE_SUMMIT_VIDEO_EXIT_VAULT`          | Vault-only final confirmation video           |
+| `VITE_SUMMIT_VIDEO_EXIT_INTENSIVE`      | Full-path final confirmation video            |
 
 The legacy direct-VIP browser env var and product ID are intentionally
 **removed** from current activation. Anything still set in the environment
@@ -132,9 +175,9 @@ a condition of purchase. Transactional access messages are separate.
   eligibility row).
 - Access tokens are single-use hashed magic links stored in `access_tokens`.
 - The magic-link URL format is `https://<domain>/resources/<slug>#t=<raw>`.
-  Raw tokens live only in the fragment (never sent to the server) and are
-  stripped from `window.location` immediately after the client POSTs them
-  to `/api/public/resources/exchange`.
+  Raw tokens live only in the fragment and are stripped from
+  `window.location` immediately after the client POSTs them to
+  `/api/public/resources/exchange`.
 - Exchange mints a short-lived hashed `resource_sessions` row; the raw
   session token is returned exclusively as an HttpOnly cookie.
 - `session_active_scopes` returns the buyer's currently active scopes so
@@ -148,24 +191,29 @@ after the entitlement summary confirms the required prior scope.
 
 ## Pre-launch checklist (P0)
 
-- [ ] **Legal**: finalize and publish counsel-approved privacy, terms, and
+- [ ] **Schedule:** all visible pages, metadata, email templates, SMS, call
+      scripts, calendar files, and videos say Aug 29–30 at 1:00–4:00 PM ET;
+      VIP materials say Sun Aug 30 at 4:15–5:45 PM ET immediately after Day 2.
+- [ ] **Live conversion:** VIP checkout link is ready in the Day 2 room, email,
+      and SMS before the 3:30 PM close; Vault and Intensive paths are tested.
+- [ ] **Legal:** finalize and publish counsel-approved privacy, terms, and
       refund window at `/privacy`, `/terms`, `/refund-policy`; flip
       `VITE_SUMMIT_LEGAL_READY=true`.
-- [ ] **Payments**: create the four current FanBasis products, distinct IDs,
+- [ ] **Payments:** create the four current FanBasis products, distinct IDs,
       exact success returns, inventory cap 10 on Intensive, one full signed
       webhook round-trip per product.
-- [ ] **Verified access**: send and receive a real NuAmenti access email
+- [ ] **Verified access:** send and receive a real NuAmenti access email
       end-to-end for GA, VIP Upgrade, Vault, and Intensive; verify the
       magic-link (`#t=`) exchange lands a scoped HttpOnly session.
-- [ ] **Communication preferences**: test opt-in, opt-out, phone-required
+- [ ] **Communication preferences:** test opt-in, opt-out, phone-required
       logic for SMS and AI-call (with e-signature), STOP/HELP wiring, and
       that revocation writes a new row rather than deleting history.
-- [ ] **Adapters**: Mailchimp audience/tags, SMS provider, AI-call provider
+- [ ] **Adapters:** Mailchimp audience/tags, SMS provider, AI-call provider
       credentials verified before flipping any sender ON.
-- [ ] **QA scripts**: run `bun test`, `bunx tsc --noEmit`, `bun run build`,
+- [ ] **QA scripts:** run `bun test`, `bunx tsc --noEmit`, `bun run build`,
       `psql -v ON_ERROR_STOP=1 -f scripts/verify-resource-sessions.sql`,
       and `scripts/scan-assets.sh` — all green.
-- [ ] **Domain + mobile**: attach domain to this project only; test every
+- [ ] **Domain + mobile:** attach domain to this project only; test every
       route on desktop and a real phone with reduced-motion enabled.
 - [ ] Republish only after all of the above pass.
 

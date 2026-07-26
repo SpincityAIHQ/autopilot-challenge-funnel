@@ -6,9 +6,21 @@ grant access.
 
 ## Event
 
-- Two-day live online implementation event: **Aug 24–25, 2026**.
-- Exact daily start times are announced to registrants and are never
-  invented in code.
+- Day 1: **Saturday, August 29, 2026 · 1:00–4:00 PM Eastern**.
+- Day 2: **Sunday, August 30, 2026 · 1:00–4:00 PM Eastern**.
+- The live room opens at **12:45 PM Eastern** both days.
+- VIP Build Lab: **Sunday, August 30, 2026 · 4:15–5:45 PM Eastern**, immediately after Day 2.
+- The 15-minute gap from 4:00–4:15 PM is the reset and live upgrade window.
+- The Summit schedule takes priority over normal recurring work blocks.
+
+## Live conversion sequence
+
+1. Day 2 closes at 4:00 PM Eastern.
+2. General Admission buyers receive the live VIP invitation and direct $77 checkout link before leaving the room.
+3. The VIP Build Lab begins at 4:15 PM Eastern while the material and urgency are still fresh.
+4. The Vault is presented during the final part of the VIP Lab.
+5. A Vault buyer is redirected to the private Strategy & Build Intensive page.
+6. Every buyer who declines an offer still reaches the correct confirmation and next-steps page for what they own.
 
 ## Sale products (four, sequential — no bundles, no tier picker)
 
@@ -27,7 +39,7 @@ Separate gated path (not part of the four-product ascension):
 
 Direct-VIP admission is **not** sold. Legacy Founder, Bundle, GA/VIP
 public tier picker, price-difference VIP upgrade math, raw query-token
-magic links, placeholder videos, and pre-August-24 dates are removed
+magic links, placeholder videos, and stale event dates are removed
 from the current funnel. Historical DB migrations remain in place as
 immutable audit history only.
 

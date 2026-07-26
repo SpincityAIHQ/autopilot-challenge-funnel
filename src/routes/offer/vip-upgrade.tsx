@@ -19,7 +19,7 @@ export const Route = createFileRoute("/offer/vip-upgrade")({
       {
         name: "description",
         content:
-          "A private next step for confirmed AI AutoPilot Summit registrants.",
+          "A private next step for confirmed AI AutoPilot Summit registrants who want the Build Lab immediately after Day 2.",
       },
       { name: "robots", content: "noindex" },
       { property: "og:title", content: "Next step — AI AutoPilot Summit" },
@@ -36,11 +36,12 @@ function VipUpgradeRoute() {
     <main className="mx-auto max-w-3xl px-5 py-12">
       <p className="eyebrow">Your next build option</p>
       <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
-        Go deeper with the VIP Implementation Experience
+        Stay for the VIP Build Lab right after Day 2
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        This page opens only after your General Admission ticket is confirmed.
-        Use the secure link in your NuAmenti email.
+        The main Summit ends Sunday at 4:00 PM Eastern. VIP starts at 4:15 PM
+        while the work is still fresh. This page opens only after your General
+        Admission ticket is confirmed.
       </p>
 
       <OfferGate
@@ -105,6 +106,9 @@ function VipUpgradeContent() {
         <h2 className="font-display text-2xl text-foreground">
           {upgrade.name} — {formatUsd(upgrade.priceCents)}
         </h2>
+        <p className="mt-3 font-heading text-[color:var(--emerald-signal)]">
+          Sunday, August 30 · 4:15–5:45 PM Eastern · immediately after Day 2
+        </p>
       </div>
 
       <section className="mt-8 surface p-6">

@@ -30,7 +30,7 @@ export const Route = createFileRoute("/checkout")({
       {
         name: "description",
         content:
-          "Join the AI AutoPilot 2-Day Summit and build the foundation for a business powered by AI agents, apps, workflows, and loops.",
+          "Join the AI AutoPilot 2-Day Summit, live Saturday August 29 and Sunday August 30 from 1:00–4:00 PM Eastern.",
       },
       { name: "robots", content: "noindex" },
       { property: "og:url", content: "/checkout" },
@@ -74,9 +74,8 @@ function Checkout() {
         Start building your AI-powered business
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Two live days to map your niche, build the core system, and structure
-        your first AI agent team. Payment is completed on a secure FanBasis
-        page.
+        Saturday, August 29 and Sunday, August 30 · 1:00–4:00 PM Eastern ·
+        live online. The room opens at 12:45 PM both days.
       </p>
 
       <FunnelVideoSlot

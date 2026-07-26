@@ -9,8 +9,13 @@
 import type { ProductId } from "./tiers";
 import { isQaReviewRuntimeEnabled } from "./qa-review";
 
-export const SUMMIT_DAY_1_ISO = "2026-08-24T00:00:00-04:00";
-export const SUMMIT_DAY_2_ISO = "2026-08-25T00:00:00-04:00";
+export const SUMMIT_TIME_ZONE = "America/New_York";
+export const SUMMIT_DAY_1_ISO = "2026-08-29T13:00:00-04:00";
+export const SUMMIT_DAY_1_END_ISO = "2026-08-29T16:00:00-04:00";
+export const SUMMIT_DAY_2_ISO = "2026-08-30T13:00:00-04:00";
+export const SUMMIT_DAY_2_END_ISO = "2026-08-30T16:00:00-04:00";
+export const VIP_LAB_START_ISO = "2026-08-30T16:15:00-04:00";
+export const VIP_LAB_END_ISO = "2026-08-30T17:45:00-04:00";
 export const SUMMIT_START_ISO = SUMMIT_DAY_1_ISO;
 export const CHALLENGE_START_ISO = SUMMIT_START_ISO;
 
@@ -27,6 +32,10 @@ export interface SectionVideoUrls {
   thankYouVip?: string;
   thankYouVault?: string;
   thankYouIntensive?: string;
+  exitGa?: string;
+  exitVip?: string;
+  exitVault?: string;
+  exitIntensive?: string;
 }
 
 export interface KeynoteConfig {
@@ -87,6 +96,10 @@ export function getCommasConfig(): CommasConfig {
       thankYouVip: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_VIP"),
       thankYouVault: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_VAULT"),
       thankYouIntensive: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_INTENSIVE"),
+      exitGa: readEnv("VITE_SUMMIT_VIDEO_EXIT_GA"),
+      exitVip: readEnv("VITE_SUMMIT_VIDEO_EXIT_VIP"),
+      exitVault: readEnv("VITE_SUMMIT_VIDEO_EXIT_VAULT"),
+      exitIntensive: readEnv("VITE_SUMMIT_VIDEO_EXIT_INTENSIVE"),
     },
     salesEnabled: readEnv("VITE_SUMMIT_SALES_ENABLED") === "true",
     legalReady: readEnv("VITE_SUMMIT_LEGAL_READY") === "true",

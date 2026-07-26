@@ -1,8 +1,7 @@
 /**
  * .ics generator for the two Summit days.
- * Times are in America/New_York. Exact start/end times are operator-
- * configured; until set, calendars use all-day event blocks so no
- * misleading clock time ships publicly.
+ * Times are locked to America/New_York and include the real three-hour
+ * implementation windows.
  */
 
 const VTIMEZONE_NY = [
@@ -38,21 +37,9 @@ export interface IcsDay {
   uid: string;
   summary: string;
   description: string;
-  dateYyyyMmDd: string; // "20260824"
-  /** Optional local times. If omitted, an all-day event is emitted. */
-  startHHmm?: string;
-  endHHmm?: string;
-}
-
-function nextDay(dateYyyyMmDd: string): string {
-  const y = Number(dateYyyyMmDd.slice(0, 4));
-  const m = Number(dateYyyyMmDd.slice(4, 6));
-  const d = Number(dateYyyyMmDd.slice(6, 8));
-  const dt = new Date(Date.UTC(y, m - 1, d + 1));
-  const yy = dt.getUTCFullYear().toString().padStart(4, "0");
-  const mm = (dt.getUTCMonth() + 1).toString().padStart(2, "0");
-  const dd = dt.getUTCDate().toString().padStart(2, "0");
-  return `${yy}${mm}${dd}`;
+  dateYyyyMmDd: string;
+  startHHmm: string;
+  endHHmm: string;
 }
 
 export function buildIcs(day: IcsDay): string {
@@ -60,16 +47,6 @@ export function buildIcs(day: IcsDay): string {
     .toISOString()
     .replace(/[-:]/g, "")
     .replace(/\.\d{3}Z$/, "Z");
-  const useTimed = Boolean(day.startHHmm && day.endHHmm);
-  const timeLines = useTimed
-    ? [
-        `DTSTART;TZID=America/New_York:${day.dateYyyyMmDd}T${day.startHHmm}`,
-        `DTEND;TZID=America/New_York:${day.dateYyyyMmDd}T${day.endHHmm}`,
-      ]
-    : [
-        `DTSTART;VALUE=DATE:${day.dateYyyyMmDd}`,
-        `DTEND;VALUE=DATE:${nextDay(day.dateYyyyMmDd)}`,
-      ];
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -80,28 +57,38 @@ export function buildIcs(day: IcsDay): string {
     "BEGIN:VEVENT",
     `UID:${day.uid}`,
     `DTSTAMP:${dtstamp}`,
-    ...timeLines,
+    `DTSTART;TZID=America/New_York:${day.dateYyyyMmDd}T${day.startHHmm}`,
+    `DTEND;TZID=America/New_York:${day.dateYyyyMmDd}T${day.endHHmm}`,
     `SUMMARY:${escapeText(day.summary)}`,
     `DESCRIPTION:${escapeText(day.description)}`,
+    "BEGIN:VALARM",
+    "TRIGGER:-PT15M",
+    "ACTION:DISPLAY",
+    `DESCRIPTION:${escapeText(day.summary)} begins in 15 minutes`,
+    "END:VALARM",
     "END:VEVENT",
     "END:VCALENDAR",
   ].join("\r\n");
 }
 
 export const SUMMIT_DAY_1: IcsDay = {
-  uid: "ai-autopilot-summit-day-1-2026-08-24@spincityhq",
-  summary: "AI AutoPilot Summit — Day 1: MAP IT",
+  uid: "ai-autopilot-summit-day-1-2026-08-29@spincityhq",
+  summary: "AI AutoPilot Summit — Day 1: Build the Business Foundation",
   description:
-    "Live online. Map your AI-powered revenue and operating system. Session start time is sent to registrants by email.",
-  dateYyyyMmDd: "20260824",
+    "Live online. Room opens at 12:45 PM Eastern. From 1:00–4:00 PM Eastern we choose the niche and problem, map the customer, offer and business numbers, design the business infrastructure, plan the internal app and set up the AI Business GPS. Use the secure room link in your NuAmenti email.",
+  dateYyyyMmDd: "20260829",
+  startHHmm: "130000",
+  endHHmm: "160000",
 };
 
 export const SUMMIT_DAY_2: IcsDay = {
-  uid: "ai-autopilot-summit-day-2-2026-08-25@spincityhq",
-  summary: "AI AutoPilot Summit — Day 2: BUILD IT",
+  uid: "ai-autopilot-summit-day-2-2026-08-30@spincityhq",
+  summary: "AI AutoPilot Summit — Day 2: Hire the AI Team",
   description:
-    "Live online. Build the AI-powered workflows that move leads, offers, and delivery. Session start time is sent to registrants by email.",
-  dateYyyyMmDd: "20260825",
+    "Live online. Room opens at 12:45 PM Eastern. From 1:00–4:00 PM Eastern we structure the AI agent team, connect workflows and improvement loops, and set up marketing, follow-up, sales and monetization. Use the secure room link in your NuAmenti email.",
+  dateYyyyMmDd: "20260830",
+  startHHmm: "130000",
+  endHHmm: "160000",
 };
 
 // Legacy aliases kept for any older imports still in the tree.

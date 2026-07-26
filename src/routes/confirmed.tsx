@@ -21,7 +21,7 @@ export const Route = createFileRoute("/confirmed")({
       {
         name: "description",
         content:
-          "Your Summit payment is being checked. Your NuAmenti access email is sent after the payment is confirmed.",
+          "Your Summit payment is being checked for the live sessions on Saturday August 29 and Sunday August 30, 1:00–4:00 PM Eastern.",
       },
       { property: "og:title", content: "AI AutoPilot Summit next step" },
       {
@@ -99,7 +99,7 @@ function Confirmed() {
         verified={verifiedGaOnly}
         eyebrow="Verified · General Admission"
         headline="Thank you, family — your General Admission seat is confirmed."
-        body="You are set for both live days. Your NuAmenti email contains the entry links and build resources."
+        body="You are set for both live days: Saturday, August 29 and Sunday, August 30 from 1:00–4:00 PM Eastern. The room opens at 12:45 PM both days."
         videoUrl={null}
         videoLabel="A note from the family — General Admission welcome"
       />
@@ -108,7 +108,7 @@ function Confirmed() {
         verified={verifiedVipNoVault}
         eyebrow="Verified · VIP Implementation Experience"
         headline="Thank you, family — your VIP access is confirmed."
-        body="You now have 30-day recordings, the live VIP Build Lab, priority questions, and deeper AI agent and workflow tools."
+        body="You have both live Summit days, 30-day recordings, priority questions, and the VIP Build Lab immediately after Day 2 on Sunday, August 30 from 4:15–5:45 PM Eastern."
         videoUrl={null}
         videoLabel="A note from the family — VIP welcome"
       />
@@ -116,23 +116,29 @@ function Confirmed() {
       <section className="mt-10 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">Save the dates</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          The Summit is live online on both days. Exact start times are sent by
-          email before the event.
+          Both Summit days run live online from 1:00–4:00 PM Eastern. The room
+          opens at 12:45 PM Eastern.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <a
             href="/calendar/day1.ics"
             className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
           >
-            Day 1 — Mon Aug 24, 2026
+            Day 1 — Sat Aug 29 · 1–4 PM ET
           </a>
           <a
             href="/calendar/day2.ics"
             className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
           >
-            Day 2 — Tue Aug 25, 2026
+            Day 2 — Sun Aug 30 · 1–4 PM ET
           </a>
         </div>
+        {verifiedVipNoVault ? (
+          <p className="mt-4 text-sm text-muted-foreground">
+            VIP Build Lab: Sunday, August 30 · 4:15–5:45 PM Eastern, immediately
+            after Day 2. Stay in the room or use the private VIP link in your email.
+          </p>
+        ) : null}
       </section>
 
       <section className="mt-10 surface p-6">

@@ -31,15 +31,20 @@ describe("every funnel exit lands on a confirmation page", () => {
     );
   });
 
-  it("uses the correct welcome-video slot for the highest purchased level", () => {
+  it("uses a separate no-upsell exit video for each final purchase level", () => {
     for (const key of [
-      "VITE_SUMMIT_VIDEO_THANK_YOU_GA",
-      "VITE_SUMMIT_VIDEO_THANK_YOU_VIP",
-      "VITE_SUMMIT_VIDEO_THANK_YOU_VAULT",
-      "VITE_SUMMIT_VIDEO_THANK_YOU_INTENSIVE",
+      "VITE_SUMMIT_VIDEO_EXIT_GA",
+      "VITE_SUMMIT_VIDEO_EXIT_VIP",
+      "VITE_SUMMIT_VIDEO_EXIT_VAULT",
+      "VITE_SUMMIT_VIDEO_EXIT_INTENSIVE",
     ]) {
       expect(NEXT_STEPS).toContain(key);
     }
+  });
+
+  it("keeps the VIP Build Lab immediately after Day 2", () => {
+    expect(NEXT_STEPS).toContain("Sunday, August 30 · 4:15–5:45 PM Eastern");
+    expect(NEXT_STEPS).toContain("15 minutes after Day 2 ends");
   });
 });
 
