@@ -76,24 +76,36 @@ function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
             PUT THE WORK ON AUTOPILOT.
           </span>
         </h1>
-        <p className="mt-6 max-w-3xl font-heading text-lg text-muted-foreground sm:text-xl">
-          In two live days, you will choose the niche you want to serve, build
-          the core business system, and learn how to hire AI agents that
-          research, analyze, do the math, market, follow up, and improve the
-          work.
-        </p>
-        <p className="mt-3 max-w-3xl text-sm text-muted-foreground sm:text-base">
-          This is not just prompting. You will build connected workflows,
-          loops, and internal tools your business can use again and again.
-        </p>
       </div>
 
       <FunnelVideoSlot
         url={heroVideoUrl}
         label="Watch the official Summit invitation"
         envKey="VITE_SUMMIT_VIDEO_HERO"
-        className="mt-10 max-w-4xl"
+        className="mt-7 max-w-4xl"
       />
+
+      <div className="mt-5 max-w-4xl">
+        <Link
+          to="/checkout"
+          className="inline-flex w-full items-center justify-center rounded-md bg-primary px-6 py-3.5 font-heading text-base font-semibold text-primary-foreground shadow-[0_0_28px_rgba(218,177,72,0.18)] transition hover:opacity-90 sm:w-auto"
+        >
+          Reserve Your Seat
+        </Link>
+      </div>
+
+      <div className="mt-6 max-w-3xl border-l-2 border-[color:var(--emerald-signal)]/35 pl-4">
+        <p className="font-heading text-lg text-muted-foreground sm:text-xl">
+          In two live days, you will choose the niche you want to serve, build
+          the core business system, and learn how to hire AI agents that
+          research, analyze, do the math, market, follow up, and improve the
+          work.
+        </p>
+        <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+          This is not just prompting. You will build connected workflows,
+          loops, and internal tools your business can use again and again.
+        </p>
+      </div>
 
       <div className="mt-8 grid max-w-4xl gap-4 sm:grid-cols-2">
         <article className="surface-raised border-[color:var(--gold)]/40 p-5">
@@ -119,15 +131,6 @@ function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
       <div className="mt-8 max-w-md">
         <p className="label-mono mb-3">Day 1 begins in</p>
         <Countdown />
-      </div>
-
-      <div className="mt-10 flex flex-wrap gap-3">
-        <Link
-          to="/checkout"
-          className="inline-flex items-center rounded-md bg-primary px-6 py-3 font-heading text-base font-semibold text-primary-foreground shadow-[0_0_28px_rgba(218,177,72,0.18)] transition hover:opacity-90"
-        >
-          Reserve Your Seat
-        </Link>
       </div>
       <div className="mt-6 gold-rule max-w-md" />
     </section>
@@ -529,7 +532,7 @@ function FinalCta() {
       <div className="mt-7 flex flex-wrap justify-center gap-3">
         <Link
           to="/checkout"
-          className="inline-flex items-center rounded-md bg-primary px-6 py-3 font-heading text-base font-semibold text-primary-foreground shadow-[0_0_28px_rgba(218,177,72,0.18)] transition hover:opacity-90"
+          className="inline-flex w-full items-center justify-center rounded-md bg-primary px-6 py-3 font-heading text-base font-semibold text-primary-foreground shadow-[0_0_28px_rgba(218,177,72,0.18)] transition hover:opacity-90 sm:w-auto"
         >
           Reserve Your Seat
         </Link>
