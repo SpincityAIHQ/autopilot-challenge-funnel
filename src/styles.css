@@ -5,10 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * AUTOPILOT Challenge Funnel — Diamond Standard / Galactic Black
- * Near-black surfaces, restrained gold, emerald signal accents.
- * No runtime web-font requests; type stack is provided via CSS variables
- * with strong local/system fallbacks (Orbitron, Rajdhani, Space Mono, Inter).
+ * AI AutoPilot 2-Day Summit — NuAmenti visual system.
+ * Deep cosmic black, polished gold, and emerald signal light.
+ * No runtime web-font requests; local/system fallbacks stay in place.
  */
 
 @theme inline {
@@ -54,46 +53,46 @@
 }
 
 :root {
-  --radius: 0.5rem;
+  --radius: 0.6rem;
 
-  /* Galactic Black surfaces */
-  --background: oklch(0.14 0.01 260);
-  --foreground: oklch(0.96 0.005 250);
-  --surface-1: oklch(0.17 0.012 260);
-  --surface-2: oklch(0.20 0.014 260);
-  --surface-3: oklch(0.24 0.015 262);
+  /* Deep cosmic black */
+  --background: oklch(0.095 0.014 255);
+  --foreground: oklch(0.97 0.008 250);
+  --surface-1: oklch(0.135 0.018 255);
+  --surface-2: oklch(0.17 0.022 255);
+  --surface-3: oklch(0.21 0.025 258);
 
-  --card: oklch(0.17 0.012 260);
-  --card-foreground: oklch(0.96 0.005 250);
-  --popover: oklch(0.17 0.012 260);
-  --popover-foreground: oklch(0.96 0.005 250);
+  --card: var(--surface-1);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface-1);
+  --popover-foreground: var(--foreground);
 
-  /* Restrained gold */
-  --gold: oklch(0.78 0.10 85);
-  --gold-soft: oklch(0.62 0.07 85);
+  /* Polished gold */
+  --gold: oklch(0.84 0.13 84);
+  --gold-soft: oklch(0.66 0.09 83);
 
-  /* Emerald signal accent */
-  --emerald-signal: oklch(0.74 0.14 160);
+  /* Emerald signal */
+  --emerald-signal: oklch(0.78 0.18 157);
 
-  --primary: oklch(0.78 0.10 85);          /* gold as primary */
-  --primary-foreground: oklch(0.14 0.01 260);
-  --secondary: oklch(0.22 0.014 260);
-  --secondary-foreground: oklch(0.96 0.005 250);
-  --muted: oklch(0.22 0.014 260);
-  --muted-foreground: oklch(0.72 0.015 258);
-  --accent: oklch(0.74 0.14 160);          /* emerald as accent */
-  --accent-foreground: oklch(0.14 0.01 260);
+  --primary: var(--gold);
+  --primary-foreground: oklch(0.10 0.012 255);
+  --secondary: oklch(0.18 0.022 255);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.18 0.022 255);
+  --muted-foreground: oklch(0.74 0.018 255);
+  --accent: var(--emerald-signal);
+  --accent-foreground: oklch(0.09 0.014 255);
   --destructive: oklch(0.60 0.20 25);
   --destructive-foreground: oklch(0.98 0.005 250);
 
-  --hairline: oklch(1 0 0 / 8%);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.78 0.10 85 / 60%);
+  --hairline: oklch(1 0 0 / 9%);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.84 0.13 84 / 65%);
 }
 
 .dark {
-  /* Same tokens — the funnel is dark by default */
+  /* Dark is the default product theme. */
 }
 
 @layer base {
@@ -114,45 +113,66 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     background-image:
-      radial-gradient(1200px 600px at 50% -10%, oklch(0.24 0.03 260 / 0.55), transparent 60%),
-      radial-gradient(800px 500px at 90% 110%, oklch(0.22 0.06 160 / 0.18), transparent 65%);
+      radial-gradient(900px 520px at 10% -5%, oklch(0.30 0.08 155 / 0.20), transparent 62%),
+      radial-gradient(1050px 620px at 92% 4%, oklch(0.38 0.09 84 / 0.12), transparent 64%),
+      radial-gradient(900px 650px at 50% 112%, oklch(0.28 0.08 158 / 0.15), transparent 68%),
+      linear-gradient(oklch(1 0 0 / 0.018) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(1 0 0 / 0.018) 1px, transparent 1px);
+    background-size: auto, auto, auto, 52px 52px, 52px 52px;
     background-attachment: fixed;
   }
 
-  h1, h2, h3, h4, h5 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
     font-family: var(--font-heading);
     letter-spacing: 0.01em;
   }
 
-  .font-display { font-family: var(--font-display); letter-spacing: 0.06em; }
-  .font-heading { font-family: var(--font-heading); }
-  .font-mono    { font-family: var(--font-mono); }
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: 0.055em;
+  }
+
+  .font-heading {
+    font-family: var(--font-heading);
+  }
+
+  .font-mono {
+    font-family: var(--font-mono);
+  }
 
   ::selection {
-    background: color-mix(in oklab, var(--gold) 40%, transparent);
+    background: color-mix(in oklab, var(--emerald-signal) 38%, transparent);
     color: var(--foreground);
   }
 }
 
-/* Surfaces */
 @utility surface {
-  background-color: var(--surface-1);
+  background:
+    linear-gradient(180deg, oklch(0.19 0.024 255 / 0.82), oklch(0.125 0.016 255 / 0.96));
   border: 1px solid var(--hairline);
   border-radius: var(--radius-lg);
+  box-shadow: 0 18px 45px -36px oklch(0 0 0 / 0.95);
 }
+
 @utility surface-raised {
-  background: linear-gradient(180deg, var(--surface-2), var(--surface-1));
+  background:
+    linear-gradient(145deg, oklch(0.22 0.028 255 / 0.92), oklch(0.135 0.018 255 / 0.98));
   border: 1px solid var(--hairline);
   border-radius: var(--radius-lg);
   box-shadow:
-    0 1px 0 0 oklch(1 0 0 / 4%) inset,
-    0 24px 60px -30px oklch(0 0 0 / 0.6);
+    0 1px 0 0 oklch(1 0 0 / 5%) inset,
+    0 30px 70px -42px oklch(0 0 0 / 0.92),
+    0 0 35px -30px var(--emerald-signal);
 }
+
 @utility hairline {
   border: 1px solid var(--hairline);
 }
 
-/* Gold rule / label */
 @utility eyebrow {
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -160,6 +180,7 @@
   text-transform: uppercase;
   color: var(--gold);
 }
+
 @utility label-mono {
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -168,27 +189,46 @@
   color: var(--muted-foreground);
 }
 
-/* Gold hairline divider */
 @utility gold-rule {
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-soft), transparent);
-  opacity: 0.6;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold-soft),
+    var(--gold),
+    var(--gold-soft),
+    transparent
+  );
+  opacity: 0.78;
+  box-shadow: 0 0 14px color-mix(in oklab, var(--gold) 35%, transparent);
 }
 
-/* Motion — respects reduced-motion */
 @utility rise-in {
   animation: rise-in 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
+
 @keyframes rise-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .rise-in { animation: none; }
-  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Focus */
+@media (prefers-reduced-motion: reduce) {
+  .rise-in {
+    animation: none;
+  }
+
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
 @layer base {
   :focus-visible {
     outline: 2px solid var(--gold);
