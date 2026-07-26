@@ -9,7 +9,8 @@ minimum bar to sell.
 - Day 1: Saturday, August 29, 2026 · 1:00–4:00 PM Eastern
 - Day 2: Sunday, August 30, 2026 · 1:00–4:00 PM Eastern
 - Room opens: 12:45 PM Eastern both days
-- VIP Build Lab: Thursday, September 3, 2026 · 7:00–9:00 PM Eastern
+- VIP Build Lab: Sunday, August 30, 2026 · 4:15–5:45 PM Eastern, immediately after Day 2
+- Live upgrade/reset window: Sunday, August 30 · 4:00–4:15 PM Eastern
 
 ## P0 — must be green before publish
 
@@ -73,6 +74,14 @@ scope from the HttpOnly session — not from `?tier=` and not from the URL.
 - [ ] Additional hosts (if any) in `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS` (comma-separated).
 - [ ] `VITE_SUMMIT_SALES_ENABLED=true` only when GA + all upsell URLs above resolve and `VITE_SUMMIT_LEGAL_READY=true`.
 
+### Live Day 2 ascension
+- [ ] At 3:45 PM Eastern, the GA-only VIP link is placed in the live chat and pinned.
+- [ ] The GA-only email and consented SMS are scheduled for the live VIP close.
+- [ ] The 4:00–4:15 PM break screen keeps the VIP link visible.
+- [ ] Only verified VIP buyers enter the 4:15–5:45 PM Build Lab.
+- [ ] The Vault link is ready for the final part of the VIP Lab.
+- [ ] Vault purchases redirect to `/strategy-intensive`; buyers who decline return to their correct `/next-steps` confirmation.
+
 ### Delivery (email)
 - [ ] Mailchimp audience created; one primary audience with tags and `SUMMITLVL` merge field.
 - [ ] Exact tags from `docs/email-segmentation-map.md` created before any journey is activated.
@@ -85,11 +94,11 @@ scope from the HttpOnly session — not from `?tier=` and not from the URL.
 ### Schedule and content
 - [ ] Landing page, checkout, confirmation pages, next-steps page, and metadata all say Aug 29–30, 1:00–4:00 PM Eastern.
 - [ ] Every Day 1 and Day 2 calendar file carries the real start/end time and a 15-minute reminder.
-- [ ] VIP page, VIP confirmation, VIP emails, and VIP scripts say Sep 3, 7:00–9:00 PM Eastern.
-- [ ] No stale references to Aug 1–2, Aug 24–25, Monday/Tuesday, all-day calendar placeholders, Founder, Bundle, or legacy prices anywhere.
+- [ ] VIP page, VIP confirmation, VIP emails, and VIP scripts say Sun Aug 30, 4:15–5:45 PM Eastern, immediately after Day 2.
+- [ ] No stale references to Aug 1–2, Aug 24–25, Monday/Tuesday, Sep 3 VIP Lab, all-day calendar placeholders, Founder, Bundle, or legacy prices anywhere.
 - [ ] Public landing page `/` shows NO price strings ($22 / $77 / $199 / $1,000) and NO links to `/offer/*`, `/strategy-intensive`, `/apply/mentorship`, or `/next-keynote`.
 - [ ] `/checkout` exposes only General Admission ($22); any legacy `?tier=vip` link normalizes to GA.
-- [ ] Video URLs (`VITE_SUMMIT_VIDEO_HERO`, `_CHECKOUT`, `_VIP_OFFER`, and the four thank-you slots) either set to approved embed URLs or left empty.
+- [ ] Offer video URLs and four final exit video URLs are either set to approved embeds or left empty.
 - [ ] VSL, funnel videos, emails, SMS, and AI-call scripts use the same simple promise and the same schedule.
 
 ### Testimonials (one slot per funnel page)
@@ -110,7 +119,7 @@ scope from the HttpOnly session — not from `?tier=` and not from the URL.
 - [ ] `SMS_ENABLED=true`, `SMS_PROVIDER=twilio`, `SMS_FROM`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` set.
 - [ ] STOP / HELP handling verified end-to-end.
 - [ ] Quiet-hours (buyer-local 8pm–9am) enforced in outbox worker.
-- [ ] Schedule reminders tested for Aug 28, Aug 29, Aug 30, and Sep 3 VIP only.
+- [ ] Schedule reminders tested for Aug 28, Aug 29, and Aug 30, including the GA-only 3:50 PM VIP invitation.
 
 ### AI / prerecorded calls
 - [ ] Provider selected + registered caller ID.
