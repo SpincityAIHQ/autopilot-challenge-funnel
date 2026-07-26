@@ -79,22 +79,22 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 const JSON_LD_EVENT = {
   "@context": "https://schema.org",
   "@type": "Event",
-  name: "AI AutoPilot Summit",
+  name: "AI AutoPilot 2-Day Summit",
   description:
-    "Two-day live online implementation Summit. Map It on Day 1, Build It on Day 2. Leave with a starter Autonomy Map and a first AI-assisted workflow to keep building.",
+    "A two-day live online build event from SpinCityHQ and NuAmenti. Attendees map the business foundation, set up an AI Business GPS, plan an internal app, structure AI agent jobs, and connect marketing and monetization workflows.",
   startDate: "2026-08-24",
   endDate: "2026-08-25",
   eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
   eventStatus: "https://schema.org/EventScheduled",
   organizer: {
     "@type": "Organization",
-    name: "NuAmenti × Perfect AIM",
+    name: "SpinCityHQ & NuAmenti",
     email: "Info@NuAmenti.com",
   },
   subEvent: [
     {
       "@type": "Event",
-      name: "AI AutoPilot Summit — Day 1: Map It",
+      name: "AI AutoPilot 2-Day Summit — Day 1: Build the Business Foundation",
       startDate: "2026-08-24",
       endDate: "2026-08-24",
       eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
@@ -102,7 +102,7 @@ const JSON_LD_EVENT = {
     },
     {
       "@type": "Event",
-      name: "AI AutoPilot Summit — Day 2: Build It",
+      name: "AI AutoPilot 2-Day Summit — Day 2: Hire the AI Team",
       startDate: "2026-08-25",
       endDate: "2026-08-25",
       eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
@@ -117,24 +117,29 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       meta: [
         { charSet: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
-        { title: "NuAmenti × Perfect AIM — AI AutoPilot Summit" },
+        {
+          title: "AI AutoPilot 2-Day Summit — SpinCityHQ & NuAmenti",
+        },
         {
           name: "description",
           content:
-            "Two-day live online implementation Summit from NuAmenti × Perfect AIM. Map three AI-assist workflow candidates and build the first working prototype.",
+            "Build the business system, structure an AI agent team, and connect workflows that research, analyze, do the math, market, follow up, and improve.",
         },
-        { name: "author", content: "NuAmenti × Perfect AIM" },
-        { name: "theme-color", content: "#090d12" },
-        { property: "og:site_name", content: "NuAmenti × Perfect AIM" },
+        { name: "author", content: "SpinCityHQ & NuAmenti" },
+        { name: "theme-color", content: "#070b0d" },
+        {
+          property: "og:site_name",
+          content: "AI AutoPilot 2-Day Summit",
+        },
         { property: "og:type", content: "website" },
         {
           property: "og:title",
-          content: "NuAmenti × Perfect AIM — AI AutoPilot Summit",
+          content: "AI AutoPilot 2-Day Summit — SpinCityHQ & NuAmenti",
         },
         {
           property: "og:description",
           content:
-            "Map It. Build It. Put AI to work with human authority and perfect aim.",
+            "Stop just prompting. Build the system, hire the AI team, and put repeatable business work on autopilot.",
         },
         { name: "twitter:card", content: "summary_large_image" },
       ],
