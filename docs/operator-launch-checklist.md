@@ -1,8 +1,8 @@
 # Operator Launch Checklist
 
 Preview stays private until every P0 item is green. Nothing here fulfills
-automatically — real payment webhook + verified magic-link email are the
-minimum bar to sell.
+automatically — real payment confirmation, verified identity, and the secure
+post-purchase path are the minimum bar to sell.
 
 ## Locked event schedule
 
@@ -17,10 +17,11 @@ minimum bar to sell.
 ### Legal (blocking)
 - [ ] Counsel-approved Privacy, Terms, and Refund Policy replace the pre-launch drafts at `/privacy`, `/terms`, `/refund-policy`.
 - [ ] Final per-product refund windows posted and required to be accepted at checkout before payment is possible.
+- [ ] Saved-card CTA clearly states the exact amount, card brand/last four, one-time charge, and no subscription.
 - [ ] Intensive slot-release language reflects the atomic-inventory reality (refund releases the slot back into the pool).
 
 ### Verified post-purchase identity + secure offer links
-- [ ] End-to-end test: a verified GA buyer receives the NuAmenti access email, opens the magic link, lands a scoped HttpOnly session, and only then sees enabled checkout on `/offer/vip-upgrade` (and the "already have this" state after upgrading).
+- [ ] End-to-end test: a verified GA buyer receives the NuAmenti access email, opens the magic link, lands a scoped HttpOnly session, and only then sees enabled VIP purchase action.
 - [ ] Same test for Vault and Intensive: eligibility gates on `/offer/implementation-vault` and `/strategy-intensive` fail closed when not signed in.
 - [ ] Sample without cookie hits `entitlement-summary` and receives `authenticated: false, scopes: []`.
 - [ ] GA, VIP, Vault, and Intensive buyers each see the correct confirmation on `/next-steps`.
@@ -35,24 +36,22 @@ minimum bar to sell.
 
 Public site sells only General Admission at $22. Every later product is
 offered post-verification, one at a time. Four current sale products only —
-direct-VIP admission is NOT a current product, so no legacy direct-VIP
-env var or product ID is required.
+direct-VIP admission is NOT a current product.
 
 - [ ] Live product IDs exist for GA ($22), VIP Implementation Experience ($77), Vault ($199), Intensive ($1,000).
 - [ ] All 4 IDs set as env: `COMMAS_PRODUCT_ID_GA`, `_VIP_UPGRADE`, `_VAULT`, `_INTENSIVE`.
 - [ ] `COMMAS_WEBHOOK_SECRET` set (strong random, minted outside this app).
 - [ ] `COMMAS_WEBHOOKS_ENABLED=true`.
-- [ ] Signed sample `payment.succeeded` POST to `/api/public/webhooks/commas` returns `ok` and creates a `summit_registrations` row.
+- [ ] Signed sample `payment.succeeded` POST to `/api/public/webhooks/commas` returns `ok` and creates the expected entitlement.
 - [ ] Signed sample `payment.refunded` POST reverses only the entitlement matching `source_payment_id`.
 - [ ] Sample without signature returns 401. Sample with wrong currency returns 200 with `rejected` status.
-- [ ] Server-side preconditions verified: VIP fulfillment REJECTS a buyer with no active GA; Vault fulfillment REJECTS a buyer with GA only; Intensive fulfillment REJECTS a buyer with GA/VIP but no Vault (unless listed in `intensive_eligibility`).
+- [ ] Server-side preconditions verified: VIP REJECTS no active GA; Vault REJECTS GA only; Intensive REJECTS no Vault unless explicitly eligible.
 
 ### Commas / FanBasis success redirects (external configuration)
 
-Configured on the checkout product itself — this app does NOT set the
-return URL. Every URL below is same-origin and safe to reveal (no PII in
-the query string). Neither this app nor the redirect ever proves purchase;
-fulfillment is authoritative via the signed webhook.
+Configured on the checkout product itself — this app does NOT set the return
+URL. Every URL below is same-origin and contains no PII. Neither the redirect
+nor a query string proves purchase.
 
 | Product                        | Price   | Success return URL                     |
 |--------------------------------|---------|----------------------------------------|
@@ -61,96 +60,115 @@ fulfillment is authoritative via the signed webhook.
 | Implementation Vault           | $199    | `/strategy-intensive`                  |
 | Strategy & Build Intensive     | $1,000  | `/next-steps`                          |
 
-Anonymous visits to any of the pages above see neutral operator-verification
-copy. The product-specific "Thank you, family" gratitude and the next-offer
-CTA render only after `entitlement-summary` confirms the required prior
-scope from the HttpOnly session — not from `?tier=` and not from the URL.
-
 ### Checkout URLs (browser-visible)
 - [ ] `VITE_COMMAS_CHECKOUT_URL_GA` — HTTPS, allowlisted host.
-- [ ] `VITE_COMMAS_CHECKOUT_URL_VIP_UPGRADE` — HTTPS, allowlisted host.
-- [ ] `VITE_COMMAS_CHECKOUT_URL_VAULT` — HTTPS, allowlisted host.
-- [ ] `VITE_COMMAS_CHECKOUT_URL_INTENSIVE` — HTTPS, allowlisted host.
-- [ ] Additional hosts (if any) in `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS` (comma-separated).
-- [ ] `VITE_SUMMIT_SALES_ENABLED=true` only when GA + all upsell URLs above resolve and `VITE_SUMMIT_LEGAL_READY=true`.
+- [ ] `VITE_COMMAS_CHECKOUT_URL_VIP_UPGRADE` — HTTPS fallback even when one-click is active.
+- [ ] `VITE_COMMAS_CHECKOUT_URL_VAULT` — HTTPS fallback even when one-click is active.
+- [ ] `VITE_COMMAS_CHECKOUT_URL_INTENSIVE` — HTTPS; Intensive always uses full checkout.
+- [ ] Additional hosts (if any) in `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS`.
+- [ ] `VITE_SUMMIT_SALES_ENABLED=true` only when all links resolve and `VITE_SUMMIT_LEGAL_READY=true`.
+
+### Saved-card one-click VIP + Vault
+- [ ] Migration `20260726074500_one_click_charge_attempts.sql` applied.
+- [ ] Sandbox API key added as `COMMAS_API_KEY`.
+- [ ] `COMMAS_API_ENV=sandbox` during all testing.
+- [ ] `COMMAS_ONE_CLICK_ENABLED=true` only in the sandbox test environment first.
+- [ ] GA sandbox buyer sees the exact saved-card brand/last four and $77 amount.
+- [ ] One click creates exactly one VIP charge, entitlement, and continuation to the Vault.
+- [ ] VIP sandbox buyer sees the exact saved-card brand/last four and $199 amount.
+- [ ] One click creates exactly one Vault charge, entitlement, and continuation to the Intensive.
+- [ ] Double tap, refresh, duplicate POST, timeout, and API 409 never create a second charge.
+- [ ] Missing card, API unavailable, and declined charge fall back to the normal Commas checkout.
+- [ ] Unknown charge status removes the charge button and tells the buyer not to retry.
+- [ ] Browser source contains no API key, customer ID, payment-method ID, buyer email, or full card data.
+- [ ] Intensive has NO one-click path; full checkout and real seat inventory remain required.
+- [ ] One controlled live internal purchase passes before `COMMAS_API_ENV=production` is used publicly.
+
+See `docs/video-first-and-one-click-setup.md` for the complete test matrix.
 
 ### Live Day 2 ascension
-- [ ] At 3:45 PM Eastern, the GA-only VIP link is placed in the live chat and pinned.
+- [ ] At 3:45 PM Eastern, the GA-only VIP action is placed in the live chat and pinned.
 - [ ] The GA-only email and consented SMS are scheduled for the live VIP close.
-- [ ] The 4:00–4:15 PM break screen keeps the VIP link visible.
+- [ ] The 4:00–4:15 PM break screen keeps the VIP action visible.
 - [ ] Only verified VIP buyers enter the 4:15–5:45 PM Build Lab.
-- [ ] The Vault link is ready for the final part of the VIP Lab.
-- [ ] Vault purchases redirect to `/strategy-intensive`; buyers who decline return to their correct `/next-steps` confirmation.
+- [ ] The Vault action is ready for the final part of the VIP Lab.
+- [ ] Vault buyers continue to `/strategy-intensive`; declines reach the right `/next-steps` confirmation.
 
 ### Delivery (email)
 - [ ] Mailchimp audience created; one primary audience with tags and `SUMMITLVL` merge field.
 - [ ] Exact tags from `docs/email-segmentation-map.md` created before any journey is activated.
 - [ ] GA, VIP, Vault, and Intensive journeys use the locked dates and times.
 - [ ] `MAILCHIMP_ENABLED=true`, `MAILCHIMP_API_KEY`, `MAILCHIMP_AUDIENCE_ID`, `MAILCHIMP_SENDER_EMAIL`, `MAILCHIMP_SERVER_PREFIX` set.
-- [ ] Verified sender + physical address (SpincityHQ LLC · Atlanta, GA) configured.
-- [ ] Welcome email template exists; access magic-link template exists.
-- [ ] `delivery_outbox` gets a row per intended send (no direct SDK calls elsewhere).
+- [ ] Verified sender + physical address configured.
+- [ ] Welcome email and access magic-link templates exist.
+- [ ] `delivery_outbox` gets one row per intended send.
 
-### Schedule and content
-- [ ] Landing page, checkout, confirmation pages, next-steps page, and metadata all say Aug 29–30, 1:00–4:00 PM Eastern.
-- [ ] Every Day 1 and Day 2 calendar file carries the real start/end time and a 15-minute reminder.
-- [ ] VIP page, VIP confirmation, VIP emails, and VIP scripts say Sun Aug 30, 4:15–5:45 PM Eastern, immediately after Day 2.
-- [ ] No stale references to Aug 1–2, Aug 24–25, Monday/Tuesday, Sep 3 VIP Lab, all-day calendar placeholders, Founder, Bundle, or legacy prices anywhere.
-- [ ] Public landing page `/` shows NO price strings ($22 / $77 / $199 / $1,000) and NO links to `/offer/*`, `/strategy-intensive`, `/apply/mentorship`, or `/next-keynote`.
-- [ ] `/checkout` exposes only General Admission ($22); any legacy `?tier=vip` link normalizes to GA.
-- [ ] Offer video URLs and four final exit video URLs are either set to approved embeds or left empty.
-- [ ] VSL, funnel videos, emails, SMS, and AI-call scripts use the same simple promise and the same schedule.
+### Schedule, content, and video-first UI
+- [ ] Landing, checkout, confirmation, next-steps, and metadata all say Aug 29–30, 1:00–4:00 PM Eastern.
+- [ ] Calendar files carry real times and 15-minute reminders.
+- [ ] VIP copy says Sun Aug 30, 4:15–5:45 PM Eastern, immediately after Day 2.
+- [ ] No stale Aug 1–2, Aug 24–25, Monday/Tuesday, Sep 3 VIP, Founder, Bundle, or legacy prices.
+- [ ] Public landing page shows no prices and no direct later-offer links.
+- [ ] `/checkout` exposes only General Admission ($22).
+- [ ] Every funnel page renders `headline → video → primary action → optional reading`.
+- [ ] Landing VSL appears before the supporting small print.
+- [ ] All join/upgrade buttons are full-width on mobile and immediately below the video.
+- [ ] Every funnel video autoplays muted/inline where allowed and shows “tap for sound.”
+- [ ] Final YouTube/Vimeo videos tested on real iPhone and Android devices.
+- [ ] Offer and four exit video URLs are set or intentionally empty.
+- [ ] VSL, emails, SMS, calls, and live scripts use one promise and one schedule.
 
-### Testimonials (one slot per funnel page)
-- [ ] Real, released video/text testimonials loaded into `src/lib/testimonials.ts` with `status: "published"` — or the array left empty (nothing renders otherwise).
-- [ ] Per-page video env slots either set to an approved-host embed URL or left empty: `VITE_TESTIMONIAL_VIDEO_LANDING`, `_CHECKOUT`, `_CONFIRMED`, `_VIP`, `_VAULT`, `_INTENSIVE`.
-- [ ] Signed release on file for every published testimonial (see `docs/testimonial-scripts.md`).
-- [ ] Every numeric claim in a published testimonial is backed by client-provided evidence.
+### Testimonials
+- [ ] Real, released testimonials are `status: "published"`; empty means nothing renders.
+- [ ] Per-page testimonial video env slots are set or intentionally empty.
+- [ ] Signed release on file for every published testimonial.
+- [ ] Every numeric claim is backed by client-provided evidence.
 
 ### Security
-- [ ] `security--run_security_scan` shows no new findings.
-- [ ] `anon` / `authenticated` still have zero table privileges.
-- [ ] `service_role` has only `SELECT/INSERT/UPDATE/DELETE` on required tables.
+- [ ] Security scan shows no new findings.
+- [ ] `anon` / `authenticated` have zero table access to payment, identity, and one-click audit data.
+- [ ] `service_role` has only required privileges.
+- [ ] `/api/public/one-click-offer` requires same-origin, rate limit, verified session, entitlement, explicit click, and duplicate reservation.
 
 ## P1 — before advertising broadly
 
 ### SMS
 - [ ] Registered sender / short code approved.
-- [ ] `SMS_ENABLED=true`, `SMS_PROVIDER=twilio`, `SMS_FROM`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` set.
+- [ ] SMS provider credentials set.
 - [ ] STOP / HELP handling verified end-to-end.
-- [ ] Quiet-hours (buyer-local 8pm–9am) enforced in outbox worker.
-- [ ] Schedule reminders tested for Aug 28, Aug 29, and Aug 30, including the GA-only 3:50 PM VIP invitation.
+- [ ] Quiet-hours enforced.
+- [ ] Schedule reminders tested, including GA-only live VIP invitation.
 
 ### AI / prerecorded calls
 - [ ] Provider selected + registered caller ID.
-- [ ] `AI_CALL_ENABLED=true`, `AI_CALL_PROVIDER`, `AI_CALL_CALLER_ID`.
-- [ ] Seller-specific written consent copy version stored.
-- [ ] Internal suppression + DNC integration confirmed.
-- [ ] AI disclosure at call start + one-touch opt-out verified.
-- [ ] Call script says the exact Summit schedule and never calls people who did not consent.
+- [ ] AI-call credentials set.
+- [ ] Seller-specific written consent stored.
+- [ ] DNC and suppression confirmed.
+- [ ] AI disclosure + one-touch opt-out verified.
+- [ ] Script says exact Summit schedule.
 
 ### Ascension paths
-- [ ] Intensive: 10 slots seeded; `intensive_eligibility` list matches NuAmenti + Summit attendees.
-- [ ] Mentorship application form live; review cadence defined.
-- [ ] Keynote priority list capture + email confirmation active.
+- [ ] Intensive: 10 slots seeded; eligibility list reviewed.
+- [ ] Mentorship application live; review cadence defined.
+- [ ] Keynote priority capture active.
 
 ### Attribution / affiliates
-- [ ] `affiliate-registry.ts` populated with real owners; every entry either `placeholder` or `live`.
-- [ ] Live entries render with `rel="sponsored nofollow noopener noreferrer"`.
-- [ ] Attribution persistence remains BLOCKED until a signed Commas sample confirms the exact metadata / custom-field name for first/last-touch. Client-side UTM capture + affiliate registry stay safe; server persists `null` until unblocked.
+- [ ] Affiliate registry populated with real owners.
+- [ ] Live links use sponsored/nofollow/noopener/noreferrer.
+- [ ] Attribution persistence remains blocked until Commas metadata field is confirmed by a signed sample.
 
 ## P2 — nice-to-have
 
-- [ ] JSON-LD `Event` schema for the Summit on the landing page.
-- [ ] OG images regenerated for all shareable routes.
-- [ ] Print-friendly resource previews tested on paper.
-- [ ] Canonical routes: `/offer/vip-upgrade`, `/offer/implementation-vault`, `/next-keynote`, `/next-steps`, `/strategy-intensive`, `/apply/mentorship` render directly. Legacy `/vault`, `/keynote`, `/mentorship`, `/intensive`, `/offer/keynote`, `/offer/mentorship`, `/offer/strategy-intensive` redirect TO the canonicals (never the reverse).
-- [ ] Attribution persistence is BLOCKED until the exact Commas metadata / custom-field name for first/last-touch is confirmed by a signed sample payload. Client-side UTM capture + affiliate registry remain safe; server persists `null` until unblocked.
+- [ ] JSON-LD `Event` schema.
+- [ ] OG images regenerated.
+- [ ] Print-friendly resources tested.
+- [ ] Canonical routes and legacy redirects verified.
 
 ## Verify before publish
 
 ```bash
-bun test src/tests/       # expect all green
-bunx tsc --noEmit         # expect clean
-bun run build             # expect clean
+bun test src/tests/
+bunx tsc --noEmit
+bun run build
+scripts/scan-assets.sh
 ```
