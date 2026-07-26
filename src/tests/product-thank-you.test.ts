@@ -1,8 +1,9 @@
 /**
  * Product-specific thank-you copy + anonymous non-disclosure.
  *
- * Each continuation page carries a product-specific thank-you message that is
- * shown only after the secure session proves the buyer owns that product.
+ * Offer pages carry the purchase thank-you that introduces the next optional
+ * step. `/next-steps` carries a separate no-upsell confirmation for the
+ * highest verified level the buyer owns.
  */
 import { describe, expect, it } from "bun:test";
 import { readFileSync } from "node:fs";
@@ -49,14 +50,21 @@ describe("verified product-specific thank-you copy", () => {
     expect(INTENSIVE.slice(0, gateAt)).not.toContain(VAULT_THANKS);
   });
 
-  it("Intensive thank-you lives on /next-steps and stays gated", () => {
+  it("next-steps contains a no-upsell confirmation for every final level", () => {
+    expect(NEXT_STEPS).toContain(GA_THANKS);
+    expect(NEXT_STEPS).toContain(
+      "Thank you, family — your General Admission and VIP access are confirmed.",
+    );
+    expect(NEXT_STEPS).toContain(
+      "Thank you, family — your Summit, VIP, and Implementation Vault access are confirmed.",
+    );
     expect(NEXT_STEPS).toContain(INTENSIVE_THANKS);
-    expect(NEXT_STEPS).toContain("verified={verifiedIntensive}");
+    expect(NEXT_STEPS).toContain("getExitConfirmation");
     expect(NEXT_STEPS).toContain("access.hasIntensive");
     expect(NEXT_STEPS).toContain("scheduling link");
   });
 
-  it("no page mixes another product thank-you into an unrelated shell", () => {
+  it("offer pages do not mix unrelated product thank-yous into their shells", () => {
     expect(VAULT).not.toContain(GA_THANKS);
     expect(VAULT).not.toContain(VAULT_THANKS);
     expect(VAULT).not.toContain(INTENSIVE_THANKS);
@@ -64,10 +72,6 @@ describe("verified product-specific thank-you copy", () => {
     expect(INTENSIVE).not.toContain(GA_THANKS);
     expect(INTENSIVE).not.toContain(VIP_THANKS);
     expect(INTENSIVE).not.toContain(INTENSIVE_THANKS);
-
-    expect(NEXT_STEPS).not.toContain(GA_THANKS);
-    expect(NEXT_STEPS).not.toContain(VIP_THANKS);
-    expect(NEXT_STEPS).not.toContain(VAULT_THANKS);
   });
 
   it("no page chooses a thank-you message from a URL parameter", () => {
@@ -141,7 +145,7 @@ describe("ProductThankYou component — non-disclosure", () => {
   });
 });
 
-describe("per-product optional video slot config", () => {
+describe("offer and exit video slot config", () => {
   it("reads four independent product video variables", () => {
     expect(CONFIG).toContain("VITE_SUMMIT_VIDEO_THANK_YOU_GA");
     expect(CONFIG).toContain("VITE_SUMMIT_VIDEO_THANK_YOU_VIP");
@@ -149,12 +153,18 @@ describe("per-product optional video slot config", () => {
     expect(CONFIG).toContain("VITE_SUMMIT_VIDEO_THANK_YOU_INTENSIVE");
   });
 
-  it("each page wires its own product video slot", () => {
+  it("each offer page wires its own purchase video slot", () => {
     expect(CONFIRMED).toContain("sectionVideos.thankYouGa");
     expect(CONFIRMED).toContain("sectionVideos.thankYouVip");
     expect(VAULT).toContain("sectionVideos.thankYouVip");
     expect(INTENSIVE).toContain("sectionVideos.thankYouVault");
-    expect(NEXT_STEPS).toContain("sectionVideos.thankYouIntensive");
+  });
+
+  it("next-steps uses separate no-upsell exit videos", () => {
+    expect(NEXT_STEPS).toContain("sectionVideos.exitGa");
+    expect(NEXT_STEPS).toContain("sectionVideos.exitVip");
+    expect(NEXT_STEPS).toContain("sectionVideos.exitVault");
+    expect(NEXT_STEPS).toContain("sectionVideos.exitIntensive");
   });
 
   it("keeps the legacy anonymous placeholder out of /confirmed", () => {
