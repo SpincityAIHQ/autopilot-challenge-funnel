@@ -4,6 +4,13 @@ Preview stays private until every P0 item is green. Nothing here fulfills
 automatically — real payment webhook + verified magic-link email are the
 minimum bar to sell.
 
+## Locked event schedule
+
+- Day 1: Saturday, August 29, 2026 · 1:00–4:00 PM Eastern
+- Day 2: Sunday, August 30, 2026 · 1:00–4:00 PM Eastern
+- Room opens: 12:45 PM Eastern both days
+- VIP Build Lab: Thursday, September 3, 2026 · 7:00–9:00 PM Eastern
+
 ## P0 — must be green before publish
 
 ### Legal (blocking)
@@ -15,14 +22,13 @@ minimum bar to sell.
 - [ ] End-to-end test: a verified GA buyer receives the NuAmenti access email, opens the magic link, lands a scoped HttpOnly session, and only then sees enabled checkout on `/offer/vip-upgrade` (and the "already have this" state after upgrading).
 - [ ] Same test for Vault and Intensive: eligibility gates on `/offer/implementation-vault` and `/strategy-intensive` fail closed when not signed in.
 - [ ] Sample without cookie hits `entitlement-summary` and receives `authenticated: false, scopes: []`.
+- [ ] GA, VIP, Vault, and Intensive buyers each see the correct confirmation on `/next-steps`.
 
 ### Communication consent testing
 - [ ] `/communication-preferences` writes one `marketing_consents` row per channel with `granted_at` OR `revoked_at`, `copy_version`, `source`, and (for SMS/AI-call) `phone`.
 - [ ] SMS/AI-call submit path REJECTS when phone is missing.
 - [ ] Rate-limit + same-origin behavior verified (403 cross-origin, 429 after burst).
 - [ ] Revocation flow: resubmitting unchecked appends a revoke row without altering earlier history.
-
-
 
 ### Payments (Commas / FanBasis) — sequential funnel
 
@@ -59,7 +65,6 @@ copy. The product-specific "Thank you, family" gratitude and the next-offer
 CTA render only after `entitlement-summary` confirms the required prior
 scope from the HttpOnly session — not from `?tier=` and not from the URL.
 
-
 ### Checkout URLs (browser-visible)
 - [ ] `VITE_COMMAS_CHECKOUT_URL_GA` — HTTPS, allowlisted host.
 - [ ] `VITE_COMMAS_CHECKOUT_URL_VIP_UPGRADE` — HTTPS, allowlisted host.
@@ -69,25 +74,29 @@ scope from the HttpOnly session — not from `?tier=` and not from the URL.
 - [ ] `VITE_SUMMIT_SALES_ENABLED=true` only when GA + all upsell URLs above resolve and `VITE_SUMMIT_LEGAL_READY=true`.
 
 ### Delivery (email)
-- [ ] Mailchimp audience created; single audience or per-tag segments.
+- [ ] Mailchimp audience created; one primary audience with tags and `SUMMITLVL` merge field.
+- [ ] Exact tags from `docs/email-segmentation-map.md` created before any journey is activated.
+- [ ] GA, VIP, Vault, and Intensive journeys use the locked dates and times.
 - [ ] `MAILCHIMP_ENABLED=true`, `MAILCHIMP_API_KEY`, `MAILCHIMP_AUDIENCE_ID`, `MAILCHIMP_SENDER_EMAIL`, `MAILCHIMP_SERVER_PREFIX` set.
 - [ ] Verified sender + physical address (SpincityHQ LLC · Atlanta, GA) configured.
 - [ ] Welcome email template exists; access magic-link template exists.
 - [ ] `delivery_outbox` gets a row per intended send (no direct SDK calls elsewhere).
 
-### Content
-- [ ] Summit start times filled in (or copy remains "session times sent to registrants").
-- [ ] No stale references to old August 1–2 dates, Founder, Bundle, or legacy prices anywhere.
+### Schedule and content
+- [ ] Landing page, checkout, confirmation pages, next-steps page, and metadata all say Aug 29–30, 1:00–4:00 PM Eastern.
+- [ ] Every Day 1 and Day 2 calendar file carries the real start/end time and a 15-minute reminder.
+- [ ] VIP page, VIP confirmation, VIP emails, and VIP scripts say Sep 3, 7:00–9:00 PM Eastern.
+- [ ] No stale references to Aug 1–2, Aug 24–25, Monday/Tuesday, all-day calendar placeholders, Founder, Bundle, or legacy prices anywhere.
 - [ ] Public landing page `/` shows NO price strings ($22 / $77 / $199 / $1,000) and NO links to `/offer/*`, `/strategy-intensive`, `/apply/mentorship`, or `/next-keynote`.
 - [ ] `/checkout` exposes only General Admission ($22); any legacy `?tier=vip` link normalizes to GA.
-- [ ] Video URLs (`VITE_SUMMIT_VIDEO_HERO`, `VITE_SUMMIT_VIDEO_THANK_YOU`) either set to approved embed URLs or left empty.
+- [ ] Video URLs (`VITE_SUMMIT_VIDEO_HERO`, `_CHECKOUT`, `_VIP_OFFER`, and the four thank-you slots) either set to approved embed URLs or left empty.
+- [ ] VSL, funnel videos, emails, SMS, and AI-call scripts use the same simple promise and the same schedule.
 
 ### Testimonials (one slot per funnel page)
 - [ ] Real, released video/text testimonials loaded into `src/lib/testimonials.ts` with `status: "published"` — or the array left empty (nothing renders otherwise).
 - [ ] Per-page video env slots either set to an approved-host embed URL or left empty: `VITE_TESTIMONIAL_VIDEO_LANDING`, `_CHECKOUT`, `_CONFIRMED`, `_VIP`, `_VAULT`, `_INTENSIVE`.
 - [ ] Signed release on file for every published testimonial (see `docs/testimonial-scripts.md`).
 - [ ] Every numeric claim in a published testimonial is backed by client-provided evidence.
-
 
 ### Security
 - [ ] `security--run_security_scan` shows no new findings.
@@ -100,7 +109,8 @@ scope from the HttpOnly session — not from `?tier=` and not from the URL.
 - [ ] Registered sender / short code approved.
 - [ ] `SMS_ENABLED=true`, `SMS_PROVIDER=twilio`, `SMS_FROM`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` set.
 - [ ] STOP / HELP handling verified end-to-end.
-- [ ] Quiet-hours (buyer-local 9pm–9am) enforced in outbox worker.
+- [ ] Quiet-hours (buyer-local 8pm–9am) enforced in outbox worker.
+- [ ] Schedule reminders tested for Aug 28, Aug 29, Aug 30, and Sep 3 VIP only.
 
 ### AI / prerecorded calls
 - [ ] Provider selected + registered caller ID.
@@ -108,6 +118,7 @@ scope from the HttpOnly session — not from `?tier=` and not from the URL.
 - [ ] Seller-specific written consent copy version stored.
 - [ ] Internal suppression + DNC integration confirmed.
 - [ ] AI disclosure at call start + one-touch opt-out verified.
+- [ ] Call script says the exact Summit schedule and never calls people who did not consent.
 
 ### Ascension paths
 - [ ] Intensive: 10 slots seeded; `intensive_eligibility` list matches NuAmenti + Summit attendees.
@@ -117,11 +128,7 @@ scope from the HttpOnly session — not from `?tier=` and not from the URL.
 ### Attribution / affiliates
 - [ ] `affiliate-registry.ts` populated with real owners; every entry either `placeholder` or `live`.
 - [ ] Live entries render with `rel="sponsored nofollow noopener noreferrer"`.
-- [ ] Attribution persistence remains BLOCKED until a signed Commas sample
-      confirms the exact metadata / custom-field name for first/last-touch.
-      Client-side UTM capture + affiliate registry stay safe; server persists
-      `null` until unblocked. Do NOT check this off just because URLs contain UTMs.
-
+- [ ] Attribution persistence remains BLOCKED until a signed Commas sample confirms the exact metadata / custom-field name for first/last-touch. Client-side UTM capture + affiliate registry stay safe; server persists `null` until unblocked.
 
 ## P2 — nice-to-have
 
@@ -130,7 +137,6 @@ scope from the HttpOnly session — not from `?tier=` and not from the URL.
 - [ ] Print-friendly resource previews tested on paper.
 - [ ] Canonical routes: `/offer/vip-upgrade`, `/offer/implementation-vault`, `/next-keynote`, `/next-steps`, `/strategy-intensive`, `/apply/mentorship` render directly. Legacy `/vault`, `/keynote`, `/mentorship`, `/intensive`, `/offer/keynote`, `/offer/mentorship`, `/offer/strategy-intensive` redirect TO the canonicals (never the reverse).
 - [ ] Attribution persistence is BLOCKED until the exact Commas metadata / custom-field name for first/last-touch is confirmed by a signed sample payload. Client-side UTM capture + affiliate registry remain safe; server persists `null` until unblocked.
-- [ ] Calendar files (`/calendar/day1.ics`, `/calendar/day2.ics`) are intentionally all-day for Aug 24 and Aug 25 until exact session times are configured. Exact times go in access emails, not in the ICS.
 
 ## Verify before publish
 
