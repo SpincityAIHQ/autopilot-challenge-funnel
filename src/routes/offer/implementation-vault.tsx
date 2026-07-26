@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
+import { OfferPurchaseAction } from "@/components/OfferPurchaseAction";
 import { UPSELLS, formatUsd } from "@/lib/tiers";
 import {
   getCommasConfig,
@@ -9,7 +10,6 @@ import {
 import { OfferGate } from "@/components/OfferGate";
 import { ProductThankYou } from "@/components/ProductThankYou";
 import { TestimonialSection } from "@/components/TestimonialSection";
-import { useQaReviewMode } from "@/hooks/use-qa-review";
 
 export const Route = createFileRoute("/offer/implementation-vault")({
   head: () => ({
@@ -55,33 +55,6 @@ function VaultRoute() {
 function VaultContent() {
   const vault = UPSELLS.vault;
   const cfg = getCommasConfig();
-  const url = resolveCheckoutUrl("vault", cfg);
-  const salesOn = isHandoffAllowed("vault", cfg);
-  const qaReview = useQaReviewMode();
-  const cta = qaReview ? (
-    <a
-      href="/strategy-intensive?qaStage=vault"
-      className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
-    >
-      Preview accepted Vault — no payment
-    </a>
-  ) : salesOn && url ? (
-    <a
-      href={url}
-      className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
-      rel="noopener noreferrer"
-    >
-      Add the Vault · {formatUsd(vault.priceCents)}
-    </a>
-  ) : (
-    <button
-      type="button"
-      disabled
-      className="inline-flex w-full cursor-not-allowed items-center justify-center rounded-md bg-muted px-5 py-3.5 font-heading text-base font-semibold text-muted-foreground"
-    >
-      Vault checkout link being connected
-    </button>
-  );
 
   return (
     <>
@@ -93,25 +66,24 @@ function VaultContent() {
       />
 
       <section className="mt-5 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-4 sm:p-5">
-        <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
-          {cta}
-          <Link
-            to="/next-steps"
-            className="inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary sm:w-auto"
-          >
-            No thanks
-          </Link>
-        </div>
+        <OfferPurchaseAction
+          product="vault"
+          productName="the Vault"
+          priceCents={vault.priceCents}
+          fallbackUrl={resolveCheckoutUrl("vault", cfg)}
+          fallbackAllowed={isHandoffAllowed("vault", cfg)}
+          qaHref="/strategy-intensive?qaStage=vault"
+          qaLabel="Preview accepted Vault — no payment"
+        />
+        <Link
+          to="/next-steps"
+          className="mt-3 inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary"
+        >
+          No thanks — keep VIP
+        </Link>
         <p className="mt-3 text-center text-xs text-muted-foreground">
           Your Summit and VIP access remain active either way.
         </p>
-        {qaReview ? (
-          <p className="mt-3 text-sm text-muted-foreground">
-            <strong className="text-foreground">Owner preview:</strong> the
-            primary button advances to the Vault confirmation and private
-            1-on-1 page without charging a card.
-          </p>
-        ) : null}
       </section>
 
       <ProductThankYou
