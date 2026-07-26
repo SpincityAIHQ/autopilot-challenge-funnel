@@ -30,7 +30,7 @@ describe("mobile funnel video slots", () => {
   });
 
   it("places the final video between the page intro and verified card", () => {
-    const intro = NEXT_STEPS.indexOf("Save the dates, watch for our emails");
+    const intro = NEXT_STEPS.indexOf("Your current purchase is safe");
     const video = NEXT_STEPS.indexOf("<FunnelVideoSlot");
     const verified = NEXT_STEPS.indexOf("<ProductThankYou");
     expect(intro).toBeGreaterThan(-1);
@@ -38,8 +38,16 @@ describe("mobile funnel video slots", () => {
     expect(verified).toBeGreaterThan(video);
   });
 
-  it("maps the added checkout and VIP video environment slots", () => {
-    expect(CONFIG).toContain("VITE_SUMMIT_VIDEO_CHECKOUT");
-    expect(CONFIG).toContain("VITE_SUMMIT_VIDEO_VIP_OFFER");
+  it("maps offer videos and separate final-exit videos", () => {
+    for (const key of [
+      "VITE_SUMMIT_VIDEO_CHECKOUT",
+      "VITE_SUMMIT_VIDEO_VIP_OFFER",
+      "VITE_SUMMIT_VIDEO_EXIT_GA",
+      "VITE_SUMMIT_VIDEO_EXIT_VIP",
+      "VITE_SUMMIT_VIDEO_EXIT_VAULT",
+      "VITE_SUMMIT_VIDEO_EXIT_INTENSIVE",
+    ]) {
+      expect(CONFIG).toContain(key);
+    }
   });
 });
