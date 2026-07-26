@@ -63,14 +63,14 @@ function VipUpgradeContent() {
   const cta = qaReview ? (
     <a
       href="/offer/implementation-vault?qaStage=vip"
-      className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+      className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
     >
-      Preview accepted VIP — continue without payment
+      Preview accepted VIP — no payment
     </a>
   ) : salesOn && url ? (
     <a
       href={url}
-      className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+      className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
       rel="noopener noreferrer"
     >
       Add VIP · {formatUsd(upgrade.priceCents)}
@@ -79,7 +79,7 @@ function VipUpgradeContent() {
     <button
       type="button"
       disabled
-      className="inline-flex cursor-not-allowed items-center rounded-md bg-muted px-5 py-3 font-heading text-sm font-semibold text-muted-foreground"
+      className="inline-flex w-full cursor-not-allowed items-center justify-center rounded-md bg-muted px-5 py-3.5 font-heading text-base font-semibold text-muted-foreground"
     >
       VIP checkout link being connected
     </button>
@@ -87,20 +87,34 @@ function VipUpgradeContent() {
 
   return (
     <>
-      {qaReview ? (
-        <div className="mt-6 rounded-md border border-[color:var(--gold)] bg-secondary/30 p-4 text-sm text-muted-foreground">
-          <strong className="text-foreground">Owner preview:</strong> accepting
-          this option moves to the VIP confirmation and Vault page without a
-          charge.
-        </div>
-      ) : null}
-
       <FunnelVideoSlot
         url={cfg.sectionVideos.vipOffer}
         label="Watch: the VIP Implementation Experience"
         envKey="VITE_SUMMIT_VIDEO_VIP_OFFER"
-        className="mt-8"
+        className="mt-7"
       />
+
+      <section className="mt-5 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-4 sm:p-5">
+        <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+          {cta}
+          <Link
+            to="/next-steps"
+            className="inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary sm:w-auto"
+          >
+            No thanks
+          </Link>
+        </div>
+        <p className="mt-3 text-center text-xs text-muted-foreground">
+          Your General Admission ticket remains active either way.
+        </p>
+        {qaReview ? (
+          <p className="mt-3 text-sm text-muted-foreground">
+            <strong className="text-foreground">Owner preview:</strong> the
+            primary button advances to the VIP confirmation and Vault page
+            without charging a card.
+          </p>
+        ) : null}
+      </section>
 
       <div className="mt-8">
         <h2 className="font-display text-2xl text-foreground">
@@ -109,6 +123,7 @@ function VipUpgradeContent() {
         <p className="mt-3 font-heading text-[color:var(--emerald-signal)]">
           Sunday, August 30 · 4:15–5:45 PM Eastern · immediately after Day 2
         </p>
+        <p className="mt-4 text-sm text-muted-foreground">{upgrade.summary}</p>
       </div>
 
       <section className="mt-8 surface p-6">
@@ -137,15 +152,6 @@ function VipUpgradeContent() {
           </div>
         </div>
         <p className="mt-4 text-xs text-muted-foreground">
-          VIP adds more support. Your General Admission ticket still works if
-          you skip this option.
-        </p>
-      </section>
-
-      <section className="mt-8 surface-raised p-6">
-        <p className="text-sm text-muted-foreground">{upgrade.summary}</p>
-        <div className="mt-6">{cta}</div>
-        <p className="mt-4 text-xs text-muted-foreground">
           Use the same email you used for General Admission. Write
           Info@NuAmenti.com before paying if that email must change.
         </p>
@@ -156,12 +162,6 @@ function VipUpgradeContent() {
         eyebrow="From VIP registrants"
         heading="What deeper implementation looked like"
       />
-
-      <p className="mt-6 text-xs text-muted-foreground">
-        <Link to="/next-steps" className="underline">
-          No thanks — continue with General Admission →
-        </Link>
-      </p>
     </>
   );
 }
