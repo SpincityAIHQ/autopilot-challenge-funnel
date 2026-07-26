@@ -70,6 +70,9 @@ done
 STALE_PATTERNS=(
   'AUTOPILOT Challenge'
   'The AUTOPILOT Challenge'
+  'Perfect AIM'
+  'Perfect Aim'
+  'PERFECT_AIM_DATA_URI'
   '2026-08-01'
   '2026-08-02'
   '\bAug 1, 2026\b'
@@ -127,7 +130,6 @@ for pat in "${STALE_PATTERNS[@]}"; do
   fi
 done
 [[ $stale_hits -eq 0 ]] && say_pass "0 stale public-copy hits"
-
 
 # 4. Canonical funnel route presence — the actual six user-facing funnel
 #    routes plus the private resource API endpoints. Legacy redirect aliases
