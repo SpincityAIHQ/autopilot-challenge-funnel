@@ -1,9 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { getCommasConfig } from "@/lib/challenge-config";
-import { UPSELLS, formatUsd } from "@/lib/tiers";
+import {
+  getCommasConfig,
+  isHandoffAllowed,
+  resolveCheckoutUrl,
+} from "@/lib/challenge-config";
+import { UPSELLS } from "@/lib/tiers";
 import { TestimonialSection } from "@/components/TestimonialSection";
 import { ProductThankYou } from "@/components/ProductThankYou";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
+import { OfferPurchaseAction } from "@/components/OfferPurchaseAction";
 import {
   useEntitlementSummary,
   derivedAccess,
@@ -95,8 +100,8 @@ function Confirmed() {
         className="mt-7"
       />
 
-      {verifiedGaOnly ? <VipUpgradeNextStep /> : null}
-      {verifiedVipNoVault ? <VaultNextStep /> : null}
+      {verifiedGaOnly ? <VipUpgradeNextStep cfg={cfg} /> : null}
+      {verifiedVipNoVault ? <VaultNextStep cfg={cfg} /> : null}
 
       <ProductThankYou
         verified={verifiedGaOnly}
@@ -182,25 +187,32 @@ function Confirmed() {
   );
 }
 
-function VipUpgradeNextStep() {
+function VipUpgradeNextStep({
+  cfg,
+}: {
+  cfg: ReturnType<typeof getCommasConfig>;
+}) {
   const upgrade = UPSELLS.vip_upgrade;
   return (
     <section className="mt-5 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-4 sm:p-5">
       <p className="eyebrow">Optional next step</p>
-      <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto]">
-        <Link
-          to="/offer/vip-upgrade"
-          className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
-        >
-          Add VIP · {formatUsd(upgrade.priceCents)}
-        </Link>
-        <Link
-          to="/next-steps"
-          className="inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary sm:w-auto"
-        >
-          No thanks
-        </Link>
+      <div className="mt-3">
+        <OfferPurchaseAction
+          product="vip_upgrade"
+          productName="VIP"
+          priceCents={upgrade.priceCents}
+          fallbackUrl={resolveCheckoutUrl("vip_upgrade", cfg)}
+          fallbackAllowed={isHandoffAllowed("vip_upgrade", cfg)}
+          qaHref="/offer/implementation-vault?qaStage=vip"
+          qaLabel="Preview accepted VIP — no payment"
+        />
       </div>
+      <Link
+        to="/next-steps"
+        className="mt-3 inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary"
+      >
+        No thanks — keep General Admission
+      </Link>
       <p className="mt-4 text-sm text-muted-foreground">
         {upgrade.summary} Your General Admission ticket stays active if you
         skip it.
@@ -209,25 +221,32 @@ function VipUpgradeNextStep() {
   );
 }
 
-function VaultNextStep() {
+function VaultNextStep({
+  cfg,
+}: {
+  cfg: ReturnType<typeof getCommasConfig>;
+}) {
   const vault = UPSELLS.vault;
   return (
     <section className="mt-5 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-4 sm:p-5">
       <p className="eyebrow">Optional next step</p>
-      <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto]">
-        <Link
-          to="/offer/implementation-vault"
-          className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
-        >
-          Add the Vault · {formatUsd(vault.priceCents)}
-        </Link>
-        <Link
-          to="/next-steps"
-          className="inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary sm:w-auto"
-        >
-          No thanks
-        </Link>
+      <div className="mt-3">
+        <OfferPurchaseAction
+          product="vault"
+          productName="the Vault"
+          priceCents={vault.priceCents}
+          fallbackUrl={resolveCheckoutUrl("vault", cfg)}
+          fallbackAllowed={isHandoffAllowed("vault", cfg)}
+          qaHref="/strategy-intensive?qaStage=vault"
+          qaLabel="Preview accepted Vault — no payment"
+        />
       </div>
+      <Link
+        to="/next-steps"
+        className="mt-3 inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary"
+      >
+        No thanks — keep VIP
+      </Link>
       <p className="mt-4 text-sm text-muted-foreground">
         {vault.summary} Your VIP access stays active if you skip it.
       </p>
