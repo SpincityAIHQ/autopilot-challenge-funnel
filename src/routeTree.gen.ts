@@ -9,97 +9,47 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as VaultRouteImport } from './routes/vault'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as StrategyIntensiveRouteImport } from './routes/strategy-intensive'
-import { Route as ResourcesRouteImport } from './routes/resources'
-import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as NextStepsRouteImport } from './routes/next-steps'
-import { Route as NextKeynoteRouteImport } from './routes/next-keynote'
-import { Route as MentorshipRouteImport } from './routes/mentorship'
-import { Route as KeynoteRouteImport } from './routes/keynote'
-import { Route as IntensiveRouteImport } from './routes/intensive'
-import { Route as ConfirmedRouteImport } from './routes/confirmed'
-import { Route as CommunicationPreferencesRouteImport } from './routes/communication-preferences'
-import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
-import { Route as OfferVipUpgradeRouteImport } from './routes/offer/vip-upgrade'
-import { Route as OfferStrategyIntensiveRouteImport } from './routes/offer/strategy-intensive'
-import { Route as OfferMentorshipRouteImport } from './routes/offer/mentorship'
-import { Route as OfferKeynoteRouteImport } from './routes/offer/keynote'
-import { Route as OfferImplementationVaultRouteImport } from './routes/offer/implementation-vault'
-import { Route as CalendarDay2DoticsRouteImport } from './routes/calendar.day2[.]ics'
-import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.]ics'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as CommunicationPreferencesRouteImport } from './routes/communication-preferences'
+import { Route as ConfirmedRouteImport } from './routes/confirmed'
+import { Route as IntensiveRouteImport } from './routes/intensive'
+import { Route as KeynoteRouteImport } from './routes/keynote'
+import { Route as MentorshipRouteImport } from './routes/mentorship'
+import { Route as NextKeynoteRouteImport } from './routes/next-keynote'
+import { Route as NextStepsRouteImport } from './routes/next-steps'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
+import { Route as ResourcesRouteImport } from './routes/resources'
+import { Route as StrategyIntensiveRouteImport } from './routes/strategy-intensive'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as VaultRouteImport } from './routes/vault'
 import { Route as ApplyMentorshipRouteImport } from './routes/apply.mentorship'
-import { Route as ApiPublicMentorshipApplicationRouteImport } from './routes/api/public/mentorship-application'
-import { Route as ApiPublicKeynoteWaitlistRouteImport } from './routes/api/public/keynote-waitlist'
+import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.]ics'
+import { Route as CalendarDay2DoticsRouteImport } from './routes/calendar.day2[.]ics'
+import { Route as OfferImplementationVaultRouteImport } from './routes/offer/implementation-vault'
+import { Route as OfferKeynoteRouteImport } from './routes/offer/keynote'
+import { Route as OfferMentorshipRouteImport } from './routes/offer/mentorship'
+import { Route as OfferStrategyIntensiveRouteImport } from './routes/offer/strategy-intensive'
+import { Route as OfferVipUpgradeRouteImport } from './routes/offer/vip-upgrade'
+import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
 import { Route as ApiPublicCommunicationPreferencesRouteImport } from './routes/api/public/communication-preferences'
-import { Route as ApiPublicWebhooksCommasRouteImport } from './routes/api/public/webhooks/commas'
-import { Route as ApiPublicResourcesReadRouteImport } from './routes/api/public/resources/read'
-import { Route as ApiPublicResourcesLogoutRouteImport } from './routes/api/public/resources/logout'
-import { Route as ApiPublicResourcesExchangeRouteImport } from './routes/api/public/resources/exchange'
+import { Route as ApiPublicKeynoteWaitlistRouteImport } from './routes/api/public/keynote-waitlist'
+import { Route as ApiPublicMentorshipApplicationRouteImport } from './routes/api/public/mentorship-application'
 import { Route as ApiPublicResourcesEntitlementSummaryRouteImport } from './routes/api/public/resources/entitlement-summary'
+import { Route as ApiPublicResourcesExchangeRouteImport } from './routes/api/public/resources/exchange'
+import { Route as ApiPublicResourcesLogoutRouteImport } from './routes/api/public/resources/logout'
+import { Route as ApiPublicResourcesReadRouteImport } from './routes/api/public/resources/read'
+import { Route as ApiPublicWebhooksCommasRouteImport } from './routes/api/public/webhooks/commas'
 
-const VaultRoute = VaultRouteImport.update({
-  id: '/vault',
-  path: '/vault',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StrategyIntensiveRoute = StrategyIntensiveRouteImport.update({
-  id: '/strategy-intensive',
-  path: '/strategy-intensive',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResourcesRoute = ResourcesRouteImport.update({
-  id: '/resources',
-  path: '/resources',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RefundPolicyRoute = RefundPolicyRouteImport.update({
-  id: '/refund-policy',
-  path: '/refund-policy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NextStepsRoute = NextStepsRouteImport.update({
-  id: '/next-steps',
-  path: '/next-steps',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NextKeynoteRoute = NextKeynoteRouteImport.update({
-  id: '/next-keynote',
-  path: '/next-keynote',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MentorshipRoute = MentorshipRouteImport.update({
-  id: '/mentorship',
-  path: '/mentorship',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KeynoteRoute = KeynoteRouteImport.update({
-  id: '/keynote',
-  path: '/keynote',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IntensiveRoute = IntensiveRouteImport.update({
-  id: '/intensive',
-  path: '/intensive',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConfirmedRoute = ConfirmedRouteImport.update({
-  id: '/confirmed',
-  path: '/confirmed',
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CommunicationPreferencesRoute =
@@ -108,39 +58,79 @@ const CommunicationPreferencesRoute =
     path: '/communication-preferences',
     getParentRoute: () => rootRouteImport,
   } as any)
-const CheckoutRoute = CheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
+const ConfirmedRoute = ConfirmedRouteImport.update({
+  id: '/confirmed',
+  path: '/confirmed',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const IntensiveRoute = IntensiveRouteImport.update({
+  id: '/intensive',
+  path: '/intensive',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => ResourcesRoute,
-} as any)
-const OfferVipUpgradeRoute = OfferVipUpgradeRouteImport.update({
-  id: '/offer/vip-upgrade',
-  path: '/offer/vip-upgrade',
+const KeynoteRoute = KeynoteRouteImport.update({
+  id: '/keynote',
+  path: '/keynote',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OfferStrategyIntensiveRoute = OfferStrategyIntensiveRouteImport.update({
-  id: '/offer/strategy-intensive',
-  path: '/offer/strategy-intensive',
+const MentorshipRoute = MentorshipRouteImport.update({
+  id: '/mentorship',
+  path: '/mentorship',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OfferMentorshipRoute = OfferMentorshipRouteImport.update({
-  id: '/offer/mentorship',
-  path: '/offer/mentorship',
+const NextKeynoteRoute = NextKeynoteRouteImport.update({
+  id: '/next-keynote',
+  path: '/next-keynote',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OfferKeynoteRoute = OfferKeynoteRouteImport.update({
-  id: '/offer/keynote',
-  path: '/offer/keynote',
+const NextStepsRoute = NextStepsRouteImport.update({
+  id: '/next-steps',
+  path: '/next-steps',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RefundPolicyRoute = RefundPolicyRouteImport.update({
+  id: '/refund-policy',
+  path: '/refund-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResourcesRoute = ResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StrategyIntensiveRoute = StrategyIntensiveRouteImport.update({
+  id: '/strategy-intensive',
+  path: '/strategy-intensive',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VaultRoute = VaultRouteImport.update({
+  id: '/vault',
+  path: '/vault',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApplyMentorshipRoute = ApplyMentorshipRouteImport.update({
+  id: '/apply/mentorship',
+  path: '/apply/mentorship',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CalendarDay1DoticsRoute = CalendarDay1DoticsRouteImport.update({
+  id: '/calendar/day1.ics',
+  path: '/calendar/day1.ics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CalendarDay2DoticsRoute = CalendarDay2DoticsRouteImport.update({
+  id: '/calendar/day2.ics',
+  path: '/calendar/day2.ics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OfferImplementationVaultRoute =
@@ -149,25 +139,35 @@ const OfferImplementationVaultRoute =
     path: '/offer/implementation-vault',
     getParentRoute: () => rootRouteImport,
   } as any)
-const CalendarDay2DoticsRoute = CalendarDay2DoticsRouteImport.update({
-  id: '/calendar/day2.ics',
-  path: '/calendar/day2.ics',
+const OfferKeynoteRoute = OfferKeynoteRouteImport.update({
+  id: '/offer/keynote',
+  path: '/offer/keynote',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CalendarDay1DoticsRoute = CalendarDay1DoticsRouteImport.update({
-  id: '/calendar/day1.ics',
-  path: '/calendar/day1.ics',
+const OfferMentorshipRoute = OfferMentorshipRouteImport.update({
+  id: '/offer/mentorship',
+  path: '/offer/mentorship',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApplyMentorshipRoute = ApplyMentorshipRouteImport.update({
-  id: '/apply/mentorship',
-  path: '/apply/mentorship',
+const OfferStrategyIntensiveRoute = OfferStrategyIntensiveRouteImport.update({
+  id: '/offer/strategy-intensive',
+  path: '/offer/strategy-intensive',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicMentorshipApplicationRoute =
-  ApiPublicMentorshipApplicationRouteImport.update({
-    id: '/api/public/mentorship-application',
-    path: '/api/public/mentorship-application',
+const OfferVipUpgradeRoute = OfferVipUpgradeRouteImport.update({
+  id: '/offer/vip-upgrade',
+  path: '/offer/vip-upgrade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ResourcesRoute,
+} as any)
+const ApiPublicCommunicationPreferencesRoute =
+  ApiPublicCommunicationPreferencesRouteImport.update({
+    id: '/api/public/communication-preferences',
+    path: '/api/public/communication-preferences',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicKeynoteWaitlistRoute =
@@ -176,32 +176,10 @@ const ApiPublicKeynoteWaitlistRoute =
     path: '/api/public/keynote-waitlist',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicCommunicationPreferencesRoute =
-  ApiPublicCommunicationPreferencesRouteImport.update({
-    id: '/api/public/communication-preferences',
-    path: '/api/public/communication-preferences',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicWebhooksCommasRoute = ApiPublicWebhooksCommasRouteImport.update({
-  id: '/api/public/webhooks/commas',
-  path: '/api/public/webhooks/commas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicResourcesReadRoute = ApiPublicResourcesReadRouteImport.update({
-  id: '/api/public/resources/read',
-  path: '/api/public/resources/read',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicResourcesLogoutRoute =
-  ApiPublicResourcesLogoutRouteImport.update({
-    id: '/api/public/resources/logout',
-    path: '/api/public/resources/logout',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicResourcesExchangeRoute =
-  ApiPublicResourcesExchangeRouteImport.update({
-    id: '/api/public/resources/exchange',
-    path: '/api/public/resources/exchange',
+const ApiPublicMentorshipApplicationRoute =
+  ApiPublicMentorshipApplicationRouteImport.update({
+    id: '/api/public/mentorship-application',
+    path: '/api/public/mentorship-application',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicResourcesEntitlementSummaryRoute =
@@ -210,6 +188,28 @@ const ApiPublicResourcesEntitlementSummaryRoute =
     path: '/api/public/resources/entitlement-summary',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicResourcesExchangeRoute =
+  ApiPublicResourcesExchangeRouteImport.update({
+    id: '/api/public/resources/exchange',
+    path: '/api/public/resources/exchange',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicResourcesLogoutRoute =
+  ApiPublicResourcesLogoutRouteImport.update({
+    id: '/api/public/resources/logout',
+    path: '/api/public/resources/logout',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicResourcesReadRoute = ApiPublicResourcesReadRouteImport.update({
+  id: '/api/public/resources/read',
+  path: '/api/public/resources/read',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicWebhooksCommasRoute = ApiPublicWebhooksCommasRouteImport.update({
+  id: '/api/public/webhooks/commas',
+  path: '/api/public/webhooks/commas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -455,95 +455,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/vault': {
-      id: '/vault'
-      path: '/vault'
-      fullPath: '/vault'
-      preLoaderRoute: typeof VaultRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/strategy-intensive': {
-      id: '/strategy-intensive'
-      path: '/strategy-intensive'
-      fullPath: '/strategy-intensive'
-      preLoaderRoute: typeof StrategyIntensiveRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/resources': {
-      id: '/resources'
-      path: '/resources'
-      fullPath: '/resources'
-      preLoaderRoute: typeof ResourcesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/refund-policy': {
-      id: '/refund-policy'
-      path: '/refund-policy'
-      fullPath: '/refund-policy'
-      preLoaderRoute: typeof RefundPolicyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/next-steps': {
-      id: '/next-steps'
-      path: '/next-steps'
-      fullPath: '/next-steps'
-      preLoaderRoute: typeof NextStepsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/next-keynote': {
-      id: '/next-keynote'
-      path: '/next-keynote'
-      fullPath: '/next-keynote'
-      preLoaderRoute: typeof NextKeynoteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mentorship': {
-      id: '/mentorship'
-      path: '/mentorship'
-      fullPath: '/mentorship'
-      preLoaderRoute: typeof MentorshipRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/keynote': {
-      id: '/keynote'
-      path: '/keynote'
-      fullPath: '/keynote'
-      preLoaderRoute: typeof KeynoteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/intensive': {
-      id: '/intensive'
-      path: '/intensive'
-      fullPath: '/intensive'
-      preLoaderRoute: typeof IntensiveRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/confirmed': {
-      id: '/confirmed'
-      path: '/confirmed'
-      fullPath: '/confirmed'
-      preLoaderRoute: typeof ConfirmedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/communication-preferences': {
-      id: '/communication-preferences'
-      path: '/communication-preferences'
-      fullPath: '/communication-preferences'
-      preLoaderRoute: typeof CommunicationPreferencesRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -553,67 +469,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/communication-preferences': {
+      id: '/communication-preferences'
+      path: '/communication-preferences'
+      fullPath: '/communication-preferences'
+      preLoaderRoute: typeof CommunicationPreferencesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/resources/$slug': {
-      id: '/resources/$slug'
-      path: '/$slug'
-      fullPath: '/resources/$slug'
-      preLoaderRoute: typeof ResourcesSlugRouteImport
-      parentRoute: typeof ResourcesRoute
-    }
-    '/offer/vip-upgrade': {
-      id: '/offer/vip-upgrade'
-      path: '/offer/vip-upgrade'
-      fullPath: '/offer/vip-upgrade'
-      preLoaderRoute: typeof OfferVipUpgradeRouteImport
+    '/confirmed': {
+      id: '/confirmed'
+      path: '/confirmed'
+      fullPath: '/confirmed'
+      preLoaderRoute: typeof ConfirmedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/offer/strategy-intensive': {
-      id: '/offer/strategy-intensive'
-      path: '/offer/strategy-intensive'
-      fullPath: '/offer/strategy-intensive'
-      preLoaderRoute: typeof OfferStrategyIntensiveRouteImport
+    '/intensive': {
+      id: '/intensive'
+      path: '/intensive'
+      fullPath: '/intensive'
+      preLoaderRoute: typeof IntensiveRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/offer/mentorship': {
-      id: '/offer/mentorship'
-      path: '/offer/mentorship'
-      fullPath: '/offer/mentorship'
-      preLoaderRoute: typeof OfferMentorshipRouteImport
+    '/keynote': {
+      id: '/keynote'
+      path: '/keynote'
+      fullPath: '/keynote'
+      preLoaderRoute: typeof KeynoteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/offer/keynote': {
-      id: '/offer/keynote'
-      path: '/offer/keynote'
-      fullPath: '/offer/keynote'
-      preLoaderRoute: typeof OfferKeynoteRouteImport
+    '/mentorship': {
+      id: '/mentorship'
+      path: '/mentorship'
+      fullPath: '/mentorship'
+      preLoaderRoute: typeof MentorshipRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/offer/implementation-vault': {
-      id: '/offer/implementation-vault'
-      path: '/offer/implementation-vault'
-      fullPath: '/offer/implementation-vault'
-      preLoaderRoute: typeof OfferImplementationVaultRouteImport
+    '/next-keynote': {
+      id: '/next-keynote'
+      path: '/next-keynote'
+      fullPath: '/next-keynote'
+      preLoaderRoute: typeof NextKeynoteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/calendar/day2.ics': {
-      id: '/calendar/day2.ics'
-      path: '/calendar/day2.ics'
-      fullPath: '/calendar/day2.ics'
-      preLoaderRoute: typeof CalendarDay2DoticsRouteImport
+    '/next-steps': {
+      id: '/next-steps'
+      path: '/next-steps'
+      fullPath: '/next-steps'
+      preLoaderRoute: typeof NextStepsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/calendar/day1.ics': {
-      id: '/calendar/day1.ics'
-      path: '/calendar/day1.ics'
-      fullPath: '/calendar/day1.ics'
-      preLoaderRoute: typeof CalendarDay1DoticsRouteImport
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/refund-policy': {
+      id: '/refund-policy'
+      path: '/refund-policy'
+      fullPath: '/refund-policy'
+      preLoaderRoute: typeof RefundPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resources': {
+      id: '/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof ResourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/strategy-intensive': {
+      id: '/strategy-intensive'
+      path: '/strategy-intensive'
+      fullPath: '/strategy-intensive'
+      preLoaderRoute: typeof StrategyIntensiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vault': {
+      id: '/vault'
+      path: '/vault'
+      fullPath: '/vault'
+      preLoaderRoute: typeof VaultRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/apply/mentorship': {
@@ -623,11 +567,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApplyMentorshipRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/mentorship-application': {
-      id: '/api/public/mentorship-application'
-      path: '/api/public/mentorship-application'
-      fullPath: '/api/public/mentorship-application'
-      preLoaderRoute: typeof ApiPublicMentorshipApplicationRouteImport
+    '/calendar/day1.ics': {
+      id: '/calendar/day1.ics'
+      path: '/calendar/day1.ics'
+      fullPath: '/calendar/day1.ics'
+      preLoaderRoute: typeof CalendarDay1DoticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calendar/day2.ics': {
+      id: '/calendar/day2.ics'
+      path: '/calendar/day2.ics'
+      fullPath: '/calendar/day2.ics'
+      preLoaderRoute: typeof CalendarDay2DoticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offer/implementation-vault': {
+      id: '/offer/implementation-vault'
+      path: '/offer/implementation-vault'
+      fullPath: '/offer/implementation-vault'
+      preLoaderRoute: typeof OfferImplementationVaultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offer/keynote': {
+      id: '/offer/keynote'
+      path: '/offer/keynote'
+      fullPath: '/offer/keynote'
+      preLoaderRoute: typeof OfferKeynoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offer/mentorship': {
+      id: '/offer/mentorship'
+      path: '/offer/mentorship'
+      fullPath: '/offer/mentorship'
+      preLoaderRoute: typeof OfferMentorshipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offer/strategy-intensive': {
+      id: '/offer/strategy-intensive'
+      path: '/offer/strategy-intensive'
+      fullPath: '/offer/strategy-intensive'
+      preLoaderRoute: typeof OfferStrategyIntensiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offer/vip-upgrade': {
+      id: '/offer/vip-upgrade'
+      path: '/offer/vip-upgrade'
+      fullPath: '/offer/vip-upgrade'
+      preLoaderRoute: typeof OfferVipUpgradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resources/$slug': {
+      id: '/resources/$slug'
+      path: '/$slug'
+      fullPath: '/resources/$slug'
+      preLoaderRoute: typeof ResourcesSlugRouteImport
+      parentRoute: typeof ResourcesRoute
+    }
+    '/api/public/communication-preferences': {
+      id: '/api/public/communication-preferences'
+      path: '/api/public/communication-preferences'
+      fullPath: '/api/public/communication-preferences'
+      preLoaderRoute: typeof ApiPublicCommunicationPreferencesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/keynote-waitlist': {
@@ -637,32 +637,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicKeynoteWaitlistRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/communication-preferences': {
-      id: '/api/public/communication-preferences'
-      path: '/api/public/communication-preferences'
-      fullPath: '/api/public/communication-preferences'
-      preLoaderRoute: typeof ApiPublicCommunicationPreferencesRouteImport
+    '/api/public/mentorship-application': {
+      id: '/api/public/mentorship-application'
+      path: '/api/public/mentorship-application'
+      fullPath: '/api/public/mentorship-application'
+      preLoaderRoute: typeof ApiPublicMentorshipApplicationRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/webhooks/commas': {
-      id: '/api/public/webhooks/commas'
-      path: '/api/public/webhooks/commas'
-      fullPath: '/api/public/webhooks/commas'
-      preLoaderRoute: typeof ApiPublicWebhooksCommasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/resources/read': {
-      id: '/api/public/resources/read'
-      path: '/api/public/resources/read'
-      fullPath: '/api/public/resources/read'
-      preLoaderRoute: typeof ApiPublicResourcesReadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/resources/logout': {
-      id: '/api/public/resources/logout'
-      path: '/api/public/resources/logout'
-      fullPath: '/api/public/resources/logout'
-      preLoaderRoute: typeof ApiPublicResourcesLogoutRouteImport
+    '/api/public/resources/entitlement-summary': {
+      id: '/api/public/resources/entitlement-summary'
+      path: '/api/public/resources/entitlement-summary'
+      fullPath: '/api/public/resources/entitlement-summary'
+      preLoaderRoute: typeof ApiPublicResourcesEntitlementSummaryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/resources/exchange': {
@@ -672,11 +658,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicResourcesExchangeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/resources/entitlement-summary': {
-      id: '/api/public/resources/entitlement-summary'
-      path: '/api/public/resources/entitlement-summary'
-      fullPath: '/api/public/resources/entitlement-summary'
-      preLoaderRoute: typeof ApiPublicResourcesEntitlementSummaryRouteImport
+    '/api/public/resources/logout': {
+      id: '/api/public/resources/logout'
+      path: '/api/public/resources/logout'
+      fullPath: '/api/public/resources/logout'
+      preLoaderRoute: typeof ApiPublicResourcesLogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/resources/read': {
+      id: '/api/public/resources/read'
+      path: '/api/public/resources/read'
+      fullPath: '/api/public/resources/read'
+      preLoaderRoute: typeof ApiPublicResourcesReadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/webhooks/commas': {
+      id: '/api/public/webhooks/commas'
+      path: '/api/public/webhooks/commas'
+      fullPath: '/api/public/webhooks/commas'
+      preLoaderRoute: typeof ApiPublicWebhooksCommasRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
