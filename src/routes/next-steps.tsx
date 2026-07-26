@@ -107,8 +107,9 @@ function NextSteps() {
           <div className="mt-5 rounded-md border border-[color:var(--emerald-signal)]/40 bg-secondary/30 p-4">
             <p className="label-mono">VIP Build Lab</p>
             <p className="mt-2 text-sm text-muted-foreground">
-              Thursday, September 3 · 7:00–9:00 PM Eastern. Your VIP email will
-              include the private Lab link and calendar reminder.
+              Sunday, August 30 · 4:15–5:45 PM Eastern. It begins 15 minutes
+              after Day 2 ends, while the work is still fresh. Stay in the room
+              or use the private VIP link in your email.
             </p>
           </div>
         ) : null}
@@ -197,48 +198,48 @@ function getExitConfirmation(
   if (access.hasIntensive) {
     return {
       level: "intensive",
-      videoUrl: cfg.sectionVideos.thankYouIntensive,
-      videoLabel: "A note from the family — Intensive welcome",
-      envKey: "VITE_SUMMIT_VIDEO_THANK_YOU_INTENSIVE",
+      videoUrl: cfg.sectionVideos.exitIntensive,
+      videoLabel: "Your full-path confirmation and next steps",
+      envKey: "VITE_SUMMIT_VIDEO_EXIT_INTENSIVE",
       eyebrow: "Verified · Full Summit Path + Strategy & Build Intensive",
       headline:
         "Thank you, family — your private Strategy & Build Intensive is confirmed.",
-      body: "You have the full Summit path, including the live sessions on August 29–30, the VIP Build Lab on September 3, the Implementation Vault, and your private session. Our team will email you from Info@NuAmenti.com with the scheduling link.",
+      body: "You have the full Summit path, including the live sessions on August 29–30, the VIP Build Lab immediately after Day 2, the Implementation Vault, and your private session. Our team will email you from Info@NuAmenti.com with the scheduling link.",
     };
   }
 
   if (access.hasVault) {
     return {
       level: "vault",
-      videoUrl: cfg.sectionVideos.thankYouVault,
-      videoLabel: "A note from the family — Vault welcome",
-      envKey: "VITE_SUMMIT_VIDEO_THANK_YOU_VAULT",
+      videoUrl: cfg.sectionVideos.exitVault,
+      videoLabel: "Your Vault confirmation and next steps",
+      envKey: "VITE_SUMMIT_VIDEO_EXIT_VAULT",
       eyebrow: "Verified · Implementation Vault",
       headline:
         "Thank you, family — your Summit, VIP, and Implementation Vault access are confirmed.",
-      body: "You are all set for the live Summit on August 29–30, the VIP Build Lab on September 3, and the Vault. Your NuAmenti email will include the secure route to your maps, agent sheets, app plans, workflow templates, and marketing tools.",
+      body: "You are all set for the live Summit on August 29–30, the VIP Build Lab on Sunday from 4:15–5:45 PM Eastern, and the Vault. Your NuAmenti email will include the secure route to your maps, agent sheets, app plans, workflow templates, and marketing tools.",
     };
   }
 
   if (access.hasVip) {
     return {
       level: "vip",
-      videoUrl: cfg.sectionVideos.thankYouVip,
-      videoLabel: "A note from the family — VIP welcome",
-      envKey: "VITE_SUMMIT_VIDEO_THANK_YOU_VIP",
+      videoUrl: cfg.sectionVideos.exitVip,
+      videoLabel: "Your VIP confirmation and next steps",
+      envKey: "VITE_SUMMIT_VIDEO_EXIT_VIP",
       eyebrow: "Verified · VIP Implementation Experience",
       headline:
         "Thank you, family — your General Admission and VIP access are confirmed.",
-      body: "You are all set for the live Summit on August 29–30 from 1:00–4:00 PM Eastern, 30-day recordings, and the VIP Build Lab on Thursday, September 3 from 7:00–9:00 PM Eastern.",
+      body: "You are all set for the live Summit on August 29–30 from 1:00–4:00 PM Eastern, 30-day recordings, and the VIP Build Lab immediately after Day 2 on Sunday from 4:15–5:45 PM Eastern.",
     };
   }
 
   if (access.hasGa) {
     return {
       level: "ga",
-      videoUrl: cfg.sectionVideos.thankYouGa,
-      videoLabel: "A note from the family — General Admission welcome",
-      envKey: "VITE_SUMMIT_VIDEO_THANK_YOU_GA",
+      videoUrl: cfg.sectionVideos.exitGa,
+      videoLabel: "Your General Admission confirmation and next steps",
+      envKey: "VITE_SUMMIT_VIDEO_EXIT_GA",
       eyebrow: "Verified · General Admission",
       headline:
         "Thank you, family — your General Admission seat is confirmed.",
