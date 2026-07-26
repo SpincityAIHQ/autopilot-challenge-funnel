@@ -15,18 +15,15 @@ import { useQaReviewMode } from "@/hooks/use-qa-review";
 export const Route = createFileRoute("/strategy-intensive")({
   head: () => ({
     meta: [
-      { title: "Next step — AI AutoPilot Summit" },
+      { title: "Private Strategy & Build Intensive — NuAmenti" },
       {
         name: "description",
         content:
-          "Verified next step for eligible Summit attendees. Sign-in from your NuAmenti access email required.",
+          "A private next step for confirmed Vault buyers and approved AI AutoPilot Summit attendees.",
       },
       { name: "robots", content: "noindex" },
-      { property: "og:title", content: "Next step — AI AutoPilot Summit" },
-      {
-        property: "og:description",
-        content: "Verified next step for eligible Summit attendees.",
-      },
+      { property: "og:title", content: "Private Strategy & Build Intensive" },
+      { property: "og:description", content: "Verified Summit next step." },
       { property: "og:url", content: "/strategy-intensive" },
     ],
     links: [{ rel: "canonical", href: "/strategy-intensive" }],
@@ -37,21 +34,21 @@ export const Route = createFileRoute("/strategy-intensive")({
 function StrategyIntensiveRoute() {
   return (
     <main className="mx-auto max-w-3xl px-5 py-16">
-      <p className="eyebrow">Sequential next step</p>
+      <p className="eyebrow">Your private build option</p>
       <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
-        Your next step is inside your access email.
+        Build the next working piece with Spin
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        Eligibility is checked from your verified access session — never from
-        this URL. Details below only appear once we confirm your Vault purchase
-        or operator-approved eligibility.
+        This page opens only for confirmed Vault buyers and approved Summit
+        attendees. Use the secure link in your NuAmenti email.
       </p>
 
       <OfferGate
-        predicate={(a) =>
-          (a.hasVault || a.hasIntensiveEligibility) && !a.hasIntensive
+        predicate={(access) =>
+          (access.hasVault || access.hasIntensiveEligibility) &&
+          !access.hasIntensive
         }
-        ineligibleMessage="This next step is only offered to verified Implementation Vault holders and operator-approved attendees. Open the secure Intensive link in your NuAmenti access email — signed in on the same browser."
+        ineligibleMessage="This private option is only for confirmed Vault buyers and approved attendees. Open the secure link in your NuAmenti email on the same browser."
       >
         <IntensiveContent />
       </OfferGate>
@@ -60,7 +57,7 @@ function StrategyIntensiveRoute() {
 }
 
 function IntensiveContent() {
-  const i = UPSELLS.intensive;
+  const intensive = UPSELLS.intensive;
   const cfg = getCommasConfig();
   const url = resolveCheckoutUrl("intensive", cfg);
   const slots = useIntensiveSlotsRemaining();
@@ -80,7 +77,7 @@ function IntensiveContent() {
       </a>
     );
   } else if (soldOut) {
-    cta = <Disabled label={`All ${i.hardCap} slots taken`} />;
+    cta = <Disabled label={`All ${intensive.hardCap} slots taken`} />;
   } else if (!salesOn || !url || !slotsKnown) {
     cta = <Disabled label="Intensive checkout link being connected" />;
   } else {
@@ -90,7 +87,7 @@ function IntensiveContent() {
         className="inline-flex items-center rounded-md bg-primary px-5 py-3 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
         rel="noopener noreferrer"
       >
-        Claim a slot — {formatUsd(i.priceCents)}
+        Claim a slot — {formatUsd(intensive.priceCents)}
       </a>
     );
   }
@@ -107,8 +104,8 @@ function IntensiveContent() {
       <ProductThankYou
         verified={true}
         eyebrow="Verified · Implementation Vault"
-        headline="Thank you, family — you added the Implementation Vault."
-        body="Your Vault access is confirmed. Below is your next optional step — the private 1-on-1 Strategy & Build Intensive."
+        headline="Thank you, family — your Vault access is confirmed."
+        body="You now have the maps, agent job sheets, app plans, workflow templates, and marketing tools inside the Vault. The private session below is optional."
         videoUrl={null}
         videoLabel="A note from the family — Vault welcome"
         className="mt-6 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-6"
@@ -117,22 +114,23 @@ function IntensiveContent() {
       {qaReview ? (
         <div className="mt-6 rounded-md border border-[color:var(--gold)] bg-secondary/30 p-4 text-sm text-muted-foreground">
           <strong className="text-foreground">Owner preview:</strong> accepting
-          this offer moves to the final confirmation page without a charge or
-          inventory change.
+          this option moves to the final confirmation page without a charge or
+          seat change.
         </div>
       ) : null}
 
       <div className="mt-8">
         <h2 className="font-display text-2xl text-foreground">
-          Book Your Private 1-on-1 Strategy &amp; Build Intensive
+          Private Strategy &amp; Build Intensive
         </h2>
         <div className="mt-4 font-display text-4xl text-[color:var(--gold)]">
-          {formatUsd(i.priceCents)}
+          {formatUsd(intensive.priceCents)}
         </div>
+        <p className="mt-5 text-muted-foreground">{intensive.summary}</p>
       </div>
 
       <div className="mt-6 surface-raised p-6" aria-live="polite">
-        <p className="label-mono">Live inventory</p>
+        <p className="label-mono">Live seat count</p>
         <div className="mt-2 font-display text-3xl text-foreground">
           {qaReview ? (
             <span className="text-muted-foreground">
@@ -142,12 +140,12 @@ function IntensiveContent() {
             <span className="text-muted-foreground">Checking availability…</span>
           ) : slots.status === "ok" ? (
             soldOut ? (
-              <span>All {i.hardCap} slots taken</span>
+              <span>All {intensive.hardCap} slots taken</span>
             ) : (
               <span>
                 {slots.remaining}
                 <span className="ml-2 text-base text-muted-foreground">
-                  of {i.hardCap} slots remaining
+                  of {intensive.hardCap} slots remaining
                 </span>
               </span>
             )
@@ -156,37 +154,29 @@ function IntensiveContent() {
           )}
         </div>
         <p className="mt-3 text-xs text-muted-foreground">
-          Atomic inventory. We never claim a slot is reserved until verified
-          payment is received.
+          A seat is counted only after the payment is confirmed.
         </p>
       </div>
 
-      <p className="mt-6 text-muted-foreground">{i.summary}</p>
-      <p className="mt-2 text-xs text-muted-foreground">
-        Your Summit ticket and Vault access stay valid whether you claim an
-        Intensive slot or not. The 8-Week Mentorship is a separate offer, not
-        this one.
-      </p>
-
       <section className="mt-8 surface p-6">
         <h3 className="font-heading text-lg text-foreground">
-          What you already have vs. what the Intensive adds
+          What you already have and what the private session adds
         </h3>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
             <p className="label-mono">You already have</p>
             <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-              <li>· Your Summit ticket + resources</li>
-              <li>· The Implementation Vault</li>
+              <li>· Your Summit access and resources</li>
+              <li>· The AI AutoPilot Implementation Vault</li>
             </ul>
           </div>
           <div>
             <p className="label-mono text-[color:var(--gold)]">
-              The Intensive adds
+              The private session adds
             </p>
             <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-              {i.bullets.map((b) => (
-                <li key={b}>· {b}</li>
+              {intensive.bullets.map((bullet) => (
+                <li key={bullet}>· {bullet}</li>
               ))}
             </ul>
           </div>
@@ -206,8 +196,8 @@ function IntensiveContent() {
 
       <TestimonialSection
         page="intensive"
-        eyebrow="From Intensive alumni"
-        heading="What people built in a private 1-on-1"
+        eyebrow="From Intensive buyers"
+        heading="What people built in a private session"
       />
     </>
   );
