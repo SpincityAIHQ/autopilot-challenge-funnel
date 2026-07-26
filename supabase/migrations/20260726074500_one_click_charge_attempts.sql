@@ -1,5 +1,9 @@
 -- One-click post-purchase charge audit and duplicate protection.
 --
+-- One-click is limited to the $77 VIP and $199 Vault steps. The $1,000
+-- Intensive keeps a full checkout because it has hard-cap inventory and a
+-- materially higher charge amount.
+--
 -- The browser never receives customer IDs or payment-method IDs. A verified
 -- HttpOnly Summit session is required before the server may reserve an attempt.
 -- Pending, unknown, and succeeded attempts block another charge for the same
@@ -8,7 +12,7 @@
 CREATE TABLE public.one_click_charge_attempts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   buyer_email TEXT NOT NULL,
-  product TEXT NOT NULL CHECK (product IN ('vip_upgrade', 'vault', 'intensive')),
+  product TEXT NOT NULL CHECK (product IN ('vip_upgrade', 'vault')),
   amount_cents INTEGER NOT NULL CHECK (amount_cents > 0),
   idempotency_key TEXT NOT NULL UNIQUE,
   status TEXT NOT NULL DEFAULT 'pending'
@@ -52,7 +56,7 @@ DECLARE
   _existing public.one_click_charge_attempts%ROWTYPE;
   _new_id UUID;
 BEGIN
-  IF _product NOT IN ('vip_upgrade', 'vault', 'intensive') THEN
+  IF _product NOT IN ('vip_upgrade', 'vault') THEN
     RAISE EXCEPTION 'unsupported one-click product';
   END IF;
   IF _amount_cents <= 0 THEN
