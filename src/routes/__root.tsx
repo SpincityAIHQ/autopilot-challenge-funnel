@@ -12,15 +12,19 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BrandFrame } from "@/components/BrandFrame";
+import {
+  SUMMIT_DAY_1_END_ISO,
+  SUMMIT_DAY_1_ISO,
+  SUMMIT_DAY_2_END_ISO,
+  SUMMIT_DAY_2_ISO,
+} from "@/lib/challenge-config";
 
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <p className="eyebrow">Error 404</p>
-        <h1 className="mt-3 font-display text-5xl text-foreground">
-          Off route
-        </h1>
+        <h1 className="mt-3 font-display text-5xl text-foreground">Off route</h1>
         <p className="mt-4 text-sm text-muted-foreground">
           The page you're looking for isn't part of the Summit.
         </p>
@@ -82,8 +86,10 @@ const JSON_LD_EVENT = {
   name: "AI AutoPilot 2-Day Summit",
   description:
     "A two-day live online build event from SpinCityHQ and NuAmenti. Attendees map the business foundation, set up an AI Business GPS, plan an internal app, structure AI agent jobs, and connect marketing and monetization workflows.",
-  startDate: "2026-08-24",
-  endDate: "2026-08-25",
+  // Must match the locked schedule in src/lib/challenge-config.ts:
+  // Sat Aug 29 and Sun Aug 30, 2026 · 1:00–4:00 PM Eastern.
+  startDate: SUMMIT_DAY_1_ISO,
+  endDate: SUMMIT_DAY_2_END_ISO,
   eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
   eventStatus: "https://schema.org/EventScheduled",
   organizer: {
@@ -95,71 +101,69 @@ const JSON_LD_EVENT = {
     {
       "@type": "Event",
       name: "AI AutoPilot 2-Day Summit — Day 1: Build the Business Foundation",
-      startDate: "2026-08-24",
-      endDate: "2026-08-24",
+      startDate: SUMMIT_DAY_1_ISO,
+      endDate: SUMMIT_DAY_1_END_ISO,
       eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
       eventStatus: "https://schema.org/EventScheduled",
     },
     {
       "@type": "Event",
       name: "AI AutoPilot 2-Day Summit — Day 2: Hire the AI Team",
-      startDate: "2026-08-25",
-      endDate: "2026-08-25",
+      startDate: SUMMIT_DAY_2_ISO,
+      endDate: SUMMIT_DAY_2_END_ISO,
       eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
       eventStatus: "https://schema.org/EventScheduled",
     },
   ],
 };
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
-  {
-    head: () => ({
-      meta: [
-        { charSet: "utf-8" },
-        { name: "viewport", content: "width=device-width, initial-scale=1" },
-        {
-          title: "AI AutoPilot 2-Day Summit — SpinCityHQ & NuAmenti",
-        },
-        {
-          name: "description",
-          content:
-            "Build the business system, structure an AI agent team, and connect workflows that research, analyze, do the math, market, follow up, and improve.",
-        },
-        { name: "author", content: "SpinCityHQ & NuAmenti" },
-        { name: "theme-color", content: "#070b0d" },
-        {
-          property: "og:site_name",
-          content: "AI AutoPilot 2-Day Summit",
-        },
-        { property: "og:type", content: "website" },
-        {
-          property: "og:title",
-          content: "AI AutoPilot 2-Day Summit — SpinCityHQ & NuAmenti",
-        },
-        {
-          property: "og:description",
-          content:
-            "Stop just prompting. Build the system, hire the AI team, and put repeatable business work on autopilot.",
-        },
-        { name: "twitter:card", content: "summary_large_image" },
-      ],
-      links: [
-        { rel: "stylesheet", href: appCss },
-        { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
-      ],
-      scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify(JSON_LD_EVENT),
-        },
-      ],
-    }),
-    shellComponent: RootShell,
-    component: RootComponent,
-    notFoundComponent: NotFoundComponent,
-    errorComponent: ErrorComponent,
-  },
-);
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  head: () => ({
+    meta: [
+      { charSet: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      {
+        title: "AI AutoPilot 2-Day Summit — SpinCityHQ & NuAmenti",
+      },
+      {
+        name: "description",
+        content:
+          "Build the business system, structure an AI agent team, and connect workflows that research, analyze, do the math, market, follow up, and improve.",
+      },
+      { name: "author", content: "SpinCityHQ & NuAmenti" },
+      { name: "theme-color", content: "#070b0d" },
+      {
+        property: "og:site_name",
+        content: "AI AutoPilot 2-Day Summit",
+      },
+      { property: "og:type", content: "website" },
+      {
+        property: "og:title",
+        content: "AI AutoPilot 2-Day Summit — SpinCityHQ & NuAmenti",
+      },
+      {
+        property: "og:description",
+        content:
+          "Stop just prompting. Build the system, hire the AI team, and put repeatable business work on autopilot.",
+      },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(JSON_LD_EVENT),
+      },
+    ],
+  }),
+  shellComponent: RootShell,
+  component: RootComponent,
+  notFoundComponent: NotFoundComponent,
+  errorComponent: ErrorComponent,
+});
 
 function RootShell({ children }: { children: ReactNode }) {
   return (

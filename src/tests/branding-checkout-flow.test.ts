@@ -59,16 +59,21 @@ describe("video-first conversion order", () => {
   });
 
   it("puts every post-purchase upgrade CTA below its video", () => {
+    // Assert on where each action is RENDERED, not where its label happens to
+    // be declared. These pages build the CTA into a variable above the JSX, so
+    // a raw source scan for the label text reports the declaration site and
+    // wrongly reads as "CTA above video".
     const checks = [
-      [CONFIRMED, "Add VIP"],
-      [VIP, "Add VIP"],
-      [VAULT, "Add the Vault"],
-      [INTENSIVE, "Claim a Slot"],
+      [CONFIRMED, "<VipUpgradeNextStep"],
+      [CONFIRMED, "<VaultNextStep"],
+      [VIP, "<OneClickUpgradeButton"],
+      [VAULT, "<OneClickUpgradeButton"],
+      [INTENSIVE, "{primaryCta}"],
     ] as const;
 
-    for (const [source, ctaText] of checks) {
+    for (const [source, rendered] of checks) {
       const video = source.indexOf("<FunnelVideoSlot");
-      const cta = source.indexOf(ctaText, video);
+      const cta = source.indexOf(rendered, video);
       expect(video).toBeGreaterThan(-1);
       expect(cta).toBeGreaterThan(video);
     }

@@ -43,8 +43,11 @@ describe("every funnel exit lands on a confirmation page", () => {
   });
 
   it("keeps the VIP Build Lab immediately after Day 2", () => {
-    expect(NEXT_STEPS).toContain("Sunday, August 30 · 4:15–5:45 PM Eastern");
-    expect(NEXT_STEPS).toContain("15 minutes after Day 2 ends");
+    // Collapse JSX line wrapping so the assertion tracks the copy, not the
+    // width prettier happened to break the string at.
+    const copy = NEXT_STEPS.replace(/\s+/g, " ");
+    expect(copy).toContain("Sunday, August 30 · 4:15–5:45 PM Eastern");
+    expect(copy).toContain("15 minutes after Day 2 ends");
   });
 });
 

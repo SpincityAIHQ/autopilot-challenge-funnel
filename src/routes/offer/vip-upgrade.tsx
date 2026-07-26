@@ -1,13 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { OfferGate } from "@/components/OfferGate";
+import { OneClickUpgradeButton } from "@/components/OneClickUpgradeButton";
 import { TestimonialSection } from "@/components/TestimonialSection";
 import { useQaReviewMode } from "@/hooks/use-qa-review";
-import {
-  getCommasConfig,
-  isHandoffAllowed,
-  resolveCheckoutUrl,
-} from "@/lib/challenge-config";
+import { getCommasConfig, isHandoffAllowed, resolveCheckoutUrl } from "@/lib/challenge-config";
+import { secureCheckoutLabel } from "@/lib/one-click";
 import { formatUsd, UPSELLS } from "@/lib/tiers";
 
 const product = "vip_upgrade" as const;
@@ -54,7 +52,9 @@ function VipUpgradeContent() {
   const salesOn = isHandoffAllowed(product, cfg);
   const qaReview = useQaReviewMode();
 
-  const primaryCta = qaReview ? (
+  // Fallback path: the ordinary Commas checkout handoff. Used whenever a
+  // saved-card one-click is not possible, so the buyer is never stranded.
+  const secureCheckoutCta = qaReview ? (
     <a
       href="/offer/implementation-vault?qaStage=vip"
       className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
@@ -67,7 +67,7 @@ function VipUpgradeContent() {
       rel="noopener noreferrer"
       className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
     >
-      Add VIP · {formatUsd(vip.priceCents)}
+      {secureCheckoutLabel(vip.priceCents)}
     </a>
   ) : (
     <button
@@ -88,20 +88,22 @@ function VipUpgradeContent() {
         className="mt-7"
       />
 
-      <section className="mt-5 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-4 sm:p-5">
-        <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
-          {primaryCta}
+      <OneClickUpgradeButton
+        product="vip_upgrade"
+        priceCents={vip.priceCents}
+        fallback={secureCheckoutCta}
+        declineSlot={
           <Link
             to="/next-steps"
             className="inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary sm:w-auto"
           >
             No thanks
           </Link>
-        </div>
-        <p className="mt-3 text-center text-xs text-muted-foreground">
-          Your General Admission ticket remains active either way.
-        </p>
-      </section>
+        }
+      />
+      <p className="mt-3 text-center text-xs text-muted-foreground">
+        Your General Admission ticket remains active either way.
+      </p>
 
       <div className="mt-8">
         <h2 className="font-display text-2xl text-foreground">

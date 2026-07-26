@@ -532,6 +532,45 @@ export type Database = {
         }
         Relationships: []
       }
+      one_click_charges: {
+        Row: {
+          amount_cents: number
+          buyer_email: string
+          commas_payment_id: string | null
+          created_at: string
+          currency: string
+          error: string | null
+          id: string
+          product: string
+          settled_at: string | null
+          status: string
+        }
+        Insert: {
+          amount_cents: number
+          buyer_email: string
+          commas_payment_id?: string | null
+          created_at?: string
+          currency?: string
+          error?: string | null
+          id?: string
+          product: string
+          settled_at?: string | null
+          status?: string
+        }
+        Update: {
+          amount_cents?: number
+          buyer_email?: string
+          commas_payment_id?: string | null
+          created_at?: string
+          currency?: string
+          error?: string | null
+          id?: string
+          product?: string
+          settled_at?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       rate_limits: {
         Row: {
           count: number
@@ -793,6 +832,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      begin_one_click_charge: {
+        Args: {
+          _amount_cents: number
+          _buyer_email: string
+          _currency: string
+          _product: string
+        }
+        Returns: {
+          blocked_status: string | null
+          charge_id: string
+        }[]
+      }
       claim_lowest_founder_seat: {
         Args: { _registration_id: string }
         Returns: number
@@ -800,6 +851,15 @@ export type Database = {
       claim_lowest_intensive_slot: {
         Args: { _buyer_email: string; _commas_payment_id: string }
         Returns: number
+      }
+      complete_one_click_charge: {
+        Args: {
+          _charge_id: string
+          _commas_payment_id: string | null
+          _error: string | null
+          _status: string
+        }
+        Returns: undefined
       }
       consume_rate_limit: {
         Args: { _key_hash: string; _limit: number; _window_seconds: number }
@@ -868,6 +928,12 @@ export type Database = {
         }[]
       }
       intensive_slots_remaining: { Args: never; Returns: number }
+      one_click_charge_state: {
+        Args: { _buyer_email: string; _product: string }
+        Returns: {
+          status: string
+        }[]
+      }
       reverse_summit_payment: {
         Args: { _commas_payment_id: string }
         Returns: {

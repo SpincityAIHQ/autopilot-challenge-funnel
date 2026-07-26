@@ -1,11 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
+import { OneClickUpgradeButton } from "@/components/OneClickUpgradeButton";
 import { ProductThankYou } from "@/components/ProductThankYou";
 import { TestimonialSection } from "@/components/TestimonialSection";
-import {
-  derivedAccess,
-  useEntitlementSummary,
-} from "@/hooks/use-entitlement-summary";
+import { derivedAccess, useEntitlementSummary } from "@/hooks/use-entitlement-summary";
 import { getCommasConfig } from "@/lib/challenge-config";
 import { formatUsd, UPSELLS } from "@/lib/tiers";
 
@@ -16,8 +14,7 @@ export const Route = createFileRoute("/confirmed")({
       { name: "robots", content: "noindex" },
       {
         name: "description",
-        content:
-          "Your AI AutoPilot Summit purchase confirmation and next optional step.",
+        content: "Your AI AutoPilot Summit purchase confirmation and next optional step.",
       },
       { property: "og:url", content: "/confirmed" },
     ],
@@ -29,13 +26,10 @@ export const Route = createFileRoute("/confirmed")({
 function Confirmed() {
   const cfg = getCommasConfig();
   const summary = useEntitlementSummary();
-  const access =
-    summary.status === "ok" ? derivedAccess(summary.scopes) : null;
+  const access = summary.status === "ok" ? derivedAccess(summary.scopes) : null;
 
   const verifiedGaOnly = Boolean(access && access.hasGa && !access.hasVip);
-  const verifiedVipNoVault = Boolean(
-    access && access.hasVip && !access.hasVault,
-  );
+  const verifiedVipNoVault = Boolean(access && access.hasVip && !access.hasVault);
 
   const video = verifiedGaOnly
     ? {
@@ -62,12 +56,7 @@ function Confirmed() {
         Your purchase is confirmed. Choose your next step.
       </h1>
 
-      <FunnelVideoSlot
-        url={video.url}
-        label={video.label}
-        envKey={video.envKey}
-        className="mt-7"
-      />
+      <FunnelVideoSlot url={video.url} label={video.label} envKey={video.envKey} className="mt-7" />
 
       {verifiedGaOnly ? <VipUpgradeNextStep /> : null}
       {verifiedVipNoVault ? <VaultNextStep /> : null}
@@ -78,8 +67,8 @@ function Confirmed() {
             We are checking the exact ticket level tied to your secure session.
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Keep your FanBasis receipt and use the secure link in your NuAmenti
-            email. A page URL by itself never proves a purchase.
+            Keep your FanBasis receipt and use the secure link in your NuAmenti email. A page URL by
+            itself never proves a purchase.
           </p>
         </section>
       ) : null}
@@ -105,8 +94,8 @@ function Confirmed() {
       <section className="mt-8 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">Save the dates</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Both Summit days run live online from 1:00–4:00 PM Eastern. The room
-          opens at 12:45 PM Eastern.
+          Both Summit days run live online from 1:00–4:00 PM Eastern. The room opens at 12:45 PM
+          Eastern.
         </p>
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           <a
@@ -125,9 +114,7 @@ function Confirmed() {
       </section>
 
       <section className="mt-8 surface p-6">
-        <h2 className="font-heading text-lg text-foreground">
-          Bring this to Day 1
-        </h2>
+        <h2 className="font-heading text-lg text-foreground">Bring this to Day 1</h2>
         <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
           <li>· One business, skill, offer, or clear idea.</li>
           <li>· The tasks that take too much time.</li>
@@ -149,29 +136,37 @@ function Confirmed() {
   );
 }
 
+const noThanks = (
+  <Link
+    to="/next-steps"
+    className="inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary sm:w-auto"
+  >
+    No thanks
+  </Link>
+);
+
 function VipUpgradeNextStep() {
   const vip = UPSELLS.vip_upgrade;
 
   return (
-    <section className="mt-5 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-4 sm:p-5">
-      <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
-        <Link
-          to="/offer/vip-upgrade"
-          className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
-        >
-          Add VIP · {formatUsd(vip.priceCents)}
-        </Link>
-        <Link
-          to="/next-steps"
-          className="inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary sm:w-auto"
-        >
-          No thanks
-        </Link>
-      </div>
+    <>
+      <OneClickUpgradeButton
+        product="vip_upgrade"
+        priceCents={vip.priceCents}
+        declineSlot={noThanks}
+        fallback={
+          <Link
+            to="/offer/vip-upgrade"
+            className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
+          >
+            Add VIP · {formatUsd(vip.priceCents)}
+          </Link>
+        }
+      />
       <p className="mt-3 text-center text-xs text-muted-foreground">
         Your General Admission ticket remains active either way.
       </p>
-    </section>
+    </>
   );
 }
 
@@ -179,24 +174,23 @@ function VaultNextStep() {
   const vault = UPSELLS.vault;
 
   return (
-    <section className="mt-5 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-4 sm:p-5">
-      <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
-        <Link
-          to="/offer/implementation-vault"
-          className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
-        >
-          Add the Vault · {formatUsd(vault.priceCents)}
-        </Link>
-        <Link
-          to="/next-steps"
-          className="inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary sm:w-auto"
-        >
-          No thanks
-        </Link>
-      </div>
+    <>
+      <OneClickUpgradeButton
+        product="vault"
+        priceCents={vault.priceCents}
+        declineSlot={noThanks}
+        fallback={
+          <Link
+            to="/offer/implementation-vault"
+            className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
+          >
+            Add the Vault · {formatUsd(vault.priceCents)}
+          </Link>
+        }
+      />
       <p className="mt-3 text-center text-xs text-muted-foreground">
         Your VIP access remains active either way.
       </p>
-    </section>
+    </>
   );
 }

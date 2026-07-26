@@ -1,14 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { OfferGate } from "@/components/OfferGate";
+import { OneClickUpgradeButton } from "@/components/OneClickUpgradeButton";
 import { ProductThankYou } from "@/components/ProductThankYou";
 import { TestimonialSection } from "@/components/TestimonialSection";
 import { useQaReviewMode } from "@/hooks/use-qa-review";
-import {
-  getCommasConfig,
-  isHandoffAllowed,
-  resolveCheckoutUrl,
-} from "@/lib/challenge-config";
+import { getCommasConfig, isHandoffAllowed, resolveCheckoutUrl } from "@/lib/challenge-config";
+import { secureCheckoutLabel } from "@/lib/one-click";
 import { formatUsd, UPSELLS } from "@/lib/tiers";
 
 export const Route = createFileRoute("/offer/implementation-vault")({
@@ -53,7 +51,9 @@ function VaultContent() {
   const salesOn = isHandoffAllowed("vault", cfg);
   const qaReview = useQaReviewMode();
 
-  const primaryCta = qaReview ? (
+  // Fallback path: the ordinary Commas checkout handoff. Used whenever a
+  // saved-card one-click is not possible, so the buyer is never stranded.
+  const secureCheckoutCta = qaReview ? (
     <a
       href="/strategy-intensive?qaStage=vault"
       className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
@@ -66,7 +66,7 @@ function VaultContent() {
       rel="noopener noreferrer"
       className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
     >
-      Add the Vault · {formatUsd(vault.priceCents)}
+      {secureCheckoutLabel(vault.priceCents)}
     </a>
   ) : (
     <button
@@ -87,20 +87,22 @@ function VaultContent() {
         className="mt-7"
       />
 
-      <section className="mt-5 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-4 sm:p-5">
-        <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
-          {primaryCta}
+      <OneClickUpgradeButton
+        product="vault"
+        priceCents={vault.priceCents}
+        fallback={secureCheckoutCta}
+        declineSlot={
           <Link
             to="/next-steps"
             className="inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary sm:w-auto"
           >
             No thanks
           </Link>
-        </div>
-        <p className="mt-3 text-center text-xs text-muted-foreground">
-          Your Summit and VIP access remain active either way.
-        </p>
-      </section>
+        }
+      />
+      <p className="mt-3 text-center text-xs text-muted-foreground">
+        Your Summit and VIP access remain active either way.
+      </p>
 
       <ProductThankYou
         verified={true}
@@ -136,9 +138,7 @@ function VaultContent() {
             </ul>
           </div>
           <div>
-            <p className="label-mono text-[color:var(--gold)]">
-              The Vault adds
-            </p>
+            <p className="label-mono text-[color:var(--gold)]">The Vault adds</p>
             <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
               {vault.bullets.map((bullet) => (
                 <li key={bullet}>· {bullet}</li>
