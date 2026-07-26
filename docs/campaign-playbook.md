@@ -5,13 +5,26 @@
 - **Day 1:** Saturday, August 29, 2026 · 1:00–4:00 PM Eastern
 - **Day 2:** Sunday, August 30, 2026 · 1:00–4:00 PM Eastern
 - **Room opens:** 12:45 PM Eastern both days
-- **VIP Build Lab:** Thursday, September 3, 2026 · 7:00–9:00 PM Eastern
+- **VIP Build Lab:** Sunday, August 30, 2026 · 4:15–5:45 PM Eastern, immediately after Day 2
 
 The message is the same everywhere:
 
 > Build the business. Hire the AI team. Put repeat work on autopilot. Keep human control.
 
 No email, text, call, page, or video may use a different date, time, or promise.
+
+## Live ascension logic
+
+The main Summit is the value event. The paid ascension happens while the value is still fresh.
+
+1. Day 2 core teaching runs from 1:00–3:30 PM Eastern.
+2. From 3:30–3:45, attendees finish their 30-day build order and Q&A.
+3. From 3:45–4:00, Spin closes the main Summit and presents the $77 VIP Build Lab.
+4. From 4:00–4:15, attendees take a short break and GA buyers may upgrade live.
+5. The VIP Build Lab starts at 4:15 PM in the same event flow.
+6. The $199 Vault is presented during the final part of the VIP Lab.
+7. A verified Vault buyer is redirected to the $1,000 Strategy & Build Intensive page.
+8. Anyone who declines an offer goes to the confirmation and next-steps page for the highest level they actually bought.
 
 ## Non-negotiables
 
@@ -73,9 +86,9 @@ Thank you, family. You now have General Admission plus:
 - 30-day Summit recordings
 - Priority question access
 - AI Agent Hiring + Workflow Kit
-- **VIP Build Lab: Thursday, September 3 · 7:00–9:00 PM Eastern**
+- **VIP Build Lab: Sunday, August 30 · 4:15–5:45 PM Eastern**
 
-Your VIP email with the private Lab link and reminder will follow.
+The Lab starts 15 minutes after Day 2 ends. Stay in the room or use the private VIP link in this email.
 
 ### Vault purchase confirmation
 
@@ -99,7 +112,7 @@ Use the exact transactional confirmation for the buyer’s highest verified leve
 
 **Subject:** One week until we build your AI-powered business
 
-Goal: Set expectations. Explain that this is not a tool tour or a prompting class. Ask the buyer to choose one real business, skill, offer, or idea.
+Explain that this is not a tool tour or a prompting class. Ask the buyer to choose one real business, skill, offer, or idea.
 
 ### Wednesday, August 26 — three days before
 
@@ -169,43 +182,85 @@ Include the room link and today’s promise: build the AI team, workflows, loops
 
 One button: Enter Day 2.
 
-### Sunday, August 30 — after Day 2
+## Day 2 live close and VIP conversion
 
-**Subject:** You built the plan. Now follow the order.
+### 3:30–3:45 PM Eastern — finish the core build
 
-Send the correct next-steps link and resources based on `SUMMITLVL`.
+- Complete the 30-day build order.
+- Answer final core questions.
+- Remind everyone that their current ticket remains complete whether they upgrade or not.
 
-## VIP Build Lab sequence
+### 3:45–4:00 PM Eastern — present VIP
 
-Send only to `CURRENT · VIP`, `CURRENT · VAULT`, and `CURRENT · INTENSIVE`.
+The live pitch is simple:
 
-### Monday, August 31
+> “The main Summit ends at 4:00. VIP begins at 4:15. Stay with us if you want the recordings, the deeper Build Lab, priority questions, and the agent and workflow kit. Your GA ticket is still complete if you pass.”
 
-**Subject:** Your VIP Build Lab is Thursday
+Place the verified VIP offer link in:
 
-Remind them to use the first days after the Summit to begin the build and write down the exact place they get stuck.
+- The live room chat
+- The pinned room message
+- The GA-only email
+- The GA-only SMS
 
-### Thursday, September 3 — 12:00 PM Eastern
+### 3:48 PM Eastern — GA-only email
 
-**Subject:** VIP Build Lab tonight at 7:00 PM Eastern
+**Subject:** Stay for the VIP Build Lab at 4:15 PM Eastern
 
-Ask them to bring:
+Explain what VIP adds, state that the Lab begins in 27 minutes, and use one CTA to the verified $77 VIP page.
 
-- The map or workflow they started
-- The error, delay, or decision blocking them
-- One clear question
+### 3:50 PM Eastern — GA-only SMS
 
-### Thursday, September 3 — 6:30 PM Eastern
+“VIP Build Lab starts at 4:15 PM ET, right after Day 2. Add recordings, the live Lab, priority questions, and the Agent Hiring + Workflow Kit: [VIP_LINK]. Reply STOP to opt out; HELP for help.”
 
-**Subject:** The VIP Build Lab opens in 30 minutes
+### 4:00–4:15 PM Eastern — reset and upgrade window
 
-One button: Enter the VIP Build Lab.
+- Main Summit ends.
+- Show a clean 15-minute break screen.
+- Keep the VIP link visible.
+- Confirm verified VIP buyers before Lab access.
+- GA buyers who decline receive their GA confirmation and next steps.
 
-### Thursday, September 3 — after the Lab
+## VIP Build Lab — Sunday, August 30 · 4:15–5:45 PM Eastern
 
-**Subject:** Your VIP Lab next steps
+### 4:15–4:25 — reset the room
 
-Send the replay window, action list, and correct resource route for the buyer’s level.
+- Welcome verified VIP buyers.
+- State the Lab target.
+- Ask each person to choose one bottleneck or next build.
+
+### 4:25–5:05 — implementation
+
+Work through real agent roles, app plans, workflows, loops, handoffs, approval rules, and marketing systems.
+
+### 5:05–5:25 — priority Q&A
+
+Answer the highest-value implementation questions collected before and during the Summit.
+
+### 5:25–5:40 — present the Vault
+
+Explain that VIP provides deeper access, support, and recordings. The Vault provides reusable operating assets. Present the $199 Vault without pretending VIP is incomplete.
+
+Place the Vault link in:
+
+- VIP room chat
+- VIP-only email
+- VIP-only SMS, when consent exists
+
+A verified Vault purchase redirects to the private Intensive page.
+
+### 5:40–5:45 — close
+
+- Thank the VIP room.
+- Confirm what they own.
+- Direct every buyer to the correct next-steps page.
+
+### 5:50 PM Eastern — ticket-level follow-up
+
+- GA: GA confirmation and core resources
+- VIP: VIP confirmation, recording expectations, and Lab next steps
+- Vault: Vault confirmation and secure resource orientation
+- Intensive: full-path confirmation and scheduling instructions
 
 ## Post-Summit sequence
 
@@ -247,11 +302,11 @@ Request testimonials only after the person has had time to use the material. Ask
 
 ### GA
 
-Send the live-event path, core resources, and optional VIP explanation. Never send VIP-only links or tell them recordings are included.
+Send the live-event path, core resources, and optional VIP explanation before the live VIP window closes. Never send VIP-only links or tell them recordings are included.
 
 ### VIP
 
-Send the live-event path, recording details, priority-question form, and Sep 3 Lab reminders. Stop VIP sales messages.
+Send the live-event path, recording details, priority-question form, and the immediate post-Day-2 Lab access. Stop VIP sales messages.
 
 ### Vault
 
@@ -270,13 +325,14 @@ Send only to people with recorded SMS consent. Every marketing SMS ends with: `R
 - **Aug 29, 12:45 PM ET:** “The Day 1 room is open now. Use the link in your NuAmenti email. Reply STOP to opt out; HELP for help.”
 - **Aug 30, 11:00 AM ET:** “Day 2 starts in 2 hours. Today we build the AI team, workflows, loops, and money path. Reply STOP to opt out; HELP for help.”
 - **Aug 30, 12:45 PM ET:** “The Day 2 room is open now. Use the link in your NuAmenti email. Reply STOP to opt out; HELP for help.”
-- **Sep 3, VIP only:** “VIP Build Lab is tonight, 7–9 PM ET. Bring the build and the place you got stuck. Reply STOP to opt out; HELP for help.”
+- **Aug 30, 3:50 PM ET, GA only:** “VIP Build Lab starts at 4:15 PM ET, right after Day 2. Add recordings, the Lab, priority questions, and the Agent Hiring + Workflow Kit: [VIP_LINK]. Reply STOP to opt out; HELP for help.”
+- **Aug 30, 5:25 PM ET, VIP only:** “The Implementation Vault gives you the reusable maps, agent sheets, app plans, workflows, loops, and marketing tools: [VAULT_LINK]. Reply STOP to opt out; HELP for help.”
 
 ## AI welcome call
 
 Use only with documented AI-call consent.
 
-“Peace Family. This is AI Spin calling for SpinCityHQ and NuAmenti. I am an AI voice. The AI AutoPilot 2-Day Summit is Saturday, August 29 and Sunday, August 30 from 1:00 to 4:00 PM Eastern. The room opens at 12:45 both days. I have three short questions to help Spin prepare the live teaching. What business, skill, offer, or idea are you bringing? What repeated task takes the most time now? What is the number-one question you want addressed? To stop future NuAmenti calls, press 9. To request a human, press 0.”
+“Peace Family. This is AI Spin calling for SpinCityHQ and NuAmenti. I am an AI voice. The AI AutoPilot 2-Day Summit is Saturday, August 29 and Sunday, August 30 from 1:00 to 4:00 PM Eastern. The room opens at 12:45 both days. The optional VIP Build Lab begins 15 minutes after Day 2 ends. I have three short questions to help Spin prepare the live teaching. What business, skill, offer, or idea are you bringing? What repeated task takes the most time now? What is the number-one question you want addressed? To stop future NuAmenti calls, press 9. To request a human, press 0.”
 
 Record the answers by topic:
 
