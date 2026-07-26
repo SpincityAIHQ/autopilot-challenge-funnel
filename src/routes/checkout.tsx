@@ -54,7 +54,7 @@ function Checkout() {
       ? "Checkout link being connected"
       : !legalAck
         ? "Acknowledge the policies to continue"
-        : `Continue to secure checkout · ${formatUsd(tier.priceCents)}`;
+        : `Reserve General Admission · ${formatUsd(tier.priceCents)}`;
 
   function handleContinue() {
     if (qaReview) {
@@ -82,32 +82,77 @@ function Checkout() {
         url={cfg.sectionVideos.checkout}
         label="Watch before you reserve your seat"
         envKey="VITE_SUMMIT_VIDEO_CHECKOUT"
-        className="mt-8"
+        className="mt-7"
       />
 
-      {qaReview ? (
-        <section className="mt-6 rounded-md border border-[color:var(--emerald-signal)]/60 bg-secondary/40 p-4 text-sm text-muted-foreground">
-          <strong className="text-foreground">Owner preview:</strong> walk the
-          full funnel without charging a card, creating an order, or reserving
-          a seat.
-          <button
-            type="button"
-            onClick={handleContinue}
-            className="mt-4 inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-3 font-heading text-base font-semibold text-primary-foreground transition hover:opacity-90"
-          >
-            Continue to GA confirmation — no payment
-          </button>
-        </section>
-      ) : null}
+      <section className="mt-5 rounded-md border border-[color:var(--gold)]/70 bg-[color:var(--surface)] p-4 sm:p-5">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="label-mono">General Admission</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Both live Summit days
+            </p>
+          </div>
+          <p className="font-display text-2xl text-[color:var(--gold)]">
+            {formatUsd(tier.priceCents)}
+          </p>
+        </div>
+
+        {qaReview ? (
+          <p className="mt-4 text-sm text-muted-foreground">
+            <strong className="text-foreground">Owner preview:</strong> this
+            continues through the complete funnel without charging a card,
+            creating an order, or reserving a seat.
+          </p>
+        ) : (
+          <label className="mt-4 flex items-start gap-3 rounded-md border border-border bg-secondary/30 p-3 text-sm text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={legalAck}
+              onChange={(event) => setLegalAck(event.target.checked)}
+              className="mt-1 accent-[color:var(--gold)]"
+              aria-describedby="legal-ack-copy"
+            />
+            <span id="legal-ack-copy">
+              I agree to the{" "}
+              <Link to="/terms" className="underline hover:text-foreground">
+                Terms
+              </Link>
+              ,{" "}
+              <Link to="/privacy" className="underline hover:text-foreground">
+                Privacy Policy
+              </Link>
+              , and{" "}
+              <Link
+                to="/refund-policy"
+                className="underline hover:text-foreground"
+              >
+                Refund Policy
+              </Link>
+              .
+            </span>
+          </label>
+        )}
+
+        <button
+          type="button"
+          disabled={!canSubmit}
+          onClick={handleContinue}
+          aria-disabled={!canSubmit}
+          className={`mt-4 inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-3.5 font-heading text-base font-semibold text-primary-foreground transition ${
+            canSubmit ? "hover:opacity-90" : "cursor-not-allowed opacity-50"
+          }`}
+        >
+          {buttonLabel}
+        </button>
+        <p className="mt-3 text-center text-xs text-muted-foreground">
+          Your first payment is completed securely on FanBasis.
+        </p>
+      </section>
 
       <section className="mt-8 surface-raised p-6">
-        <h2 className="font-heading text-lg text-foreground">{tier.name}</h2>
-        <div className="mt-2 flex items-baseline justify-between gap-4">
-          <p className="text-sm text-muted-foreground">{tier.headline}</p>
-          <span className="font-mono text-lg text-foreground">
-            {formatUsd(tier.priceCents)}
-          </span>
-        </div>
+        <h2 className="font-heading text-lg text-foreground">What you get</h2>
+        <p className="mt-2 text-sm text-muted-foreground">{tier.headline}</p>
         <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
           {tier.bullets.map((bullet) => (
             <li key={bullet}>· {bullet}</li>
@@ -126,82 +171,6 @@ function Checkout() {
         <p className="mt-2 text-sm text-muted-foreground">
           Secure FanBasis checkout collects your order details. NuAmenti email,
           text, and call preferences are confirmed separately after purchase.
-        </p>
-      </section>
-
-      <section className="mt-6 surface-raised p-6">
-        <h2 className="font-heading text-lg text-foreground">Order summary</h2>
-        <dl className="mt-4 space-y-2 text-sm">
-          <div className="flex items-baseline justify-between">
-            <dt className="text-muted-foreground">{tier.name}</dt>
-            <dd className="font-mono text-foreground">
-              {formatUsd(tier.priceCents)}
-            </dd>
-          </div>
-          <div className="gold-rule my-2" />
-          <div className="flex items-baseline justify-between">
-            <dt className="font-heading text-base text-foreground">Total</dt>
-            <dd className="font-mono text-base text-foreground">
-              {formatUsd(tier.priceCents)}
-            </dd>
-          </div>
-        </dl>
-
-        {!qaReview ? (
-          <label className="mt-6 flex items-start gap-3 rounded-md border border-border bg-secondary/30 p-4 text-sm text-muted-foreground">
-            <input
-              type="checkbox"
-              checked={legalAck}
-              onChange={(event) => setLegalAck(event.target.checked)}
-              className="mt-1 accent-[color:var(--gold)]"
-              aria-describedby="legal-ack-copy"
-            />
-            <span id="legal-ack-copy">
-              I have read and agree to the{" "}
-              <Link to="/terms" className="underline hover:text-foreground">
-                Terms
-              </Link>
-              ,{" "}
-              <Link to="/privacy" className="underline hover:text-foreground">
-                Privacy Policy
-              </Link>
-              , and{" "}
-              <Link
-                to="/refund-policy"
-                className="underline hover:text-foreground"
-              >
-                Refund Policy
-              </Link>
-              .
-            </span>
-          </label>
-        ) : null}
-
-        <button
-          type="button"
-          disabled={!canSubmit}
-          onClick={handleContinue}
-          aria-disabled={!canSubmit}
-          className={`mt-4 inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-3 font-heading text-base font-semibold text-primary-foreground transition ${
-            canSubmit ? "hover:opacity-90" : "cursor-not-allowed opacity-50"
-          }`}
-        >
-          {buttonLabel}
-        </button>
-        <p className="mt-3 text-xs text-muted-foreground">
-          By continuing to a live checkout, you agree to the{" "}
-          <Link to="/terms" className="underline hover:text-foreground">
-            Terms
-          </Link>
-          ,{" "}
-          <Link to="/privacy" className="underline hover:text-foreground">
-            Privacy
-          </Link>
-          , and{" "}
-          <Link to="/refund-policy" className="underline hover:text-foreground">
-            Refund Policy
-          </Link>
-          .
         </p>
       </section>
 
