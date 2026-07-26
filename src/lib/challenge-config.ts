@@ -32,6 +32,10 @@ export interface SectionVideoUrls {
   thankYouVip?: string;
   thankYouVault?: string;
   thankYouIntensive?: string;
+  exitGa?: string;
+  exitVip?: string;
+  exitVault?: string;
+  exitIntensive?: string;
 }
 
 export interface KeynoteConfig {
@@ -92,6 +96,10 @@ export function getCommasConfig(): CommasConfig {
       thankYouVip: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_VIP"),
       thankYouVault: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_VAULT"),
       thankYouIntensive: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_INTENSIVE"),
+      exitGa: readEnv("VITE_SUMMIT_VIDEO_EXIT_GA"),
+      exitVip: readEnv("VITE_SUMMIT_VIDEO_EXIT_VIP"),
+      exitVault: readEnv("VITE_SUMMIT_VIDEO_EXIT_VAULT"),
+      exitIntensive: readEnv("VITE_SUMMIT_VIDEO_EXIT_INTENSIVE"),
     },
     salesEnabled: readEnv("VITE_SUMMIT_SALES_ENABLED") === "true",
     legalReady: readEnv("VITE_SUMMIT_LEGAL_READY") === "true",
