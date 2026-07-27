@@ -38,16 +38,14 @@ export const TIERS: readonly Tier[] = [
     shortName: "GA Ticket",
     priceCents: 2200,
     headline:
-      "Join both live days and build the foundation for your AI-powered business.",
+      "See the whole system get built. Leave knowing exactly what to build.",
     bullets: [
       "Live online · Sat Aug 29 + Sun Aug 30 · 1:00–4:00 PM Eastern",
       "Room opens at 12:45 PM Eastern both days",
-      "Niche + Offer Map",
-      "Business Infrastructure Map",
-      "AI Business GPS workbook",
-      "AI Agent Team Chart",
-      "First Workflow + Loop Builder",
-      "GA does not include session recordings",
+      "Summit Action Guide",
+      "Meeting notes from both sessions",
+      "48-hour replay access",
+      "Workbooks and 30-day recordings are VIP",
     ],
   },
 ] as const;
