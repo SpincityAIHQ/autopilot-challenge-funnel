@@ -138,9 +138,7 @@ function Outputs() {
     ["Summit Action Guide", "Follow the same build order we run live, step by step."],
     ["Meeting notes from both sessions", "Keep the decisions, numbers, and next steps from each day."],
     ["48-hour replay access", "Rewatch both sessions for two days after the Summit ends."],
-    ["AI Business GPS", "Give every AI tool the same goals, rules, facts, numbers, and next steps."],
     ["Internal Business App Plan", "Plan or begin one internal business app that keeps the work in one place."],
-    ["30-Day Build Order", "Know what to build first, second, and third after the Summit."],
   ] as const;
 
   return (
@@ -151,15 +149,8 @@ function Outputs() {
         every step by hand.
       </h2>
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {outputs.map(([title, body], index) => (
-          <article
-            key={title}
-            className={`surface-raised p-5 ${
-              index === 2 || index === 3
-                ? "border-[color:var(--emerald-signal)]/35"
-                : ""
-            }`}
-          >
+        {outputs.map(([title, body]) => (
+          <article key={title} className="surface-raised p-5">
             <h3 className="font-display text-sm text-[color:var(--gold)]">
               {title}
             </h3>
@@ -177,6 +168,7 @@ function Outputs() {
         <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
           <li>· Niche + Offer Map — choose who you help, the problem you solve, and what you sell.</li>
           <li>· Business Infrastructure Map — see the pages, apps, tools, data, and handoffs your business needs.</li>
+          <li>· AI Business GPS workbook — give every AI tool the same goals, rules, facts, numbers, and next steps.</li>
           <li>· AI Agent Team Chart — name the AI jobs, what each agent owns, and where a human approves.</li>
         </ul>
       </div>
@@ -327,7 +319,7 @@ function Faq() {
     ["Do I need to code?", "No. We use plain language and visual tools. You learn the business logic first."],
     ["Is this a prompting class?", "No. Prompts are one small part. We build apps, agent jobs, workflows, loops, numbers, marketing, and approval rules."],
     ["What is an AI Business GPS?", "It is the shared goals, rules, facts, numbers, and next steps that keep your AI tools pointed at the same outcome."],
-    ["What will I leave with?", "The Summit Action Guide, meeting notes from both sessions, 48-hour replay access, and a clear 30-day build order. The fill-in workbooks are part of the VIP Implementation Experience."],
+    ["What will I leave with?", "The Summit Action Guide, meeting notes from both sessions, and 48-hour replay access. You see the whole system get built and leave knowing exactly what to build. The fill-in workbooks and 30-day recordings are part of the VIP Implementation Experience."],
     ["When is the Summit?", "Saturday, August 29 and Sunday, August 30 from 1:00–4:00 PM Eastern. The room opens at 12:45 PM."],
     ["Are recordings included?", "General Admission includes 48-hour replay access. The 30-day recordings are part of the VIP Implementation Experience, offered after you register."],
   ] as const;
