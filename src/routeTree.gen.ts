@@ -31,6 +31,7 @@ import { Route as OfferStrategyIntensiveRouteImport } from './routes/offer/strat
 import { Route as OfferMentorshipRouteImport } from './routes/offer/mentorship'
 import { Route as OfferKeynoteRouteImport } from './routes/offer/keynote'
 import { Route as OfferImplementationVaultRouteImport } from './routes/offer/implementation-vault'
+import { Route as CalendarVaultWithSpinDoticsRouteImport } from './routes/calendar.vault-with-spin[.]ics'
 import { Route as CalendarDay2DoticsRouteImport } from './routes/calendar.day2[.]ics'
 import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.]ics'
 import { Route as ApplyMentorshipRouteImport } from './routes/apply.mentorship'
@@ -158,6 +159,12 @@ const OfferImplementationVaultRoute =
     path: '/offer/implementation-vault',
     getParentRoute: () => rootRouteImport,
   } as any)
+const CalendarVaultWithSpinDoticsRoute =
+  CalendarVaultWithSpinDoticsRouteImport.update({
+    id: '/calendar/vault-with-spin.ics',
+    path: '/calendar/vault-with-spin.ics',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CalendarDay2DoticsRoute = CalendarDay2DoticsRouteImport.update({
   id: '/calendar/day2.ics',
   path: '/calendar/day2.ics',
@@ -257,6 +264,7 @@ export interface FileRoutesByFullPath {
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
+  '/calendar/vault-with-spin.ics': typeof CalendarVaultWithSpinDoticsRoute
   '/offer/implementation-vault': typeof OfferImplementationVaultRoute
   '/offer/keynote': typeof OfferKeynoteRoute
   '/offer/mentorship': typeof OfferMentorshipRoute
@@ -295,6 +303,7 @@ export interface FileRoutesByTo {
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
+  '/calendar/vault-with-spin.ics': typeof CalendarVaultWithSpinDoticsRoute
   '/offer/implementation-vault': typeof OfferImplementationVaultRoute
   '/offer/keynote': typeof OfferKeynoteRoute
   '/offer/mentorship': typeof OfferMentorshipRoute
@@ -334,6 +343,7 @@ export interface FileRoutesById {
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
+  '/calendar/vault-with-spin.ics': typeof CalendarVaultWithSpinDoticsRoute
   '/offer/implementation-vault': typeof OfferImplementationVaultRoute
   '/offer/keynote': typeof OfferKeynoteRoute
   '/offer/mentorship': typeof OfferMentorshipRoute
@@ -374,6 +384,7 @@ export interface FileRouteTypes {
     | '/apply/mentorship'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
+    | '/calendar/vault-with-spin.ics'
     | '/offer/implementation-vault'
     | '/offer/keynote'
     | '/offer/mentorship'
@@ -412,6 +423,7 @@ export interface FileRouteTypes {
     | '/apply/mentorship'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
+    | '/calendar/vault-with-spin.ics'
     | '/offer/implementation-vault'
     | '/offer/keynote'
     | '/offer/mentorship'
@@ -450,6 +462,7 @@ export interface FileRouteTypes {
     | '/apply/mentorship'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
+    | '/calendar/vault-with-spin.ics'
     | '/offer/implementation-vault'
     | '/offer/keynote'
     | '/offer/mentorship'
@@ -489,6 +502,7 @@ export interface RootRouteChildren {
   ApplyMentorshipRoute: typeof ApplyMentorshipRoute
   CalendarDay1DoticsRoute: typeof CalendarDay1DoticsRoute
   CalendarDay2DoticsRoute: typeof CalendarDay2DoticsRoute
+  CalendarVaultWithSpinDoticsRoute: typeof CalendarVaultWithSpinDoticsRoute
   OfferImplementationVaultRoute: typeof OfferImplementationVaultRoute
   OfferKeynoteRoute: typeof OfferKeynoteRoute
   OfferMentorshipRoute: typeof OfferMentorshipRoute
@@ -662,6 +676,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OfferImplementationVaultRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/calendar/vault-with-spin.ics': {
+      id: '/calendar/vault-with-spin.ics'
+      path: '/calendar/vault-with-spin.ics'
+      fullPath: '/calendar/vault-with-spin.ics'
+      preLoaderRoute: typeof CalendarVaultWithSpinDoticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/calendar/day2.ics': {
       id: '/calendar/day2.ics'
       path: '/calendar/day2.ics'
@@ -796,6 +817,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApplyMentorshipRoute: ApplyMentorshipRoute,
   CalendarDay1DoticsRoute: CalendarDay1DoticsRoute,
   CalendarDay2DoticsRoute: CalendarDay2DoticsRoute,
+  CalendarVaultWithSpinDoticsRoute: CalendarVaultWithSpinDoticsRoute,
   OfferImplementationVaultRoute: OfferImplementationVaultRoute,
   OfferKeynoteRoute: OfferKeynoteRoute,
   OfferMentorshipRoute: OfferMentorshipRoute,
