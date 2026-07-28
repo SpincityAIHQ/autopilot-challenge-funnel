@@ -4,6 +4,7 @@ import { BrandSignature } from "@/components/BrandFrame";
 import { Countdown } from "@/components/Countdown";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { TestimonialSection } from "@/components/TestimonialSection";
+import { LandingReservationForm } from "@/components/reserve/LandingReservationForm";
 import { captureAttribution } from "@/lib/attribution";
 import { getCommasConfig } from "@/lib/challenge-config";
 
@@ -60,17 +61,11 @@ function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
       <BrandSignature />
 
       <div className="mt-10 max-w-5xl">
-        <p className="eyebrow">
-          Live online · Sat Aug 29 + Sun Aug 30 · 1:00–4:00 PM Eastern
-        </p>
+        <p className="eyebrow">Live online · Sat Aug 29 + Sun Aug 30 · 1:00–4:00 PM Eastern</p>
         <h1 className="rise-in mt-4 font-display text-3xl leading-tight text-foreground sm:text-5xl md:text-6xl">
           BUILD THE BUSINESS.
-          <span className="block text-[color:var(--emerald-signal)]">
-            HIRE THE AI TEAM.
-          </span>
-          <span className="block text-[color:var(--gold)]">
-            PUT THE WORK ON AUTOPILOT.
-          </span>
+          <span className="block text-[color:var(--emerald-signal)]">HIRE THE AI TEAM.</span>
+          <span className="block text-[color:var(--gold)]">PUT THE WORK ON AUTOPILOT.</span>
         </h1>
       </div>
 
@@ -81,34 +76,24 @@ function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
         className="mt-7 max-w-4xl"
       />
 
-      <div className="mt-5 max-w-4xl">
-        <Link
-          to="/reserve"
-          className="inline-flex w-full items-center justify-center rounded-md bg-primary px-6 py-3.5 font-heading text-base font-semibold text-primary-foreground shadow-[0_0_28px_rgba(218,177,72,0.18)] transition hover:opacity-90 sm:w-auto"
-        >
-          Reserve My Seat
-        </Link>
-      </div>
+      <LandingReservationForm />
 
       <div className="mt-6 max-w-3xl border-l-2 border-[color:var(--emerald-signal)]/35 pl-4">
         <p className="font-heading text-lg text-muted-foreground sm:text-xl">
-          In two live days, you will choose the niche you want to serve, build
-          the core business system, and learn how to hire AI agents that
-          research, analyze, do the math, market, follow up, and improve the
-          work.
+          In two live days, you will choose the niche you want to serve, build the core business
+          system, and learn how to hire AI agents that research, analyze, do the math, market,
+          follow up, and improve the work.
         </p>
         <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-          This is not just prompting. You will build connected workflows,
-          loops, and internal tools your business can use again and again.
+          This is not just prompting. You will build connected workflows, loops, and internal tools
+          your business can use again and again.
         </p>
       </div>
 
       <div className="mt-8 grid max-w-4xl gap-4 sm:grid-cols-2">
         <article className="surface-raised border-[color:var(--gold)]/40 p-5">
           <p className="label-mono">Day 1 · Saturday, August 29</p>
-          <p className="mt-2 font-display text-lg text-[color:var(--gold)]">
-            1:00–4:00 PM Eastern
-          </p>
+          <p className="mt-2 font-display text-lg text-[color:var(--gold)]">1:00–4:00 PM Eastern</p>
           <p className="mt-2 text-sm text-muted-foreground">
             Build the business foundation. Room opens at 12:45 PM Eastern.
           </p>
@@ -136,10 +121,19 @@ function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
 function Outputs() {
   const outputs = [
     ["Niche + Offer Map", "Choose who you help, the problem you solve, and what you sell."],
-    ["Business Infrastructure Map", "See the pages, apps, tools, data, and handoffs your business needs."],
-    ["AI Business GPS", "Give every AI tool the same goals, rules, facts, numbers, and next steps."],
+    [
+      "Business Infrastructure Map",
+      "See the pages, apps, tools, data, and handoffs your business needs.",
+    ],
+    [
+      "AI Business GPS",
+      "Give every AI tool the same goals, rules, facts, numbers, and next steps.",
+    ],
     ["AI Agent Team Chart", "Name the AI jobs, what each agent owns, and where a human approves."],
-    ["Internal Business App Plan", "Plan or begin one internal business app that keeps the work in one place."],
+    [
+      "Internal Business App Plan",
+      "Plan or begin one internal business app that keeps the work in one place.",
+    ],
     ["30-Day Build Order", "Know what to build first, second, and third after the Summit."],
   ] as const;
 
@@ -147,29 +141,24 @@ function Outputs() {
     <section className="mx-auto max-w-5xl px-5 py-16">
       <p className="eyebrow">What you leave with</p>
       <h2 className="mt-3 max-w-4xl font-heading text-2xl text-foreground sm:text-3xl">
-        A clear plan for a business that can run more work without you doing
-        every step by hand.
+        A clear plan for a business that can run more work without you doing every step by hand.
       </h2>
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {outputs.map(([title, body], index) => (
           <article
             key={title}
             className={`surface-raised p-5 ${
-              index === 2 || index === 3
-                ? "border-[color:var(--emerald-signal)]/35"
-                : ""
+              index === 2 || index === 3 ? "border-[color:var(--emerald-signal)]/35" : ""
             }`}
           >
-            <h3 className="font-display text-sm text-[color:var(--gold)]">
-              {title}
-            </h3>
+            <h3 className="font-display text-sm text-[color:var(--gold)]">{title}</h3>
             <p className="mt-3 text-sm text-muted-foreground">{body}</p>
           </article>
         ))}
       </div>
       <p className="mt-6 text-xs text-muted-foreground">
-        No magic button and no guaranteed income. You bring the business and
-        keep building after the Summit.
+        No magic button and no guaranteed income. You bring the business and keep building after the
+        Summit.
       </p>
     </section>
   );
@@ -264,15 +253,13 @@ function AgentTeam() {
         Give AI a job, not a random prompt.
       </h2>
       <p className="mt-4 max-w-3xl text-muted-foreground">
-        Each agent needs a job, a goal, tools, rules, and a way to report back.
-        You keep control of the important decisions.
+        Each agent needs a job, a goal, tools, rules, and a way to report back. You keep control of
+        the important decisions.
       </p>
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {roles.map(([title, body]) => (
           <article key={title} className="surface p-5">
-            <h3 className="font-display text-sm text-[color:var(--emerald-signal)]">
-              {title}
-            </h3>
+            <h3 className="font-display text-sm text-[color:var(--emerald-signal)]">{title}</h3>
             <p className="mt-3 text-sm text-muted-foreground">{body}</p>
           </article>
         ))}
@@ -311,12 +298,30 @@ function FitCheck() {
 
 function Faq() {
   const rows = [
-    ["Do I need to code?", "No. We use plain language and visual tools. You learn the business logic first."],
-    ["Is this a prompting class?", "No. Prompts are one small part. We build apps, agent jobs, workflows, loops, numbers, marketing, and approval rules."],
-    ["What is an AI Business GPS?", "It is the shared goals, rules, facts, numbers, and next steps that keep your AI tools pointed at the same outcome."],
-    ["What will I leave with?", "A niche and offer map, infrastructure map, AI Business GPS, agent-team chart, internal app plan, and 30-day build order."],
-    ["When is the Summit?", "Saturday, August 29 and Sunday, August 30 from 1:00–4:00 PM Eastern. The room opens at 12:45 PM."],
-    ["Are recordings included?", "General Admission is built for live participation. A recording and deeper implementation option appears after registration."],
+    [
+      "Do I need to code?",
+      "No. We use plain language and visual tools. You learn the business logic first.",
+    ],
+    [
+      "Is this a prompting class?",
+      "No. Prompts are one small part. We build apps, agent jobs, workflows, loops, numbers, marketing, and approval rules.",
+    ],
+    [
+      "What is an AI Business GPS?",
+      "It is the shared goals, rules, facts, numbers, and next steps that keep your AI tools pointed at the same outcome.",
+    ],
+    [
+      "What will I leave with?",
+      "A niche and offer map, infrastructure map, AI Business GPS, agent-team chart, internal app plan, and 30-day build order.",
+    ],
+    [
+      "When is the Summit?",
+      "Saturday, August 29 and Sunday, August 30 from 1:00–4:00 PM Eastern. The room opens at 12:45 PM.",
+    ],
+    [
+      "Are recordings included?",
+      "General Admission is built for live participation. A recording and deeper implementation option appears after registration.",
+    ],
   ] as const;
 
   return (
@@ -344,12 +349,12 @@ function FinalCta() {
       <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
         Join us live August 29 and 30 and build the system your AI team can run.
       </p>
-      <Link
-        to="/reserve"
+      <a
+        href="#reserve-seat"
         className="mt-7 inline-flex w-full items-center justify-center rounded-md bg-primary px-6 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90 sm:w-auto"
       >
-        Reserve My Seat
-      </Link>
+        Reserve General Admission
+      </a>
     </section>
   );
 }
@@ -358,14 +363,17 @@ function Footer() {
   return (
     <footer className="border-t border-border py-10">
       <div className="mx-auto max-w-6xl px-5 text-xs text-muted-foreground">
-        <p>
-          SpinCityHQ &amp; NuAmenti · SpincityHQ LLC · Atlanta, GA ·
-          Info@NuAmenti.com
-        </p>
+        <p>SpinCityHQ &amp; NuAmenti · SpincityHQ LLC · Atlanta, GA · Info@NuAmenti.com</p>
         <div className="mt-3 flex flex-wrap gap-4">
-          <Link to="/privacy" className="hover:text-foreground">Privacy</Link>
-          <Link to="/terms" className="hover:text-foreground">Terms</Link>
-          <Link to="/refund-policy" className="hover:text-foreground">Refund policy</Link>
+          <Link to="/privacy" className="hover:text-foreground">
+            Privacy
+          </Link>
+          <Link to="/terms" className="hover:text-foreground">
+            Terms
+          </Link>
+          <Link to="/refund-policy" className="hover:text-foreground">
+            Refund policy
+          </Link>
         </div>
       </div>
     </footer>

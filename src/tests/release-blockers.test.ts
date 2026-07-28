@@ -46,9 +46,7 @@ describe("legal-ready gate is required in addition to sales gate", () => {
 
 describe("keynote checkout uses allowlist resolver", () => {
   it("resolves an https allowlisted keynote URL", () => {
-    expect(resolveKeynoteCheckoutUrl(baseCfg)).toBe(
-      "https://www.fanbasis.com/i/keynote",
-    );
+    expect(resolveKeynoteCheckoutUrl(baseCfg)).toBe("https://www.fanbasis.com/i/keynote");
     expect(isKeynoteHandoffAllowed(baseCfg)).toBe(true);
   });
   it("rejects http, embedded creds, and off-allowlist hosts", () => {
@@ -127,8 +125,9 @@ describe("checkout requires explicit legal-policy acknowledgement", () => {
   const src = readFileSync("src/routes/checkout.tsx", "utf8");
   it("adds a legal-ack checkbox gated with `legalAck`", () => {
     expect(src.includes("legalAck")).toBe(true);
-    expect(src.includes("I have read and agree to the")).toBe(true);
-    // Submit computed from BOTH the gate and the ack.
-    expect(src.includes("gateAllowed && legalAck")).toBe(true);
+    expect(src.includes("I agree to the")).toBe(true);
+    expect(src.includes("if (!gateAllowed || !checkoutUrl) return")).toBe(true);
+    expect(src.includes("if (!legalAck)")).toBe(true);
+    expect(src.includes("window.location.href = checkoutUrl")).toBe(true);
   });
 });

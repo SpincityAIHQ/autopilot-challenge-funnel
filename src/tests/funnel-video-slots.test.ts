@@ -2,6 +2,8 @@ import { describe, expect, it } from "bun:test";
 import { readFileSync } from "node:fs";
 
 const COMPONENT = readFileSync("src/components/FunnelVideoSlot.tsx", "utf8");
+const LANDING = readFileSync("src/routes/index.tsx", "utf8");
+const LANDING_FORM = readFileSync("src/components/reserve/LandingReservationForm.tsx", "utf8");
 const CHECKOUT = readFileSync("src/routes/checkout.tsx", "utf8");
 const CONFIRMED = readFileSync("src/routes/confirmed.tsx", "utf8");
 const VIP = readFileSync("src/routes/offer/vip-upgrade.tsx", "utf8");
@@ -20,7 +22,7 @@ const ROUTES = [
   VAULT,
   INTENSIVE,
   NEXT_STEPS,
-  RESERVE,
+  LANDING,
   RESERVE_VIP,
   RESERVE_VAULT,
 ];
@@ -42,8 +44,10 @@ describe("mobile funnel video slots", () => {
     }
   });
 
-  it("keeps the VSL before the decision action on every reserve page", () => {
-    expect(RESERVE.indexOf("<FunnelVideoSlot")).toBeLessThan(RESERVE.indexOf("<form"));
+  it("keeps the VSL before the lead form or decision action on all three sales pages", () => {
+    expect(LANDING.indexOf("<FunnelVideoSlot")).toBeLessThan(
+      LANDING.indexOf("<LandingReservationForm"),
+    );
     expect(RESERVE_VIP.indexOf("<FunnelVideoSlot")).toBeLessThan(
       RESERVE_VIP.indexOf("Upgrade My Reservation"),
     );
@@ -52,10 +56,14 @@ describe("mobile funnel video slots", () => {
     );
   });
 
-  it("reuses the recorded funnel video slots in the reserve-then-settle path", () => {
-    expect(RESERVE).toContain("VITE_SUMMIT_VIDEO_CHECKOUT");
-    expect(RESERVE_VIP).toContain("VITE_SUMMIT_VIDEO_VIP_OFFER");
+  it("maps one recorded VSL to each sales page and one to confirmation", () => {
+    expect(LANDING).toContain("VITE_SUMMIT_VIDEO_HERO");
+    expect(LANDING).toContain("LandingReservationForm");
+    expect(LANDING_FORM).toContain('fetch("/api/public/reserve"');
+    expect(RESERVE).not.toContain("FunnelVideoSlot");
+    expect(RESERVE_VIP).toContain("VITE_SUMMIT_VIDEO_CHECKOUT");
     expect(RESERVE_VAULT).toContain("VITE_SUMMIT_VIDEO_THANK_YOU_VIP");
+    expect(CONFIRMED).toContain("VITE_SUMMIT_VIDEO_THANK_YOU");
   });
 
   it("places the final video between the page intro and verified card", () => {

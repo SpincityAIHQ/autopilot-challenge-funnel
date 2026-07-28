@@ -98,11 +98,12 @@ allowlist (`www.fanbasis.com` plus any hosts in
 | `VITE_KEYNOTE_DATE_ISO`                 | Next keynote date (enables the `/next-keynote` card) |
 | `VITE_KEYNOTE_PRICE_LABEL`              | Optional display price for keynote            |
 | `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS`    | Comma-separated extra allowlisted hosts       |
-| `VITE_SUMMIT_VIDEO_HERO`                | Landing-page VSL embed URL                    |
-| `VITE_SUMMIT_VIDEO_CHECKOUT`            | Reserve-page VSL before lead capture          |
-| `VITE_SUMMIT_VIDEO_VIP_OFFER`           | Reserve-path VIP upgrade VSL                  |
+| `VITE_SUMMIT_VIDEO_HERO`                | Landing intro VSL before lead capture         |
+| `VITE_SUMMIT_VIDEO_CHECKOUT`            | GA explanation + VIP option VSL               |
+| `VITE_SUMMIT_VIDEO_VIP_OFFER`           | VIP email-recovery offer VSL                  |
 | `VITE_SUMMIT_VIDEO_THANK_YOU_GA`        | GA purchase + VIP introduction video          |
-| `VITE_SUMMIT_VIDEO_THANK_YOU_VIP`       | VIP-held + Vault invitation VSL               |
+| `VITE_SUMMIT_VIDEO_THANK_YOU_VIP`       | VIP explanation + Emerald invitation VSL      |
+| `VITE_SUMMIT_VIDEO_THANK_YOU`           | Shared post-payment confirmation VSL          |
 | `VITE_SUMMIT_VIDEO_THANK_YOU_VAULT`     | Vault purchase + Intensive introduction video |
 | `VITE_SUMMIT_VIDEO_THANK_YOU_INTENSIVE` | Intensive purchase video                      |
 | `VITE_SUMMIT_VIDEO_EXIT_GA`             | GA-only final confirmation video              |

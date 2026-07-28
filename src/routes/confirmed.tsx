@@ -4,10 +4,7 @@ import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 
 import { ProductThankYou } from "@/components/ProductThankYou";
 import { TestimonialSection } from "@/components/TestimonialSection";
-import {
-  derivedAccess,
-  useEntitlementSummary,
-} from "@/hooks/use-entitlement-summary";
+import { derivedAccess, useEntitlementSummary } from "@/hooks/use-entitlement-summary";
 import { getCommasConfig } from "@/lib/challenge-config";
 
 export const Route = createFileRoute("/confirmed")({
@@ -17,8 +14,7 @@ export const Route = createFileRoute("/confirmed")({
       { name: "robots", content: "noindex" },
       {
         name: "description",
-        content:
-          "Your AI AutoPilot Summit purchase confirmation and next optional step.",
+        content: "Your AI AutoPilot Summit purchase confirmation and next optional step.",
       },
       { property: "og:url", content: "/confirmed" },
     ],
@@ -30,63 +26,37 @@ export const Route = createFileRoute("/confirmed")({
 function Confirmed() {
   const cfg = getCommasConfig();
   const summary = useEntitlementSummary();
-  const access =
-    summary.status === "ok" ? derivedAccess(summary.scopes) : null;
+  const access = summary.status === "ok" ? derivedAccess(summary.scopes) : null;
 
   const verifiedGaOnly = Boolean(access && access.hasGa && !access.hasVip);
-  const verifiedVipNoVault = Boolean(
-    access && access.hasVip && !access.hasVault,
-  );
-
-  const video = verifiedGaOnly
-    ? {
-        url: cfg.sectionVideos.thankYouGa,
-        label: "General Admission welcome and VIP invitation",
-        envKey: "VITE_SUMMIT_VIDEO_THANK_YOU_GA",
-      }
-    : verifiedVipNoVault
-      ? {
-          url: cfg.sectionVideos.thankYouVip,
-          label: "VIP welcome and Vault invitation",
-          envKey: "VITE_SUMMIT_VIDEO_THANK_YOU_VIP",
-        }
-      : {
-          url: cfg.sectionVideos.confirmedThankYou,
-          label: "A message from the NuAmenti family",
-          envKey: "VITE_SUMMIT_VIDEO_THANK_YOU",
-        };
+  const verifiedVipNoVault = Boolean(access && access.hasVip && !access.hasVault);
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
       <p className="eyebrow">Thank you, family</p>
       <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
-        Your purchase is confirmed. Choose your next step.
+        Your purchase is confirmed.
       </h1>
 
       <FunnelVideoSlot
-        url={video.url}
-        label={video.label}
-        envKey={video.envKey}
+        url={cfg.sectionVideos.confirmedThankYou}
+        label="Your Summit confirmation and next steps"
+        envKey="VITE_SUMMIT_VIDEO_THANK_YOU"
         className="mt-7"
       />
 
       <section className="mt-6 rounded-md border border-[color:var(--emerald-signal)]/40 bg-[color:var(--surface)] p-5 sm:p-6">
-        <h2 className="font-heading text-lg text-foreground">
-          What happens next
-        </h2>
+        <h2 className="font-heading text-lg text-foreground">What happens next</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          You're in. AI AutoPilot 2-Day Summit, August 29–30, 1:00–4:00 PM ET
-          both days. Room opens at 12:45.
+          You're in. AI AutoPilot 2-Day Summit, August 29–30, 1:00–4:00 PM ET both days. Room opens
+          at 12:45.
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
           Your access link and calendar invite arrive within 24 hours.
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
           Questions:{" "}
-          <a
-            className="text-foreground underline"
-            href="mailto:Info@NuAmenti.com"
-          >
+          <a className="text-foreground underline" href="mailto:Info@NuAmenti.com">
             Info@NuAmenti.com
           </a>
         </p>
@@ -127,9 +97,7 @@ function Confirmed() {
       />
 
       <section className="mt-8 surface p-6">
-        <h2 className="font-heading text-lg text-foreground">
-          Bring this to Day 1
-        </h2>
+        <h2 className="font-heading text-lg text-foreground">Bring this to Day 1</h2>
         <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
           <li>· One business, skill, offer, or clear idea.</li>
           <li>· The tasks that take too much time.</li>
@@ -150,4 +118,3 @@ function Confirmed() {
     </main>
   );
 }
-

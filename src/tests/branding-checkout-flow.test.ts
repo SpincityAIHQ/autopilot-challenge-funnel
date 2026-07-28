@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 
 const ROOT = readFileSync("src/routes/__root.tsx", "utf8");
 const LANDING = readFileSync("src/routes/index.tsx", "utf8");
+const LANDING_FORM = readFileSync("src/components/reserve/LandingReservationForm.tsx", "utf8");
 const CHECKOUT = readFileSync("src/routes/checkout.tsx", "utf8");
 const CONFIRMED = readFileSync("src/routes/confirmed.tsx", "utf8");
 const VIP = readFileSync("src/routes/offer/vip-upgrade.tsx", "utf8");
@@ -37,16 +38,17 @@ describe("SpinCityHQ and NuAmenti Summit branding", () => {
 });
 
 describe("video-first conversion order", () => {
-  it("puts the landing VSL directly after the headline and the ticket button directly after the VSL", () => {
+  it("puts the landing VSL directly after the headline and the reservation form directly after the VSL", () => {
     const headline = LANDING.indexOf("PUT THE WORK ON AUTOPILOT");
     const video = LANDING.indexOf("<FunnelVideoSlot", headline);
-    const button = LANDING.indexOf("Reserve My Seat", video);
-    const supportingCopy = LANDING.indexOf("In two live days", button);
+    const form = LANDING.indexOf("<LandingReservationForm", video);
+    const supportingCopy = LANDING.indexOf("In two live days", form);
 
     expect(headline).toBeGreaterThan(-1);
     expect(video).toBeGreaterThan(headline);
-    expect(button).toBeGreaterThan(video);
-    expect(supportingCopy).toBeGreaterThan(button);
+    expect(form).toBeGreaterThan(video);
+    expect(LANDING_FORM).toContain("Reserve My General Admission Seat");
+    expect(supportingCopy).toBeGreaterThan(form);
   });
 
   it("puts the General Admission ticket button immediately after the checkout video", () => {
@@ -58,27 +60,19 @@ describe("video-first conversion order", () => {
     expect(details).toBeGreaterThan(button);
   });
 
-  it("puts every post-purchase upgrade CTA below its video", () => {
-    const checks = [
-      [CONFIRMED, "Add VIP"],
-      [VIP, "Add VIP"],
-      [VAULT, "Add the Vault"],
-      [INTENSIVE, "Claim a Slot"],
-    ] as const;
-
-    for (const [source, ctaText] of checks) {
+  it("puts every email-recovery upgrade action below its video", () => {
+    for (const source of [VIP, VAULT, INTENSIVE]) {
       const video = source.indexOf("<FunnelVideoSlot");
-      const cta = source.indexOf(ctaText, video);
+      const cta = source.indexOf("{primaryCta}", video);
       expect(video).toBeGreaterThan(-1);
       expect(cta).toBeGreaterThan(video);
     }
+    expect(CONFIRMED).not.toContain("Add VIP");
   });
 });
 
 describe("checkout owner walkthrough", () => {
   it("continues to the GA confirmation in QA mode", () => {
-    expect(CHECKOUT).toContain(
-      'window.location.href = "/confirmed?qaStage=ga"',
-    );
+    expect(CHECKOUT).toContain('window.location.href = "/confirmed?qaStage=ga"');
   });
 });

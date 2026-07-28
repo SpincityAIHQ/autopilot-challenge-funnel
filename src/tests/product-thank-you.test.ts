@@ -13,8 +13,7 @@ const INTENSIVE = readFileSync("src/routes/strategy-intensive.tsx", "utf8");
 const NEXT_STEPS = readFileSync("src/routes/next-steps.tsx", "utf8");
 const CONFIG = readFileSync("src/lib/challenge-config.ts", "utf8");
 
-const GA_THANKS =
-  "Thank you, family — your General Admission seat is confirmed.";
+const GA_THANKS = "Thank you, family — your General Admission seat is confirmed.";
 const VIP_THANKS = "Thank you, family — your VIP access is confirmed.";
 const VAULT_THANKS = "Thank you, family — your Vault access is confirmed.";
 const INTENSIVE_THANKS =
@@ -25,9 +24,7 @@ describe("verified product-specific thank-you copy", () => {
     expect(CONFIRMED).toContain(GA_THANKS);
     expect(CONFIRMED).toContain("verified={verifiedGaOnly}");
     expect(CONFIRMED).toContain("access.hasGa && !access.hasVip");
-    expect(CONFIRMED).toContain(
-      "Your purchase is confirmed. Choose your next step.",
-    );
+    expect(CONFIRMED).toContain("Your purchase is confirmed.");
   });
 
   it("VIP thank-you is present on /confirmed and on the Vault page", () => {
@@ -149,9 +146,10 @@ describe("offer and exit video slot config", () => {
     expect(CONFIG).toContain("VITE_SUMMIT_VIDEO_THANK_YOU_INTENSIVE");
   });
 
-  it("each offer page wires its own purchase video slot", () => {
-    expect(CONFIRMED).toContain("sectionVideos.thankYouGa");
-    expect(CONFIRMED).toContain("sectionVideos.thankYouVip");
+  it("the shared confirmation and recovery offers keep separate video slots", () => {
+    expect(CONFIRMED).toContain("sectionVideos.confirmedThankYou");
+    expect(CONFIRMED).not.toContain("sectionVideos.thankYouGa");
+    expect(CONFIRMED).not.toContain("sectionVideos.thankYouVip");
     expect(VAULT).toContain("sectionVideos.thankYouVip");
     expect(INTENSIVE).toContain("sectionVideos.thankYouVault");
   });

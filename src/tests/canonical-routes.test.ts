@@ -26,7 +26,6 @@ const CANONICAL_ROUTES = [
 ];
 
 const REDIRECT_ONLY_ROUTES = [
-  "/vault",
   "/keynote",
   "/mentorship",
   "/intensive",
@@ -36,18 +35,18 @@ const REDIRECT_ONLY_ROUTES = [
 ];
 
 describe("canonical routes in generated route tree", () => {
+  it("does not restore the removed stray /vault redirect", () => {
+    expect(routeTree.includes("'/vault'") || routeTree.includes('"/vault"')).toBe(false);
+  });
+
   for (const path of CANONICAL_ROUTES) {
     it(`contains ${path}`, () => {
-      expect(
-        routeTree.includes(`'${path}'`) || routeTree.includes(`"${path}"`),
-      ).toBe(true);
+      expect(routeTree.includes(`'${path}'`) || routeTree.includes(`"${path}"`)).toBe(true);
     });
   }
   for (const path of REDIRECT_ONLY_ROUTES) {
     it(`still resolves ${path} (redirect stub)`, () => {
-      expect(
-        routeTree.includes(`'${path}'`) || routeTree.includes(`"${path}"`),
-      ).toBe(true);
+      expect(routeTree.includes(`'${path}'`) || routeTree.includes(`"${path}"`)).toBe(true);
     });
   }
 });

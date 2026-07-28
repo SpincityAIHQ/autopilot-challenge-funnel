@@ -83,9 +83,9 @@ function ReserveVipPage() {
 
         <RevealOnView delayMs={80}>
           <FunnelVideoSlot
-            url={cfg.sectionVideos.vipOffer}
-            label="Watch the VIP reservation invitation"
-            envKey="VITE_SUMMIT_VIDEO_VIP_OFFER"
+            url={cfg.sectionVideos.checkout}
+            label="Watch: General Admission and the VIP option"
+            envKey="VITE_SUMMIT_VIDEO_CHECKOUT"
             className="mt-8"
           />
         </RevealOnView>
@@ -93,7 +93,13 @@ function ReserveVipPage() {
         <div className="mt-5 space-y-10">
           <RevealOnView delayMs={160}>
             <section className="reserve-card reserve-card--emerald p-6 sm:p-8">
-              <p className="reserve-eyebrow reserve-gold-text">Upgrade this reservation to VIP</p>
+              <p className="reserve-eyebrow reserve-gold-text">
+                Choose your General Admission ticket
+              </p>
+              <p className="mt-4 reserve-body-lg">
+                General Admission gives you both live Summit days and the core build experience.
+                Settle the $22 ticket now, or upgrade this reservation to VIP before you pay.
+              </p>
               <p className="mt-3 reserve-mono-price text-[44px]">$99 Total</p>
               <button
                 type="button"
@@ -134,7 +140,7 @@ function ReserveVipPage() {
               ) : null}
 
               <div className="mt-8 reserve-hairline" />
-              <p className="mt-7 reserve-eyebrow reserve-gold-text">What VIP adds</p>
+              <p className="mt-7 reserve-eyebrow reserve-gold-text">VIP adds</p>
               <ul className="mt-5 space-y-2 reserve-body-lg">
                 <li>• All six build workbooks</li>
                 <li>• Two hours with me after each day</li>

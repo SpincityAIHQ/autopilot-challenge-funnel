@@ -1,16 +1,10 @@
 import { describe, expect, it } from "bun:test";
 import { readFileSync } from "node:fs";
-import {
-  emailSegmentUpdateForProduct,
-  SUMMIT_EMAIL_TAGS,
-} from "../lib/summit-email-segmentation";
+import { emailSegmentUpdateForProduct, SUMMIT_EMAIL_TAGS } from "../lib/summit-email-segmentation";
 
 const NEXT_STEPS = readFileSync("src/routes/next-steps.tsx", "utf8");
 const VIP = readFileSync("src/routes/offer/vip-upgrade.tsx", "utf8");
-const VAULT = readFileSync(
-  "src/routes/offer/implementation-vault.tsx",
-  "utf8",
-);
+const VAULT = readFileSync("src/routes/offer/implementation-vault.tsx", "utf8");
 const INTENSIVE = readFileSync("src/routes/strategy-intensive.tsx", "utf8");
 
 describe("every funnel exit lands on a confirmation page", () => {
@@ -43,8 +37,8 @@ describe("every funnel exit lands on a confirmation page", () => {
   });
 
   it("keeps the VIP Build Lab immediately after Day 2", () => {
-    expect(NEXT_STEPS).toContain("Sunday, August 30 · 4:15–5:45 PM Eastern");
-    expect(NEXT_STEPS).toContain("15 minutes after Day 2 ends");
+    expect(NEXT_STEPS.replace(/\s+/g, " ")).toContain("Sunday, August 30 · 4:15–5:45 PM Eastern");
+    expect(NEXT_STEPS.replace(/\s+/g, " ")).toContain("15 minutes after Day 2 ends");
   });
 });
 
@@ -66,8 +60,6 @@ describe("email segmentation follows verified purchases", () => {
     expect(emailSegmentUpdateForProduct("ga").highestLevel).toBe("ga");
     expect(emailSegmentUpdateForProduct("vip_upgrade").highestLevel).toBe("vip");
     expect(emailSegmentUpdateForProduct("vault").highestLevel).toBe("vault");
-    expect(emailSegmentUpdateForProduct("intensive").highestLevel).toBe(
-      "intensive",
-    );
+    expect(emailSegmentUpdateForProduct("intensive").highestLevel).toBe("intensive");
   });
 });

@@ -2,6 +2,8 @@ import { describe, expect, it } from "bun:test";
 import { readFileSync } from "node:fs";
 
 const source = readFileSync("src/routes/index.tsx", "utf8");
+const form = readFileSync("src/components/reserve/LandingReservationForm.tsx", "utf8");
+const landingSource = `${source}\n${form}`;
 
 describe("landing page — no prices, no later-offer links", () => {
   const priceStrings = [
@@ -25,7 +27,7 @@ describe("landing page — no prices, no later-offer links", () => {
 
   for (const value of priceStrings) {
     it(`does not contain the price string ${value}`, () => {
-      expect(source.includes(value)).toBe(false);
+      expect(landingSource.includes(value)).toBe(false);
     });
   }
 
@@ -49,10 +51,12 @@ describe("landing page — no prices, no later-offer links", () => {
     }
   });
 
-  it("uses Reserve My Seat buttons to enter checkout", () => {
-    expect(source.includes('to="/checkout"')).toBe(true);
-    const buttons = source.match(/>\s*Reserve My Seat\s*</g) ?? [];
-    expect(buttons.length).toBeGreaterThanOrEqual(2);
+  it("captures the lead on-page before any checkout", () => {
+    expect(source.includes("<LandingReservationForm")).toBe(true);
+    expect(form.includes("Reserve My General Admission Seat")).toBe(true);
+    expect(form.includes('fetch("/api/public/reserve"')).toBe(true);
+    expect(source.includes('to="/checkout"')).toBe(false);
+    expect(source.includes('to="/reserve"')).toBe(false);
     expect(source.match(/Get GA/)).toBeNull();
     expect(source.match(/Go VIP/)).toBeNull();
   });
@@ -64,15 +68,11 @@ describe("landing page — no prices, no later-offer links", () => {
   });
 
   it("contains no dollar-price string in source or metadata", () => {
-    expect(source.match(/\$\d[\d,]*/g)).toBeNull();
+    expect(landingSource.match(/\$\d[\d,]*/g)).toBeNull();
   });
 
   it("does not link to later customer or resource pages", () => {
-    for (const route of [
-      "/next-steps",
-      "/resources",
-      "/communication-preferences",
-    ]) {
+    for (const route of ["/next-steps", "/resources", "/communication-preferences"]) {
       expect(source.includes(route)).toBe(false);
     }
   });

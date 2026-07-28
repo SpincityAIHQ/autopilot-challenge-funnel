@@ -93,7 +93,7 @@ function ReserveVaultPage() {
         <RevealOnView delayMs={80}>
           <FunnelVideoSlot
             url={cfg.sectionVideos.thankYouVip}
-            label="Watch the Emerald Vault invitation"
+            label="Watch: your VIP reservation and the Emerald Key Holder option"
             envKey="VITE_SUMMIT_VIDEO_THANK_YOU_VIP"
             className="mt-8"
           />
@@ -143,6 +143,12 @@ function ReserveVaultPage() {
               ) : null}
 
               <div className="mt-8 reserve-hairline" />
+              <p className="mt-7 reserve-eyebrow reserve-gold-text">Your VIP reservation</p>
+              <p className="mt-4 reserve-body-lg">
+                VIP includes both live Summit days, all six build workbooks, two additional hours
+                with me after each day, and 30 days of recordings.
+              </p>
+              <p className="mt-7 reserve-eyebrow reserve-jewel">Emerald Key Holder adds</p>
               <p className="mt-5 reserve-body-lg">
                 You're not getting a course about our system. You're getting our system. The MVP App
                 Builder and the AI Business GPS are the actual files we run when we build for

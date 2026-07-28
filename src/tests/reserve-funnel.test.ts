@@ -1,20 +1,14 @@
 import { describe, expect, it } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import {
-  generateReservationToken,
-  isValidReservationToken,
-} from "@/lib/reservation-token";
+import { generateReservationToken, isValidReservationToken } from "@/lib/reservation-token";
 import {
   RESERVE_ENV_KEY,
   resolveReserveCheckoutUrl,
   validateReserveCheckoutUrl,
   type ReserveBundle,
 } from "@/lib/reserve-checkout";
-import {
-  computeReserveTransition,
-  isAtOrAbove,
-} from "@/lib/reserve-tier-transition";
+import { computeReserveTransition, isAtOrAbove } from "@/lib/reserve-tier-transition";
 
 describe("reservation tokens", () => {
   it("generates exactly 32 lowercase hex characters", () => {
@@ -42,9 +36,7 @@ describe("reserve checkout URL — pure validator", () => {
   const GOOD = "https://www.fanbasis.com/i/example";
 
   it("accepts a valid HTTPS URL on the default allowed host", () => {
-    expect(
-      validateReserveCheckoutUrl("ga", { VITE_COMMAS_URL_GA: GOOD }),
-    ).toBe(GOOD);
+    expect(validateReserveCheckoutUrl("ga", { VITE_COMMAS_URL_GA: GOOD })).toBe(GOOD);
   });
   it("rejects HTTP (non-HTTPS)", () => {
     expect(
@@ -73,9 +65,7 @@ describe("reserve checkout URL — pure validator", () => {
   });
   it("honors the additional allowed-hosts env variable", () => {
     const url = "https://checkout.partner.co/x";
-    expect(
-      validateReserveCheckoutUrl("ga", { VITE_COMMAS_URL_GA: url }),
-    ).toBeNull();
+    expect(validateReserveCheckoutUrl("ga", { VITE_COMMAS_URL_GA: url })).toBeNull();
     expect(
       validateReserveCheckoutUrl("ga", {
         VITE_COMMAS_URL_GA: url,
@@ -135,6 +125,8 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
   const root = process.cwd();
   const read = (p: string) => readFileSync(join(root, p), "utf8");
   const readReserveIndex = () => read("src/routes/reserve/index.tsx");
+  const readLanding = () => read("src/routes/index.tsx");
+  const readLandingForm = () => read("src/components/reserve/LandingReservationForm.tsx");
   const readReserveVip = () => read("src/routes/reserve/vip.tsx");
   const readReserveVault = () => read("src/routes/reserve/vault.tsx");
   const readUpgradeApi = () => read("src/routes/api/public/reserve-upgrade.ts");
@@ -150,10 +142,23 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
   });
   it("/reserve landing has exact reassurance + CTA copy", () => {
     const src = readReserveIndex();
-    expect(
-      src.includes("Nothing is charged. You choose how to settle on the next page."),
-    ).toBe(true);
+    expect(src.includes("Nothing is charged. You choose how to settle on the next page.")).toBe(
+      true,
+    );
     expect(src.includes("Reserve My Seat")).toBe(true);
+  });
+  it("the live landing page captures the lead and advances directly to the GA decision", () => {
+    const landing = readLanding();
+    const form = readLandingForm();
+    expect(landing.includes("LandingReservationForm")).toBe(true);
+    expect(landing.includes('to="/reserve"')).toBe(false);
+    expect(form.includes('id="reserve-seat"')).toBe(true);
+    expect(form.includes('fetch("/api/public/reserve"')).toBe(true);
+    expect(form.includes("Reserve My General Admission Seat")).toBe(true);
+    expect(form.includes("first_name")).toBe(true);
+    expect(form.includes('name="email"')).toBe(true);
+    expect(form.includes('name="phone"')).toBe(true);
+    expect(readReserveApi().includes("/reserve/vip?t=${token}")).toBe(true);
   });
   it("uses the exact hyphen date punctuation on all reserve pages", () => {
     expect(readReserveIndex().includes("August 29-30 · 1-4 PM ET both days")).toBe(true);
@@ -176,14 +181,14 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(src.includes("MVP App Builder")).toBe(true);
     expect(src.includes("AI Business GPS")).toBe(true);
     expect(
-      src.includes(
-        "30 days of NuAmenti 3 Gold — emailed August 10, use it for three weeks before the Summit",
-      ),
+      src
+        .replace(/\s+/g, " ")
+        .includes(
+          "30 days of NuAmenti 3 Gold — emailed August 10, use it for three weeks before the Summit",
+        ),
     ).toBe(true);
     expect(src.includes("Full NuAmenti 3 Day recording")).toBe(true);
-    expect(
-      src.includes("Your VIP reservation carries forward. The Vault adds $199."),
-    ).toBe(true);
+    expect(src.includes("Your VIP reservation carries forward. The Vault adds $199.")).toBe(true);
   });
   it("uses token (never id) in every URL surface", () => {
     const files = [
@@ -221,7 +226,9 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
       expect(src.includes("applyReserveNoStoreHeaders()")).toBe(true);
       // beforeLoad must be async AND await the helper.
       expect(
-        /beforeLoad:\s*async\s*\([^)]*\)\s*=>\s*\{\s*await\s+applyReserveNoStoreHeaders\(\)\s*;?\s*\}/.test(src),
+        /beforeLoad:\s*async\s*\([^)]*\)\s*=>\s*\{\s*await\s+applyReserveNoStoreHeaders\(\)\s*;?\s*\}/.test(
+          src,
+        ),
       ).toBe(true);
       // robots meta stays too.
       expect(src.includes('"noindex, nofollow"')).toBe(true);
@@ -299,4 +306,3 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(frame.includes(".reserve-reveal.is-mounted")).toBe(true);
   });
 });
-

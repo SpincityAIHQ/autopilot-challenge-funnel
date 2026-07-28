@@ -4,8 +4,6 @@ import { applyReserveNoStoreHeaders } from "@/lib/reserve-headers";
 import { ReserveFrame } from "@/components/reserve/ReserveFrame";
 import { WingedPlaneMark } from "@/components/reserve/WingedPlaneMark";
 import { RevealOnView } from "@/components/reserve/RevealOnView";
-import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
-import { getCommasConfig } from "@/lib/challenge-config";
 
 export const Route = createFileRoute("/reserve/")({
   head: () => ({
@@ -45,7 +43,6 @@ function validate(v: { first_name: string; email: string; phone: string }): Fiel
 }
 
 function ReservePage() {
-  const cfg = getCommasConfig();
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
@@ -118,15 +115,6 @@ function ReservePage() {
         </RevealOnView>
 
         <RevealOnView delayMs={160}>
-          <FunnelVideoSlot
-            url={cfg.sectionVideos.checkout}
-            label="Watch before you reserve your Summit seat"
-            envKey="VITE_SUMMIT_VIDEO_CHECKOUT"
-            className="mt-8"
-          />
-        </RevealOnView>
-
-        <RevealOnView delayMs={240}>
           <form
             onSubmit={onSubmit}
             className="mt-7 space-y-5"
