@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as VaultWelcomeRouteImport } from './routes/vault-welcome'
-import { Route as VaultRouteImport } from './routes/vault'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StrategyIntensiveRouteImport } from './routes/strategy-intensive'
 import { Route as ResourcesRouteImport } from './routes/resources'
@@ -62,11 +61,6 @@ const WelcomeRoute = WelcomeRouteImport.update({
 const VaultWelcomeRoute = VaultWelcomeRouteImport.update({
   id: '/vault-welcome',
   path: '/vault-welcome',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VaultRoute = VaultRouteImport.update({
-  id: '/vault',
-  path: '/vault',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -301,7 +295,6 @@ export interface FileRoutesByFullPath {
   '/resources': typeof ResourcesRouteWithChildren
   '/strategy-intensive': typeof StrategyIntensiveRoute
   '/terms': typeof TermsRoute
-  '/vault': typeof VaultRoute
   '/vault-welcome': typeof VaultWelcomeRoute
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -347,7 +340,6 @@ export interface FileRoutesByTo {
   '/resources': typeof ResourcesRouteWithChildren
   '/strategy-intensive': typeof StrategyIntensiveRoute
   '/terms': typeof TermsRoute
-  '/vault': typeof VaultRoute
   '/vault-welcome': typeof VaultWelcomeRoute
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -394,7 +386,6 @@ export interface FileRoutesById {
   '/resources': typeof ResourcesRouteWithChildren
   '/strategy-intensive': typeof StrategyIntensiveRoute
   '/terms': typeof TermsRoute
-  '/vault': typeof VaultRoute
   '/vault-welcome': typeof VaultWelcomeRoute
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -442,7 +433,6 @@ export interface FileRouteTypes {
     | '/resources'
     | '/strategy-intensive'
     | '/terms'
-    | '/vault'
     | '/vault-welcome'
     | '/welcome'
     | '/admin/audit'
@@ -488,7 +478,6 @@ export interface FileRouteTypes {
     | '/resources'
     | '/strategy-intensive'
     | '/terms'
-    | '/vault'
     | '/vault-welcome'
     | '/welcome'
     | '/admin/audit'
@@ -534,7 +523,6 @@ export interface FileRouteTypes {
     | '/resources'
     | '/strategy-intensive'
     | '/terms'
-    | '/vault'
     | '/vault-welcome'
     | '/welcome'
     | '/admin/audit'
@@ -581,7 +569,6 @@ export interface RootRouteChildren {
   ResourcesRoute: typeof ResourcesRouteWithChildren
   StrategyIntensiveRoute: typeof StrategyIntensiveRoute
   TermsRoute: typeof TermsRoute
-  VaultRoute: typeof VaultRoute
   VaultWelcomeRoute: typeof VaultWelcomeRoute
   WelcomeRoute: typeof WelcomeRoute
   AdminAuditRoute: typeof AdminAuditRoute
@@ -625,13 +612,6 @@ declare module '@tanstack/react-router' {
       path: '/vault-welcome'
       fullPath: '/vault-welcome'
       preLoaderRoute: typeof VaultWelcomeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/vault': {
-      id: '/vault'
-      path: '/vault'
-      fullPath: '/vault'
-      preLoaderRoute: typeof VaultRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -952,7 +932,6 @@ const rootRouteChildren: RootRouteChildren = {
   ResourcesRoute: ResourcesRouteWithChildren,
   StrategyIntensiveRoute: StrategyIntensiveRoute,
   TermsRoute: TermsRoute,
-  VaultRoute: VaultRoute,
   VaultWelcomeRoute: VaultWelcomeRoute,
   WelcomeRoute: WelcomeRoute,
   AdminAuditRoute: AdminAuditRoute,
@@ -986,3 +965,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

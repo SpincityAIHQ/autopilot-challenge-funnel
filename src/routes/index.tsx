@@ -83,7 +83,7 @@ function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
 
       <div className="mt-5 max-w-4xl">
         <Link
-          to="/checkout"
+          to="/reserve"
           className="inline-flex w-full items-center justify-center rounded-md bg-primary px-6 py-3.5 font-heading text-base font-semibold text-primary-foreground shadow-[0_0_28px_rgba(218,177,72,0.18)] transition hover:opacity-90 sm:w-auto"
         >
           Reserve My Seat
@@ -345,7 +345,7 @@ function FinalCta() {
         Join us live August 29 and 30 and build the system your AI team can run.
       </p>
       <Link
-        to="/checkout"
+        to="/reserve"
         className="mt-7 inline-flex w-full items-center justify-center rounded-md bg-primary px-6 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90 sm:w-auto"
       >
         Reserve My Seat
