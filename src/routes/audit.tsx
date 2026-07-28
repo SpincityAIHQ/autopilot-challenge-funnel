@@ -385,9 +385,15 @@ function AuditPage() {
           />
         </Field>
 
+        {notice ? (
+          <p className="rounded-md border border-border bg-[color:var(--surface)] p-3 text-sm text-foreground">
+            {notice}
+          </p>
+        ) : null}
         {error ? (
           <p className="text-sm text-[color:var(--gold)]">{error}</p>
         ) : null}
+
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <button
