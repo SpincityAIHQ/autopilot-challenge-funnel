@@ -19,7 +19,7 @@ export const Route = createFileRoute("/reserve/vip")({
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
-  beforeLoad: () => { applyReserveNoStoreHeaders(); },
+  beforeLoad: async () => { await applyReserveNoStoreHeaders(); },
   loaderDeps: ({ search }) => ({ t: search.t }),
   loader: async ({ deps }) => {
     if (!deps.t || !isValidReservationToken(deps.t)) {

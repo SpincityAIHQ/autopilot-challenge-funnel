@@ -139,15 +139,55 @@ export function ReserveFrame({ children }: { children: ReactNode }) {
           letter-spacing: 0.15em;
           color: var(--emerald);
         }
+        /* Vault jewel — restrained faceted emerald text using ONLY exact tokens. */
         .reserve-jewel {
           background:
-            radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), transparent 40%),
-            linear-gradient(135deg, #30D68B 0%, #14996A 45%, #08543A 100%);
+            radial-gradient(circle at 30% 30%, rgba(240,223,160,0.35), transparent 40%),
+            linear-gradient(135deg, var(--emerald) 0%, var(--emerald-lo) 100%);
           -webkit-background-clip: text;
           background-clip: text;
           color: transparent;
-          text-shadow: 0 0 12px rgba(48,214,139,0.35);
+          text-shadow: 0 0 12px rgba(15,191,127,0.35);
         }
+        /* Vault Card B — dedicated faceted-emerald surface. Non-flat. */
+        .reserve-card--vault {
+          position: relative;
+          background:
+            /* soft gold facet highlight (top-left) */
+            radial-gradient(circle at 15% 10%, rgba(240,223,160,0.10), transparent 45%),
+            /* faceted emerald aura (bottom-right) */
+            radial-gradient(circle at 85% 90%, rgba(15,191,127,0.22), transparent 55%),
+            /* long emerald wash */
+            linear-gradient(160deg,
+              rgba(15,191,127,0.12) 0%,
+              rgba(6,127,83,0.10) 45%,
+              var(--panel) 100%),
+            var(--panel);
+          border: 1px solid rgba(15,191,127,0.55);
+          border-radius: 14px;
+          box-shadow:
+            inset 0 1px 0 rgba(240,223,160,0.14),
+            inset 0 0 0 1px rgba(15,191,127,0.10),
+            0 0 34px rgba(15,191,127,0.14),
+            0 34px 70px -30px rgba(0,0,0,0.95);
+        }
+        .reserve-card--vault::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border-radius: 14px;
+          pointer-events: none;
+          background:
+            /* faceted diagonal highlight — restrained, no breathing */
+            linear-gradient(135deg,
+              rgba(240,223,160,0.08) 0%,
+              transparent 30%,
+              transparent 70%,
+              rgba(15,191,127,0.10) 100%);
+          mix-blend-mode: screen;
+          opacity: 0.9;
+        }
+        .reserve-card--vault > * { position: relative; }
         .reserve-input {
           width: 100%;
           background: #0F1113;

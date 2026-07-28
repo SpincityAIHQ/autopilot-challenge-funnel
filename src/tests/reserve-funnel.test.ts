@@ -215,11 +215,14 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(helpers.includes("ga_vip_vault")).toBe(true);
   });
 
-  it("all three reserve routes install actual no-store response headers via server-runtime setResponseHeader", () => {
+  it("all three reserve routes install actual no-store response headers via server-runtime setResponseHeader and AWAIT the helper", () => {
     for (const src of [readReserveIndex(), readReserveVip(), readReserveVault()]) {
       expect(src.includes(`from "@/lib/reserve-headers"`)).toBe(true);
       expect(src.includes("applyReserveNoStoreHeaders()")).toBe(true);
-      expect(src.includes("applyReserveNoStoreHeaders")).toBe(true);
+      // beforeLoad must be async AND await the helper.
+      expect(
+        /beforeLoad:\s*async\s*\([^)]*\)\s*=>\s*\{\s*await\s+applyReserveNoStoreHeaders\(\)\s*;?\s*\}/.test(src),
+      ).toBe(true);
       // robots meta stays too.
       expect(src.includes('"noindex, nofollow"')).toBe(true);
     }
@@ -233,20 +236,34 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(src.includes('.eq("tier_reserved", currentTier)')).toBe(true);
   });
 
-  it("design tokens are exact and no legacy reserve-funnel emerald values remain", () => {
+  it("design tokens are exact and NO legacy reserve-funnel emerald values remain anywhere under reserve/", () => {
     const frame = readFrame();
     expect(frame.includes("#0FBF7F")).toBe(true);
     expect(frame.includes("#067F53")).toBe(true);
-    expect(frame.includes("--void")).toBe(true);
-    expect(frame.includes("--panel")).toBe(true);
-    expect(frame.includes("--emerald")).toBe(true);
-    expect(frame.includes("--emerald-lo")).toBe(true);
-    expect(frame.includes("--gold-gradient")).toBe(true);
+    for (const t of ["--void", "--panel", "--emerald", "--emerald-lo", "--gold-gradient"]) {
+      expect(frame.includes(t)).toBe(true);
+    }
 
-    // The three reserve pages must not carry casual emerald hexes.
-    const pages = [readReserveIndex(), readReserveVip(), readReserveVault()].join("\n");
-    expect(pages.includes("#30D68B")).toBe(false);
-    expect(pages.includes("#14C97D")).toBe(false);
+    // Scan EVERY reserve source file, not only the three pages.
+    const scanned = [
+      "src/components/reserve/ReserveFrame.tsx",
+      "src/components/reserve/RevealOnView.tsx",
+      "src/components/reserve/WingedPlaneMark.tsx",
+      "src/routes/reserve/index.tsx",
+      "src/routes/reserve/vip.tsx",
+      "src/routes/reserve/vault.tsx",
+      "src/lib/reserve-checkout.ts",
+      "src/lib/reserve-tier-transition.ts",
+      "src/lib/reserve-headers.ts",
+      "src/lib/reserve-headers.server.ts",
+      "src/routes/api/public/reserve.ts",
+      "src/routes/api/public/reserve-upgrade.ts",
+    ]
+      .map(read)
+      .join("\n");
+    for (const bad of ["#30D68B", "#14C97D", "#14996A", "#08543A", "rgba(48,214,139"]) {
+      expect(scanned.includes(bad)).toBe(false);
+    }
   });
 
   it("primary CTA breathing animation is scoped to the emerald primary CTA only", () => {
@@ -259,13 +276,27 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(frame.includes(".reserve-emerald-btn")).toBe(false);
   });
 
-  it("scroll reveal component exists, uses IntersectionObserver, respects reduced motion, and stays visible without JS", () => {
+  it("reserve-card--vault exists in the frame and is used ONLY on /reserve/vault", () => {
+    const frame = readFrame();
+    expect(frame.includes(".reserve-card--vault")).toBe(true);
+    // Used only on the Vault page.
+    expect(readReserveVault().includes("reserve-card--vault")).toBe(true);
+    expect(readReserveVip().includes("reserve-card--vault")).toBe(false);
+    expect(readReserveIndex().includes("reserve-card--vault")).toBe(false);
+    // VIP keeps the lighter border-and-lift treatment.
+    expect(readReserveVip().includes("reserve-card--emerald")).toBe(true);
+  });
+
+  it("scroll reveal component exists, uses IntersectionObserver, respects reduced motion, clears its timeout, and stays visible without JS", () => {
     const src = read("src/components/reserve/RevealOnView.tsx");
     expect(src.includes("IntersectionObserver")).toBe(true);
     expect(src.includes("prefers-reduced-motion")).toBe(true);
     expect(src.includes("io.disconnect()")).toBe(true);
+    // New: pending stagger timeout is cleared on unmount.
+    expect(src.includes("clearTimeout")).toBe(true);
     const frame = readFrame();
     expect(frame.includes(".reserve-reveal { opacity: 1; transform: none; }")).toBe(true);
     expect(frame.includes(".reserve-reveal.is-mounted")).toBe(true);
   });
 });
+

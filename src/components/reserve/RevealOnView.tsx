@@ -7,6 +7,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
  * - respects prefers-reduced-motion
  * - SSR / no-JS: content stays fully visible (opacity 1, no transform)
  * - IntersectionObserver disconnects after first reveal
+ * - Pending stagger timeout is cleared on unmount to prevent post-unmount
+ *   state updates.
  */
 export function RevealOnView({
   children,
@@ -39,11 +41,15 @@ export function RevealOnView({
       setVisible(true);
       return;
     }
+    let timeoutId: number | null = null;
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
           if (e.isIntersecting) {
-            window.setTimeout(() => setVisible(true), delayMs);
+            timeoutId = window.setTimeout(() => {
+              timeoutId = null;
+              setVisible(true);
+            }, delayMs);
             io.disconnect();
             break;
           }
@@ -52,7 +58,13 @@ export function RevealOnView({
       { threshold: 0.15, rootMargin: "0px 0px -5% 0px" },
     );
     io.observe(node);
-    return () => io.disconnect();
+    return () => {
+      io.disconnect();
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+    };
   }, [delayMs]);
 
   const cls =
