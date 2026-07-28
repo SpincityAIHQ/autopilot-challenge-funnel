@@ -168,6 +168,9 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     const src = readReserveVip();
     expect(src.includes("$22")).toBe(true);
     expect(src.includes("$99 Total")).toBe(true);
+    expect(src.includes("Keep General Admission · Settle $22")).toBe(true);
+    expect(src.includes("Upgrade My Reservation to VIP")).toBe(true);
+    expect(src.includes("General Admission includes")).toBe(true);
     expect(src.includes("All six build workbooks")).toBe(true);
     expect(src.includes("Two hours with me after each day")).toBe(true);
     expect(src.includes("30 days of recordings")).toBe(true);
@@ -178,6 +181,9 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     const src = readReserveVault();
     expect(src.includes("$99")).toBe(true);
     expect(src.includes("$298 Total")).toBe(true);
+    expect(src.includes("Keep VIP · Settle $99")).toBe(true);
+    expect(src.includes("Become an Emerald Key Holder · Pay $298")).toBe(true);
+    expect(src.includes("one $298 payment")).toBe(true);
     expect(src.includes("MVP App Builder")).toBe(true);
     expect(src.includes("AI Business GPS")).toBe(true);
     expect(
@@ -189,6 +195,19 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     ).toBe(true);
     expect(src.includes("Full NuAmenti 3 Day recording")).toBe(true);
     expect(src.includes("Your VIP reservation carries forward. The Vault adds $199.")).toBe(true);
+  });
+
+  it("every settle button resolves the matching Commas bundle URL", () => {
+    const vip = readReserveVip();
+    const vault = readReserveVault();
+    expect(vip.includes('resolveReserveCheckoutUrl("ga")')).toBe(true);
+    expect(vip.includes('href={gaUrl ?? "#"}')).toBe(true);
+    expect(vault.includes('resolveReserveCheckoutUrl("ga_vip")')).toBe(true);
+    expect(vault.includes('resolveReserveCheckoutUrl("ga_vip_vault")')).toBe(true);
+    expect(vault.includes('href={gaVipUrl ?? "#"}')).toBe(true);
+    expect(
+      readUpgradeApi().includes('resolveReserveCheckoutUrlFromProcessEnv("ga_vip_vault")'),
+    ).toBe(true);
   });
   it("uses token (never id) in every URL surface", () => {
     const files = [

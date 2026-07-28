@@ -30,6 +30,7 @@ function Confirmed() {
 
   const verifiedGaOnly = Boolean(access && access.hasGa && !access.hasVip);
   const verifiedVipNoVault = Boolean(access && access.hasVip && !access.hasVault);
+  const verifiedEmerald = Boolean(access && access.hasGa && access.hasVip && access.hasVault);
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
@@ -51,9 +52,27 @@ function Confirmed() {
           You're in. AI AutoPilot 2-Day Summit, August 29–30, 1:00–4:00 PM ET both days. Room opens
           at 12:45.
         </p>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Your access link and calendar invite arrive within 24 hours.
-        </p>
+        <ol className="mt-4 space-y-3 text-sm text-muted-foreground">
+          <li>
+            <span className="font-heading text-foreground">1. Check your receipt.</span> Keep the
+            Commas payment receipt for your records.
+          </li>
+          <li>
+            <span className="font-heading text-foreground">2. Watch your email and phone.</span>{" "}
+            Your access link, calendar details, and ticket-specific resources arrive within 24
+            hours. Check Spam, Promotions, and Updates if you do not see them.
+          </li>
+          <li>
+            <span className="font-heading text-foreground">3. Save both live dates.</span> Saturday,
+            August 29 and Sunday, August 30. Room opens at 12:45 PM Eastern; training begins at 1:00
+            PM.
+          </li>
+          <li>
+            <span className="font-heading text-foreground">4. Prepare your build.</span> Bring a
+            laptop, one business or offer, the tasks taking too much time, and your basic prices and
+            goals.
+          </li>
+        </ol>
         <p className="mt-2 text-sm text-muted-foreground">
           Questions:{" "}
           <a className="text-foreground underline" href="mailto:Info@NuAmenti.com">
@@ -94,6 +113,15 @@ function Confirmed() {
         body="You have both live Summit days, 30-day recordings, priority questions, and the VIP Build Lab immediately after Day 2 on Sunday from 4:15–5:45 PM Eastern."
         videoUrl={null}
         videoLabel="VIP welcome"
+      />
+
+      <ProductThankYou
+        verified={verifiedEmerald}
+        eyebrow="Verified · Emerald Key Holder"
+        headline="Thank you, family — your Emerald Key Holder access is confirmed."
+        body="You have General Admission, VIP, the MVP App Builder, the AI Business GPS, 30 days of NuAmenti 3 Gold, and the full NuAmenti 3 Day recording."
+        videoUrl={null}
+        videoLabel="Emerald Key Holder welcome"
       />
 
       <section className="mt-8 surface p-6">

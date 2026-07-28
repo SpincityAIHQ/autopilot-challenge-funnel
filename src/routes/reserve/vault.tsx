@@ -102,18 +102,29 @@ function ReserveVaultPage() {
         <div className="mt-5 space-y-10">
           <RevealOnView delayMs={160}>
             <section className="reserve-card--vault p-6 sm:p-8">
-              <p className="reserve-eyebrow reserve-jewel">Become an Emerald Vault Key Holder</p>
+              <p className="reserve-eyebrow reserve-gold-text">Choose once · Pay once</p>
+              <p className="mt-4 reserve-body-lg">
+                Your VIP reservation is already held. You can settle the $99 VIP total now or add
+                the Emerald Key Holder system and complete one $298 Commas checkout.
+              </p>
+              <p className="mt-6 reserve-eyebrow reserve-jewel">
+                Option 1 · Become an Emerald Key Holder
+              </p>
               <p className="mt-3 reserve-mono-price text-[48px] reserve-jewel">$298 Total</p>
+              <p className="mt-2 reserve-note-15" style={{ opacity: 0.78 }}>
+                General Admission and VIP are included. Emerald adds $199.
+              </p>
               <button
                 type="button"
                 onClick={becomeKeyHolder}
                 disabled={busy || !gaVipVaultReady}
                 className="reserve-cta-primary mt-5 w-full rounded-xl py-4 reserve-body-lg"
               >
-                {busy ? "Working…" : "Become a Key Holder"}
+                {busy ? "Opening Checkout…" : "Become an Emerald Key Holder · Pay $298"}
               </button>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Nothing is charged here. Your $298 total is settled once at checkout.
+                Opens the secure Commas checkout for one $298 payment. There is no second charge for
+                General Admission or VIP.
               </p>
 
               <div className="my-6 flex items-center gap-4">
@@ -136,6 +147,9 @@ function ReserveVaultPage() {
               >
                 Keep VIP · Settle $99
               </a>
+              <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
+                Opens the secure Commas checkout for one $99 VIP payment.
+              </p>
               {!gaVipUrl ? (
                 <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
                   Checkout is being configured. Please try again shortly.
@@ -143,26 +157,37 @@ function ReserveVaultPage() {
               ) : null}
 
               <div className="mt-8 reserve-hairline" />
-              <p className="mt-7 reserve-eyebrow reserve-gold-text">Your VIP reservation</p>
-              <p className="mt-4 reserve-body-lg">
-                VIP includes both live Summit days, all six build workbooks, two additional hours
-                with me after each day, and 30 days of recordings.
-              </p>
-              <p className="mt-7 reserve-eyebrow reserve-jewel">Emerald Key Holder adds</p>
-              <p className="mt-5 reserve-body-lg">
-                You're not getting a course about our system. You're getting our system. The MVP App
-                Builder and the AI Business GPS are the actual files we run when we build for
-                clients paying $20,000 and up.
-              </p>
-              <ul className="mt-5 space-y-2 reserve-body-lg">
-                <li>• MVP App Builder</li>
-                <li>• AI Business GPS</li>
-                <li>
-                  • 30 days of NuAmenti 3 Gold — emailed August 10, use it for three weeks before
-                  the Summit
-                </li>
-                <li>• Full NuAmenti 3 Day recording</li>
-              </ul>
+              <div className="mt-7 grid gap-7 sm:grid-cols-2">
+                <div>
+                  <p className="reserve-eyebrow reserve-gold-text">Your VIP reservation includes</p>
+                  <ul className="mt-5 space-y-2 reserve-body-lg">
+                    <li>• Both live Summit days</li>
+                    <li>• All six build workbooks</li>
+                    <li>• Two hours with me after each day</li>
+                    <li>• 30 days of Summit recordings</li>
+                  </ul>
+                  <p className="mt-4 reserve-note-15" style={{ opacity: 0.7 }}>
+                    Best if you want the complete live experience, replay access, and added build
+                    time.
+                  </p>
+                </div>
+                <div>
+                  <p className="reserve-eyebrow reserve-jewel">Emerald Key Holder adds</p>
+                  <p className="mt-5 reserve-body-lg">
+                    You're not getting a course about our system. You're getting the system files we
+                    use to plan apps, align AI tools, and build for clients paying $20,000 and up.
+                  </p>
+                  <ul className="mt-5 space-y-2 reserve-body-lg">
+                    <li>• MVP App Builder</li>
+                    <li>• AI Business GPS</li>
+                    <li>
+                      • 30 days of NuAmenti 3 Gold — emailed August 10, use it for three weeks
+                      before the Summit
+                    </li>
+                    <li>• Full NuAmenti 3 Day recording</li>
+                  </ul>
+                </div>
+              </div>
               <p className="mt-4 reserve-note-15" style={{ opacity: 0.7 }}>
                 Your VIP reservation carries forward. The Vault adds $199.
               </p>

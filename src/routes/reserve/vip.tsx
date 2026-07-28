@@ -93,24 +93,27 @@ function ReserveVipPage() {
         <div className="mt-5 space-y-10">
           <RevealOnView delayMs={160}>
             <section className="reserve-card reserve-card--emerald p-6 sm:p-8">
-              <p className="reserve-eyebrow reserve-gold-text">
-                Choose your General Admission ticket
-              </p>
+              <p className="reserve-eyebrow reserve-gold-text">Choose once · Pay once</p>
               <p className="mt-4 reserve-body-lg">
-                General Admission gives you both live Summit days and the core build experience.
-                Settle the $22 ticket now, or upgrade this reservation to VIP before you pay.
+                Your General Admission seat is already held. Choose the level that matches how much
+                access and implementation support you want, then complete one Commas checkout.
               </p>
+              <p className="mt-5 reserve-eyebrow reserve-gold-text">Option 1 · Upgrade to VIP</p>
               <p className="mt-3 reserve-mono-price text-[44px]">$99 Total</p>
+              <p className="mt-2 reserve-note-15" style={{ opacity: 0.78 }}>
+                Your $22 General Admission reservation carries forward. VIP adds $77.
+              </p>
               <button
                 type="button"
                 onClick={upgrade}
                 disabled={busy || tier === "ga_vip_vault"}
                 className="reserve-cta-primary mt-5 w-full rounded-xl py-4 reserve-body-lg"
               >
-                {busy ? "Upgrading…" : "Upgrade My Reservation"}
+                {busy ? "Upgrading…" : "Upgrade My Reservation to VIP"}
               </button>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Nothing is charged here. Your $99 total is settled once at checkout.
+                Nothing is charged by this button. Next, watch the VIP video and either settle the
+                $99 total or continue to Emerald Key Holder.
               </p>
 
               <div className="my-6 flex items-center gap-4">
@@ -133,6 +136,9 @@ function ReserveVipPage() {
               >
                 Keep General Admission · Settle $22
               </a>
+              <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
+                Opens the secure Commas checkout for one $22 General Admission payment.
+              </p>
               {!gaUrl ? (
                 <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
                   Checkout is being configured. Please try again shortly.
@@ -140,15 +146,32 @@ function ReserveVipPage() {
               ) : null}
 
               <div className="mt-8 reserve-hairline" />
-              <p className="mt-7 reserve-eyebrow reserve-gold-text">VIP adds</p>
-              <ul className="mt-5 space-y-2 reserve-body-lg">
-                <li>• All six build workbooks</li>
-                <li>• Two hours with me after each day</li>
-                <li>• 30 days of recordings</li>
-              </ul>
-              <p className="mt-4 reserve-note-15" style={{ opacity: 0.7 }}>
-                You're holding $22. VIP adds $77.
-              </p>
+              <div className="mt-7 grid gap-7 sm:grid-cols-2">
+                <div>
+                  <p className="reserve-eyebrow reserve-gold-text">General Admission includes</p>
+                  <ul className="mt-5 space-y-2 reserve-body-lg">
+                    <li>• Both live Summit days, August 29-30</li>
+                    <li>• The autonomous-business foundation build</li>
+                    <li>• Niche, offer, infrastructure, and AI team mapping</li>
+                    <li>• Live access from 1-4 PM Eastern both days</li>
+                  </ul>
+                  <p className="mt-4 reserve-note-15" style={{ opacity: 0.7 }}>
+                    Best if you can attend live and want the core build experience.
+                  </p>
+                </div>
+                <div>
+                  <p className="reserve-eyebrow reserve-gold-text">VIP adds</p>
+                  <ul className="mt-5 space-y-2 reserve-body-lg">
+                    <li>• All six build workbooks</li>
+                    <li>• Two hours with me after each day</li>
+                    <li>• 30 days of recordings</li>
+                    <li>• More time to ask questions and work through your build</li>
+                  </ul>
+                  <p className="mt-4 reserve-note-15" style={{ opacity: 0.7 }}>
+                    You're holding $22. VIP adds $77.
+                  </p>
+                </div>
+              </div>
               <div role="alert" aria-live="polite" className="min-h-[1.25rem] mt-3">
                 {error ? (
                   <p className="reserve-note-15" style={{ color: "#FFB4B4" }}>

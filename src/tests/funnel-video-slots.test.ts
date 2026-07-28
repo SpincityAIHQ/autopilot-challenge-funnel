@@ -52,7 +52,7 @@ describe("mobile funnel video slots", () => {
       RESERVE_VIP.indexOf("Upgrade My Reservation"),
     );
     expect(RESERVE_VAULT.indexOf("<FunnelVideoSlot")).toBeLessThan(
-      RESERVE_VAULT.indexOf("Become a Key Holder"),
+      RESERVE_VAULT.indexOf("Become an Emerald Key Holder"),
     );
   });
 

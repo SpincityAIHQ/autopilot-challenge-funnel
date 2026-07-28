@@ -101,8 +101,15 @@ export function LandingReservationForm() {
     >
       <p className="label-mono text-[color:var(--gold)]">Reserve General Admission</p>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-        Enter your information to hold a General Admission seat. Nothing is charged on this page.
+        Enter your name, best email, and mobile number to place the Summit reservation under your
+        name. No card is needed and nothing is charged on this page.
       </p>
+
+      <div className="mt-4 grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
+        <p className="rounded-md border border-border px-3 py-2">1. Hold your GA seat</p>
+        <p className="rounded-md border border-border px-3 py-2">2. Watch the GA ticket video</p>
+        <p className="rounded-md border border-border px-3 py-2">3. Choose once and pay once</p>
+      </div>
 
       <div className="mt-5 grid gap-4 md:grid-cols-3">
         <label className="text-sm font-medium text-foreground">
@@ -181,8 +188,8 @@ export function LandingReservationForm() {
       </button>
 
       <p className="mt-3 text-xs text-muted-foreground">
-        Next, choose General Admission or upgrade your reservation to VIP. You pay only after
-        choosing your ticket.
+        On the next page, Spin explains General Admission and the VIP option before you decide. Your
+        information stays attached to the reservation while you move through the pages.
       </p>
     </form>
   );

@@ -15,6 +15,7 @@ const CONFIG = readFileSync("src/lib/challenge-config.ts", "utf8");
 
 const GA_THANKS = "Thank you, family — your General Admission seat is confirmed.";
 const VIP_THANKS = "Thank you, family — your VIP access is confirmed.";
+const EMERALD_THANKS = "Thank you, family — your Emerald Key Holder access is confirmed.";
 const VAULT_THANKS = "Thank you, family — your Vault access is confirmed.";
 const INTENSIVE_THANKS =
   "Thank you, family — your private Strategy & Build Intensive is confirmed.";
@@ -34,6 +35,12 @@ describe("verified product-specific thank-you copy", () => {
     const gateAt = VAULT.indexOf("<OfferGate");
     expect(gateAt).toBeGreaterThan(0);
     expect(VAULT.slice(0, gateAt)).not.toContain(VIP_THANKS);
+  });
+
+  it("Emerald Key Holder receives a verified final confirmation", () => {
+    expect(CONFIRMED).toContain(EMERALD_THANKS);
+    expect(CONFIRMED).toContain("verified={verifiedEmerald}");
+    expect(CONFIRMED).toContain("access.hasVault");
   });
 
   it("Vault thank-you lives inside the Intensive gated content", () => {

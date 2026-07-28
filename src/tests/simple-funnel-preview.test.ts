@@ -16,10 +16,10 @@ describe("simple owner funnel walkthrough", () => {
   });
 
   it("advances through all four offers without a payment in QA preview", () => {
-    expect(CHECKOUT).toContain('/confirmed?qaStage=ga');
-    expect(VIP).toContain('/offer/implementation-vault?qaStage=vip');
-    expect(VAULT).toContain('/strategy-intensive?qaStage=vault');
-    expect(INTENSIVE).toContain('/next-steps?qaStage=intensive');
+    expect(CHECKOUT).toContain("/confirmed?qaStage=ga");
+    expect(VIP).toContain("/offer/implementation-vault?qaStage=vip");
+    expect(VAULT).toContain("/strategy-intensive?qaStage=vault");
+    expect(INTENSIVE).toContain("/next-steps?qaStage=intensive");
   });
 
   it("does not render the floating QA panel", () => {
@@ -27,7 +27,9 @@ describe("simple owner funnel walkthrough", () => {
   });
 
   it("documents every Commas checkout placeholder and redirect", () => {
-    expect(MAP).toContain("VITE_COMMAS_CHECKOUT_URL_GA");
+    expect(MAP).toContain("VITE_COMMAS_URL_GA");
+    expect(MAP).toContain("VITE_COMMAS_URL_GA_VIP");
+    expect(MAP).toContain("VITE_COMMAS_URL_GA_VIP_VAULT");
     expect(MAP).toContain("VITE_COMMAS_CHECKOUT_URL_VIP_UPGRADE");
     expect(MAP).toContain("VITE_COMMAS_CHECKOUT_URL_VAULT");
     expect(MAP).toContain("VITE_COMMAS_CHECKOUT_URL_INTENSIVE");
