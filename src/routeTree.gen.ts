@@ -39,6 +39,8 @@ import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.
 import { Route as ApplyMentorshipRouteImport } from './routes/apply.mentorship'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as ApiPublicSummitAuditRouteImport } from './routes/api/public/summit-audit'
+import { Route as ApiPublicReserveUpgradeRouteImport } from './routes/api/public/reserve-upgrade'
+import { Route as ApiPublicReserveRouteImport } from './routes/api/public/reserve'
 import { Route as ApiPublicMentorshipApplicationRouteImport } from './routes/api/public/mentorship-application'
 import { Route as ApiPublicKeynoteWaitlistRouteImport } from './routes/api/public/keynote-waitlist'
 import { Route as ApiPublicCommunicationPreferencesRouteImport } from './routes/api/public/communication-preferences'
@@ -202,6 +204,16 @@ const ApiPublicSummitAuditRoute = ApiPublicSummitAuditRouteImport.update({
   path: '/api/public/summit-audit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicReserveUpgradeRoute = ApiPublicReserveUpgradeRouteImport.update({
+  id: '/api/public/reserve-upgrade',
+  path: '/api/public/reserve-upgrade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicReserveRoute = ApiPublicReserveRouteImport.update({
+  id: '/api/public/reserve',
+  path: '/api/public/reserve',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicMentorshipApplicationRoute =
   ApiPublicMentorshipApplicationRouteImport.update({
     id: '/api/public/mentorship-application',
@@ -288,6 +300,8 @@ export interface FileRoutesByFullPath {
   '/api/public/communication-preferences': typeof ApiPublicCommunicationPreferencesRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/reserve': typeof ApiPublicReserveRoute
+  '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
@@ -329,6 +343,8 @@ export interface FileRoutesByTo {
   '/api/public/communication-preferences': typeof ApiPublicCommunicationPreferencesRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/reserve': typeof ApiPublicReserveRoute
+  '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
@@ -371,6 +387,8 @@ export interface FileRoutesById {
   '/api/public/communication-preferences': typeof ApiPublicCommunicationPreferencesRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/reserve': typeof ApiPublicReserveRoute
+  '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
@@ -414,6 +432,8 @@ export interface FileRouteTypes {
     | '/api/public/communication-preferences'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/reserve'
+    | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
     | '/api/public/admin/summit-audit'
     | '/api/public/resources/entitlement-summary'
@@ -455,6 +475,8 @@ export interface FileRouteTypes {
     | '/api/public/communication-preferences'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/reserve'
+    | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
     | '/api/public/admin/summit-audit'
     | '/api/public/resources/entitlement-summary'
@@ -496,6 +518,8 @@ export interface FileRouteTypes {
     | '/api/public/communication-preferences'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/reserve'
+    | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
     | '/api/public/admin/summit-audit'
     | '/api/public/resources/entitlement-summary'
@@ -537,6 +561,8 @@ export interface RootRouteChildren {
   ApiPublicCommunicationPreferencesRoute: typeof ApiPublicCommunicationPreferencesRoute
   ApiPublicKeynoteWaitlistRoute: typeof ApiPublicKeynoteWaitlistRoute
   ApiPublicMentorshipApplicationRoute: typeof ApiPublicMentorshipApplicationRoute
+  ApiPublicReserveRoute: typeof ApiPublicReserveRoute
+  ApiPublicReserveUpgradeRoute: typeof ApiPublicReserveUpgradeRoute
   ApiPublicSummitAuditRoute: typeof ApiPublicSummitAuditRoute
   ApiPublicAdminSummitAuditRoute: typeof ApiPublicAdminSummitAuditRoute
   ApiPublicResourcesEntitlementSummaryRoute: typeof ApiPublicResourcesEntitlementSummaryRoute
@@ -758,6 +784,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSummitAuditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/reserve-upgrade': {
+      id: '/api/public/reserve-upgrade'
+      path: '/api/public/reserve-upgrade'
+      fullPath: '/api/public/reserve-upgrade'
+      preLoaderRoute: typeof ApiPublicReserveUpgradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/reserve': {
+      id: '/api/public/reserve'
+      path: '/api/public/reserve'
+      fullPath: '/api/public/reserve'
+      preLoaderRoute: typeof ApiPublicReserveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/mentorship-application': {
       id: '/api/public/mentorship-application'
       path: '/api/public/mentorship-application'
@@ -869,6 +909,8 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicCommunicationPreferencesRoute,
   ApiPublicKeynoteWaitlistRoute: ApiPublicKeynoteWaitlistRoute,
   ApiPublicMentorshipApplicationRoute: ApiPublicMentorshipApplicationRoute,
+  ApiPublicReserveRoute: ApiPublicReserveRoute,
+  ApiPublicReserveUpgradeRoute: ApiPublicReserveUpgradeRoute,
   ApiPublicSummitAuditRoute: ApiPublicSummitAuditRoute,
   ApiPublicAdminSummitAuditRoute: ApiPublicAdminSummitAuditRoute,
   ApiPublicResourcesEntitlementSummaryRoute:
