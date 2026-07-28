@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WelcomeRouteImport } from './routes/welcome'
+import { Route as VaultWelcomeRouteImport } from './routes/vault-welcome'
 import { Route as VaultRouteImport } from './routes/vault'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StrategyIntensiveRouteImport } from './routes/strategy-intensive'
@@ -47,6 +49,16 @@ import { Route as ApiPublicResourcesExchangeRouteImport } from './routes/api/pub
 import { Route as ApiPublicResourcesEntitlementSummaryRouteImport } from './routes/api/public/resources/entitlement-summary'
 import { Route as ApiPublicAdminSummitAuditRouteImport } from './routes/api/public/admin/summit-audit'
 
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VaultWelcomeRoute = VaultWelcomeRouteImport.update({
+  id: '/vault-welcome',
+  path: '/vault-welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VaultRoute = VaultRouteImport.update({
   id: '/vault',
   path: '/vault',
@@ -260,6 +272,8 @@ export interface FileRoutesByFullPath {
   '/strategy-intensive': typeof StrategyIntensiveRoute
   '/terms': typeof TermsRoute
   '/vault': typeof VaultRoute
+  '/vault-welcome': typeof VaultWelcomeRoute
+  '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
@@ -299,6 +313,8 @@ export interface FileRoutesByTo {
   '/strategy-intensive': typeof StrategyIntensiveRoute
   '/terms': typeof TermsRoute
   '/vault': typeof VaultRoute
+  '/vault-welcome': typeof VaultWelcomeRoute
+  '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
@@ -339,6 +355,8 @@ export interface FileRoutesById {
   '/strategy-intensive': typeof StrategyIntensiveRoute
   '/terms': typeof TermsRoute
   '/vault': typeof VaultRoute
+  '/vault-welcome': typeof VaultWelcomeRoute
+  '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
@@ -380,6 +398,8 @@ export interface FileRouteTypes {
     | '/strategy-intensive'
     | '/terms'
     | '/vault'
+    | '/vault-welcome'
+    | '/welcome'
     | '/admin/audit'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
@@ -419,6 +439,8 @@ export interface FileRouteTypes {
     | '/strategy-intensive'
     | '/terms'
     | '/vault'
+    | '/vault-welcome'
+    | '/welcome'
     | '/admin/audit'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
@@ -458,6 +480,8 @@ export interface FileRouteTypes {
     | '/strategy-intensive'
     | '/terms'
     | '/vault'
+    | '/vault-welcome'
+    | '/welcome'
     | '/admin/audit'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
@@ -498,6 +522,8 @@ export interface RootRouteChildren {
   StrategyIntensiveRoute: typeof StrategyIntensiveRoute
   TermsRoute: typeof TermsRoute
   VaultRoute: typeof VaultRoute
+  VaultWelcomeRoute: typeof VaultWelcomeRoute
+  WelcomeRoute: typeof WelcomeRoute
   AdminAuditRoute: typeof AdminAuditRoute
   ApplyMentorshipRoute: typeof ApplyMentorshipRoute
   CalendarDay1DoticsRoute: typeof CalendarDay1DoticsRoute
@@ -522,6 +548,20 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vault-welcome': {
+      id: '/vault-welcome'
+      path: '/vault-welcome'
+      fullPath: '/vault-welcome'
+      preLoaderRoute: typeof VaultWelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/vault': {
       id: '/vault'
       path: '/vault'
@@ -813,6 +853,8 @@ const rootRouteChildren: RootRouteChildren = {
   StrategyIntensiveRoute: StrategyIntensiveRoute,
   TermsRoute: TermsRoute,
   VaultRoute: VaultRoute,
+  VaultWelcomeRoute: VaultWelcomeRoute,
+  WelcomeRoute: WelcomeRoute,
   AdminAuditRoute: AdminAuditRoute,
   ApplyMentorshipRoute: ApplyMentorshipRoute,
   CalendarDay1DoticsRoute: CalendarDay1DoticsRoute,
