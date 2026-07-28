@@ -109,12 +109,14 @@ function ReserveVipPage() {
 
               <a
                 href={gaUrl!}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block w-full rounded-xl py-4 text-center reserve-body-lg reserve-gold-btn"
               >
                 Get General Admission · $22
               </a>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Complete your secure payment through SpincityHQ.
+                Secure checkout opens in a new tab.
               </p>
               <div className="mt-8 reserve-hairline" />
               <div className="mt-7 grid gap-7 sm:grid-cols-2">

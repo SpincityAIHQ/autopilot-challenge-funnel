@@ -230,6 +230,26 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     }
     expect(readReserveVault().includes("disabled={busy || !gaVipVaultUrl}")).toBe(false);
   });
+  it("opens every Shopify payment handoff outside embedded previews", () => {
+    const vip = readReserveVip();
+    const vault = readReserveVault();
+    const paymentAnchors = [
+      [vip, "href={gaUrl!}"],
+      [vault, "href={gaVipUrl!}"],
+      [vault, "href={gaVipVaultUrl!}"],
+    ] as const;
+    for (const [src, href] of paymentAnchors) {
+      const openingTag = [...src.matchAll(/<a\b[^>]*>/g)]
+        .map(([tag]) => tag)
+        .find((tag) => tag.includes(href));
+      expect(openingTag).toBeDefined();
+      expect(openingTag).toContain('target="_blank"');
+      expect(openingTag).toContain('rel="noopener noreferrer"');
+    }
+    for (const src of [vip, vault]) {
+      expect(src.includes("Secure checkout opens in a new tab.")).toBe(true);
+    }
+  });
   it("advances from VIP without waiting on the reservation database", () => {
     const vip = readReserveVip();
     const vault = readReserveVault();
