@@ -906,6 +906,23 @@ export type Database = {
           seat_number: number
         }[]
       }
+      fulfill_summit_bundle: {
+        Args: {
+          _amount_cents: number
+          _commas_payment_id: string
+          _currency: string
+          _email: string
+          _first_touch: Json
+          _full_name: string
+          _last_touch: Json
+          _phone: string
+          _scopes: string[]
+        }
+        Returns: {
+          already_existed: boolean
+          registration_id: string
+        }[]
+      }
       fulfill_summit_payment: {
         Args: {
           _amount_cents: number
