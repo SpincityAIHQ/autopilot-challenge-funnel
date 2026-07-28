@@ -149,6 +149,7 @@ export const Route = createFileRoute("/api/public/admin/summit-audit")({
               [
                 csvEscape(r.created_at),
                 csvEscape(r.email),
+                csvEscape(r.verification),
                 csvEscape(r.entitlement_tier),
                 csvEscape(r.business_type),
                 csvEscape(r.revenue_stage),
@@ -163,6 +164,7 @@ export const Route = createFileRoute("/api/public/admin/summit-audit")({
               ].join(","),
             );
           }
+
           const h = noStore("text/csv; charset=utf-8");
           h.set(
             "content-disposition",
