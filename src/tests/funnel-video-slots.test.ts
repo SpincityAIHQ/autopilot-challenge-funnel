@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { readFileSync } from "node:fs";
 
 const COMPONENT = readFileSync("src/components/FunnelVideoSlot.tsx", "utf8");
+const VIDEO_SLOT = readFileSync("src/components/VideoSlot.tsx", "utf8");
 const LANDING = readFileSync("src/routes/index.tsx", "utf8");
 const LANDING_FORM = readFileSync("src/components/reserve/LandingReservationForm.tsx", "utf8");
 const CHECKOUT = readFileSync("src/routes/checkout.tsx", "utf8");
@@ -36,6 +37,15 @@ describe("mobile funnel video slots", () => {
   it("renders empty placeholders only in private owner review", () => {
     expect(COMPONENT).toContain("useQaReviewMode");
     expect(COMPONENT).toContain("if (!qaReview) return null");
+  });
+
+  it("keeps Vimeo inside the funnel while preserving player controls", () => {
+    expect(VIDEO_SLOT).toContain("videoIframeSandbox");
+    expect(VIDEO_SLOT).toContain("sandbox={sandbox}");
+    expect(VIDEO_SLOT).toContain(
+      'allow="autoplay; fullscreen; picture-in-picture; encrypted-media"',
+    );
+    expect(VIDEO_SLOT).toContain("allowFullScreen");
   });
 
   it("adds a funnel video slot to every paid funnel page", () => {

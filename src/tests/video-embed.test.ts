@@ -1,5 +1,10 @@
 import { describe, expect, it } from "bun:test";
-import { configureVideoPlayback, normalizeVideoEmbedUrl } from "../lib/video-embed";
+import {
+  configureVideoPlayback,
+  normalizeVideoEmbedUrl,
+  videoIframeSandbox,
+  VIMEO_PLAYER_SANDBOX,
+} from "../lib/video-embed";
 
 describe("video embed normalization", () => {
   it("normalizes YouTube watch URLs", () => {
@@ -56,5 +61,31 @@ describe("funnel autoplay parameters", () => {
     expect(url.searchParams.get("autoplay")).toBe("1");
     expect(url.searchParams.get("muted")).toBe("1");
     expect(url.searchParams.get("playsinline")).toBe("1");
+    expect(url.searchParams.get("controls")).toBe("1");
+  });
+
+  it("removes Vimeo-owned outbound branding from the player", () => {
+    const configured = configureVideoPlayback("https://player.vimeo.com/video/123456789", {
+      autoplay: true,
+      muted: true,
+      playsInline: true,
+    });
+    const url = new URL(configured);
+
+    expect(url.searchParams.get("title")).toBe("0");
+    expect(url.searchParams.get("byline")).toBe("0");
+    expect(url.searchParams.get("portrait")).toBe("0");
+    expect(url.searchParams.get("badge")).toBe("0");
+    expect(url.searchParams.get("vimeo_logo")).toBe("0");
+    expect(url.searchParams.get("dnt")).toBe("1");
+  });
+
+  it("sandboxes Vimeo without granting popup or top-navigation access", () => {
+    expect(videoIframeSandbox("https://player.vimeo.com/video/123456789")).toBe(
+      VIMEO_PLAYER_SANDBOX,
+    );
+    expect(videoIframeSandbox("https://www.youtube.com/embed/dQw4w9WgXcQ")).toBeUndefined();
+    expect(VIMEO_PLAYER_SANDBOX).not.toContain("allow-popups");
+    expect(VIMEO_PLAYER_SANDBOX).not.toContain("allow-top-navigation");
   });
 });

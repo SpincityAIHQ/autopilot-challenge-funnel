@@ -2,9 +2,7 @@
  * Normalize a user-provided video URL into a safe embed URL.
  * Returns null for anything outside the YouTube / Vimeo allowlist.
  */
-export function normalizeVideoEmbedUrl(
-  input: string | null | undefined,
-): string | null {
+export function normalizeVideoEmbedUrl(input: string | null | undefined): string | null {
   if (!input) return null;
 
   let url: URL;
@@ -20,35 +18,25 @@ export function normalizeVideoEmbedUrl(
   if (host === "youtube.com" || host === "m.youtube.com") {
     if (url.pathname === "/watch") {
       const id = url.searchParams.get("v");
-      return id && /^[\w-]{6,20}$/.test(id)
-        ? `https://www.youtube.com/embed/${id}`
-        : null;
+      return id && /^[\w-]{6,20}$/.test(id) ? `https://www.youtube.com/embed/${id}` : null;
     }
 
     const embedMatch = url.pathname.match(/^\/embed\/([\w-]{6,20})$/);
-    return embedMatch
-      ? `https://www.youtube.com/embed/${embedMatch[1]}`
-      : null;
+    return embedMatch ? `https://www.youtube.com/embed/${embedMatch[1]}` : null;
   }
 
   if (host === "youtu.be") {
     const id = url.pathname.replace(/^\//, "");
-    return /^[\w-]{6,20}$/.test(id)
-      ? `https://www.youtube.com/embed/${id}`
-      : null;
+    return /^[\w-]{6,20}$/.test(id) ? `https://www.youtube.com/embed/${id}` : null;
   }
 
   if (host === "vimeo.com") {
     const id = url.pathname.replace(/^\//, "").split("/")[0];
-    return /^\d{4,15}$/.test(id)
-      ? `https://player.vimeo.com/video/${id}`
-      : null;
+    return /^\d{4,15}$/.test(id) ? `https://player.vimeo.com/video/${id}` : null;
   }
 
   if (host === "player.vimeo.com") {
-    return /^\/video\/\d{4,15}$/.test(url.pathname)
-      ? url.toString()
-      : null;
+    return /^\/video\/\d{4,15}$/.test(url.pathname) ? url.toString() : null;
   }
 
   return null;
@@ -58,6 +46,23 @@ export interface VideoPlaybackOptions {
   autoplay?: boolean;
   muted?: boolean;
   playsInline?: boolean;
+}
+
+/**
+ * Vimeo needs scripts and its own origin to play, plus presentation permission
+ * for fullscreen. Deliberately omit popup and top-navigation permissions so
+ * Vimeo-owned links cannot take a funnel visitor away from the page.
+ */
+export const VIMEO_PLAYER_SANDBOX = "allow-scripts allow-same-origin allow-presentation";
+
+export function videoIframeSandbox(embedUrl: string): string | undefined {
+  try {
+    return new URL(embedUrl).hostname.toLowerCase() === "player.vimeo.com"
+      ? VIMEO_PLAYER_SANDBOX
+      : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 /**
@@ -87,9 +92,13 @@ export function configureVideoPlayback(
     if (muted) url.searchParams.set("muted", "1");
     if (playsInline) url.searchParams.set("playsinline", "1");
     url.searchParams.set("autopause", "0");
+    url.searchParams.set("controls", "1");
     url.searchParams.set("title", "0");
     url.searchParams.set("byline", "0");
     url.searchParams.set("portrait", "0");
+    url.searchParams.set("badge", "0");
+    url.searchParams.set("vimeo_logo", "0");
+    url.searchParams.set("dnt", "1");
   }
 
   return url.toString();

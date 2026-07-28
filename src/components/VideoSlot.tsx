@@ -1,6 +1,7 @@
 import {
   configureVideoPlayback,
   normalizeVideoEmbedUrl,
+  videoIframeSandbox,
 } from "@/lib/video-embed";
 
 export interface VideoSlotProps {
@@ -36,6 +37,7 @@ export function VideoSlot({
     muted,
     playsInline: true,
   });
+  const sandbox = videoIframeSandbox(safe);
   const aspectClass = aspect === "portrait" ? "aspect-[9/16]" : "aspect-video";
 
   return (
@@ -50,6 +52,7 @@ export function VideoSlot({
           loading={eager || autoplay ? "eager" : "lazy"}
           referrerPolicy="strict-origin-when-cross-origin"
           allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+          sandbox={sandbox}
           allowFullScreen
           className="h-full w-full"
         />
