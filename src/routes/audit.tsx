@@ -217,7 +217,7 @@ function AuditPage() {
             autoComplete="email"
             value={form.email}
             onChange={(e) => update("email", e.target.value)}
-            className="input"
+            className="w-full rounded-md border border-border bg-[color:var(--surface)] px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-[color:var(--emerald-signal)] focus:outline-none focus:ring-1 focus:ring-[color:var(--emerald-signal)]"
             placeholder="you@domain.com"
           />
         </Field>
@@ -249,7 +249,7 @@ function AuditPage() {
             maxLength={2000}
             value={form.what_stops}
             onChange={(e) => update("what_stops", e.target.value)}
-            className="input"
+            className="w-full rounded-md border border-border bg-[color:var(--surface)] px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-[color:var(--emerald-signal)] focus:outline-none focus:ring-1 focus:ring-[color:var(--emerald-signal)]"
             placeholder="Time, money, don't know the steps, tried and failed…"
           />
         </Field>
@@ -297,7 +297,7 @@ function AuditPage() {
             maxLength={2000}
             value={form.top_question}
             onChange={(e) => update("top_question", e.target.value)}
-            className="input"
+            className="w-full rounded-md border border-border bg-[color:var(--surface)] px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-[color:var(--emerald-signal)] focus:outline-none focus:ring-1 focus:ring-[color:var(--emerald-signal)]"
             placeholder="What do you most want answered live?"
           />
         </Field>
@@ -315,7 +315,7 @@ function AuditPage() {
             maxLength={2000}
             value={form.anything_else}
             onChange={(e) => update("anything_else", e.target.value)}
-            className="input"
+            className="w-full rounded-md border border-border bg-[color:var(--surface)] px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-[color:var(--emerald-signal)] focus:outline-none focus:ring-1 focus:ring-[color:var(--emerald-signal)]"
           />
         </Field>
 
@@ -418,7 +418,7 @@ function SelectField({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="input"
+        className="w-full rounded-md border border-border bg-[color:var(--surface)] px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-[color:var(--emerald-signal)] focus:outline-none focus:ring-1 focus:ring-[color:var(--emerald-signal)]"
       >
         <option value="">— choose one —</option>
         {options.map((o) => (
