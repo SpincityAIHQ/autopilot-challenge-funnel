@@ -178,12 +178,12 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isReserveRoute = pathname === "/reserve" || pathname.startsWith("/reserve/");
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrandFrame>
-        <Outlet />
-      </BrandFrame>
+      {isReserveRoute ? <Outlet /> : <BrandFrame><Outlet /></BrandFrame>}
     </QueryClientProvider>
   );
 }
