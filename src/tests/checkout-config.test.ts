@@ -1,5 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import {
+  DEFAULT_SUMMIT_HERO_VIDEO_URL,
+  getCommasConfig,
   isAllowedCheckoutUrl,
   resolveCheckoutUrl,
   isHandoffAllowed,
@@ -22,7 +24,6 @@ const cfg = {
     intensive: undefined,
   },
 } as const;
-
 
 describe("isAllowedCheckoutUrl", () => {
   it("accepts https on allowlisted host", () => {
@@ -52,6 +53,13 @@ describe("resolveCheckoutUrl", () => {
     // getCommasConfig() no longer populates urls.vip — the sequential
     // funnel sells vip only as post-GA vip_upgrade.
     expect(resolveCheckoutUrl("vip", cfg)).toBeNull();
+  });
+});
+
+describe("summit video configuration", () => {
+  it("ships the supplied landing-page Vimeo VSL as the production default", () => {
+    expect(DEFAULT_SUMMIT_HERO_VIDEO_URL).toBe("https://vimeo.com/1213741553");
+    expect(getCommasConfig().sectionVideos.hero).toBe(DEFAULT_SUMMIT_HERO_VIDEO_URL);
   });
 });
 
