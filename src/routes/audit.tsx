@@ -97,6 +97,7 @@ interface FormState {
   top_question: string;
   autonomy_goal: string;
   anything_else: string;
+  website: string; // honeypot — real users leave this empty
 }
 
 const INITIAL: FormState = {
@@ -111,7 +112,9 @@ const INITIAL: FormState = {
   top_question: "",
   autonomy_goal: "",
   anything_else: "",
+  website: "",
 };
+
 
 function AuditPage() {
   const [form, setForm] = useState<FormState>(INITIAL);
