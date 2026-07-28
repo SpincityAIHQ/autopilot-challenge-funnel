@@ -599,6 +599,7 @@ export type Database = {
           team_size: string | null
           top_question: string | null
           updated_at: string
+          verification: string
           what_stops: string | null
         }
         Insert: {
@@ -616,6 +617,7 @@ export type Database = {
           team_size?: string | null
           top_question?: string | null
           updated_at?: string
+          verification?: string
           what_stops?: string | null
         }
         Update: {
@@ -633,6 +635,7 @@ export type Database = {
           team_size?: string | null
           top_question?: string | null
           updated_at?: string
+          verification?: string
           what_stops?: string | null
         }
         Relationships: []

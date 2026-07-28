@@ -67,14 +67,20 @@ export const Route = createFileRoute("/api/public/resources/entitlement-summary"
         if (!row) return emptyScopes();
 
         const rawScopes: string[] = Array.isArray(row.scopes) ? row.scopes : [];
+        const buyerEmail: string | null =
+          typeof row.buyer_email === "string" ? row.buyer_email : null;
         return respond(
           200,
           JSON.stringify({
             authenticated: true,
             scopes: rawScopes,
+            // Buyer's own email — this session belongs to them, so echoing
+            // it back to their own browser is not a PII disclosure.
+            email: buyerEmail,
           }),
           "application/json",
         );
+
       },
     },
   },

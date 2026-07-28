@@ -20,21 +20,28 @@ interface Bucket {
   byTier: Record<Tier, number>;
 }
 
-interface Stats {
+interface Aggregate {
   total: number;
   tiers: Record<Tier, number>;
   breakdowns: Record<string, Record<string, Bucket>>;
   aiTools: Record<string, Bucket>;
+}
+
+interface Stats extends Aggregate {
+  verification: { session: number; entitlement_match: number };
+  sessionOnly: Aggregate;
   openText: Array<{
     id: string;
     email: string;
     created_at: string;
     entitlement_tier: string | null;
+    verification: string | null;
     what_stops: string | null;
     top_question: string | null;
     anything_else: string | null;
   }>;
 }
+
 
 const FIELD_LABELS: Record<string, string> = {
   business_type: "Business type",
@@ -114,6 +121,16 @@ function AdminAuditPage() {
   }
 
   const { stats } = state;
+  return <AdminAuditContent stats={stats} />;
+}
+
+function AdminAuditContent({ stats }: { stats: Stats }) {
+  const [sessionOnly, setSessionOnly] = useState(false);
+  const view: Aggregate = sessionOnly ? stats.sessionOnly : stats;
+  const openTextRows = sessionOnly
+    ? stats.openText.filter((r) => r.verification === "session")
+    : stats.openText;
+
   return (
     <main className="mx-auto max-w-5xl px-5 py-12">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -123,44 +140,59 @@ function AdminAuditPage() {
             Pre-Summit alignment audit
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {stats.total} total submissions ·{" "}
-            {stats.tiers.ga} GA · {stats.tiers.vip} VIP ·{" "}
-            {stats.tiers.vault} Vault · {stats.tiers.none} unverified
+            {view.total} submissions ({sessionOnly ? "session-verified" : "all"})
+            · {view.tiers.ga} GA · {view.tiers.vip} VIP ·{" "}
+            {view.tiers.vault} Vault · {view.tiers.none} unverified
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Verification: {stats.verification.session} session-verified ·{" "}
+            {stats.verification.entitlement_match} matched by registered email
           </p>
         </div>
-        <a
-          href="/api/public/admin/summit-audit?format=csv"
-          className="inline-flex items-center rounded-md bg-primary px-4 py-2 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
-        >
-          Export CSV
-        </a>
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="flex items-center gap-2 text-xs text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={sessionOnly}
+              onChange={(e) => setSessionOnly(e.target.checked)}
+              className="h-4 w-4 rounded border-border"
+            />
+            Session-verified only
+          </label>
+          <a
+            href="/api/public/admin/summit-audit?format=csv"
+            className="inline-flex items-center rounded-md bg-primary px-4 py-2 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+          >
+            Export CSV
+          </a>
+        </div>
       </div>
 
       <div className="mt-10 grid gap-6">
-        {Object.entries(stats.breakdowns).map(([field, values]) => (
+        {Object.entries(view.breakdowns).map(([field, values]) => (
           <BreakdownCard
             key={field}
             title={FIELD_LABELS[field] ?? field}
-            total={stats.total}
+            total={view.total}
             values={values}
           />
         ))}
         <BreakdownCard
           title="AI tools used (multi-select)"
-          total={stats.total}
-          values={stats.aiTools}
+          total={view.total}
+          values={view.aiTools}
         />
       </div>
 
       <section className="mt-12">
         <h2 className="font-heading text-lg text-foreground">
-          Open-text answers ({stats.openText.length})
+          Open-text answers ({openTextRows.length})
         </h2>
         <p className="mt-1 text-xs text-muted-foreground">
-          Newest first. Email + tier shown for follow-up.
+          Newest first. Email + tier + verification shown for follow-up.
         </p>
         <ul className="mt-4 space-y-4">
-          {stats.openText.map((r) => (
+          {openTextRows.map((r) => (
             <li
               key={r.id}
               className="rounded-md border border-border bg-[color:var(--surface)] p-4"
@@ -169,6 +201,8 @@ function AdminAuditPage() {
                 <span className="text-foreground">{r.email}</span>
                 <span>·</span>
                 <span>{r.entitlement_tier ?? "unverified"}</span>
+                <span>·</span>
+                <span>{r.verification ?? "—"}</span>
                 <span>·</span>
                 <span>{new Date(r.created_at).toLocaleString()}</span>
               </div>
@@ -183,7 +217,7 @@ function AdminAuditPage() {
               ) : null}
             </li>
           ))}
-          {stats.openText.length === 0 ? (
+          {openTextRows.length === 0 ? (
             <li className="text-sm text-muted-foreground">No answers yet.</li>
           ) : null}
         </ul>
@@ -191,6 +225,7 @@ function AdminAuditPage() {
     </main>
   );
 }
+
 
 function BreakdownCard({
   title,

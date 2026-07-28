@@ -4,8 +4,9 @@ import { getQaReviewScopes } from "@/lib/qa-review";
 export type EntitlementSummary =
   | { status: "loading" }
   | { status: "unauthenticated" }
-  | { status: "ok"; scopes: string[] }
+  | { status: "ok"; scopes: string[]; email: string | null }
   | { status: "error" };
+
 
 /**
  * Fetches the same-origin entitlement summary from the current resource
@@ -27,11 +28,12 @@ export function useEntitlementSummary(): EntitlementSummary {
 
     const qaScopes = getQaReviewScopes();
     if (qaScopes !== null) {
-      setState({ status: "ok", scopes: qaScopes });
+      setState({ status: "ok", scopes: qaScopes, email: null });
       return () => {
         alive = false;
       };
     }
+
 
     (async () => {
       try {
@@ -48,6 +50,7 @@ export function useEntitlementSummary(): EntitlementSummary {
         const j = (await res.json()) as {
           authenticated: boolean;
           scopes?: unknown;
+          email?: unknown;
         };
         if (!alive) return;
         if (!j.authenticated) {
@@ -57,7 +60,9 @@ export function useEntitlementSummary(): EntitlementSummary {
         const scopes = Array.isArray(j.scopes)
           ? j.scopes.filter((s): s is string => typeof s === "string")
           : [];
-        setState({ status: "ok", scopes });
+        const email = typeof j.email === "string" ? j.email : null;
+        setState({ status: "ok", scopes, email });
+
       } catch {
         if (alive) setState({ status: "error" });
       }

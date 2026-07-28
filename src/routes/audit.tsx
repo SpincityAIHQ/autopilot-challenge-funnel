@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useEntitlementSummary } from "@/hooks/use-entitlement-summary";
+
 
 export const Route = createFileRoute("/audit")({
   head: () => ({
@@ -95,6 +97,7 @@ interface FormState {
   top_question: string;
   autonomy_goal: string;
   anything_else: string;
+  website: string; // honeypot — real users leave this empty
 }
 
 const INITIAL: FormState = {
@@ -109,15 +112,26 @@ const INITIAL: FormState = {
   top_question: "",
   autonomy_goal: "",
   anything_else: "",
+  website: "",
 };
 
+
 function AuditPage() {
+  const summary = useEntitlementSummary();
+  const sessionEmail =
+    summary.status === "ok" && summary.email ? summary.email : null;
+  const hasSession = sessionEmail !== null;
+
   const [form, setForm] = useState<FormState>(INITIAL);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const progress = useMemo(() => computeProgress(form), [form]);
+  const progress = useMemo(
+    () => computeProgress(form, hasSession),
+    [form, hasSession],
+  );
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -134,7 +148,8 @@ function AuditPage() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    if (!form.email.trim()) {
+    setNotice(null);
+    if (!hasSession && !form.email.trim()) {
       setError("Your email is required so we can align the Summit for you.");
       return;
     }
@@ -145,7 +160,7 @@ function AuditPage() {
         credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: form.email.trim(),
+          email: hasSession ? undefined : form.email.trim() || undefined,
           business_type: form.business_type || undefined,
           revenue_stage: form.revenue_stage || undefined,
           bottleneck: form.bottleneck || undefined,
@@ -156,10 +171,21 @@ function AuditPage() {
           top_question: form.top_question || undefined,
           autonomy_goal: form.autonomy_goal || undefined,
           anything_else: form.anything_else || undefined,
+          website: form.website || undefined,
         }),
       });
       if (res.ok) {
-        setSubmitted(true);
+        const j = (await res.json().catch(() => ({}))) as {
+          ok?: boolean;
+          message?: string;
+          verification?: string;
+        };
+        if (j.message) {
+          // Neutral "no registration found" reply.
+          setNotice(j.message);
+        } else {
+          setSubmitted(true);
+        }
       } else if (res.status === 429) {
         setError("Too many submissions. Give it a minute and try again.");
       } else {
@@ -171,6 +197,7 @@ function AuditPage() {
       setSubmitting(false);
     }
   }
+
 
   if (submitted) {
     return (
@@ -210,17 +237,56 @@ function AuditPage() {
       <ProgressBar percent={progress} />
 
       <form onSubmit={onSubmit} className="mt-8 space-y-8">
-        <Field label="1. Your email" required>
-          <input
-            type="email"
-            required
-            autoComplete="email"
-            value={form.email}
-            onChange={(e) => update("email", e.target.value)}
-            className="w-full rounded-md border border-border bg-[color:var(--surface)] px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-[color:var(--emerald-signal)] focus:outline-none focus:ring-1 focus:ring-[color:var(--emerald-signal)]"
-            placeholder="you@domain.com"
-          />
-        </Field>
+        {/* Honeypot — hidden from users, catches basic bots. */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            left: "-10000px",
+            width: 1,
+            height: 1,
+            overflow: "hidden",
+          }}
+        >
+          <label>
+            Website
+            <input
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={form.website}
+              onChange={(e) => update("website", e.target.value)}
+            />
+          </label>
+        </div>
+
+        {hasSession ? (
+          <Field label="1. Your email">
+            <div className="rounded-md border border-border bg-[color:var(--surface)] px-3 py-2.5 text-sm text-foreground">
+              {sessionEmail}
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Verified from your session — we'll attach your answers to this
+              address.
+            </p>
+          </Field>
+        ) : (
+          <Field label="1. Your email" required>
+            <input
+              type="email"
+              required
+              autoComplete="email"
+              value={form.email}
+              onChange={(e) => update("email", e.target.value)}
+              className="w-full rounded-md border border-border bg-[color:var(--surface)] px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-[color:var(--emerald-signal)] focus:outline-none focus:ring-1 focus:ring-[color:var(--emerald-signal)]"
+              placeholder="you@domain.com"
+            />
+            <p className="mt-1 text-xs text-muted-foreground">
+              Use the same email you registered with.
+            </p>
+          </Field>
+        )}
+
 
         <SelectField
           label="2. What best describes your business?"
@@ -319,9 +385,15 @@ function AuditPage() {
           />
         </Field>
 
+        {notice ? (
+          <p className="rounded-md border border-border bg-[color:var(--surface)] p-3 text-sm text-foreground">
+            {notice}
+          </p>
+        ) : null}
         {error ? (
           <p className="text-sm text-[color:var(--gold)]">{error}</p>
         ) : null}
+
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <button
@@ -340,9 +412,9 @@ function AuditPage() {
   );
 }
 
-function computeProgress(form: FormState): number {
+function computeProgress(form: FormState, hasSession: boolean): number {
   const fields = [
-    form.email,
+    hasSession ? "x" : form.email,
     form.business_type,
     form.revenue_stage,
     form.bottleneck,
@@ -356,6 +428,7 @@ function computeProgress(form: FormState): number {
   const done = fields.filter((v) => (v ?? "").length > 0).length;
   return Math.round((done / fields.length) * 100);
 }
+
 
 function ProgressBar({ percent }: { percent: number }) {
   return (
