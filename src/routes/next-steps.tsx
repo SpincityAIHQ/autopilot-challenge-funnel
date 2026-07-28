@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { AuditCallout } from "@/components/AuditCallout";
 import { getCommasConfig } from "@/lib/challenge-config";
+
 import { ProductThankYou } from "@/components/ProductThankYou";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import {
