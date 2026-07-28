@@ -28,11 +28,12 @@ export function useEntitlementSummary(): EntitlementSummary {
 
     const qaScopes = getQaReviewScopes();
     if (qaScopes !== null) {
-      setState({ status: "ok", scopes: qaScopes });
+      setState({ status: "ok", scopes: qaScopes, email: null });
       return () => {
         alive = false;
       };
     }
+
 
     (async () => {
       try {
