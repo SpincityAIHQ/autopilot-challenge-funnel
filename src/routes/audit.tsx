@@ -412,9 +412,9 @@ function AuditPage() {
   );
 }
 
-function computeProgress(form: FormState): number {
+function computeProgress(form: FormState, hasSession: boolean): number {
   const fields = [
-    form.email,
+    hasSession ? "x" : form.email,
     form.business_type,
     form.revenue_stage,
     form.bottleneck,
@@ -428,6 +428,7 @@ function computeProgress(form: FormState): number {
   const done = fields.filter((v) => (v ?? "").length > 0).length;
   return Math.round((done / fields.length) * 100);
 }
+
 
 function ProgressBar({ percent }: { percent: number }) {
   return (
