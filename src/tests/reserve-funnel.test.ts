@@ -96,11 +96,23 @@ describe("reserve funnel — copy + config guards", () => {
   it("uses token (not id) in the routing / URL surface", () => {
     const vip = readReserveVip();
     const vault = readReserveVault();
-    expect(vip.includes("/reserve/vault?t=") || vip.includes('to: "/reserve/vault"')).toBe(true);
-    expect(vault.includes('"/reserve/vip"') || vault.includes("resolveReserveCheckoutUrl")).toBe(true);
-    // Tokens must NEVER be routed as id
+    const upgrade = readFileSync(
+      join(root, "src/routes/api/public/reserve-upgrade.ts"),
+      "utf8",
+    );
+    const reserve = readFileSync(
+      join(root, "src/routes/api/public/reserve.ts"),
+      "utf8",
+    );
+    // Server produces token-based next URLs
+    expect(reserve.includes("/reserve/vip?t=${token}")).toBe(true);
+    expect(upgrade.includes("/reserve/vault?t=${token}")).toBe(true);
+    expect(upgrade.includes("/reserve/vip?t=${token}")).toBe(true);
+    // Tokens must NEVER be routed as id anywhere in the surface
     expect(/[?&]id=/.test(vip)).toBe(false);
     expect(/[?&]id=/.test(vault)).toBe(false);
+    expect(/[?&]id=/.test(reserve)).toBe(false);
+    expect(/[?&]id=/.test(upgrade)).toBe(false);
   });
 
   it("declares all three reserve-bundle env variables in .env.example", () => {
