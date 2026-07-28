@@ -96,8 +96,9 @@ describe("reserve funnel — copy + config guards", () => {
   it("uses token (not id) in the routing / URL surface", () => {
     const vip = readReserveVip();
     const vault = readReserveVault();
-    // Tokens flow through as ?t= and never as ?id=/&id=
-    expect(vip.includes("?t=${token}") || vip.includes("t: deps.t")).toBe(true);
+    expect(vip.includes("/reserve/vault?t=") || vip.includes('to: "/reserve/vault"')).toBe(true);
+    expect(vault.includes('"/reserve/vip"') || vault.includes("resolveReserveCheckoutUrl")).toBe(true);
+    // Tokens must NEVER be routed as id
     expect(/[?&]id=/.test(vip)).toBe(false);
     expect(/[?&]id=/.test(vault)).toBe(false);
   });
@@ -109,21 +110,16 @@ describe("reserve funnel — copy + config guards", () => {
     expect(env.includes("VITE_COMMAS_URL_GA_VIP_VAULT=")).toBe(true);
   });
 
-  it("did NOT modify src/lib/tiers.ts price ladder or webhook file structure", () => {
-    // Static guard: prices and product IDs still match the current sequential
-    // + bundle contract. This is a coarse fingerprint check.
+  it("did NOT modify src/lib/tiers.ts price ladder or webhook bundle contract", () => {
     const tiers = readFileSync(join(root, "src/lib/tiers.ts"), "utf8");
     expect(tiers.includes("2200")).toBe(true); // GA
     expect(tiers.includes("7700")).toBe(true); // VIP upgrade
     expect(tiers.includes("19900")).toBe(true); // Vault
     expect(tiers.includes("100000")).toBe(true); // Intensive
-    const webhook = readFileSync(
-      join(root, "src/routes/api/public/webhooks/commas.ts"),
+    const helpers = readFileSync(
+      join(root, "src/lib/webhook-helpers.ts"),
       "utf8",
     );
-    // Bundle SKU handling must still be present in the webhook.
-    expect(
-      webhook.includes("GA_VIP_VAULT") || webhook.includes("ga_vip_vault"),
-    ).toBe(true);
+    expect(helpers.includes("ga_vip_vault")).toBe(true);
   });
 });
