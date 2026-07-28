@@ -91,15 +91,14 @@ function ReserveVaultPage() {
               </p>
               <a
                 href={gaVipVaultUrl!}
-                target="_blank"
-                rel="noopener noreferrer"
+                target="_top"
                 onClick={recordVaultReservation}
                 className="reserve-cta-primary mt-5 block w-full rounded-xl py-4 text-center reserve-body-lg"
               >
                 Get the Emerald Vault Key · $298
               </a>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Secure checkout opens in a new tab.
+                Continue to secure Shopify checkout.
               </p>
 
               <div className="my-6 flex items-center gap-4">
@@ -112,14 +111,13 @@ function ReserveVaultPage() {
 
               <a
                 href={gaVipUrl!}
-                target="_blank"
-                rel="noopener noreferrer"
+                target="_top"
                 className="block w-full rounded-xl py-4 text-center reserve-body-lg reserve-gold-btn"
               >
                 Get VIP Access · $99
               </a>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Secure checkout opens in a new tab.
+                Continue to secure Shopify checkout.
               </p>
               <div className="mt-8 reserve-hairline" />
               <div className="mt-7 grid gap-7 sm:grid-cols-2">

@@ -34,7 +34,8 @@ describe("reservation tokens", () => {
 });
 
 describe("reserve checkout URL — pure validator", () => {
-  const GOOD = "https://spincityhq.com/cart/50980696129783:1?checkout";
+  const GOOD =
+    "https://spincityhq.com/cart/50980696129783:1?checkout&skip_shop_pay=true";
 
   it("accepts a permanent Shopify cart permalink on the store host", () => {
     expect(validateReserveCheckoutUrl("ga", { VITE_SHOPIFY_URL_GA: GOOD })).toBe(GOOD);
@@ -65,7 +66,8 @@ describe("reserve checkout URL — pure validator", () => {
     expect(validateReserveCheckoutUrl("ga", { VITE_SHOPIFY_URL_GA: "   " })).toBeNull();
   });
   it("honors the additional allowed-hosts env variable", () => {
-    const url = "https://checkout.partner.co/cart/50980696129783:1?checkout";
+    const url =
+      "https://checkout.partner.co/cart/50980696129783:1?checkout&skip_shop_pay=true";
     expect(validateReserveCheckoutUrl("ga", { VITE_SHOPIFY_URL_GA: url })).toBeNull();
     expect(
       validateReserveCheckoutUrl("ga", {
@@ -84,6 +86,13 @@ describe("reserve checkout URL — pure validator", () => {
       validateReserveCheckoutUrl("ga", {
         VITE_SHOPIFY_URL_GA:
           "https://spincityhq.com/products/ai-autopilot-summit-general-admission",
+      }),
+    ).toBeNull();
+  });
+  it("requires the direct checkout flag so Shopify does not route through Shop Pay first", () => {
+    expect(
+      validateReserveCheckoutUrl("ga", {
+        VITE_SHOPIFY_URL_GA: "https://spincityhq.com/cart/50980696129783:1?checkout",
       }),
     ).toBeNull();
   });
@@ -230,7 +239,7 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     }
     expect(readReserveVault().includes("disabled={busy || !gaVipVaultUrl}")).toBe(false);
   });
-  it("opens every Shopify payment handoff outside embedded previews", () => {
+  it("navigates every Shopify payment handoff at the top level outside embedded previews", () => {
     const vip = readReserveVip();
     const vault = readReserveVault();
     const paymentAnchors = [
@@ -243,11 +252,12 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
         .map(([tag]) => tag)
         .find((tag) => tag.includes(href));
       expect(openingTag).toBeDefined();
-      expect(openingTag).toContain('target="_blank"');
-      expect(openingTag).toContain('rel="noopener noreferrer"');
+      expect(openingTag).toContain('target="_top"');
+      expect(openingTag).not.toContain('target="_blank"');
     }
     for (const src of [vip, vault]) {
-      expect(src.includes("Secure checkout opens in a new tab.")).toBe(true);
+      expect(src.includes("Continue to secure Shopify checkout.")).toBe(true);
+      expect(src.includes("Secure checkout opens in a new tab.")).toBe(false);
     }
   });
   it("advances from VIP without waiting on the reservation database", () => {
@@ -287,13 +297,13 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     const env = readProductionEnv();
     expect(env).toContain("VITE_SHOPIFY_ALLOWED_CHECKOUT_HOSTS=spincityhq.com");
     expect(env).toContain(
-      "VITE_SHOPIFY_URL_GA=https://spincityhq.com/cart/50980696129783:1?checkout",
+      "VITE_SHOPIFY_URL_GA=https://spincityhq.com/cart/50980696129783:1?checkout&skip_shop_pay=true",
     );
     expect(env).toContain(
-      "VITE_SHOPIFY_URL_GA_VIP=https://spincityhq.com/cart/50980697571575:1?checkout",
+      "VITE_SHOPIFY_URL_GA_VIP=https://spincityhq.com/cart/50980697571575:1?checkout&skip_shop_pay=true",
     );
     expect(env).toContain(
-      "VITE_SHOPIFY_URL_GA_VIP_VAULT=https://spincityhq.com/cart/50980698194167:1?checkout",
+      "VITE_SHOPIFY_URL_GA_VIP_VAULT=https://spincityhq.com/cart/50980698194167:1?checkout&skip_shop_pay=true",
     );
   });
 
