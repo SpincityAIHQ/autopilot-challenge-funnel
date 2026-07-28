@@ -20,21 +20,28 @@ interface Bucket {
   byTier: Record<Tier, number>;
 }
 
-interface Stats {
+interface Aggregate {
   total: number;
   tiers: Record<Tier, number>;
   breakdowns: Record<string, Record<string, Bucket>>;
   aiTools: Record<string, Bucket>;
+}
+
+interface Stats extends Aggregate {
+  verification: { session: number; entitlement_match: number };
+  sessionOnly: Aggregate;
   openText: Array<{
     id: string;
     email: string;
     created_at: string;
     entitlement_tier: string | null;
+    verification: string | null;
     what_stops: string | null;
     top_question: string | null;
     anything_else: string | null;
   }>;
 }
+
 
 const FIELD_LABELS: Record<string, string> = {
   business_type: "Business type",
