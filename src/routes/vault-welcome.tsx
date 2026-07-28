@@ -21,7 +21,7 @@ export const Route = createFileRoute("/vault-welcome")({
 function VaultWelcome() {
   const cfg = getCommasConfig();
   const slots = useIntensiveSlotsRemaining();
-  const intensiveUrl = cfg.checkoutUrls.intensive;
+  const intensiveUrl = cfg.urls.intensive;
 
   const seatLine =
     slots.status === "ok"
