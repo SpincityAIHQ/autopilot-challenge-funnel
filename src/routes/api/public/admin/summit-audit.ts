@@ -173,54 +173,61 @@ export const Route = createFileRoute("/api/public/admin/summit-audit")({
           return new Response(lines.join("\r\n"), { status: 200, headers: h });
         }
 
-        // Aggregate counts + cross-tabs by entitlement tier.
-        const total = rows.length;
-        const tiers: Record<TierKey, number> = {
-          ga: 0,
-          vip: 0,
-          vault: 0,
-          none: 0,
-        };
-        const breakdowns: Record<
-          string,
-          Record<string, { total: number; byTier: Record<TierKey, number> }>
-        > = {};
-        for (const f of SELECT_FIELDS) breakdowns[f] = {};
-        const aiToolsAgg: Record<
-          string,
-          { total: number; byTier: Record<TierKey, number> }
-        > = {};
-
-        for (const r of rows) {
-          const tk = tierBucket(r.entitlement_tier);
-          tiers[tk] += 1;
-
-          for (const f of SELECT_FIELDS) {
-            const val = r[f as SelectField];
-            if (!val) continue;
-            const bucket =
-              breakdowns[f][val] ??
-              (breakdowns[f][val] = {
-                total: 0,
-                byTier: { ga: 0, vip: 0, vault: 0, none: 0 },
-              });
-            bucket.total += 1;
-            bucket.byTier[tk] += 1;
-          }
-
-          if (Array.isArray(r.ai_tools)) {
-            for (const tool of r.ai_tools) {
+        function aggregate(source: AuditRow[]) {
+          const total = source.length;
+          const tiers: Record<TierKey, number> = {
+            ga: 0,
+            vip: 0,
+            vault: 0,
+            none: 0,
+          };
+          const breakdowns: Record<
+            string,
+            Record<string, { total: number; byTier: Record<TierKey, number> }>
+          > = {};
+          for (const f of SELECT_FIELDS) breakdowns[f] = {};
+          const aiToolsAgg: Record<
+            string,
+            { total: number; byTier: Record<TierKey, number> }
+          > = {};
+          for (const r of source) {
+            const tk = tierBucket(r.entitlement_tier);
+            tiers[tk] += 1;
+            for (const f of SELECT_FIELDS) {
+              const val = r[f as SelectField];
+              if (!val) continue;
               const bucket =
-                aiToolsAgg[tool] ??
-                (aiToolsAgg[tool] = {
+                breakdowns[f][val] ??
+                (breakdowns[f][val] = {
                   total: 0,
                   byTier: { ga: 0, vip: 0, vault: 0, none: 0 },
                 });
               bucket.total += 1;
               bucket.byTier[tk] += 1;
             }
+            if (Array.isArray(r.ai_tools)) {
+              for (const tool of r.ai_tools) {
+                const bucket =
+                  aiToolsAgg[tool] ??
+                  (aiToolsAgg[tool] = {
+                    total: 0,
+                    byTier: { ga: 0, vip: 0, vault: 0, none: 0 },
+                  });
+                bucket.total += 1;
+                bucket.byTier[tk] += 1;
+              }
+            }
           }
+          return { total, tiers, breakdowns, aiTools: aiToolsAgg };
         }
+
+        const full = aggregate(rows);
+        const sessionRows = rows.filter((r) => r.verification === "session");
+        const sessionOnly = aggregate(sessionRows);
+        const verification = {
+          session: sessionRows.length,
+          entitlement_match: rows.length - sessionRows.length,
+        };
 
         const openText = rows
           .filter((r) => r.what_stops || r.top_question || r.anything_else)
@@ -229,6 +236,7 @@ export const Route = createFileRoute("/api/public/admin/summit-audit")({
             email: r.email,
             created_at: r.created_at,
             entitlement_tier: r.entitlement_tier,
+            verification: r.verification,
             what_stops: r.what_stops,
             top_question: r.top_question,
             anything_else: r.anything_else,
@@ -237,14 +245,17 @@ export const Route = createFileRoute("/api/public/admin/summit-audit")({
         return respond(
           200,
           JSON.stringify({
-            total,
-            tiers,
-            breakdowns,
-            aiTools: aiToolsAgg,
+            total: full.total,
+            tiers: full.tiers,
+            breakdowns: full.breakdowns,
+            aiTools: full.aiTools,
+            verification,
+            sessionOnly,
             openText,
           }),
           "application/json",
         );
+
       },
     },
   },
