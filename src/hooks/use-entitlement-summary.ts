@@ -4,8 +4,9 @@ import { getQaReviewScopes } from "@/lib/qa-review";
 export type EntitlementSummary =
   | { status: "loading" }
   | { status: "unauthenticated" }
-  | { status: "ok"; scopes: string[] }
+  | { status: "ok"; scopes: string[]; email: string | null }
   | { status: "error" };
+
 
 /**
  * Fetches the same-origin entitlement summary from the current resource
