@@ -6,8 +6,21 @@ import { assertSameOrigin, consumeRateLimit } from "@/lib/rate-limit";
 
 /**
  * Pre-Summit alignment audit — same-origin, DB rate-limited, upsert by email.
- * The client-provided tier is IGNORED; the server derives the tier from the
- * verified resource session cookie (if any) via session_active_scopes.
+ *
+ * Email resolution (in order):
+ *   1. Valid resource-session cookie → derive buyer_email from
+ *      session_active_scopes; ignore any body email; verification = 'session'.
+ *   2. No session → require body email to match an existing registration or
+ *      entitlement (case-insensitive, trimmed);
+ *      verification = 'entitlement_match'.
+ *   3. Neither → return 200 with a neutral message. Response is identical
+ *      whether the email exists or not, so this endpoint cannot be used to
+ *      probe whether an address bought a ticket.
+ *
+ * Honeypot: `website` field, if present with any non-empty value, returns the
+ * normal success response and writes nothing.
+ *
+ * Tier is always derived server-side; any client-supplied tier is ignored.
  */
 
 const SESSION_COOKIE = "summit_rs";
@@ -24,7 +37,7 @@ const optionalStr = (max: number) =>
     .transform((v) => (v && v.length > 0 ? v : undefined));
 
 const bodySchema = z.object({
-  email: z.string().trim().email().max(255),
+  email: z.string().trim().email().max(255).optional(),
   business_type: optionalStr(120),
   revenue_stage: optionalStr(120),
   bottleneck: optionalStr(120),
@@ -38,6 +51,8 @@ const bodySchema = z.object({
   top_question: optionalStr(2000),
   autonomy_goal: optionalStr(120),
   anything_else: optionalStr(2000),
+  // Honeypot — real users don't fill this.
+  website: z.string().max(500).optional(),
 });
 
 const NO_STORE = {
@@ -45,12 +60,22 @@ const NO_STORE = {
   "Cache-Control": "private, no-store",
 };
 
+const NEUTRAL_NOT_FOUND_MESSAGE =
+  "We couldn't find a registration for that email. Use the link in your confirmation email, or contact Info@NuAmenti.com.";
+
 function deriveTier(scopes: string[]): string | null {
   const s = new Set(scopes);
   if (s.has("vault")) return "vault";
   if (s.has("vip") || s.has("vip_upgrade")) return "vip";
   if (s.has("ga")) return "ga";
   return null;
+}
+
+function okJson(payload: Record<string, unknown>): Response {
+  return new Response(JSON.stringify(payload), {
+    status: 200,
+    headers: NO_STORE,
+  });
 }
 
 export const Route = createFileRoute("/api/public/summit-audit")({
@@ -94,12 +119,20 @@ export const Route = createFileRoute("/api/public/summit-audit")({
         }
         const d = check.data;
 
+        // Honeypot: silently swallow.
+        if (d.website && d.website.trim().length > 0) {
+          return okJson({ ok: true });
+        }
+
         const { supabaseAdmin } = await import(
           "@/integrations/supabase/client.server"
         );
 
-        // Server-side tier lookup. NEVER trust a client-supplied value.
+        // Resolve email — session first, then entitlement match.
+        let resolvedEmail: string | null = null;
+        let verification: "session" | "entitlement_match" | null = null;
         let entitlementTier: string | null = null;
+
         const sessionToken = getCookie(SESSION_COOKIE);
         if (sessionToken && sessionToken.length >= 32) {
           const sessionHash = hashToken(sessionToken);
@@ -108,14 +141,50 @@ export const Route = createFileRoute("/api/public/summit-audit")({
             { _session_hash: sessionHash },
           );
           const row = Array.isArray(sess) ? sess[0] : null;
-          const scopes: string[] =
-            row && Array.isArray(row.scopes) ? row.scopes : [];
-          entitlementTier = deriveTier(scopes);
+          if (row?.buyer_email) {
+            resolvedEmail = String(row.buyer_email).toLowerCase();
+            verification = "session";
+            const scopes: string[] = Array.isArray(row.scopes) ? row.scopes : [];
+            entitlementTier = deriveTier(scopes);
+          }
         }
 
-        const emailLower = d.email.toLowerCase();
+        if (!resolvedEmail) {
+          const bodyEmail = d.email?.trim().toLowerCase();
+          if (!bodyEmail) {
+            return okJson({ ok: true, message: NEUTRAL_NOT_FOUND_MESSAGE });
+          }
+
+          // Match against a confirmed registration or an active entitlement.
+          const [regRes, entRes] = await Promise.all([
+            supabaseAdmin
+              .from("summit_registrations")
+              .select("email, tier")
+              .ilike("email", bodyEmail)
+              .eq("payment_status", "confirmed")
+              .limit(1),
+            supabaseAdmin
+              .from("entitlements")
+              .select("buyer_email, product")
+              .ilike("buyer_email", bodyEmail)
+              .is("revoked_at", null)
+              .limit(10),
+          ]);
+
+          const reg = regRes.data?.[0];
+          const ents = entRes.data ?? [];
+          if (!reg && ents.length === 0) {
+            return okJson({ ok: true, message: NEUTRAL_NOT_FOUND_MESSAGE });
+          }
+
+          resolvedEmail = bodyEmail;
+          verification = "entitlement_match";
+          const scopes = ents.map((e) => e.product as string);
+          entitlementTier = deriveTier(scopes) ?? (reg?.tier ?? null);
+        }
+
         const payload = {
-          email: emailLower,
+          email: resolvedEmail,
           business_type: d.business_type ?? null,
           revenue_stage: d.revenue_stage ?? null,
           bottleneck: d.bottleneck ?? null,
@@ -127,10 +196,10 @@ export const Route = createFileRoute("/api/public/summit-audit")({
           autonomy_goal: d.autonomy_goal ?? null,
           anything_else: d.anything_else ?? null,
           entitlement_tier: entitlementTier,
+          verification,
           updated_at: new Date().toISOString(),
         };
 
-        // Upsert on lowercased email — people can revise their answers.
         const { error } = await supabaseAdmin
           .from("summit_audit")
           .upsert(payload, { onConflict: "email" });
@@ -138,10 +207,7 @@ export const Route = createFileRoute("/api/public/summit-audit")({
         if (error) {
           return new Response("Server error", { status: 500, headers: NO_STORE });
         }
-        return new Response(JSON.stringify({ ok: true }), {
-          status: 200,
-          headers: NO_STORE,
-        });
+        return okJson({ ok: true, verification });
       },
     },
   },
