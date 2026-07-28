@@ -583,6 +583,60 @@ export type Database = {
         }
         Relationships: []
       }
+      summit_audit: {
+        Row: {
+          ai_tools: string[] | null
+          anything_else: string | null
+          attendance: string | null
+          autonomy_goal: string | null
+          bottleneck: string | null
+          business_type: string | null
+          created_at: string
+          email: string
+          entitlement_tier: string | null
+          id: string
+          revenue_stage: string | null
+          team_size: string | null
+          top_question: string | null
+          updated_at: string
+          what_stops: string | null
+        }
+        Insert: {
+          ai_tools?: string[] | null
+          anything_else?: string | null
+          attendance?: string | null
+          autonomy_goal?: string | null
+          bottleneck?: string | null
+          business_type?: string | null
+          created_at?: string
+          email: string
+          entitlement_tier?: string | null
+          id?: string
+          revenue_stage?: string | null
+          team_size?: string | null
+          top_question?: string | null
+          updated_at?: string
+          what_stops?: string | null
+        }
+        Update: {
+          ai_tools?: string[] | null
+          anything_else?: string | null
+          attendance?: string | null
+          autonomy_goal?: string | null
+          bottleneck?: string | null
+          business_type?: string | null
+          created_at?: string
+          email?: string
+          entitlement_tier?: string | null
+          id?: string
+          revenue_stage?: string | null
+          team_size?: string | null
+          top_question?: string | null
+          updated_at?: string
+          what_stops?: string | null
+        }
+        Relationships: []
+      }
       summit_payment_events: {
         Row: {
           created_at: string

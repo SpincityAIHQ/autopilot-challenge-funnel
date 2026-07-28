@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { AuditCallout } from "@/components/AuditCallout";
 import { getCommasConfig } from "@/lib/challenge-config";
+
 import { ProductThankYou } from "@/components/ProductThankYou";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import {
@@ -82,6 +84,9 @@ function NextSteps() {
       ) : (
         <VerificationNotice status={summary.status} />
       )}
+
+      <AuditCallout />
+
 
       <section className="mt-10 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">Save the dates</h2>
