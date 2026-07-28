@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
 /**
@@ -11,7 +12,20 @@ export function ReserveFrame({ children }: { children: ReactNode }) {
     <div className="reserve-shell min-h-screen">
       <div aria-hidden="true" className="reserve-noise pointer-events-none fixed inset-0" />
       <div aria-hidden="true" className="reserve-vignette pointer-events-none fixed inset-0" />
-      <div className="relative z-10">{children}</div>
+      <div className="relative z-10">
+        <nav
+          aria-label="Funnel navigation"
+          className="mx-auto flex w-full max-w-6xl items-center px-5 pt-5"
+        >
+          <Link
+            to="/"
+            className="reserve-home-link inline-flex min-h-11 items-center rounded-lg px-4 py-2"
+          >
+            ← Home / Start Over
+          </Link>
+        </nav>
+        {children}
+      </div>
       <style>{`
         .reserve-shell {
           --void: #0B0C0E;
@@ -59,6 +73,25 @@ export function ReserveFrame({ children }: { children: ReactNode }) {
         .reserve-gold-btn[aria-disabled="true"] {
           opacity: 0.5;
           cursor: not-allowed;
+        }
+        .reserve-home-link {
+          color: #F0DFA0;
+          border: 1px solid rgba(240,223,160,0.38);
+          background: rgba(20,22,25,0.82);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+          font-family: "Space Mono", ui-monospace, monospace;
+          font-size: 12px;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          transition: border-color 160ms ease, background-color 160ms ease;
+        }
+        .reserve-home-link:hover {
+          border-color: rgba(240,223,160,0.72);
+          background: rgba(20,22,25,0.98);
+        }
+        .reserve-home-link:focus-visible {
+          outline: 2px solid #F0DFA0;
+          outline-offset: 3px;
         }
         /* Primary CTA (emerald) — the ONLY element that breathes. */
         .reserve-cta-primary {
