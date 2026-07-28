@@ -66,8 +66,8 @@ function Terms() {
 
         <p className="mt-8 text-xs">
           SpincityHQ LLC · Atlanta, GA ·{" "}
-          <a className="underline" href="mailto:Info@NuAmenti.com">
-            Info@NuAmenti.com
+          <a className="underline" href="mailto:Sebastian@spincityhq.com">
+            Sebastian@spincityhq.com
           </a>
           . This is a pre-launch draft pending counsel review and will be replaced with the final
           version before public checkout opens.

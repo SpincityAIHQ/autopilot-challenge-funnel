@@ -25,7 +25,7 @@ export function OfferGate({
 
   if (summary.status === "unauthenticated" || summary.status === "error") {
     return (
-      <SecureLinkPanel message="This page is only for confirmed Summit buyers. Open the secure link in your NuAmenti email. If you cannot find it, email Info@NuAmenti.com." />
+      <SecureLinkPanel message="This page is only for confirmed Summit buyers. Open the secure link in your NuAmenti email. If you cannot find it, email Sebastian@spincityhq.com." />
     );
   }
 
@@ -64,10 +64,10 @@ function SecureLinkPanel({ message }: { message: string }) {
           See your next steps
         </Link>
         <a
-          href="mailto:Info@NuAmenti.com"
+          href="mailto:Sebastian@spincityhq.com"
           className="inline-flex items-center rounded-md bg-primary px-4 py-2 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
         >
-          Email Info@NuAmenti.com
+          Email Sebastian@spincityhq.com
         </a>
       </div>
       <p className="mt-4 text-xs text-muted-foreground">

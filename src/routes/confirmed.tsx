@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AuditCallout } from "@/components/AuditCallout";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
+import { SummitCalendarActions } from "@/components/SummitCalendarActions";
 
 import { ProductThankYou } from "@/components/ProductThankYou";
 import { TestimonialSection } from "@/components/TestimonialSection";
@@ -59,8 +60,9 @@ function Confirmed() {
           </li>
           <li>
             <span className="font-heading text-foreground">2. Watch your email and phone.</span>{" "}
-            Your access link, calendar details, and ticket-specific resources arrive within 24
-            hours. Check Spam, Promotions, and Updates if you do not see them.
+            Your access link, calendar details, and ticket-specific resources arrive from
+            Sebastian@spincityhq.com within 24 hours. Check Spam, Promotions, and Updates if you do
+            not see them.
           </li>
           <li>
             <span className="font-heading text-foreground">3. Save both live dates.</span> Saturday,
@@ -75,25 +77,21 @@ function Confirmed() {
         </ol>
         <p className="mt-2 text-sm text-muted-foreground">
           Questions:{" "}
-          <a className="text-foreground underline" href="mailto:Info@NuAmenti.com">
-            Info@NuAmenti.com
+          <a className="text-foreground underline" href="mailto:Sebastian@spincityhq.com">
+            Sebastian@spincityhq.com
           </a>
         </p>
-        <div className="mt-4 flex flex-wrap gap-3">
-          <a
-            href="/calendar/day1.ics"
-            className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
-          >
-            Add Day 1 to calendar
-          </a>
-          <a
-            href="/calendar/day2.ics"
-            className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
-          >
-            Add Day 2 to calendar
-          </a>
-        </div>
       </section>
+
+      <SummitCalendarActions />
+
+      <FunnelVideoSlot
+        url={cfg.sectionVideos.auditIntro}
+        label="Why your 3-minute pre-Summit audit matters"
+        envKey="VITE_SUMMIT_VIDEO_AUDIT"
+        className="mt-7"
+        autoplay={false}
+      />
 
       <AuditCallout />
 
@@ -141,7 +139,7 @@ function Confirmed() {
       />
 
       <p className="mt-8 text-sm text-muted-foreground">
-        Questions? Reply to your receipt or email Info@NuAmenti.com.
+        Questions? Reply to your receipt or email Sebastian@spincityhq.com.
       </p>
     </main>
   );

@@ -9,7 +9,8 @@ const OPEN_THE_VAULT: IcsDay = {
   uid: "open-the-vault-with-spin-2026-08-31@spincityhq",
   summary: "Secret Day 3 — Vault Opener Class with Spin",
   description:
-    "Emerald-only live implementation class with Spin. Open the Vault, connect the system to your business, and work through implementation questions. Use the private link in your NuAmenti email.",
+    "Emerald-only live implementation class with Spin. Open the Vault, connect the system to your business, and work through implementation questions. Use the private link in your email from Sebastian@spincityhq.com.",
+  location: "Online — use the private link in your email",
   dateYyyyMmDd: "20260831",
   startHHmm: "130000",
   endHHmm: "150000",

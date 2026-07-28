@@ -19,16 +19,14 @@ export const VIP_LAB_END_ISO = "2026-08-30T17:45:00-04:00";
 export const SUMMIT_START_ISO = SUMMIT_DAY_1_ISO;
 export const CHALLENGE_START_ISO = SUMMIT_START_ISO;
 
-export const DEFAULT_COMMAS_CHECKOUT_HOSTS: readonly string[] = [
-  "www.fanbasis.com",
-  "commas.com",
-];
+export const DEFAULT_COMMAS_CHECKOUT_HOSTS: readonly string[] = ["www.fanbasis.com", "commas.com"];
 
 export interface SectionVideoUrls {
   hero?: string;
   checkout?: string;
   vipOffer?: string;
   confirmedThankYou?: string;
+  auditIntro?: string;
   thankYouGa?: string;
   thankYouVip?: string;
   thankYouVault?: string;
@@ -93,6 +91,7 @@ export function getCommasConfig(): CommasConfig {
       checkout: readEnv("VITE_SUMMIT_VIDEO_CHECKOUT"),
       vipOffer: readEnv("VITE_SUMMIT_VIDEO_VIP_OFFER"),
       confirmedThankYou: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU"),
+      auditIntro: readEnv("VITE_SUMMIT_VIDEO_AUDIT"),
       thankYouGa: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_GA"),
       thankYouVip: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_VIP"),
       thankYouVault: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_VAULT"),
@@ -105,15 +104,11 @@ export function getCommasConfig(): CommasConfig {
     salesEnabled: readEnv("VITE_SUMMIT_SALES_ENABLED") === "true",
     legalReady: readEnv("VITE_SUMMIT_LEGAL_READY") === "true",
     upsellsEnabled: readEnv("VITE_SUMMIT_UPSELLS_ENABLED") === "true",
-    intensiveSalesEnabled:
-      readEnv("VITE_SUMMIT_INTENSIVE_SALES_ENABLED") === "true",
-    keynoteSalesEnabled:
-      readEnv("VITE_SUMMIT_KEYNOTE_SALES_ENABLED") === "true",
+    intensiveSalesEnabled: readEnv("VITE_SUMMIT_INTENSIVE_SALES_ENABLED") === "true",
+    keynoteSalesEnabled: readEnv("VITE_SUMMIT_KEYNOTE_SALES_ENABLED") === "true",
     mentorshipApplicationsEnabled:
       readEnv("VITE_SUMMIT_MENTORSHIP_APPLICATIONS_ENABLED") === "true",
-    allowedHosts: parseAllowedHosts(
-      readEnv("VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS"),
-    ),
+    allowedHosts: parseAllowedHosts(readEnv("VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS")),
     keynote: {
       announced: Boolean(keynoteUrl && keynoteDate),
       dateIso: keynoteDate,
@@ -178,17 +173,13 @@ export function isHandoffAllowed(
  * Keynote checkout — the raw env URL must pass the same HTTPS allowlist
  * as every other CTA. Never renders `cfg.keynote.checkoutUrl` directly.
  */
-export function resolveKeynoteCheckoutUrl(
-  cfg: CommasConfig = getCommasConfig(),
-): string | null {
+export function resolveKeynoteCheckoutUrl(cfg: CommasConfig = getCommasConfig()): string | null {
   const raw = cfg.keynote.checkoutUrl;
   const hosts = cfg.allowedHosts ?? DEFAULT_COMMAS_CHECKOUT_HOSTS;
   return isAllowedCheckoutUrl(raw, hosts) ? (raw as string) : null;
 }
 
-export function isKeynoteHandoffAllowed(
-  cfg: CommasConfig = getCommasConfig(),
-): boolean {
+export function isKeynoteHandoffAllowed(cfg: CommasConfig = getCommasConfig()): boolean {
   if (isQaReviewRuntimeEnabled()) return false;
   if (!cfg.salesEnabled) return false;
   if (!cfg.legalReady) return false;

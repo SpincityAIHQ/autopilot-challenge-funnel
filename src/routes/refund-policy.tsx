@@ -56,8 +56,8 @@ function Refunds() {
         <h2 className="mt-6 font-heading text-base text-foreground">How to request a refund</h2>
         <p>
           Refund questions and requests: write{" "}
-          <a className="underline" href="mailto:Info@NuAmenti.com">
-            Info@NuAmenti.com
+          <a className="underline" href="mailto:Sebastian@spincityhq.com">
+            Sebastian@spincityhq.com
           </a>{" "}
           with your order details. The final refund window per product will be posted here before
           public checkout opens.
@@ -65,8 +65,8 @@ function Refunds() {
 
         <p className="mt-8 text-xs">
           SpincityHQ LLC · Atlanta, GA ·{" "}
-          <a className="underline" href="mailto:Info@NuAmenti.com">
-            Info@NuAmenti.com
+          <a className="underline" href="mailto:Sebastian@spincityhq.com">
+            Sebastian@spincityhq.com
           </a>
           . No income, sales, or business-outcome guarantees are made. This is a pre-launch draft
           pending counsel review.

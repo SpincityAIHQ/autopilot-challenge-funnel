@@ -12,14 +12,14 @@ routes, tables, domains, or payment products with the NuAmenti application.
 
 ## Product catalog (sequential ascension funnel)
 
-| Product                                | Price     | Notes                                                         |
-| -------------------------------------- | --------- | ------------------------------------------------------------- |
-| General Admission (GA)                 | $22       | Public `/checkout`. Both live Summit days, maps, workbook, and build plan. |
-| VIP Implementation Experience          | $77       | Post-GA at `/offer/vip-upgrade`. 30-day recordings, VIP Build Lab right after Day 2, priority Q&A. |
-| AI AutoPilot Implementation Vault      | $199      | Post-VIP at `/offer/implementation-vault`. Reusable operating library. |
-| Strategy & Build Intensive             | $1,000    | Post-Vault at `/strategy-intensive`. Two-hour private session; **cap 10 total**, atomic inventory. |
-| Eight-Week Mentorship & Work-Along     | $8,000    | Application-based at `/apply/mentorship`. Separate from the Intensive. |
-| Next NuAmenti Keynote                  | TBA       | Priority-access waitlist at `/next-keynote`. Rendered as "coming soon" until configured. |
+| Product                            | Price  | Notes                                                                                              |
+| ---------------------------------- | ------ | -------------------------------------------------------------------------------------------------- |
+| General Admission (GA)             | $22    | Public `/checkout`. Both live Summit days, maps, workbook, and build plan.                         |
+| VIP Implementation Experience      | $77    | Post-GA at `/offer/vip-upgrade`. 30-day recordings, VIP Build Lab right after Day 2, priority Q&A. |
+| AI AutoPilot Implementation Vault  | $199   | Post-VIP at `/offer/implementation-vault`. Reusable operating library.                             |
+| Strategy & Build Intensive         | $1,000 | Post-Vault at `/strategy-intensive`. Two-hour private session; **cap 10 total**, atomic inventory. |
+| Eight-Week Mentorship & Work-Along | $8,000 | Application-based at `/apply/mentorship`. Separate from the Intensive.                             |
+| Next NuAmenti Keynote              | TBA    | Priority-access waitlist at `/next-keynote`. Rendered as "coming soon" until configured.           |
 
 Direct-VIP admission is **not** a current sale product. VIP is only sold as
 the sequential `vip_upgrade` after a verified GA purchase.
@@ -83,33 +83,34 @@ corresponding gate is `true` **and** the checkout URL passes the HTTPS
 allowlist (`www.fanbasis.com` plus any hosts in
 `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS`).
 
-| Variable                                | Purpose                                       |
-| --------------------------------------- | --------------------------------------------- |
-| `VITE_SUMMIT_SALES_ENABLED`             | GA checkout master gate                       |
-| `VITE_SUMMIT_LEGAL_READY`               | Independent legal gate — must be `true`        |
-| `VITE_SUMMIT_UPSELLS_ENABLED`           | VIP Upgrade + Vault gate                      |
-| `VITE_SUMMIT_INTENSIVE_SALES_ENABLED`   | Strategy & Build Intensive gate               |
-| `VITE_SUMMIT_MENTORSHIP_APPLICATIONS_ENABLED` | Mentorship application gate             |
-| `VITE_COMMAS_CHECKOUT_URL_GA`           | FanBasis GA checkout — $22                     |
-| `VITE_COMMAS_CHECKOUT_URL_VIP_UPGRADE`  | FanBasis VIP Implementation Experience — $77   |
-| `VITE_COMMAS_CHECKOUT_URL_VAULT`        | FanBasis Vault — $199                          |
-| `VITE_COMMAS_CHECKOUT_URL_INTENSIVE`    | FanBasis Intensive — $1,000                    |
-| `VITE_COMMAS_CHECKOUT_URL_KEYNOTE`      | Next keynote checkout (also needs date)       |
-| `VITE_KEYNOTE_DATE_ISO`                 | Next keynote date (enables the `/next-keynote` card) |
-| `VITE_KEYNOTE_PRICE_LABEL`              | Optional display price for keynote            |
-| `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS`    | Comma-separated extra allowlisted hosts       |
-| `VITE_SUMMIT_VIDEO_HERO`                | Landing intro VSL before lead capture         |
-| `VITE_SUMMIT_VIDEO_CHECKOUT`            | GA explanation + VIP option VSL               |
-| `VITE_SUMMIT_VIDEO_VIP_OFFER`           | VIP email-recovery offer VSL                  |
-| `VITE_SUMMIT_VIDEO_THANK_YOU_GA`        | GA purchase + VIP introduction video          |
-| `VITE_SUMMIT_VIDEO_THANK_YOU_VIP`       | VIP explanation + Emerald invitation VSL      |
-| `VITE_SUMMIT_VIDEO_THANK_YOU`           | Shared post-payment confirmation VSL          |
-| `VITE_SUMMIT_VIDEO_THANK_YOU_VAULT`     | Vault purchase + Intensive introduction video |
-| `VITE_SUMMIT_VIDEO_THANK_YOU_INTENSIVE` | Intensive purchase video                      |
-| `VITE_SUMMIT_VIDEO_EXIT_GA`             | GA-only final confirmation video              |
-| `VITE_SUMMIT_VIDEO_EXIT_VIP`            | VIP-only final confirmation video             |
-| `VITE_SUMMIT_VIDEO_EXIT_VAULT`          | Vault-only final confirmation video           |
-| `VITE_SUMMIT_VIDEO_EXIT_INTENSIVE`      | Full-path final confirmation video            |
+| Variable                                      | Purpose                                              |
+| --------------------------------------------- | ---------------------------------------------------- |
+| `VITE_SUMMIT_SALES_ENABLED`                   | GA checkout master gate                              |
+| `VITE_SUMMIT_LEGAL_READY`                     | Independent legal gate — must be `true`              |
+| `VITE_SUMMIT_UPSELLS_ENABLED`                 | VIP Upgrade + Vault gate                             |
+| `VITE_SUMMIT_INTENSIVE_SALES_ENABLED`         | Strategy & Build Intensive gate                      |
+| `VITE_SUMMIT_MENTORSHIP_APPLICATIONS_ENABLED` | Mentorship application gate                          |
+| `VITE_COMMAS_CHECKOUT_URL_GA`                 | FanBasis GA checkout — $22                           |
+| `VITE_COMMAS_CHECKOUT_URL_VIP_UPGRADE`        | FanBasis VIP Implementation Experience — $77         |
+| `VITE_COMMAS_CHECKOUT_URL_VAULT`              | FanBasis Vault — $199                                |
+| `VITE_COMMAS_CHECKOUT_URL_INTENSIVE`          | FanBasis Intensive — $1,000                          |
+| `VITE_COMMAS_CHECKOUT_URL_KEYNOTE`            | Next keynote checkout (also needs date)              |
+| `VITE_KEYNOTE_DATE_ISO`                       | Next keynote date (enables the `/next-keynote` card) |
+| `VITE_KEYNOTE_PRICE_LABEL`                    | Optional display price for keynote                   |
+| `VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS`          | Comma-separated extra allowlisted hosts              |
+| `VITE_SUMMIT_VIDEO_HERO`                      | Landing intro VSL before lead capture                |
+| `VITE_SUMMIT_VIDEO_CHECKOUT`                  | GA explanation + VIP option VSL                      |
+| `VITE_SUMMIT_VIDEO_VIP_OFFER`                 | VIP email-recovery offer VSL                         |
+| `VITE_SUMMIT_VIDEO_THANK_YOU_GA`              | GA purchase + VIP introduction video                 |
+| `VITE_SUMMIT_VIDEO_THANK_YOU_VIP`             | VIP explanation + Emerald invitation VSL             |
+| `VITE_SUMMIT_VIDEO_THANK_YOU`                 | Shared post-payment confirmation VSL                 |
+| `VITE_SUMMIT_VIDEO_AUDIT`                     | Pre-Summit audit explanation video                   |
+| `VITE_SUMMIT_VIDEO_THANK_YOU_VAULT`           | Vault purchase + Intensive introduction video        |
+| `VITE_SUMMIT_VIDEO_THANK_YOU_INTENSIVE`       | Intensive purchase video                             |
+| `VITE_SUMMIT_VIDEO_EXIT_GA`                   | GA-only final confirmation video                     |
+| `VITE_SUMMIT_VIDEO_EXIT_VIP`                  | VIP-only final confirmation video                    |
+| `VITE_SUMMIT_VIDEO_EXIT_VAULT`                | Vault-only final confirmation video                  |
+| `VITE_SUMMIT_VIDEO_EXIT_INTENSIVE`            | Full-path final confirmation video                   |
 
 The legacy direct-VIP browser env var and product ID are intentionally
 **removed** from current activation. Anything still set in the environment

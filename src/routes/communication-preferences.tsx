@@ -88,9 +88,7 @@ function CommunicationPreferences() {
           phone: phone.trim(),
           signerName: signerName.trim(),
           sourceRoute:
-            typeof window !== "undefined"
-              ? window.location.pathname
-              : "/communication-preferences",
+            typeof window !== "undefined" ? window.location.pathname : "/communication-preferences",
           channels: { email: wantEmail, sms: wantSms, ai_call: wantAiCall },
         }),
       });
@@ -105,7 +103,7 @@ function CommunicationPreferences() {
           message:
             res.status === 429
               ? "Too many requests — please try again in a minute."
-              : "We couldn't save that. Please try again or email Info@NuAmenti.com.",
+              : "We couldn't save that. Please try again or email Sebastian@spincityhq.com.",
         });
         return;
       }
@@ -113,7 +111,7 @@ function CommunicationPreferences() {
     } catch {
       setState({
         status: "error",
-        message: "Network error — please try again or email Info@NuAmenti.com.",
+        message: "Network error — please try again or email Sebastian@spincityhq.com.",
       });
     }
   }
@@ -122,9 +120,7 @@ function CommunicationPreferences() {
     return (
       <main className="mx-auto max-w-2xl px-5 py-16">
         <p className="eyebrow">Communication preferences</p>
-        <p className="mt-4 text-sm text-muted-foreground">
-          Checking your secure session…
-        </p>
+        <p className="mt-4 text-sm text-muted-foreground">Checking your secure session…</p>
       </main>
     );
   }
@@ -137,17 +133,15 @@ function CommunicationPreferences() {
           You’ll need your secure link first.
         </h1>
         <p className="mt-4 text-sm text-muted-foreground">
-          For your protection, we don’t let anyone opt another person in or
-          out from this page. Open the most recent “Your Summit access” email
-          we sent to your registered address and click the secure link — that
-          starts a private session on this device, then you can set your
+          For your protection, we don’t let anyone opt another person in or out from this page. Open
+          the most recent “Your Summit access” email we sent to your registered address and click
+          the secure link — that starts a private session on this device, then you can set your
           preferences.
         </p>
         <p className="mt-3 text-sm text-muted-foreground">
-          Can’t find it? Email Info@NuAmenti.com from the address you used at
-          registration and we’ll resend the link. Transactional access
-          messages about your Summit ticket are separate from marketing
-          consent — those will still reach you.
+          Can’t find it? Email Sebastian@spincityhq.com from the address you used at registration
+          and we’ll resend the link. Transactional access messages about your Summit ticket are
+          separate from marketing consent — those will still reach you.
         </p>
         <Link
           to="/confirmed"
@@ -167,9 +161,9 @@ function CommunicationPreferences() {
           Thank you, family — your choices are recorded.
         </h1>
         <p className="mt-4 text-sm text-muted-foreground">
-          You can update these preferences any time by returning to this page
-          or writing Info@NuAmenti.com. Transactional messages about your
-          Summit access remain separate from marketing consent.
+          You can update these preferences any time by returning to this page or writing
+          Sebastian@spincityhq.com. Transactional messages about your Summit access remain separate
+          from marketing consent.
         </p>
         <Link
           to="/confirmed"
@@ -188,21 +182,22 @@ function CommunicationPreferences() {
         Choose how the family talks to you.
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        Every channel below is optional, unbundled, and revocable. Marketing
-        consent is never required to purchase or attend the Summit.
-        Transactional order and access messages are separate from marketing
-        consent. Seller: {SELLER_IDENTITY} · Atlanta, GA.
+        Every channel below is optional, unbundled, and revocable. Marketing consent is never
+        required to purchase or attend the Summit. Transactional order and access messages are
+        separate from marketing consent. Seller: {SELLER_IDENTITY} · Atlanta, GA.
       </p>
       <p className="mt-2 text-xs text-muted-foreground">
-        Your identity is confirmed by your secure session on this device — we
-        never ask you to retype your email here, and no one else can change
-        your preferences from another browser.
+        Your identity is confirmed by your secure session on this device — we never ask you to
+        retype your email here, and no one else can change your preferences from another browser.
       </p>
 
       <form onSubmit={onSubmit} className="mt-8 space-y-6" noValidate>
         <label className="block">
           <span className="label-mono">
-            Phone {phoneRequired ? "(required for SMS or AI-call)" : "(only if you opt into SMS or AI-call)"}
+            Phone{" "}
+            {phoneRequired
+              ? "(required for SMS or AI-call)"
+              : "(only if you opt into SMS or AI-call)"}
           </span>
           <input
             type="tel"
@@ -225,12 +220,7 @@ function CommunicationPreferences() {
             onChange={setWantEmail}
             label={CONSENT_COPY.email}
           />
-          <ChoiceRow
-            id="ch-sms"
-            checked={wantSms}
-            onChange={setWantSms}
-            label={CONSENT_COPY.sms}
-          />
+          <ChoiceRow id="ch-sms" checked={wantSms} onChange={setWantSms} label={CONSENT_COPY.sms} />
           <ChoiceRow
             id="ch-ai"
             checked={wantAiCall}
@@ -254,20 +244,18 @@ function CommunicationPreferences() {
               className="mt-2 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-[color:var(--gold)] focus:outline-none"
             />
             <p className="mt-2 text-xs text-muted-foreground">
-              By typing your name above, you provide a written signature
-              acknowledging the exact AI/prerecorded-call consent shown above,
-              tied to the phone number you provided, from {SELLER_IDENTITY}.
-              You may revoke this consent at any time.
+              By typing your name above, you provide a written signature acknowledging the exact
+              AI/prerecorded-call consent shown above, tied to the phone number you provided, from{" "}
+              {SELLER_IDENTITY}. You may revoke this consent at any time.
             </p>
           </label>
         ) : null}
 
         <p className="text-xs text-muted-foreground">
-          For SMS: reply STOP to opt out or HELP for help. Msg &amp; data
-          rates may apply. AI/prerecorded calls: your consent is explicit,
-          not required to buy, and revocable at any time. All channels can be
-          revoked by writing Info@NuAmenti.com or resubmitting this form
-          unchecked.
+          For SMS: reply STOP to opt out or HELP for help. Msg &amp; data rates may apply.
+          AI/prerecorded calls: your consent is explicit, not required to buy, and revocable at any
+          time. All channels can be revoked by writing Sebastian@spincityhq.com or resubmitting this
+          form unchecked.
         </p>
 
         {state.status === "error" ? (

@@ -18,9 +18,7 @@ export const Route = createFileRoute("/resources/$slug")({
   head: ({ loaderData }) => ({
     meta: [
       {
-        title: loaderData
-          ? `${loaderData.name} — Summit Resource Preview`
-          : "Resource — not found",
+        title: loaderData ? `${loaderData.name} — Summit Resource Preview` : "Resource — not found",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -48,9 +46,7 @@ function ResourcePreview() {
 
     let t: string | null = null;
     // Preferred: fragment `#t=<token>` (also supports #t=<token>&...).
-    const hash = window.location.hash.startsWith("#")
-      ? window.location.hash.slice(1)
-      : "";
+    const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
     if (hash) {
       const hashParams = new URLSearchParams(hash);
       const ht = hashParams.get("t");
@@ -124,18 +120,14 @@ function ResourcePreview() {
   return (
     <main className="mx-auto max-w-3xl px-5 py-16 print:py-6">
       <p className="eyebrow">Resource · {meta.tier.toUpperCase()}</p>
-      <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
-        {meta.name}
-      </h1>
+      <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">{meta.name}</h1>
       <p className="mt-3 text-sm text-muted-foreground">{meta.preview}</p>
 
       {unlocked ? (
         <section className="mt-8 space-y-6">
           {unlocked.sections.map((s) => (
             <div key={s.heading} className="surface p-5 print:border-0">
-              <h2 className="font-heading text-lg text-foreground">
-                {s.heading}
-              </h2>
+              <h2 className="font-heading text-lg text-foreground">{s.heading}</h2>
               <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
                 {s.bullets.map((b) => (
                   <li key={b}>· {b}</li>
@@ -152,21 +144,20 @@ function ResourcePreview() {
             <p>Loading your resource…</p>
           ) : status === "denied" ? (
             <p>
-              This session doesn't include access to this resource. If you
-              believe that's wrong, write Info@NuAmenti.com.
+              This session doesn't include access to this resource. If you believe that's wrong,
+              write Sebastian@spincityhq.com.
             </p>
           ) : status === "expired" ? (
             <p>
-              Your access session has expired or the magic link was already
-              used. Request a fresh access email from Info@NuAmenti.com.
+              Your access session has expired or the magic link was already used. Request a fresh
+              access email from Sebastian@spincityhq.com.
             </p>
           ) : status === "error" ? (
             <p>Something went wrong. Try again in a moment.</p>
           ) : (
             <p>
-              This is the public preview. The full content unlocks only through
-              the secure link in your access email. Reusing a magic link never
-              unlocks anything.
+              This is the public preview. The full content unlocks only through the secure link in
+              your access email. Reusing a magic link never unlocks anything.
             </p>
           )}
         </section>

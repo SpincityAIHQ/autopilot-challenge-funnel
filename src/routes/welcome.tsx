@@ -24,14 +24,11 @@ function Welcome() {
         Everything is confirmed.
       </h1>
       <p className="mt-3 text-muted-foreground">
-        You have everything you need. Save the dates and watch your inbox for
-        access details.
+        You have everything you need. Save the dates and watch your inbox for access details.
       </p>
 
       <section className="mt-8 rounded-md border border-[color:var(--emerald-signal)]/40 bg-[color:var(--surface)] p-5 sm:p-6">
-        <h2 className="font-heading text-lg text-foreground">
-          AI AutoPilot 2-Day Summit
-        </h2>
+        <h2 className="font-heading text-lg text-foreground">AI AutoPilot 2-Day Summit</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           August 29–30, 1:00–4:00 PM ET both days. Room opens at 12:45.
         </p>
@@ -59,12 +56,12 @@ function Welcome() {
           Your Private Strategy &amp; Build Intensive
         </h2>
         <p className="mt-3 text-sm text-muted-foreground">
-          Scheduling instructions and your prep brief arrive within 24 hours
-          at the email on your receipt.
+          Scheduling instructions and your prep brief arrive within 24 hours at the email on your
+          receipt.
         </p>
         <p className="mt-3 text-sm text-muted-foreground">
-          Come with one bottleneck in mind. We spend two hours building one
-          real, working asset around it.
+          Come with one bottleneck in mind. We spend two hours building one real, working asset
+          around it.
         </p>
         <p className="mt-3 text-sm text-foreground">
           Your $1,000 credits toward the AI AutoPilot Accelerator.
@@ -75,11 +72,8 @@ function Welcome() {
         <h2 className="font-heading text-lg text-foreground">Need us?</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Email{" "}
-          <a
-            className="text-foreground underline"
-            href="mailto:Info@NuAmenti.com"
-          >
-            Info@NuAmenti.com
+          <a className="text-foreground underline" href="mailto:Sebastian@spincityhq.com">
+            Sebastian@spincityhq.com
           </a>{" "}
           any time.
         </p>

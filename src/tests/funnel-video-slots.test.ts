@@ -66,6 +66,26 @@ describe("mobile funnel video slots", () => {
     expect(CONFIRMED).toContain("VITE_SUMMIT_VIDEO_THANK_YOU");
   });
 
+  it("gives confirmation and the audit two independent video slots", () => {
+    expect(CONFIRMED.match(/<FunnelVideoSlot/g)?.length).toBe(2);
+    expect(CONFIRMED).toContain("sectionVideos.confirmedThankYou");
+    expect(CONFIRMED).toContain("sectionVideos.auditIntro");
+    expect(CONFIRMED).toContain("VITE_SUMMIT_VIDEO_AUDIT");
+    expect(CONFIG).toContain('auditIntro: readEnv("VITE_SUMMIT_VIDEO_AUDIT")');
+
+    const auditVideo = CONFIRMED.indexOf("sectionVideos.auditIntro");
+    const auditText = CONFIRMED.indexOf("<AuditCallout");
+    expect(auditVideo).toBeGreaterThan(-1);
+    expect(auditVideo).toBeLessThan(auditText);
+  });
+
+  it("autoplays only the confirmation video when both slots are present", () => {
+    const auditVideo = CONFIRMED.indexOf("sectionVideos.auditIntro");
+    const auditCallout = CONFIRMED.indexOf("<AuditCallout");
+    const auditSlot = CONFIRMED.slice(auditVideo, auditCallout);
+    expect(auditSlot).toContain("autoplay={false}");
+  });
+
   it("places the final video between the page intro and verified card", () => {
     const intro = NEXT_STEPS.indexOf("Your current purchase is safe");
     const video = NEXT_STEPS.indexOf("<FunnelVideoSlot");

@@ -330,7 +330,7 @@ That includes the MVP App Builder, AI Business GPS, Internal Agent Builder Skill
 
 There is no additional offer on this page.
 
-Our team will email you from Info@NuAmenti.com with the scheduling link for your private session.
+Our team will email you from Sebastian@spincityhq.com with the scheduling link for your private session.
 
 Before the session, gather the goals, offers, numbers, apps, tools, and current process connected to the system you want to build. Do not send passwords or private client information.
 

@@ -8,7 +8,7 @@ import {
   VIP_LAB_START_ISO,
   VIP_LAB_END_ISO,
 } from "../lib/challenge-config";
-import { SUMMIT_DAY_1, SUMMIT_DAY_2 } from "../lib/ics";
+import { buildGoogleCalendarUrl, buildIcs, SUMMIT_DAY_1, SUMMIT_DAY_2 } from "../lib/ics";
 
 const FILES = [
   "src/routes/index.tsx",
@@ -44,6 +44,36 @@ describe("locked AI AutoPilot Summit schedule", () => {
     expect(SUMMIT_DAY_2.dateYyyyMmDd).toBe("20260830");
     expect(SUMMIT_DAY_2.startHHmm).toBe("130000");
     expect(SUMMIT_DAY_2.endHHmm).toBe("160000");
+  });
+
+  it("opens real prefilled Google Calendar events in Eastern time", () => {
+    const day1 = new URL(buildGoogleCalendarUrl(SUMMIT_DAY_1));
+    const day2 = new URL(buildGoogleCalendarUrl(SUMMIT_DAY_2));
+
+    for (const url of [day1, day2]) {
+      expect(url.origin).toBe("https://calendar.google.com");
+      expect(url.pathname).toBe("/calendar/render");
+      expect(url.searchParams.get("action")).toBe("TEMPLATE");
+      expect(url.searchParams.get("ctz")).toBe("America/New_York");
+      expect(url.searchParams.get("location")).toContain("secure room link");
+      expect(url.searchParams.get("details")).toContain("Room opens at 12:45 PM Eastern");
+    }
+
+    expect(day1.searchParams.get("dates")).toBe("20260829T130000/20260829T160000");
+    expect(day2.searchParams.get("dates")).toBe("20260830T130000/20260830T160000");
+  });
+
+  it("keeps Apple and Outlook imports complete and private-link safe", () => {
+    for (const event of [SUMMIT_DAY_1, SUMMIT_DAY_2]) {
+      const ics = buildIcs(event);
+      expect(ics).toContain("BEGIN:VCALENDAR");
+      expect(ics).toContain("BEGIN:VEVENT");
+      expect(ics).toContain("TZID:America/New_York");
+      expect(ics).toContain(`LOCATION:${event.location.replace(/,/g, "\\,")}`);
+      expect(ics).toContain("TRIGGER:-PT15M");
+      expect(ics).not.toContain("zoom.us/");
+      expect(ics).not.toContain("meet.google.com/");
+    }
   });
 
   it("removes the rejected separate-day VIP Lab from active funnel files", () => {

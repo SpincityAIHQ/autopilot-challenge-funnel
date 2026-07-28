@@ -119,7 +119,7 @@ function NextSteps() {
           <li>· Keep every SpincityHQ order confirmation connected to your purchases.</li>
           <li>
             · Look for the NuAmenti welcome email from{" "}
-            <span className="text-foreground">Info@NuAmenti.com</span>.
+            <span className="text-foreground">Sebastian@spincityhq.com</span>.
           </li>
           <li>· Check Promotions and Spam if you do not see it.</li>
           <li>· Your emails and resources will match the highest ticket level you purchased.</li>
@@ -134,8 +134,8 @@ function NextSteps() {
           resources tied to the purchases confirmed for your email address. Do not share it.
         </p>
         <p className="mt-3 text-sm text-muted-foreground">
-          Missing your link? Email <span className="text-foreground">Info@NuAmenti.com</span> from
-          the same address you used to buy.
+          Missing your link? Email <span className="text-foreground">Sebastian@spincityhq.com</span>{" "}
+          from the same address you used to buy.
         </p>
         <p className="mt-3 text-sm text-muted-foreground">
           Change your email, text, or call choices on the{" "}
@@ -188,7 +188,7 @@ function getExitConfirmation(
       envKey: "VITE_SUMMIT_VIDEO_EXIT_INTENSIVE",
       eyebrow: "Verified · Full Summit Path + Strategy & Build Intensive",
       headline: "Thank you, family — your private Strategy & Build Intensive is confirmed.",
-      body: "You have the full Summit path, including the live sessions on August 29–30, the VIP builder toolkit, the Emerald Vault Key with the Secret Day 3 Vault Opener Class, and your private session. Our team will email you from Info@NuAmenti.com with the scheduling link.",
+      body: "You have the full Summit path, including the live sessions on August 29–30, the VIP builder toolkit, the Emerald Vault Key with the Secret Day 3 Vault Opener Class, and your private session. Our team will email you from Sebastian@spincityhq.com with the scheduling link.",
     };
   }
 

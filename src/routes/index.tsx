@@ -379,7 +379,7 @@ function Footer() {
   return (
     <footer className="border-t border-border py-10">
       <div className="mx-auto max-w-6xl px-5 text-xs text-muted-foreground">
-        <p>SpinCityHQ &amp; NuAmenti · SpincityHQ LLC · Atlanta, GA · Info@NuAmenti.com</p>
+        <p>SpinCityHQ &amp; NuAmenti · SpincityHQ LLC · Atlanta, GA · Sebastian@spincityhq.com</p>
         <div className="mt-3 flex flex-wrap gap-4">
           <Link to="/privacy" className="hover:text-foreground">
             Privacy

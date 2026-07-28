@@ -25,10 +25,10 @@ function Resources() {
         Verified access required
       </h1>
       <p className="mt-3 text-muted-foreground">
-        Every resource below unlocks only through a secure single-use link we
-        email you after verified payment. The link is single-use: after you open
-        it, we drop a private session cookie so you can browse everything you
-        actually own until it expires. Sharing a link never works twice.
+        Every resource below unlocks only through a secure single-use link we email you after
+        verified payment. The link is single-use: after you open it, we drop a private session
+        cookie so you can browse everything you actually own until it expires. Sharing a link never
+        works twice.
       </p>
 
       <ul className="mt-8 grid gap-3 sm:grid-cols-2">
@@ -49,8 +49,8 @@ function Resources() {
       </ul>
 
       <p className="mt-8 text-xs text-muted-foreground">
-        Missing your access email? Check Promotions and Spam, then write
-        Info@NuAmenti.com. Refunds revoke access immediately.
+        Missing your access email? Check Promotions and Spam, then write Sebastian@spincityhq.com.
+        Refunds revoke access immediately.
       </p>
     </main>
   );

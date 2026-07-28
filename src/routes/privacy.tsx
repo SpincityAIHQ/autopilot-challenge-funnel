@@ -64,14 +64,14 @@ function Privacy() {
         <h2 className="mt-6 font-heading text-base text-foreground">Your choices</h2>
         <p>
           You can revoke any communication channel at any time by resubmitting the preferences form
-          unchecked, replying STOP to a text, or writing Info@NuAmenti.com. Deletion requests for
-          personal data are handled by the same email.
+          unchecked, replying STOP to a text, or writing Sebastian@spincityhq.com. Deletion requests
+          for personal data are handled by the same email.
         </p>
 
         <p className="mt-8 text-xs">
           SpincityHQ LLC · Atlanta, GA ·{" "}
-          <a className="underline" href="mailto:Info@NuAmenti.com">
-            Info@NuAmenti.com
+          <a className="underline" href="mailto:Sebastian@spincityhq.com">
+            Sebastian@spincityhq.com
           </a>
           . No income, sales, or business-outcome guarantees are made. This notice is a pre-launch
           draft pending counsel review and will be replaced with the final version before public

@@ -74,7 +74,7 @@ Your next steps: [NEXT_STEPS_URL]
 
 Bring one business, skill, offer, or clear idea. Also bring the tasks that take too much time, your current prices, goals, and basic business numbers.
 
-Questions? Reply here or email Info@NuAmenti.com.
+Questions? Reply here or email Sebastian@spincityhq.com.
 
 — The NuAmenti Team
 

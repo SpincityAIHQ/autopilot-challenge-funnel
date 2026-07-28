@@ -88,7 +88,7 @@ const JSON_LD_EVENT = {
   organizer: {
     "@type": "Organization",
     name: "SpinCityHQ & NuAmenti",
-    email: "Info@NuAmenti.com",
+    email: "Sebastian@spincityhq.com",
   },
   subEvent: [
     {

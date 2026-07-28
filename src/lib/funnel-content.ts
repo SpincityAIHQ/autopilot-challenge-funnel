@@ -35,7 +35,7 @@ export const CONFIRMATION_CONTENT: Record<ConfirmationTier, ConfirmationContent>
       "Once verified, GA unlocks live online access to both Summit days, the Digital Summit Action Guide, AI Readiness Scorecard, Buyer + Offer Canvas, and live prompt drops.",
     nextSteps: [
       "Your FanBasis receipt confirms payment was received. Your official NuAmenti verification + access email is the authority for entry, links, and resources.",
-      "Watch inbox, Promotions, and Spam for both messages. Reply to Info@NuAmenti.com if the NuAmenti email doesn't arrive within a few hours.",
+      "Watch inbox, Promotions, and Spam for both messages. Reply to Sebastian@spincityhq.com if the NuAmenti email doesn't arrive within a few hours.",
       "Add Aug 24 and Aug 25 to your calendar with the buttons below.",
       "Bring one business, offer, or idea you're ready to map and build.",
       "Exact session start times are sent to registrants closer to the event.",
@@ -56,7 +56,7 @@ export const CONFIRMATION_CONTENT: Record<ConfirmationTier, ConfirmationContent>
       "Once verified, VIP includes everything in GA plus 30-day recordings, one live VIP Implementation Lab, priority Q&A, the VIP Proposal + Outreach Kit, and the VIP Resource Vault.",
     nextSteps: [
       "Your FanBasis receipt confirms payment was received. Your official NuAmenti verification + access email is the authority for entry, VIP Lab invite, and resources.",
-      "Watch inbox, Promotions, and Spam. Reply to Info@NuAmenti.com if the NuAmenti email doesn't arrive within a few hours.",
+      "Watch inbox, Promotions, and Spam. Reply to Sebastian@spincityhq.com if the NuAmenti email doesn't arrive within a few hours.",
       "Add Aug 24 and Aug 25 to your calendar with the buttons below.",
       "Priority Q&A submission link comes with your NuAmenti welcome pack.",
     ],
@@ -69,9 +69,7 @@ export const CONFIRMATION_CONTENT: Record<ConfirmationTier, ConfirmationContent>
   },
 };
 
-export function getConfirmationContent(
-  tier: ConfirmationTier | null,
-): ConfirmationContent | null {
+export function getConfirmationContent(tier: ConfirmationTier | null): ConfirmationContent | null {
   if (!tier) return null;
   return CONFIRMATION_CONTENT[tier];
 }

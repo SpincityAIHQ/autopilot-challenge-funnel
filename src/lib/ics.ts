@@ -33,9 +33,31 @@ export interface IcsDay {
   uid: string;
   summary: string;
   description: string;
+  location: string;
   dateYyyyMmDd: string;
   startHHmm: string;
   endHHmm: string;
+}
+
+const GOOGLE_CALENDAR_URL = "https://calendar.google.com/calendar/render";
+
+/**
+ * Opens Google's real event composer with the Summit session prefilled.
+ * The buyer still presses Save in Google Calendar; silently writing to a
+ * personal calendar would require account authorization.
+ */
+export function buildGoogleCalendarUrl(day: IcsDay): string {
+  const url = new URL(GOOGLE_CALENDAR_URL);
+  url.searchParams.set("action", "TEMPLATE");
+  url.searchParams.set("text", day.summary);
+  url.searchParams.set(
+    "dates",
+    `${day.dateYyyyMmDd}T${day.startHHmm}/${day.dateYyyyMmDd}T${day.endHHmm}`,
+  );
+  url.searchParams.set("details", day.description);
+  url.searchParams.set("location", day.location);
+  url.searchParams.set("ctz", "America/New_York");
+  return url.toString();
 }
 
 export function buildIcs(day: IcsDay): string {
@@ -57,6 +79,7 @@ export function buildIcs(day: IcsDay): string {
     `DTEND;TZID=America/New_York:${day.dateYyyyMmDd}T${day.endHHmm}`,
     `SUMMARY:${escapeText(day.summary)}`,
     `DESCRIPTION:${escapeText(day.description)}`,
+    `LOCATION:${escapeText(day.location)}`,
     "BEGIN:VALARM",
     "TRIGGER:-PT15M",
     "ACTION:DISPLAY",
@@ -71,7 +94,8 @@ export const SUMMIT_DAY_1: IcsDay = {
   uid: "ai-autopilot-summit-day-1-2026-08-29@spincityhq",
   summary: "AI AutoPilot Summit — Day 1: Build the Business Foundation",
   description:
-    "Live online. Room opens at 12:45 PM Eastern. From 1:00–4:00 PM Eastern we choose the niche and problem, map the customer, offer and business numbers, design the business infrastructure, plan the internal app and map an AI readiness blueprint. Use the secure room link in your NuAmenti email.",
+    "Live online. Room opens at 12:45 PM Eastern. From 1:00–4:00 PM Eastern we choose the niche and problem, map the customer, offer and business numbers, design the business infrastructure, plan the internal app and map an AI readiness blueprint. Use the secure room link in your email from Sebastian@spincityhq.com.",
+  location: "Online — secure room link arrives by email and text",
   dateYyyyMmDd: "20260829",
   startHHmm: "130000",
   endHHmm: "160000",
@@ -81,7 +105,8 @@ export const SUMMIT_DAY_2: IcsDay = {
   uid: "ai-autopilot-summit-day-2-2026-08-30@spincityhq",
   summary: "AI AutoPilot Summit — Day 2: Hire the AI Team",
   description:
-    "Live online. Room opens at 12:45 PM Eastern. From 1:00–4:00 PM Eastern we structure the AI agent team, connect workflows and improvement loops, and set up marketing, follow-up, sales and monetization. Use the secure room link in your NuAmenti email.",
+    "Live online. Room opens at 12:45 PM Eastern. From 1:00–4:00 PM Eastern we structure the AI agent team, connect workflows and improvement loops, and set up marketing, follow-up, sales and monetization. Use the secure room link in your email from Sebastian@spincityhq.com.",
+  location: "Online — secure room link arrives by email and text",
   dateYyyyMmDd: "20260830",
   startHHmm: "130000",
   endHHmm: "160000",

@@ -157,8 +157,8 @@ function VaultWelcomeContent() {
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
           Questions:{" "}
-          <a className="text-foreground underline" href="mailto:Info@NuAmenti.com">
-            Info@NuAmenti.com
+          <a className="text-foreground underline" href="mailto:Sebastian@spincityhq.com">
+            Sebastian@spincityhq.com
           </a>
         </p>
         <div className="mt-4 flex flex-wrap gap-3">

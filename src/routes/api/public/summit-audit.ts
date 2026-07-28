@@ -42,10 +42,7 @@ const bodySchema = z.object({
   revenue_stage: optionalStr(120),
   bottleneck: optionalStr(120),
   what_stops: optionalStr(2000),
-  ai_tools: z
-    .array(z.string().trim().min(1).max(60))
-    .max(20)
-    .optional(),
+  ai_tools: z.array(z.string().trim().min(1).max(60)).max(20).optional(),
   team_size: optionalStr(60),
   attendance: optionalStr(60),
   top_question: optionalStr(2000),
@@ -61,7 +58,7 @@ const NO_STORE = {
 };
 
 const NEUTRAL_NOT_FOUND_MESSAGE =
-  "We couldn't find a registration for that email. Use the link in your confirmation email, or contact Info@NuAmenti.com.";
+  "We couldn't find a registration for that email. Use the link in your confirmation email, or contact Sebastian@spincityhq.com.";
 
 function deriveTier(scopes: string[]): string | null {
   const s = new Set(scopes);
@@ -124,9 +121,7 @@ export const Route = createFileRoute("/api/public/summit-audit")({
           return okJson({ ok: true });
         }
 
-        const { supabaseAdmin } = await import(
-          "@/integrations/supabase/client.server"
-        );
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
         // Resolve email — session first, then entitlement match.
         let resolvedEmail: string | null = null;
@@ -136,10 +131,9 @@ export const Route = createFileRoute("/api/public/summit-audit")({
         const sessionToken = getCookie(SESSION_COOKIE);
         if (sessionToken && sessionToken.length >= 32) {
           const sessionHash = hashToken(sessionToken);
-          const { data: sess } = await supabaseAdmin.rpc(
-            "session_active_scopes",
-            { _session_hash: sessionHash },
-          );
+          const { data: sess } = await supabaseAdmin.rpc("session_active_scopes", {
+            _session_hash: sessionHash,
+          });
           const row = Array.isArray(sess) ? sess[0] : null;
           if (row?.buyer_email) {
             resolvedEmail = String(row.buyer_email).toLowerCase();
@@ -180,7 +174,7 @@ export const Route = createFileRoute("/api/public/summit-audit")({
           resolvedEmail = bodyEmail;
           verification = "entitlement_match";
           const scopes = ents.map((e) => e.product as string);
-          entitlementTier = deriveTier(scopes) ?? (reg?.tier ?? null);
+          entitlementTier = deriveTier(scopes) ?? reg?.tier ?? null;
         }
 
         const payload = {
@@ -205,7 +199,6 @@ export const Route = createFileRoute("/api/public/summit-audit")({
           // Types regenerate after the verification-column migration; cast
           // keeps this compiling in the interim.
           .upsert(payload as never, { onConflict: "email" });
-
 
         if (error) {
           return new Response("Server error", { status: 500, headers: NO_STORE });
