@@ -40,7 +40,7 @@ describe("video-first conversion order", () => {
   it("puts the landing VSL directly after the headline and the ticket button directly after the VSL", () => {
     const headline = LANDING.indexOf("PUT THE WORK ON AUTOPILOT");
     const video = LANDING.indexOf("<FunnelVideoSlot", headline);
-    const button = LANDING.indexOf("Get Your Ticket Now", video);
+    const button = LANDING.indexOf("Reserve My Seat", video);
     const supportingCopy = LANDING.indexOf("In two live days", button);
 
     expect(headline).toBeGreaterThan(-1);
@@ -51,7 +51,7 @@ describe("video-first conversion order", () => {
 
   it("puts the General Admission ticket button immediately after the checkout video", () => {
     const video = CHECKOUT.indexOf("<FunnelVideoSlot");
-    const button = CHECKOUT.indexOf("Get Your Ticket Now", video);
+    const button = CHECKOUT.indexOf("Reserve My Seat", video);
     const details = CHECKOUT.indexOf("How communication works", button);
     expect(video).toBeGreaterThan(-1);
     expect(button).toBeGreaterThan(video);

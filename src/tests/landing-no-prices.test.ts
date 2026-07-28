@@ -49,9 +49,9 @@ describe("landing page — no prices, no later-offer links", () => {
     }
   });
 
-  it("uses Get Your Ticket Now buttons to enter checkout", () => {
+  it("uses Reserve My Seat buttons to enter checkout", () => {
     expect(source.includes('to="/checkout"')).toBe(true);
-    const buttons = source.match(/>\s*Get Your Ticket Now\s*</g) ?? [];
+    const buttons = source.match(/>\s*Reserve My Seat\s*</g) ?? [];
     expect(buttons.length).toBeGreaterThanOrEqual(2);
     expect(source.match(/Get GA/)).toBeNull();
     expect(source.match(/Go VIP/)).toBeNull();
