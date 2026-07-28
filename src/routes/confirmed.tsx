@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { AuditCallout } from "@/components/AuditCallout";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 
@@ -9,7 +9,6 @@ import {
   useEntitlementSummary,
 } from "@/hooks/use-entitlement-summary";
 import { getCommasConfig } from "@/lib/challenge-config";
-import { formatUsd, UPSELLS } from "@/lib/tiers";
 
 export const Route = createFileRoute("/confirmed")({
   head: () => ({
