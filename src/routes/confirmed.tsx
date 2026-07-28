@@ -70,29 +70,49 @@ function Confirmed() {
         className="mt-7"
       />
 
+      <section className="mt-6 rounded-md border border-[color:var(--emerald-signal)]/40 bg-[color:var(--surface)] p-5 sm:p-6">
+        <h2 className="font-heading text-lg text-foreground">
+          What happens next
+        </h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          You're in. AI AutoPilot 2-Day Summit, August 29–30, 1:00–4:00 PM ET
+          both days. Room opens at 12:45.
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Your access link and calendar invite arrive within 24 hours.
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Questions:{" "}
+          <a
+            className="text-foreground underline"
+            href="mailto:Info@NuAmenti.com"
+          >
+            Info@NuAmenti.com
+          </a>
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <a
+            href="/calendar/day1.ics"
+            className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+          >
+            Add Day 1 to calendar
+          </a>
+          <a
+            href="/calendar/day2.ics"
+            className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+          >
+            Add Day 2 to calendar
+          </a>
+        </div>
+      </section>
+
       <AuditCallout />
-
-
-      {verifiedGaOnly ? <VipUpgradeNextStep /> : null}
-      {verifiedVipNoVault ? <VaultNextStep /> : null}
-
-      {!verifiedGaOnly && !verifiedVipNoVault ? (
-        <section className="mt-5 rounded-md border border-[color:var(--gold)]/60 bg-[color:var(--surface)] p-5">
-          <p className="font-heading text-foreground">
-            We are checking the exact ticket level tied to your secure session.
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Keep your FanBasis receipt and use the secure link in your NuAmenti
-            email. A page URL by itself never proves a purchase.
-          </p>
-        </section>
-      ) : null}
 
       <ProductThankYou
         verified={verifiedGaOnly}
         eyebrow="Verified · General Admission"
         headline="Thank you, family — your General Admission seat is confirmed."
-        body="You are set for both live days: Saturday, August 29 and Sunday, August 30 from 1:00–4:00 PM Eastern. Your ticket stays complete whether you add VIP or not."
+        body="You are set for both live days: Saturday, August 29 and Sunday, August 30 from 1:00–4:00 PM Eastern."
         videoUrl={null}
         videoLabel="General Admission welcome"
       />
@@ -105,28 +125,6 @@ function Confirmed() {
         videoUrl={null}
         videoLabel="VIP welcome"
       />
-
-      <section className="mt-8 surface-raised p-6">
-        <h2 className="font-heading text-lg text-foreground">Save the dates</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Both Summit days run live online from 1:00–4:00 PM Eastern. The room
-          opens at 12:45 PM Eastern.
-        </p>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          <a
-            href="/calendar/day1.ics"
-            className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-3 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
-          >
-            Day 1 · Sat Aug 29
-          </a>
-          <a
-            href="/calendar/day2.ics"
-            className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-3 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
-          >
-            Day 2 · Sun Aug 30
-          </a>
-        </div>
-      </section>
 
       <section className="mt-8 surface p-6">
         <h2 className="font-heading text-lg text-foreground">
@@ -153,54 +151,3 @@ function Confirmed() {
   );
 }
 
-function VipUpgradeNextStep() {
-  const vip = UPSELLS.vip_upgrade;
-
-  return (
-    <section className="mt-5 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-4 sm:p-5">
-      <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
-        <Link
-          to="/offer/vip-upgrade"
-          className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
-        >
-          Add VIP · {formatUsd(vip.priceCents)}
-        </Link>
-        <Link
-          to="/next-steps"
-          className="inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary sm:w-auto"
-        >
-          No thanks
-        </Link>
-      </div>
-      <p className="mt-3 text-center text-xs text-muted-foreground">
-        Your General Admission ticket remains active either way.
-      </p>
-    </section>
-  );
-}
-
-function VaultNextStep() {
-  const vault = UPSELLS.vault;
-
-  return (
-    <section className="mt-5 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-4 sm:p-5">
-      <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
-        <Link
-          to="/offer/implementation-vault"
-          className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
-        >
-          Add the Vault · {formatUsd(vault.priceCents)}
-        </Link>
-        <Link
-          to="/next-steps"
-          className="inline-flex w-full items-center justify-center rounded-md border border-border px-4 py-3 text-sm text-foreground hover:bg-secondary sm:w-auto"
-        >
-          No thanks
-        </Link>
-      </div>
-      <p className="mt-3 text-center text-xs text-muted-foreground">
-        Your VIP access remains active either way.
-      </p>
-    </section>
-  );
-}
