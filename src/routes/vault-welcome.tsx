@@ -1,0 +1,181 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { AuditCallout } from "@/components/AuditCallout";
+import { getCommasConfig } from "@/lib/challenge-config";
+import { useIntensiveSlotsRemaining } from "@/hooks/use-intensive-slots";
+
+export const Route = createFileRoute("/vault-welcome")({
+  head: () => ({
+    meta: [
+      { title: "Welcome — AI AutoPilot 2-Day Summit" },
+      { name: "robots", content: "noindex" },
+      {
+        name: "description",
+        content: "Your purchase is confirmed. Next steps inside.",
+      },
+    ],
+    links: [{ rel: "canonical", href: "/vault-welcome" }],
+  }),
+  component: VaultWelcome,
+});
+
+function VaultWelcome() {
+  const cfg = getCommasConfig();
+  const slots = useIntensiveSlotsRemaining();
+  const intensiveUrl = cfg.urls.intensive;
+
+  const seatLine =
+    slots.status === "ok"
+      ? `${slots.remaining} of 10 seats remaining`
+      : "Limited seats";
+
+  return (
+    <main className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
+      <p className="eyebrow">Thank you, family</p>
+      <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
+        Your Implementation Vault is confirmed.
+      </h1>
+
+      {/* Section A — Vault confirmed */}
+      <section className="mt-8 surface p-6">
+        <h2 className="font-heading text-lg text-foreground">
+          What you unlocked
+        </h2>
+        <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+          <li>
+            · <span className="text-foreground">MVP App Builder</span> — access
+            arrives within 24 hours.
+          </li>
+          <li>
+            · <span className="text-foreground">AI Business GPS</span> —
+            arrives within 24 hours.
+          </li>
+          <li>
+            ·{" "}
+            <span className="text-foreground">
+              NuAmenti 3 Gold access — 90 days
+            </span>{" "}
+            — arrives within 24 hours.
+          </li>
+          <li>
+            ·{" "}
+            <span className="text-foreground">
+              Full NuAmenti 3 Day recording
+            </span>{" "}
+            — arrives within 24 hours.
+          </li>
+        </ul>
+      </section>
+
+      {/* Section B — THE REVEAL */}
+      <section className="mt-8 rounded-lg border-2 border-[color:var(--gold)] bg-[color:var(--surface)] p-6 shadow-[0_0_40px_rgba(212,175,55,0.15)] sm:p-8">
+        <p
+          className="font-mono text-xs uppercase tracking-[0.2em]"
+          style={{ color: "var(--gold)" }}
+        >
+          The Reveal
+        </p>
+        <h2
+          className="mt-3 font-display text-2xl sm:text-3xl"
+          style={{ color: "var(--gold)" }}
+        >
+          YOU DIDN'T BUY THIS
+        </h2>
+        <p className="mt-4 font-heading text-lg text-foreground">
+          Open The Vault with Spin — Monday, August 31 · 2 hours
+        </p>
+        <p className="mt-3 text-sm text-muted-foreground">
+          It wasn't on any page. The day after we finish, I'm walking you
+          through all of it — how to run it, not just own it.
+        </p>
+        <div className="mt-5">
+          <a
+            href="/calendar/vault-with-spin.ics"
+            className="inline-flex items-center rounded-md border border-[color:var(--gold)] px-5 py-2.5 font-heading text-sm font-semibold hover:opacity-90"
+            style={{ color: "var(--gold)" }}
+          >
+            Add to my calendar
+          </a>
+        </div>
+      </section>
+
+      {/* Section C — Strategy & Build Intensive */}
+      <section className="mt-8 surface p-6">
+        <p className="eyebrow">Optional next step</p>
+        <h2 className="mt-2 font-display text-2xl text-foreground">
+          Private Strategy &amp; Build Intensive — $1,000
+        </h2>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Two hours, private, one bottleneck, one working asset.
+        </p>
+        <p className="mt-2 font-mono text-xs uppercase tracking-[0.15em] text-[color:var(--emerald-signal)]">
+          {seatLine}
+        </p>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Your $1,000 credits toward the AI AutoPilot Accelerator.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          {intensiveUrl ? (
+            <a
+              href={intensiveUrl}
+              className="inline-flex items-center rounded-md bg-primary px-5 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+            >
+              Claim my Intensive seat
+            </a>
+          ) : (
+            <button
+              disabled
+              className="inline-flex cursor-not-allowed items-center rounded-md bg-muted px-5 py-2.5 font-heading text-sm font-semibold text-muted-foreground"
+            >
+              Booking opens soon
+            </button>
+          )}
+          <Link
+            to="/welcome"
+            className="inline-flex items-center rounded-md border border-border px-5 py-2.5 font-heading text-sm text-foreground hover:bg-muted"
+          >
+            No thanks — take me to my resources
+          </Link>
+        </div>
+      </section>
+
+      {/* Section D — What happens next */}
+      <section className="mt-8 rounded-md border border-[color:var(--emerald-signal)]/40 bg-[color:var(--surface)] p-5 sm:p-6">
+        <h2 className="font-heading text-lg text-foreground">
+          What happens next
+        </h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          You're in. AI AutoPilot 2-Day Summit, August 29–30, 1:00–4:00 PM ET
+          both days. Room opens at 12:45.
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Your access link and calendar invite arrive within 24 hours.
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Questions:{" "}
+          <a
+            className="text-foreground underline"
+            href="mailto:Info@NuAmenti.com"
+          >
+            Info@NuAmenti.com
+          </a>
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <a
+            href="/calendar/day1.ics"
+            className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+          >
+            Add Day 1 to calendar
+          </a>
+          <a
+            href="/calendar/day2.ics"
+            className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
+          >
+            Add Day 2 to calendar
+          </a>
+        </div>
+      </section>
+
+      <AuditCallout />
+    </main>
+  );
+}
