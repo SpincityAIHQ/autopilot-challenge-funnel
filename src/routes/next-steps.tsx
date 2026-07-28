@@ -83,6 +83,9 @@ function NextSteps() {
         <VerificationNotice status={summary.status} />
       )}
 
+      <AuditCallout />
+
+
       <section className="mt-10 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">Save the dates</h2>
         <p className="mt-2 text-sm text-muted-foreground">

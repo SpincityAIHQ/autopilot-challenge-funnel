@@ -69,6 +69,9 @@ function Confirmed() {
         className="mt-7"
       />
 
+      <AuditCallout />
+
+
       {verifiedGaOnly ? <VipUpgradeNextStep /> : null}
       {verifiedVipNoVault ? <VaultNextStep /> : null}
 
