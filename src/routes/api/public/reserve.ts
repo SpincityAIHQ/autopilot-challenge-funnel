@@ -73,7 +73,7 @@ export const Route = createFileRoute("/api/public/reserve")({
               token: candidate,
               first_name,
               email: email.toLowerCase(),
-              phone,
+              phone: phone.replace(/\s+/g, " ").trim(),
               tier_reserved: "ga",
               settled: false,
             });

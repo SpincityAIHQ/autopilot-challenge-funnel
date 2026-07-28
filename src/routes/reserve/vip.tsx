@@ -1,7 +1,9 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
+import { applyReserveNoStoreHeaders } from "@/lib/reserve-headers";
 import { ReserveFrame } from "@/components/reserve/ReserveFrame";
+import { RevealOnView } from "@/components/reserve/RevealOnView";
 import { isValidReservationToken } from "@/lib/reservation-token";
 import { getReservationByToken } from "@/lib/reservation.functions";
 import { resolveReserveCheckoutUrl } from "@/lib/reserve-checkout";
@@ -15,9 +17,9 @@ export const Route = createFileRoute("/reserve/vip")({
       { title: "Your reservation — AI AutoPilot 2-Day Summit" },
       { name: "description", content: "Complete or upgrade your Summit reservation." },
       { name: "robots", content: "noindex, nofollow" },
-      { httpEquiv: "Cache-Control", content: "private, no-store" },
     ],
   }),
+  beforeLoad: () => { applyReserveNoStoreHeaders(); },
   loaderDeps: ({ search }) => ({ t: search.t }),
   loader: async ({ deps }) => {
     if (!deps.t || !isValidReservationToken(deps.t)) {
@@ -63,70 +65,73 @@ function ReserveVipPage() {
   return (
     <ReserveFrame>
       <main className="mx-auto max-w-3xl px-5 py-14 sm:py-24">
-        <p className="reserve-eyebrow reserve-gold-text text-center">
-          Your seat is held
-        </p>
-        <h1 className="mt-3 text-center reserve-display reserve-gold-text text-3xl sm:text-[42px] leading-tight">
-          General Admission · Reserved
-        </h1>
-        <p className="mt-4 text-center text-base sm:text-lg">
-          {first_name ? `${first_name}, ` : ""}your seat for August 29–30 is under your name.
-          Nothing has been charged.
-        </p>
+        <RevealOnView delayMs={0}>
+          <p className="reserve-eyebrow reserve-eyebrow--centered reserve-gold-text text-center">
+            Your seat is held
+          </p>
+          <h1 className="mt-3 text-center reserve-display reserve-gold-text text-3xl sm:text-[42px] leading-tight">
+            General Admission · Reserved
+          </h1>
+          <p className="mt-4 text-center reserve-body-lg">
+            {first_name ? `${first_name}, ` : ""}your seat for August 29-30 is under your name.
+            Nothing has been charged.
+          </p>
+        </RevealOnView>
 
-        <div className="mt-12 sm:mt-16 space-y-8 sm:space-y-10">
+        <div className="mt-12 sm:mt-16 space-y-12">
           {/* CARD A */}
-          <section className="reserve-card p-6 sm:p-8">
-            <p className="reserve-eyebrow reserve-gold-text">Complete your reservation</p>
-            <p className="mt-3 reserve-mono-price text-[34px]" style={{ color: "#30D68B" }}>
-              $22
-            </p>
-            <p className="mt-2 text-sm opacity-80">
-              Two-day live Summit access. Nothing else added.
-            </p>
-            <a
-              href={gaUrl ?? "#"}
-              aria-disabled={!gaUrl}
-              onClick={(e) => { if (!gaUrl) e.preventDefault(); }}
-              className={`mt-6 block w-full text-center rounded-xl py-4 text-base sm:text-lg reserve-gold-btn ${!gaUrl ? "pointer-events-none opacity-50" : ""}`}
-            >
-              Spend $22 Now
-            </a>
-            {!gaUrl ? (
-              <p className="mt-3 text-xs opacity-70">Checkout is being configured. Please try again shortly.</p>
-            ) : null}
-          </section>
+          <RevealOnView delayMs={80}>
+            <section className="reserve-card p-6 sm:p-8">
+              <p className="reserve-eyebrow reserve-gold-text">Complete your reservation</p>
+              <p className="mt-3 reserve-mono-price text-[34px]">$22</p>
+              <a
+                href={gaUrl ?? "#"}
+                aria-disabled={!gaUrl}
+                onClick={(e) => { if (!gaUrl) e.preventDefault(); }}
+                className={`mt-6 block w-full text-center rounded-xl py-4 reserve-body-lg reserve-gold-btn ${!gaUrl ? "pointer-events-none opacity-50" : ""}`}
+              >
+                Spend $22 Now
+              </a>
+              {!gaUrl ? (
+                <p className="mt-3 reserve-note-15" style={{ opacity: 0.7 }}>
+                  Checkout is being configured. Please try again shortly.
+                </p>
+              ) : null}
+            </section>
+          </RevealOnView>
 
           <div className="flex items-center gap-4">
             <div className="reserve-hairline flex-1" />
-            <span className="reserve-eyebrow reserve-gold-text">or</span>
+            <span className="reserve-eyebrow reserve-gold-text" style={{ paddingTop: 0 }}>or</span>
             <div className="reserve-hairline flex-1" />
           </div>
 
           {/* CARD B */}
-          <section className="reserve-card reserve-card--emerald p-6 sm:p-8">
-            <p className="reserve-eyebrow" style={{ color: "#30D68B" }}>Upgrade to VIP</p>
-            <p className="mt-3 reserve-mono-price text-[44px]" style={{ color: "#30D68B" }}>
-              $99 Total
-            </p>
-            <ul className="mt-5 space-y-2 text-base sm:text-lg">
-              <li>• All six build workbooks</li>
-              <li>• Two hours with me after each day</li>
-              <li>• 30 days of recordings</li>
-            </ul>
-            <p className="mt-4" style={{ fontSize: "15px", opacity: 0.7 }}>
-              You're holding $22. VIP adds $77.
-            </p>
-            {error ? <p role="alert" className="mt-3 text-sm text-red-300">{error}</p> : null}
-            <button
-              type="button"
-              onClick={upgrade}
-              disabled={busy || tier === "ga_vip_vault"}
-              className="reserve-emerald-btn mt-6 w-full rounded-xl py-4 text-base sm:text-lg"
-            >
-              {busy ? "Upgrading…" : "Upgrade My Reservation"}
-            </button>
-          </section>
+          <RevealOnView delayMs={160}>
+            <section className="reserve-card reserve-card--emerald p-6 sm:p-8">
+              <p className="reserve-eyebrow reserve-gold-text">Upgrade to VIP</p>
+              <p className="mt-3 reserve-mono-price text-[44px]">$99 Total</p>
+              <ul className="mt-5 space-y-2 reserve-body-lg">
+                <li>• All six build workbooks</li>
+                <li>• Two hours with me after each day</li>
+                <li>• 30 days of recordings</li>
+              </ul>
+              <p className="mt-4 reserve-note-15" style={{ opacity: 0.7 }}>
+                You're holding $22. VIP adds $77.
+              </p>
+              <div role="alert" aria-live="polite" className="min-h-[1.25rem] mt-3">
+                {error ? <p className="reserve-note-15" style={{ color: "#FFB4B4" }}>{error}</p> : null}
+              </div>
+              <button
+                type="button"
+                onClick={upgrade}
+                disabled={busy || tier === "ga_vip_vault"}
+                className="reserve-cta-primary mt-6 w-full rounded-xl py-4 reserve-body-lg"
+              >
+                {busy ? "Upgrading…" : "Upgrade My Reservation"}
+              </button>
+            </section>
+          </RevealOnView>
         </div>
       </main>
     </ReserveFrame>
