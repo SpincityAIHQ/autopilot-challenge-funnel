@@ -196,13 +196,16 @@ export const Route = createFileRoute("/api/public/summit-audit")({
           autonomy_goal: d.autonomy_goal ?? null,
           anything_else: d.anything_else ?? null,
           entitlement_tier: entitlementTier,
-          verification,
+          verification: verification ?? "entitlement_match",
           updated_at: new Date().toISOString(),
         };
 
         const { error } = await supabaseAdmin
           .from("summit_audit")
-          .upsert(payload, { onConflict: "email" });
+          // Types regenerate after the verification-column migration; cast
+          // keeps this compiling in the interim.
+          .upsert(payload as never, { onConflict: "email" });
+
 
         if (error) {
           return new Response("Server error", { status: 500, headers: NO_STORE });
