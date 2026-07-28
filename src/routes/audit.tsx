@@ -237,17 +237,56 @@ function AuditPage() {
       <ProgressBar percent={progress} />
 
       <form onSubmit={onSubmit} className="mt-8 space-y-8">
-        <Field label="1. Your email" required>
-          <input
-            type="email"
-            required
-            autoComplete="email"
-            value={form.email}
-            onChange={(e) => update("email", e.target.value)}
-            className="w-full rounded-md border border-border bg-[color:var(--surface)] px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-[color:var(--emerald-signal)] focus:outline-none focus:ring-1 focus:ring-[color:var(--emerald-signal)]"
-            placeholder="you@domain.com"
-          />
-        </Field>
+        {/* Honeypot — hidden from users, catches basic bots. */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            left: "-10000px",
+            width: 1,
+            height: 1,
+            overflow: "hidden",
+          }}
+        >
+          <label>
+            Website
+            <input
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={form.website}
+              onChange={(e) => update("website", e.target.value)}
+            />
+          </label>
+        </div>
+
+        {hasSession ? (
+          <Field label="1. Your email">
+            <div className="rounded-md border border-border bg-[color:var(--surface)] px-3 py-2.5 text-sm text-foreground">
+              {sessionEmail}
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Verified from your session — we'll attach your answers to this
+              address.
+            </p>
+          </Field>
+        ) : (
+          <Field label="1. Your email" required>
+            <input
+              type="email"
+              required
+              autoComplete="email"
+              value={form.email}
+              onChange={(e) => update("email", e.target.value)}
+              className="w-full rounded-md border border-border bg-[color:var(--surface)] px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-[color:var(--emerald-signal)] focus:outline-none focus:ring-1 focus:ring-[color:var(--emerald-signal)]"
+              placeholder="you@domain.com"
+            />
+            <p className="mt-1 text-xs text-muted-foreground">
+              Use the same email you registered with.
+            </p>
+          </Field>
+        )}
+
 
         <SelectField
           label="2. What best describes your business?"
