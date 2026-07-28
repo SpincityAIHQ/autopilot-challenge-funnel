@@ -7,11 +7,15 @@ import {
   extractPayment,
   extractPaymentIdForReversal,
   resolveProductFromItem,
+  resolveBundleFromItem,
+  BUNDLE_SCOPES,
+  expectedBundleTotalCents,
   redactEventPayload,
   expectedTotalCents,
   validateWebhookConfig,
   CANONICAL_FULFILLMENT_EVENT,
 } from "@/lib/webhook-helpers";
+
 
 /**
  * Commas webhook — AI AutoPilot Summit.
