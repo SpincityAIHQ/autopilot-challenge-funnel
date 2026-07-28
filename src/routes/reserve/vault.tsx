@@ -114,10 +114,7 @@ function ReserveVaultPage() {
           {/* CARD B — jewel treatment (Vault exception) */}
           <RevealOnView delayMs={160}>
             <section className="reserve-card--vault p-6 sm:p-8">
-              <p className="reserve-eyebrow reserve-gold-text">Become an Emerald Vault Key Holder</p>
-              <h2 className="mt-3 reserve-display reserve-jewel text-[26px] sm:text-[30px] leading-tight">
-                Emerald Vault
-              </h2>
+              <p className="reserve-eyebrow reserve-jewel">Become an Emerald Vault Key Holder</p>
               <p className="mt-3 reserve-mono-price text-[48px] reserve-jewel">
                 $298 Total
               </p>
