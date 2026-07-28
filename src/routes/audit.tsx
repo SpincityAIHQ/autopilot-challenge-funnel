@@ -117,12 +117,21 @@ const INITIAL: FormState = {
 
 
 function AuditPage() {
+  const summary = useEntitlementSummary();
+  const sessionEmail =
+    summary.status === "ok" && summary.email ? summary.email : null;
+  const hasSession = sessionEmail !== null;
+
   const [form, setForm] = useState<FormState>(INITIAL);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const progress = useMemo(() => computeProgress(form), [form]);
+  const progress = useMemo(
+    () => computeProgress(form, hasSession),
+    [form, hasSession],
+  );
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -139,7 +148,8 @@ function AuditPage() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    if (!form.email.trim()) {
+    setNotice(null);
+    if (!hasSession && !form.email.trim()) {
       setError("Your email is required so we can align the Summit for you.");
       return;
     }
@@ -150,7 +160,7 @@ function AuditPage() {
         credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: form.email.trim(),
+          email: hasSession ? undefined : form.email.trim() || undefined,
           business_type: form.business_type || undefined,
           revenue_stage: form.revenue_stage || undefined,
           bottleneck: form.bottleneck || undefined,
@@ -161,10 +171,21 @@ function AuditPage() {
           top_question: form.top_question || undefined,
           autonomy_goal: form.autonomy_goal || undefined,
           anything_else: form.anything_else || undefined,
+          website: form.website || undefined,
         }),
       });
       if (res.ok) {
-        setSubmitted(true);
+        const j = (await res.json().catch(() => ({}))) as {
+          ok?: boolean;
+          message?: string;
+          verification?: string;
+        };
+        if (j.message) {
+          // Neutral "no registration found" reply.
+          setNotice(j.message);
+        } else {
+          setSubmitted(true);
+        }
       } else if (res.status === 429) {
         setError("Too many submissions. Give it a minute and try again.");
       } else {
@@ -176,6 +197,7 @@ function AuditPage() {
       setSubmitting(false);
     }
   }
+
 
   if (submitted) {
     return (
