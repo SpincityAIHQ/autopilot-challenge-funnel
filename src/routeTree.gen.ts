@@ -23,6 +23,7 @@ import { Route as IntensiveRouteImport } from './routes/intensive'
 import { Route as ConfirmedRouteImport } from './routes/confirmed'
 import { Route as CommunicationPreferencesRouteImport } from './routes/communication-preferences'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as AuditRouteImport } from './routes/audit'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
 import { Route as OfferVipUpgradeRouteImport } from './routes/offer/vip-upgrade'
@@ -33,6 +34,7 @@ import { Route as OfferImplementationVaultRouteImport } from './routes/offer/imp
 import { Route as CalendarDay2DoticsRouteImport } from './routes/calendar.day2[.]ics'
 import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.]ics'
 import { Route as ApplyMentorshipRouteImport } from './routes/apply.mentorship'
+import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as ApiPublicSummitAuditRouteImport } from './routes/api/public/summit-audit'
 import { Route as ApiPublicMentorshipApplicationRouteImport } from './routes/api/public/mentorship-application'
 import { Route as ApiPublicKeynoteWaitlistRouteImport } from './routes/api/public/keynote-waitlist'
@@ -115,6 +117,11 @@ const CheckoutRoute = CheckoutRouteImport.update({
   path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuditRoute = AuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -164,6 +171,11 @@ const CalendarDay1DoticsRoute = CalendarDay1DoticsRouteImport.update({
 const ApplyMentorshipRoute = ApplyMentorshipRouteImport.update({
   id: '/apply/mentorship',
   path: '/apply/mentorship',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/admin/audit',
+  path: '/admin/audit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicSummitAuditRoute = ApiPublicSummitAuditRouteImport.update({
@@ -226,6 +238,7 @@ const ApiPublicAdminSummitAuditRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/audit': typeof AuditRoute
   '/checkout': typeof CheckoutRoute
   '/communication-preferences': typeof CommunicationPreferencesRoute
   '/confirmed': typeof ConfirmedRoute
@@ -240,6 +253,7 @@ export interface FileRoutesByFullPath {
   '/strategy-intensive': typeof StrategyIntensiveRoute
   '/terms': typeof TermsRoute
   '/vault': typeof VaultRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
@@ -262,6 +276,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/audit': typeof AuditRoute
   '/checkout': typeof CheckoutRoute
   '/communication-preferences': typeof CommunicationPreferencesRoute
   '/confirmed': typeof ConfirmedRoute
@@ -276,6 +291,7 @@ export interface FileRoutesByTo {
   '/strategy-intensive': typeof StrategyIntensiveRoute
   '/terms': typeof TermsRoute
   '/vault': typeof VaultRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
@@ -299,6 +315,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/audit': typeof AuditRoute
   '/checkout': typeof CheckoutRoute
   '/communication-preferences': typeof CommunicationPreferencesRoute
   '/confirmed': typeof ConfirmedRoute
@@ -313,6 +330,7 @@ export interface FileRoutesById {
   '/strategy-intensive': typeof StrategyIntensiveRoute
   '/terms': typeof TermsRoute
   '/vault': typeof VaultRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
@@ -337,6 +355,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/audit'
     | '/checkout'
     | '/communication-preferences'
     | '/confirmed'
@@ -351,6 +370,7 @@ export interface FileRouteTypes {
     | '/strategy-intensive'
     | '/terms'
     | '/vault'
+    | '/admin/audit'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
@@ -373,6 +393,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/audit'
     | '/checkout'
     | '/communication-preferences'
     | '/confirmed'
@@ -387,6 +408,7 @@ export interface FileRouteTypes {
     | '/strategy-intensive'
     | '/terms'
     | '/vault'
+    | '/admin/audit'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
@@ -409,6 +431,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/audit'
     | '/checkout'
     | '/communication-preferences'
     | '/confirmed'
@@ -423,6 +446,7 @@ export interface FileRouteTypes {
     | '/strategy-intensive'
     | '/terms'
     | '/vault'
+    | '/admin/audit'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
@@ -446,6 +470,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuditRoute: typeof AuditRoute
   CheckoutRoute: typeof CheckoutRoute
   CommunicationPreferencesRoute: typeof CommunicationPreferencesRoute
   ConfirmedRoute: typeof ConfirmedRoute
@@ -460,6 +485,7 @@ export interface RootRouteChildren {
   StrategyIntensiveRoute: typeof StrategyIntensiveRoute
   TermsRoute: typeof TermsRoute
   VaultRoute: typeof VaultRoute
+  AdminAuditRoute: typeof AdminAuditRoute
   ApplyMentorshipRoute: typeof ApplyMentorshipRoute
   CalendarDay1DoticsRoute: typeof CalendarDay1DoticsRoute
   CalendarDay2DoticsRoute: typeof CalendarDay2DoticsRoute
@@ -580,6 +606,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/audit': {
+      id: '/audit'
+      path: '/audit'
+      fullPath: '/audit'
+      preLoaderRoute: typeof AuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -648,6 +681,13 @@ declare module '@tanstack/react-router' {
       path: '/apply/mentorship'
       fullPath: '/apply/mentorship'
       preLoaderRoute: typeof ApplyMentorshipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/admin/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/summit-audit': {
@@ -737,6 +777,7 @@ const ResourcesRouteWithChildren = ResourcesRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuditRoute: AuditRoute,
   CheckoutRoute: CheckoutRoute,
   CommunicationPreferencesRoute: CommunicationPreferencesRoute,
   ConfirmedRoute: ConfirmedRoute,
@@ -751,6 +792,7 @@ const rootRouteChildren: RootRouteChildren = {
   StrategyIntensiveRoute: StrategyIntensiveRoute,
   TermsRoute: TermsRoute,
   VaultRoute: VaultRoute,
+  AdminAuditRoute: AdminAuditRoute,
   ApplyMentorshipRoute: ApplyMentorshipRoute,
   CalendarDay1DoticsRoute: CalendarDay1DoticsRoute,
   CalendarDay2DoticsRoute: CalendarDay2DoticsRoute,
