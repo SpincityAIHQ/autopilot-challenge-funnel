@@ -6,6 +6,7 @@
 - Day 2: Sunday, August 30, 2026 · 1:00–4:00 PM Eastern
 - Room opens: 12:45 PM Eastern both days
 - VIP Build Lab: Sunday, August 30, 2026 · 4:15–5:45 PM Eastern, immediately after Day 2
+- Secret Day 3 Vault Opener Class: Monday, August 31, 2026 · 1:00–3:00 PM Eastern, Emerald only
 
 Use plain language. Read naturally. Do not rush. Do not promise income.
 
@@ -49,9 +50,7 @@ You will create your Business Infrastructure Map so you can see the pages, apps,
 
 You will plan an internal business app.
 
-And you will set up your AI Business GPS.
-
-Your AI Business GPS tells your tools who you serve, what you sell, how the business works, what rules to follow, what numbers matter, and what should happen next.
+And you will organize the goals, rules, facts, numbers, and next steps your AI tools need.
 
 Day 2 is Sunday, August 30, from 1:00 to 4:00 PM Eastern.
 
@@ -83,7 +82,7 @@ There is no magic button here.
 
 We are building real infrastructure.
 
-You will leave with a Niche and Offer Map, a Business Infrastructure Map, an AI Business GPS, an AI Agent Team Chart, a starter internal app plan, a workflow and loop plan, and a clear 30-day build order.
+You will leave with a Niche and Offer Map, a Business Infrastructure Map, organized business inputs, an AI Agent Team Chart, a starter internal app plan, a workflow and loop plan, and a clear 30-day build order.
 
 The room opens at 12:45 PM Eastern both days.
 
@@ -113,7 +112,7 @@ The Summit is live Saturday, August 29 and Sunday, August 30 from 1:00 to 4:00 P
 
 Your General Admission ticket gives you both live days.
 
-On Day 1, we build your niche, offer, business numbers, infrastructure map, internal app plan, and AI Business GPS.
+On Day 1, we build your niche, offer, business numbers, infrastructure map, internal app plan, and the organized business inputs your AI tools need.
 
 On Day 2, we structure your AI agent team, workflows, loops, marketing, follow-up, and monetization.
 
@@ -147,7 +146,7 @@ Your General Admission ticket is complete by itself.
 
 You may also see the optional VIP Implementation Experience below.
 
-VIP is for people who want 30-day recordings, priority questions, deeper agent and workflow tools, and the live VIP Build Lab.
+VIP is for people who want 30-day recordings, priority questions, the MVP App Builder, AI Business GPS, Internal Agent Builder Skill, and one 90-minute VIP Build Lab.
 
 The VIP Build Lab starts Sunday at 4:15 PM Eastern, only 15 minutes after Day 2 ends. You stay in the flow and keep building while everything is fresh.
 
@@ -179,9 +178,15 @@ VIP adds 30-day access to the Summit recordings.
 
 It adds priority questions.
 
+It adds the MVP App Builder.
+
+It adds the AI Business GPS.
+
+It adds the Internal Agent Builder Skill.
+
 It adds the AI Agent Hiring and Workflow Kit.
 
-And it adds the live Build Lab where we work through real agent roles, app plans, workflows, loops, handoffs, and approval rules.
+And it adds one 90-minute live Build Lab, immediately after Day 2, where we work through real agent roles, app plans, workflows, loops, handoffs, and approval rules.
 
 VIP is an add-on. It does not replace General Admission.
 
@@ -191,7 +196,7 @@ When this level of support makes sense for you, add VIP below.
 
 ---
 
-## 5. VIP purchase video that introduces the Vault
+## 5. VIP purchase video that introduces the Emerald Vault Key
 
 **Video slot:** `VITE_SUMMIT_VIDEO_THANK_YOU_VIP`
 
@@ -199,39 +204,49 @@ Peace Family. Thank you for adding the VIP Implementation Experience.
 
 Your VIP access is confirmed.
 
-You now have both live Summit days, 30-day recordings, priority question access, the AI Agent Hiring and Workflow Kit, and the VIP Build Lab.
+You now have both live Summit days, 30-day recordings, priority question access, the MVP App Builder, the AI Business GPS, the Internal Agent Builder Skill, the AI Agent Hiring and Workflow Kit, and the VIP Build Lab.
 
-The Lab begins Sunday, August 30 at 4:15 PM Eastern, right after the main Summit ends.
+The single 90-minute Lab begins Sunday, August 30 at 4:15 PM Eastern, right after the main Summit ends, and runs until 5:45 PM.
 
-The next option on this page is the AI AutoPilot Implementation Vault.
+The next option on this page is the Emerald Vault Key.
 
-VIP gives you deeper access and live support.
+VIP already includes your builders, business GPS, agent skill, recordings, priority questions, and the live Build Lab.
 
-The Vault gives you reusable operating assets.
+The Emerald Vault Key adds my time.
 
-Inside the Vault, you receive editable maps, agent job sheets, internal app plans, workflow templates, loop builders, business math tools, marketing systems, and implementation guides.
+It unlocks the private, unlisted Secret Day 3 Vault Opener Class with Spin on Monday, August 31 from 1:00 to 3:00 PM Eastern.
 
-The goal is to stop rebuilding every system from a blank page.
+That is two additional live hours to open the system, connect it to your business, and work through your implementation questions with me.
 
-The Vault does not replace VIP.
+Emerald also includes 30 days of NuAmenti 3 Gold beginning August 10 and the full NuAmenti 3 Day recording.
 
-Your VIP access stays active whether you add the Vault or not.
+Your private Day 3 room details arrive by email and text after purchase.
+
+The Emerald Vault Key does not replace VIP.
+
+Your VIP access stays active whether you add Emerald or not.
 
 Review what is included below and choose the level that fits the way you want to build.
 
 ---
 
-## 6. Vault purchase video that introduces the private Intensive
+## 6. Emerald Vault Key purchase video that introduces the private Intensive
 
 **Video slot:** `VITE_SUMMIT_VIDEO_THANK_YOU_VAULT`
 
-Peace Family. Thank you for adding the AI AutoPilot Implementation Vault.
+Peace Family. Thank you for adding the Emerald Vault Key.
 
-Your Vault access is confirmed.
+Your Emerald access is confirmed.
 
-You now have the maps, agent job sheets, app-planning tools, workflow templates, business math resources, marketing systems, and implementation guides designed to help you keep building.
+You have everything in General Admission and VIP.
 
-The Vault gives you the operating assets.
+You also have the Secret Day 3 Vault Opener Class with me on Monday, August 31 from 1:00 to 3:00 PM Eastern.
+
+Those are two additional live implementation hours to open the system, connect it to your business, and work through your questions.
+
+Your private room details arrive by email and text after purchase.
+
+You also receive 30 days of NuAmenti 3 Gold beginning August 10 and the full NuAmenti 3 Day recording.
 
 The final optional step is a private Strategy and Build Intensive with me.
 
@@ -247,7 +262,7 @@ There are only ten private sessions because I am personally involved in each one
 
 The seat count shown on this page is the real count.
 
-Your Summit, VIP, and Vault access stay active whether you book the private session or not.
+Your Summit, VIP, and Emerald access stay active whether you book the private session or not.
 
 Review the details below and reserve a seat only when that level of support fits your business.
 
@@ -279,25 +294,29 @@ Thank you for trusting SpinCityHQ and NuAmenti. I will see you inside.
 
 Peace Family. You are all set with General Admission and VIP.
 
-You have both live Summit days, 30-day recordings, priority questions, the AI Agent Hiring and Workflow Kit, and the VIP Build Lab.
+You have both live Summit days, 30-day recordings, priority questions, the MVP App Builder, the AI Business GPS, the Internal Agent Builder Skill, the AI Agent Hiring and Workflow Kit, and the VIP Build Lab.
 
-The VIP Lab starts Sunday, August 30 at 4:15 PM Eastern, 15 minutes after Day 2 ends, and runs until 5:45 PM.
+Your single 90-minute VIP Build Lab starts Sunday, August 30 at 4:15 PM Eastern, 15 minutes after Day 2 ends, and runs until 5:45 PM.
 
 Watch your NuAmenti email for your calendar links, private room link, VIP access, and preparation steps.
 
 Thank you, Family. I will see you at the Summit and in the VIP Lab.
 
-## 7C. Vault final confirmation
+## 7C. Emerald Vault Key final confirmation
 
 **Video slot:** `VITE_SUMMIT_VIDEO_EXIT_VAULT`
 
-Peace Family. You are all set with the Summit, VIP, and the AI AutoPilot Implementation Vault.
+Peace Family. You are all set with the Summit, VIP, and the Emerald Vault Key.
 
-You have both live days, the VIP Build Lab right after Day 2, the recordings, priority questions, deeper implementation support, and the reusable Vault assets.
+You have both live days, 30-day recordings, priority questions, the MVP App Builder, the AI Business GPS, the Internal Agent Builder Skill, and the single 90-minute VIP Build Lab right after Day 2.
 
-Your NuAmenti email will include the private event links and the secure route to your maps, agent sheets, app plans, workflows, loops, and marketing tools.
+Emerald adds the Secret Day 3 Vault Opener Class with Spin on Monday, August 31 from 1:00 to 3:00 PM Eastern, giving you two additional live implementation hours.
 
-Thank you for trusting us with the full implementation path.
+It also adds 30 days of NuAmenti 3 Gold beginning August 10 and the full NuAmenti 3 Day recording.
+
+Your private Day 3 room details arrive by email and text after purchase.
+
+Thank you for trusting us with the complete Summit experience.
 
 ## 7D. Full-path Intensive confirmation
 
@@ -305,7 +324,9 @@ Thank you for trusting us with the full implementation path.
 
 Peace Family. Thank you for completing the full AI AutoPilot Summit path.
 
-You now have General Admission, VIP, the Implementation Vault, and the private Strategy and Build Intensive.
+You now have General Admission, VIP, the Emerald Vault Key, and the private Strategy and Build Intensive.
+
+That includes the MVP App Builder, AI Business GPS, Internal Agent Builder Skill, 30-day Summit recordings, priority questions, the single 90-minute VIP Build Lab, the Secret Day 3 Vault Opener Class with Spin, two additional live hours, 30 days of NuAmenti 3 Gold beginning August 10, and the full NuAmenti 3 Day recording.
 
 There is no additional offer on this page.
 
@@ -331,7 +352,7 @@ Your General Admission ticket is complete. You have the maps, the business found
 
 For the people who want to keep going while this is still fresh, the VIP Build Lab starts at 4:15 PM Eastern.
 
-VIP gives you 30-day recordings, priority questions, the AI Agent Hiring and Workflow Kit, and the live Lab from 4:15 to 5:45.
+VIP gives you 30-day recordings, priority questions, the MVP App Builder, the AI Business GPS, the Internal Agent Builder Skill, the AI Agent Hiring and Workflow Kit, and one 90-minute live Build Lab from 4:15 to 5:45.
 
 We will take a 15-minute break. The VIP link is in the chat, your email, and your text messages if you opted in.
 
@@ -339,16 +360,18 @@ Add VIP if you want to stay and build deeper.
 
 If you are complete with General Admission, thank you. Use your next-steps page and follow the 30-day order.
 
-## VIP Lab Vault close — about 5:25 PM Eastern
+## VIP Lab Emerald close — about 5:25 PM Eastern
 
-Family, VIP gave you the deeper room, recordings, questions, and implementation time.
+Family, VIP gave you the MVP App Builder, AI Business GPS, Internal Agent Builder Skill, recordings, priority questions, and this 90-minute implementation Lab.
 
-The next option is for the person who wants the reusable operating library.
+The next option is for the person who wants more live time with me.
 
-The AI AutoPilot Implementation Vault includes the editable maps, agent job sheets, app plans, workflow templates, loop builders, business math tools, marketing systems, and implementation guides.
+The Emerald Vault Key unlocks the private, unlisted Secret Day 3 Vault Opener Class with Spin on Monday, August 31 from 1:00 to 3:00 PM Eastern.
+
+That gives you two additional live hours to open the system, connect it to your business, and work through your implementation questions.
+
+Emerald also includes 30 days of NuAmenti 3 Gold beginning August 10 and the full NuAmenti 3 Day recording.
 
 VIP is still complete without it.
 
-The Vault is for the person who does not want to rebuild the system from a blank page.
-
-The link is in the VIP chat. When you add the Vault, the next page will also show the limited private Strategy and Build Intensive.
+The Emerald link is in the VIP chat. After purchase, your private Day 3 room details arrive by email and text, and the next page will also show the limited private Strategy and Build Intensive.

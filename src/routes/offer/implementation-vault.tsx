@@ -4,22 +4,18 @@ import { OfferGate } from "@/components/OfferGate";
 import { ProductThankYou } from "@/components/ProductThankYou";
 import { TestimonialSection } from "@/components/TestimonialSection";
 import { useQaReviewMode } from "@/hooks/use-qa-review";
-import {
-  getCommasConfig,
-  isHandoffAllowed,
-  resolveCheckoutUrl,
-} from "@/lib/challenge-config";
+import { getCommasConfig, isHandoffAllowed, resolveCheckoutUrl } from "@/lib/challenge-config";
 import { formatUsd, UPSELLS } from "@/lib/tiers";
 
 export const Route = createFileRoute("/offer/implementation-vault")({
   head: () => ({
     meta: [
-      { title: "Implementation Vault — AI AutoPilot 2-Day Summit" },
+      { title: "Emerald Vault Key — AI AutoPilot 2-Day Summit" },
       { name: "robots", content: "noindex" },
       {
         name: "description",
         content:
-          "Add reusable AI business maps, agent job sheets, app plans, workflows, loops, and marketing tools.",
+          "Add the private Day 3 Vault Opener Class and two additional live implementation hours with Spin.",
       },
       { property: "og:url", content: "/offer/implementation-vault" },
     ],
@@ -33,12 +29,12 @@ function VaultRoute() {
     <main className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
       <p className="eyebrow">Optional next step</p>
       <h1 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
-        Keep building with the Implementation Vault
+        Unlock the Emerald Vault Key
       </h1>
 
       <OfferGate
         predicate={(access) => access.hasVip && !access.hasVault}
-        ineligibleMessage="This option is only for confirmed VIP buyers who have not added the Implementation Vault. Open the secure link in your NuAmenti email on the same browser."
+        ineligibleMessage="This option is only for confirmed VIP buyers who have not added the Emerald Vault Key. Open the secure link in your NuAmenti email on the same browser."
       >
         <VaultContent />
       </OfferGate>
@@ -58,7 +54,7 @@ function VaultContent() {
       href="/strategy-intensive?qaStage=vault"
       className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
     >
-      Add the Vault · Preview, No Payment
+      Add the Emerald Vault Key · Preview, No Payment
     </a>
   ) : salesOn && checkoutUrl ? (
     <a
@@ -66,7 +62,7 @@ function VaultContent() {
       rel="noopener noreferrer"
       className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
     >
-      Add the Vault · {formatUsd(vault.priceCents)}
+      Add the Emerald Vault Key · {formatUsd(vault.priceCents)}
     </a>
   ) : (
     <button
@@ -74,7 +70,7 @@ function VaultContent() {
       disabled
       className="inline-flex w-full cursor-not-allowed items-center justify-center rounded-md bg-muted px-5 py-3.5 font-heading text-base font-semibold text-muted-foreground"
     >
-      Vault Checkout Link Being Connected
+      Emerald Checkout Link Being Connected
     </button>
   );
 
@@ -106,7 +102,7 @@ function VaultContent() {
         verified={true}
         eyebrow="Verified · VIP Implementation Experience"
         headline="Thank you, family — your VIP access is confirmed."
-        body="You now have recordings, the VIP Build Lab, priority questions, and deeper agent and workflow tools. The Vault is an optional library you can keep using after the live event."
+        body="You now have recordings, the VIP Build Lab, the MVP App Builder, AI Business GPS, and Internal Agent Builder Skill. The Emerald Vault Key is your optional path to a private Day 3 with Spin."
         videoUrl={null}
         videoLabel="VIP welcome"
         className="mt-6 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-6"
@@ -122,7 +118,7 @@ function VaultContent() {
 
       <section className="mt-8 surface p-6">
         <h3 className="font-heading text-lg text-foreground">
-          What you already have and what the Vault adds
+          What you already have and what Emerald adds
         </h3>
         <div className="mt-4 grid gap-5 sm:grid-cols-2">
           <div>
@@ -132,13 +128,14 @@ function VaultContent() {
               <li>· 30-day session recordings</li>
               <li>· VIP Build Lab</li>
               <li>· Priority questions</li>
+              <li>· MVP App Builder</li>
+              <li>· AI Business GPS</li>
+              <li>· Internal Agent Builder Skill</li>
               <li>· AI Agent Hiring + Workflow Kit</li>
             </ul>
           </div>
           <div>
-            <p className="label-mono text-[color:var(--gold)]">
-              The Vault adds
-            </p>
+            <p className="label-mono text-[color:var(--gold)]">Emerald adds</p>
             <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
               {vault.bullets.map((bullet) => (
                 <li key={bullet}>· {bullet}</li>
@@ -150,8 +147,8 @@ function VaultContent() {
 
       <TestimonialSection
         page="vault"
-        eyebrow="From Vault users"
-        heading="What people built with the Vault"
+        eyebrow="From Emerald Key Holders"
+        heading="What deeper access made possible"
       />
     </>
   );

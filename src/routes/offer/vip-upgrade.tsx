@@ -3,11 +3,7 @@ import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { OfferGate } from "@/components/OfferGate";
 import { TestimonialSection } from "@/components/TestimonialSection";
 import { useQaReviewMode } from "@/hooks/use-qa-review";
-import {
-  getCommasConfig,
-  isHandoffAllowed,
-  resolveCheckoutUrl,
-} from "@/lib/challenge-config";
+import { getCommasConfig, isHandoffAllowed, resolveCheckoutUrl } from "@/lib/challenge-config";
 import { formatUsd, UPSELLS } from "@/lib/tiers";
 
 const product = "vip_upgrade" as const;
@@ -20,7 +16,7 @@ export const Route = createFileRoute("/offer/vip-upgrade")({
       {
         name: "description",
         content:
-          "Add recordings, the live VIP Build Lab, priority questions, and deeper AI agent and workflow tools.",
+          "Add recordings, the live VIP Build Lab, the MVP App Builder, AI Business GPS, and Internal Agent Builder Skill.",
       },
       { property: "og:url", content: "/offer/vip-upgrade" },
     ],
@@ -124,7 +120,6 @@ function VipUpgradeContent() {
               <li>· Both live Summit days</li>
               <li>· Niche + Offer Map</li>
               <li>· Business Infrastructure Map</li>
-              <li>· AI Business GPS workbook</li>
               <li>· AI Agent Team Chart</li>
             </ul>
           </div>

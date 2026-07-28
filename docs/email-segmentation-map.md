@@ -32,12 +32,12 @@ Purchase-history tags stay active. Only one `CURRENT` tag stays active.
 
 ## Verified purchase mapping
 
-| Verified product | SUMMITLVL | Active purchase tags | Active current tag |
-|---|---|---|---|
-| General Admission | `GA` | BUYER + GA | CURRENT · GA |
-| VIP upgrade | `VIP` | BUYER + GA + VIP | CURRENT · VIP |
-| Implementation Vault | `VAULT` | BUYER + GA + VIP + VAULT | CURRENT · VAULT |
-| Strategy & Build Intensive | `INTENSIVE` | BUYER + GA + VIP + VAULT + INTENSIVE | CURRENT · INTENSIVE |
+| Verified product                             | SUMMITLVL   | Active purchase tags                 | Active current tag  |
+| -------------------------------------------- | ----------- | ------------------------------------ | ------------------- |
+| General Admission                            | `GA`        | BUYER + GA                           | CURRENT · GA        |
+| VIP Implementation Experience upgrade        | `VIP`       | BUYER + GA + VIP                     | CURRENT · VIP       |
+| Emerald Vault Key (`vault` internal product) | `VAULT`     | BUYER + GA + VIP + VAULT             | CURRENT · VAULT     |
+| Strategy & Build Intensive                   | `INTENSIVE` | BUYER + GA + VIP + VAULT + INTENSIVE | CURRENT · INTENSIVE |
 
 Every upgrade removes the older `CURRENT` tag and replaces it with the new
 highest level. It does not remove historical purchase tags.
@@ -47,6 +47,7 @@ highest level. It does not remove historical purchase tags.
 - Day 1: Saturday, August 29, 2026 · 1:00–4:00 PM Eastern
 - Day 2: Sunday, August 30, 2026 · 1:00–4:00 PM Eastern
 - VIP Build Lab: Sunday, August 30 · 4:15–5:45 PM Eastern, immediately after Day 2
+- Secret Day 3 Vault Opener Class: Monday, August 31 · 1:00–3:00 PM Eastern, Emerald only
 - GA-to-VIP live upgrade window: Sunday, August 30 · 3:45–4:15 PM Eastern
 
 ## Journey rules
@@ -76,27 +77,32 @@ Trigger: `AAS26 · CURRENT · VIP`
 Send:
 
 - VIP confirmation
-- Recording expectations
+- 30-day recording expectations
 - Priority-question intake
-- Immediate Build Lab access for Sunday, August 30 at 4:15 PM Eastern
-- Optional Vault explanation during the final part of the Build Lab
+- MVP App Builder delivery
+- AI Business GPS delivery
+- Internal Agent Builder Skill delivery
+- Immediate access to the single 90-minute Build Lab on Sunday, August 30 at 4:15 PM Eastern
+- Optional Emerald Vault Key explanation during the final part of the Build Lab
 
 Never send another VIP sales email. When the VIP tag is applied during the
 live close, the buyer should receive the Lab-access message immediately.
 
-### Vault journey
+### Emerald Vault Key journey (`VAULT` internal tag)
 
 Trigger: `AAS26 · CURRENT · VAULT`
 
 Send:
 
-- Vault confirmation
-- Secure Vault-access instructions
-- Resource orientation
-- Implementation checklist
+- Emerald confirmation
+- Secret Day 3 Vault Opener Class details
+- Two additional live implementation hours with Spin
+- Private Day 3 room details by email and text after verified purchase
+- 30 days of NuAmenti 3 Gold beginning August 10
+- Full NuAmenti 3 Day recording delivery details
 - Optional private Intensive explanation
 
-Never send another VIP or Vault sales email.
+Never send another VIP or Emerald sales email.
 
 ### Intensive journey
 
@@ -131,14 +137,14 @@ is not eligible for marketing email.
 6. Confirm that upgrading removes the prior `CURRENT` tag immediately.
 7. Confirm that a refund or dispute recalculates the highest active level.
 8. Test the Day 2 live close: GA → VIP tag → immediate Lab-access email.
-9. Test the VIP Lab close: VIP → Vault tag → Vault access + Intensive page.
+9. Test the VIP Lab close: VIP → `VAULT` tag → Emerald confirmation, private Day 3 delivery, and Intensive page.
 
 ## Operator QA cases
 
 - GA buyer declines VIP → GA confirmation + GA email journey.
 - GA buyer upgrades live → VIP tag replaces current GA and delivers the Lab link before 4:15 PM.
-- VIP buyer declines Vault → VIP confirmation + VIP email journey.
-- Vault buyer declines Intensive → Vault confirmation + Vault email journey.
+- VIP buyer declines Emerald → VIP confirmation + VIP email journey.
+- Emerald buyer declines Intensive → Emerald confirmation + `VAULT` email journey.
 - Intensive buyer completes the funnel → Intensive confirmation + scheduling journey.
 - Buyer upgrades later → prior sales journey stops; new journey begins.
 - Buyer unsubscribes → purchase record remains, marketing stops.

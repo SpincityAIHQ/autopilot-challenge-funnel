@@ -18,6 +18,15 @@ describe("Summit sequential funnel catalog", () => {
   it("VIP admission spec is $77 (referenced by vip_upgrade + webhook)", () => {
     expect(VIP_SPEC.priceCents).toBe(7700);
   });
+  it("assigns the three reusable builder tools to VIP, not Emerald", () => {
+    for (const benefit of ["MVP App Builder", "AI Business GPS", "Internal Agent Builder Skill"]) {
+      expect(VIP_SPEC.bullets).toContain(benefit);
+      expect(UPSELLS.vip_upgrade.bullets).toContain(benefit);
+      expect(UPSELLS.vault.bullets).not.toContain(benefit);
+    }
+    expect(UPSELLS.vault.bullets).toContain("Secret Day 3 Vault Opener Class with Spin");
+    expect(UPSELLS.vault.bullets).toContain("Two additional live implementation hours with Spin");
+  });
   it("uses the canonical sequential prices", () => {
     expect(TIER_MAP.ga.priceCents).toBe(2200);
     // Post-GA VIP Implementation Experience — full $77, not a difference.

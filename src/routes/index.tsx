@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BrandSignature } from "@/components/BrandFrame";
 import { Countdown } from "@/components/Countdown";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
@@ -37,11 +37,16 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   const cfg = getCommasConfig();
+  const [reservationOpen, setReservationOpen] = useState(false);
   useEffect(() => captureAttribution(), []);
 
   return (
     <main className="min-h-screen">
-      <Hero heroVideoUrl={cfg.sectionVideos.hero ?? null} />
+      <Hero
+        heroVideoUrl={cfg.sectionVideos.hero ?? null}
+        reservationOpen={reservationOpen}
+        onReservationOpenChange={setReservationOpen}
+      />
       <Outputs />
       <Agenda />
       <OperatingLoop />
@@ -49,13 +54,21 @@ function Landing() {
       <FitCheck />
       <TestimonialSection page="landing" />
       <Faq />
-      <FinalCta />
+      <FinalCta onReserve={() => setReservationOpen(true)} />
       <Footer />
     </main>
   );
 }
 
-function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
+function Hero({
+  heroVideoUrl,
+  reservationOpen,
+  onReservationOpenChange,
+}: {
+  heroVideoUrl: string | null;
+  reservationOpen: boolean;
+  onReservationOpenChange: (open: boolean) => void;
+}) {
   return (
     <section className="mx-auto max-w-6xl px-5 pb-16 pt-10 sm:pb-24 sm:pt-16">
       <BrandSignature />
@@ -76,7 +89,7 @@ function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
         className="mt-7 max-w-4xl"
       />
 
-      <LandingReservationForm />
+      <LandingReservationForm open={reservationOpen} onOpenChange={onReservationOpenChange} />
 
       <div className="mt-6 max-w-3xl border-l-2 border-[color:var(--emerald-signal)]/35 pl-4">
         <p className="font-heading text-lg text-muted-foreground sm:text-xl">
@@ -126,8 +139,8 @@ function Outputs() {
       "See the pages, apps, tools, data, and handoffs your business needs.",
     ],
     [
-      "AI Business GPS",
-      "Give every AI tool the same goals, rules, facts, numbers, and next steps.",
+      "AI Readiness Blueprint",
+      "Map the goals, rules, facts, numbers, and next steps your AI tools need.",
     ],
     ["AI Agent Team Chart", "Name the AI jobs, what each agent owns, and where a human approves."],
     [
@@ -157,8 +170,8 @@ function Outputs() {
         ))}
       </div>
       <p className="mt-6 text-xs text-muted-foreground">
-        No magic button and no guaranteed income. You bring the business and keep building after the
-        Summit.
+        Income is not guaranteed. Results depend on the decisions you make and the work you continue
+        after the Summit.
       </p>
     </section>
   );
@@ -182,7 +195,9 @@ function Agenda() {
             <li>· Map the customer, offer, price, and business numbers.</li>
             <li>· Design your business infrastructure.</li>
             <li>· Plan your internal business app.</li>
-            <li>· Set up your AI Business GPS.</li>
+            <li>
+              · Map the goals, rules, facts, numbers, and next steps your AI system will need.
+            </li>
           </ul>
         </article>
         <article className="surface-raised border-[color:var(--emerald-signal)]/35 p-6">
@@ -307,12 +322,12 @@ function Faq() {
       "No. Prompts are one small part. We build apps, agent jobs, workflows, loops, numbers, marketing, and approval rules.",
     ],
     [
-      "What is an AI Business GPS?",
-      "It is the shared goals, rules, facts, numbers, and next steps that keep your AI tools pointed at the same outcome.",
+      "What is the AI Readiness Blueprint?",
+      "It maps the goals, rules, facts, numbers, and next steps your future AI system will need.",
     ],
     [
       "What will I leave with?",
-      "A niche and offer map, infrastructure map, AI Business GPS, agent-team chart, internal app plan, and 30-day build order.",
+      "A niche and offer map, infrastructure map, AI readiness blueprint, agent-team chart, internal app plan, and 30-day build order.",
     ],
     [
       "When is the Summit?",
@@ -339,7 +354,7 @@ function Faq() {
   );
 }
 
-function FinalCta() {
+function FinalCta({ onReserve }: { onReserve: () => void }) {
   return (
     <section className="mx-auto max-w-4xl px-5 py-20 text-center">
       <p className="eyebrow">SpinCityHQ &amp; NuAmenti present</p>
@@ -351,6 +366,7 @@ function FinalCta() {
       </p>
       <a
         href="#reserve-seat"
+        onClick={onReserve}
         className="mt-7 inline-flex w-full items-center justify-center rounded-md bg-primary px-6 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90 sm:w-auto"
       >
         Reserve General Admission

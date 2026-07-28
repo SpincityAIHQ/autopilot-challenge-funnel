@@ -31,7 +31,8 @@ describe("SpinCityHQ and NuAmenti Summit branding", () => {
     expect(LANDING).toContain("BUILD THE BUSINESS");
     expect(LANDING).toContain("HIRE THE AI TEAM");
     expect(LANDING).toContain("PUT THE WORK ON AUTOPILOT");
-    expect(LANDING).toContain("AI Business GPS");
+    expect(LANDING).toContain("AI Readiness Blueprint");
+    expect(LANDING).not.toContain("AI Business GPS");
     expect(LANDING).toContain("Internal Business App Plan");
     expect(LANDING).toContain("Do the Math");
   });

@@ -1,9 +1,13 @@
 import { describe, expect, it } from "bun:test";
 import { readFileSync } from "node:fs";
-import {
-  canScopeAccessTier,
-  scopesGrantTier,
-} from "@/lib/resource-metadata";
+import { canScopeAccessTier, getResourceMeta, scopesGrantTier } from "@/lib/resource-metadata";
+
+const VIP_PRODUCT_RESOURCE_SLUGS = ["company-brain", "prompt-stack", "site-blueprint"] as const;
+
+function scopesGrantResource(scopes: readonly string[], slug: string): boolean {
+  const resource = getResourceMeta(slug);
+  return resource !== null && scopesGrantTier(scopes, resource.tier);
+}
 
 /**
  * Product rule (NOT a tier ordering):
@@ -58,16 +62,24 @@ describe("scopesGrantTier — union of held scopes", () => {
   });
 });
 
+describe("VIP product resources — exact slug access", () => {
+  for (const slug of VIP_PRODUCT_RESOURCE_SLUGS) {
+    it(`vip and vip_upgrade access ${slug}; ga and vault-only do not`, () => {
+      expect(scopesGrantResource(["vip"], slug)).toBe(true);
+      expect(scopesGrantResource(["vip_upgrade"], slug)).toBe(true);
+      expect(scopesGrantResource(["ga"], slug)).toBe(false);
+      expect(scopesGrantResource(["vault"], slug)).toBe(false);
+    });
+  }
+});
+
 /**
  * Exchange handler contract — enforced by static assertions on the source.
  * The raw session token must NEVER leave the server in JSON; it MUST be
  * set as HttpOnly; Secure; SameSite=Lax cookie only.
  */
 describe("resource exchange handler — cookie flags + non-disclosure", () => {
-  const exchangeSrc = readFileSync(
-    "src/routes/api/public/resources/exchange.ts",
-    "utf8",
-  );
+  const exchangeSrc = readFileSync("src/routes/api/public/resources/exchange.ts", "utf8");
   it("sets HttpOnly session cookie", () => {
     expect(/HttpOnly/i.test(exchangeSrc)).toBe(true);
   });
@@ -83,10 +95,7 @@ describe("resource exchange handler — cookie flags + non-disclosure", () => {
     expect(/JSON\.stringify\(\s*\{\s*ok:\s*true,\s*expiresAt/i.test(exchangeSrc)).toBe(true);
   });
   it("uses no-store cache control on protected /read", () => {
-    const readSrc = readFileSync(
-      "src/routes/api/public/resources/read.ts",
-      "utf8",
-    );
+    const readSrc = readFileSync("src/routes/api/public/resources/read.ts", "utf8");
     expect(/private,\s*no-store/i.test(readSrc)).toBe(true);
   });
 });

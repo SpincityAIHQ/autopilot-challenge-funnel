@@ -180,8 +180,7 @@ export const RESOURCE_INDEX: readonly ResourceContent[] = [
     slug: "vip-proposal-kit",
     tier: "vip",
     name: "VIP Proposal + Outreach Kit",
-    preview:
-      "The corporate outreach + proposal kit built for VIP registrants.",
+    preview: "The corporate outreach + proposal kit built for VIP registrants.",
     sections: [
       {
         heading: "3-touch outreach cadence",
@@ -213,13 +212,11 @@ export const RESOURCE_INDEX: readonly ResourceContent[] = [
     ],
   },
 
-  // ============ Vault tier ============
   {
     slug: "company-brain",
-    tier: "vault",
-    name: "Company Brain Starter Kit",
-    preview:
-      "One index that any AI agent (or new teammate) can read to sound like you.",
+    tier: "vip",
+    name: "AI Business GPS",
+    preview: "One shared business-context index that keeps every AI agent and teammate aligned.",
     sections: [
       {
         heading: "Sections to fill",
@@ -235,10 +232,10 @@ export const RESOURCE_INDEX: readonly ResourceContent[] = [
   },
   {
     slug: "prompt-stack",
-    tier: "vault",
-    name: "AI Sales + Follow-up Agent Prompt Stack",
+    tier: "vip",
+    name: "Internal Agent Builder Skill",
     preview:
-      "Agent cards for sales, follow-up, and support — with an explicit safety block for every one.",
+      "Reusable agent cards for building internal sales, follow-up, and support roles with clear safety rules.",
     sections: [
       {
         heading: "Sales agent card",
@@ -268,10 +265,10 @@ export const RESOURCE_INDEX: readonly ResourceContent[] = [
   },
   {
     slug: "site-blueprint",
-    tier: "vault",
-    name: "Lovable Funnel + Site Blueprint",
+    tier: "vip",
+    name: "MVP App Builder",
     preview:
-      "The route map + content model for a monetizable Lovable site.",
+      "The route map and content model for planning and building a working MVP business app.",
     sections: [
       {
         heading: "Route map",
@@ -294,12 +291,13 @@ export const RESOURCE_INDEX: readonly ResourceContent[] = [
       },
     ],
   },
+
+  // ============ Vault tier ============
   {
     slug: "campaign-calendar",
     tier: "vault",
     name: "30-Day Campaign Calendar",
-    preview:
-      "Day-by-day campaign spine for the 30 days after the Summit.",
+    preview: "Day-by-day campaign spine for the 30 days after the Summit.",
     sections: [
       {
         heading: "Week 1 — Prove",
@@ -393,7 +391,7 @@ export const RESOURCE_INDEX: readonly ResourceContent[] = [
         bullets: [
           "Every entry names an owner and a status (placeholder / live).",
           "Placeholders show the tool name + disclosure but no clickable link.",
-          "Live entries use rel=\"sponsored nofollow noopener noreferrer\".",
+          'Live entries use rel="sponsored nofollow noopener noreferrer".',
           "Every live entry shows the disclosure text on the same screen.",
         ],
       },

@@ -135,8 +135,11 @@ function ReserveVipPage() {
                   <p className="reserve-eyebrow reserve-gold-text">VIP adds</p>
                   <ul className="mt-5 space-y-2 reserve-body-lg">
                     <li>• All six build workbooks</li>
-                    <li>• Two hours with me after each day</li>
+                    <li>• VIP Build Lab immediately after Day 2</li>
                     <li>• 30 days of recordings</li>
+                    <li>• MVP App Builder</li>
+                    <li>• AI Business GPS</li>
+                    <li>• Internal Agent Builder Skill</li>
                     <li>• More time to ask questions and work through your build</li>
                   </ul>
                   <p className="mt-4 reserve-note-15" style={{ opacity: 0.7 }}>

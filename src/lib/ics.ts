@@ -26,11 +26,7 @@ const VTIMEZONE_NY = [
 ].join("\r\n");
 
 function escapeText(v: string): string {
-  return v
-    .replace(/\\/g, "\\\\")
-    .replace(/\n/g, "\\n")
-    .replace(/,/g, "\\,")
-    .replace(/;/g, "\\;");
+  return v.replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
 }
 
 export interface IcsDay {
@@ -75,7 +71,7 @@ export const SUMMIT_DAY_1: IcsDay = {
   uid: "ai-autopilot-summit-day-1-2026-08-29@spincityhq",
   summary: "AI AutoPilot Summit — Day 1: Build the Business Foundation",
   description:
-    "Live online. Room opens at 12:45 PM Eastern. From 1:00–4:00 PM Eastern we choose the niche and problem, map the customer, offer and business numbers, design the business infrastructure, plan the internal app and set up the AI Business GPS. Use the secure room link in your NuAmenti email.",
+    "Live online. Room opens at 12:45 PM Eastern. From 1:00–4:00 PM Eastern we choose the niche and problem, map the customer, offer and business numbers, design the business infrastructure, plan the internal app and map an AI readiness blueprint. Use the secure room link in your NuAmenti email.",
   dateYyyyMmDd: "20260829",
   startHHmm: "130000",
   endHHmm: "160000",

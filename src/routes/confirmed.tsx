@@ -110,7 +110,7 @@ function Confirmed() {
         verified={verifiedVipNoVault}
         eyebrow="Verified · VIP Implementation Experience"
         headline="Thank you, family — your VIP access is confirmed."
-        body="You have both live Summit days, 30-day recordings, priority questions, and the VIP Build Lab immediately after Day 2 on Sunday from 4:15–5:45 PM Eastern."
+        body="You have both live Summit days, 30-day recordings, the VIP Build Lab, the MVP App Builder, AI Business GPS, and Internal Agent Builder Skill."
         videoUrl={null}
         videoLabel="VIP welcome"
       />
@@ -119,7 +119,7 @@ function Confirmed() {
         verified={verifiedEmerald}
         eyebrow="Verified · Emerald Key Holder"
         headline="Thank you, family — your Emerald Key Holder access is confirmed."
-        body="You have General Admission, VIP, the MVP App Builder, the AI Business GPS, 30 days of NuAmenti 3 Gold, and the full NuAmenti 3 Day recording."
+        body="You have everything in VIP plus the Secret Day 3 Vault Opener Class with Spin, two additional live implementation hours, 30 days of NuAmenti 3 Gold, and the full NuAmenti 3 Day recording. Your private room details arrive by email and text."
         videoUrl={null}
         videoLabel="Emerald Key Holder welcome"
       />

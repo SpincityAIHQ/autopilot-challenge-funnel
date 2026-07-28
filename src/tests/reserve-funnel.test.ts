@@ -34,8 +34,7 @@ describe("reservation tokens", () => {
 });
 
 describe("reserve checkout URL — pure validator", () => {
-  const GOOD =
-    "https://spincityhq.com/cart/50980696129783:1?checkout&skip_shop_pay=true";
+  const GOOD = "https://spincityhq.com/cart/50980696129783:1?checkout&skip_shop_pay=true";
 
   it("accepts a permanent Shopify cart permalink on the store host", () => {
     expect(validateReserveCheckoutUrl("ga", { VITE_SHOPIFY_URL_GA: GOOD })).toBe(GOOD);
@@ -66,8 +65,7 @@ describe("reserve checkout URL — pure validator", () => {
     expect(validateReserveCheckoutUrl("ga", { VITE_SHOPIFY_URL_GA: "   " })).toBeNull();
   });
   it("honors the additional allowed-hosts env variable", () => {
-    const url =
-      "https://checkout.partner.co/cart/50980696129783:1?checkout&skip_shop_pay=true";
+    const url = "https://checkout.partner.co/cart/50980696129783:1?checkout&skip_shop_pay=true";
     expect(validateReserveCheckoutUrl("ga", { VITE_SHOPIFY_URL_GA: url })).toBeNull();
     expect(
       validateReserveCheckoutUrl("ga", {
@@ -182,6 +180,20 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(form.includes('name="phone"')).toBe(true);
     expect(readReserveApi().includes("/reserve/vip?t=${token}")).toBe(true);
   });
+  it("keeps the reservation process private behind one accessible disclosure button", () => {
+    const form = readLandingForm();
+    expect(form.includes("CollapsibleTrigger")).toBe(true);
+    expect(form.includes("CollapsibleContent")).toBe(true);
+    expect(form.includes('id="reserve-seat"')).toBe(true);
+    expect(form.includes('type="button"')).toBe(true);
+    expect(form.includes("Reserve General Admission")).toBe(true);
+    expect(form.indexOf("<CollapsibleTrigger")).toBeLessThan(form.indexOf("<CollapsibleContent"));
+    expect(form.indexOf("<CollapsibleContent")).toBeLessThan(form.indexOf("<form"));
+    expect(form.includes("1. Hold your GA seat")).toBe(false);
+    expect(form.includes("2. Watch the GA ticket video")).toBe(false);
+    expect(form.includes("3. Choose your ticket and check out")).toBe(false);
+    expect(form.includes("On the next page, Spin explains")).toBe(false);
+  });
   it("uses the exact hyphen date punctuation on all reserve pages", () => {
     expect(readReserveIndex().includes("August 29-30 · 1-4 PM ET both days")).toBe(true);
     expect(readReserveVip().includes("August 29-30")).toBe(true);
@@ -194,28 +206,41 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(src.includes("Upgrade My Reservation to VIP")).toBe(true);
     expect(src.includes("General Admission includes")).toBe(true);
     expect(src.includes("All six build workbooks")).toBe(true);
-    expect(src.includes("Two hours with me after each day")).toBe(true);
+    expect(src.includes("VIP Build Lab immediately after Day 2")).toBe(true);
     expect(src.includes("30 days of recordings")).toBe(true);
+    expect(src.includes("MVP App Builder")).toBe(true);
+    expect(src.includes("AI Business GPS")).toBe(true);
+    expect(src.includes("Internal Agent Builder Skill")).toBe(true);
     expect(src.includes("You're holding $22. VIP adds $77.")).toBe(true);
     expect(src.includes("Two-day live Summit access. Nothing else added.")).toBe(false);
   });
   it("/reserve/vault has correct bullets and totals", () => {
     const src = readReserveVault();
+    const vipStart = src.indexOf("Your VIP reservation includes");
+    const emeraldStart = src.indexOf("Emerald Key Holder adds Spin's time");
+    const vipBenefits = src.slice(vipStart, emeraldStart);
+    const emeraldBenefits = src.slice(emeraldStart);
     expect(src.includes("$99")).toBe(true);
     expect(src.includes("$298 Total")).toBe(true);
     expect(src.includes("Get VIP Access · $99")).toBe(true);
     expect(src.includes("Get the Emerald Vault Key · $298")).toBe(true);
     expect(src.includes("AI AutoPilot Summit + VIP + Emerald Vault Key")).toBe(true);
-    expect(src.includes("MVP App Builder")).toBe(true);
-    expect(src.includes("AI Business GPS")).toBe(true);
+    expect(vipStart).toBeGreaterThan(-1);
+    expect(emeraldStart).toBeGreaterThan(vipStart);
+    expect(vipBenefits.includes("MVP App Builder")).toBe(true);
+    expect(vipBenefits.includes("AI Business GPS")).toBe(true);
+    expect(vipBenefits.includes("Internal Agent Builder Skill")).toBe(true);
+    expect(emeraldBenefits.includes("MVP App Builder")).toBe(false);
+    expect(emeraldBenefits.includes("<li>• AI Business GPS</li>")).toBe(false);
+    expect(emeraldBenefits.includes("Secret Day 3 Vault Opener Class with Spin")).toBe(true);
+    expect(emeraldBenefits.includes("Two additional live hours with Spin")).toBe(true);
+    expect(emeraldBenefits.includes("Private room details delivered after purchase")).toBe(true);
     expect(
-      src
+      emeraldBenefits
         .replace(/\s+/g, " ")
-        .includes(
-          "30 days of NuAmenti 3 Gold — emailed August 10, use it for three weeks before the Summit",
-        ),
+        .includes("30 days of NuAmenti 3 Gold — emailed August 10 for use before the Summit"),
     ).toBe(true);
-    expect(src.includes("Full NuAmenti 3 Day recording")).toBe(true);
+    expect(emeraldBenefits.includes("Full NuAmenti 3 Day recording")).toBe(true);
     expect(src.includes("Choose the access level that matches")).toBe(true);
   });
 

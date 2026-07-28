@@ -12,13 +12,7 @@
  */
 
 export type AdmissionTierId = "ga";
-export type ProductId =
-  | "ga"
-  | "vip"
-  | "vip_upgrade"
-  | "vault"
-  | "intensive"
-  | "mentorship";
+export type ProductId = "ga" | "vip" | "vip_upgrade" | "vault" | "intensive" | "mentorship";
 
 export type TierId = AdmissionTierId;
 
@@ -37,14 +31,12 @@ export const TIERS: readonly Tier[] = [
     name: "General Admission",
     shortName: "GA Ticket",
     priceCents: 2200,
-    headline:
-      "Join both live days and build the foundation for your AI-powered business.",
+    headline: "Join both live days and build the foundation for your AI-powered business.",
     bullets: [
       "Live online · Sat Aug 29 + Sun Aug 30 · 1:00–4:00 PM Eastern",
       "Room opens at 12:45 PM Eastern both days",
       "Niche + Offer Map",
       "Business Infrastructure Map",
-      "AI Business GPS workbook",
       "AI Agent Team Chart",
       "First Workflow + Loop Builder",
       "GA does not include session recordings",
@@ -73,13 +65,16 @@ export const VIP_SPEC = {
   shortName: "VIP Access",
   priceCents: 7700,
   headline:
-    "Add recordings, a live build lab right after Day 2, priority questions, and deeper agent and workflow tools.",
+    "Add recordings, the live VIP Build Lab, and the reusable tools to build your app, business GPS, and internal AI agent team.",
   bullets: [
     "Everything in General Admission",
     "30-day session recordings",
     "VIP Build Lab · Sun Aug 30 · 4:15–5:45 PM Eastern",
     "Join the Lab right after the main Summit ends",
     "Priority question submission",
+    "MVP App Builder",
+    "AI Business GPS",
+    "Internal Agent Builder Skill",
     "AI Agent Hiring + Workflow Kit",
     "VIP Implementation Resources",
   ],
@@ -107,31 +102,32 @@ export const UPSELLS: Record<UpsellProduct["id"], UpsellProduct> = {
     name: "VIP Implementation Experience",
     priceCents: 7700,
     summary:
-      "Keep the momentum going when Day 2 ends. Stay for the live VIP Build Lab from 4:15–5:45 PM Eastern, get 30-day recordings, ask priority questions, and use deeper tools for your AI agents and workflows.",
+      "Keep the momentum going when Day 2 ends. Stay for the live VIP Build Lab, get 30-day recordings, and unlock the MVP App Builder, AI Business GPS, and Internal Agent Builder Skill.",
     bullets: [
       "Requires verified General Admission on the same email",
       "30-day session recordings",
       "VIP Build Lab · Sun Aug 30 · 4:15–5:45 PM Eastern",
       "Join the Lab right after the main Summit ends",
       "Priority questions",
+      "MVP App Builder",
+      "AI Business GPS",
+      "Internal Agent Builder Skill",
       "AI Agent Hiring + Workflow Kit",
       "VIP Implementation Resources",
     ],
   },
   vault: {
     id: "vault",
-    name: "AI AutoPilot Implementation Vault",
+    name: "Emerald Vault Key",
     priceCents: 19900,
     summary:
-      "Keep building after the Summit with ready-to-use maps, agent job sheets, app plans, workflows, loops, and marketing tools.",
+      "Add the private, unlisted Day 3 Vault Opener Class and two additional live hours with Spin.",
     bullets: [
-      "AI Business GPS starter kit",
-      "AI agent job descriptions + hiring scorecards",
-      "Research, analysis, math, sales, and marketing workflow templates",
-      "Internal business app blueprint",
-      "30-day marketing + monetization calendar",
-      "SOP + improvement loop templates",
-      "Curated AI tool and agent directory with clear disclosures",
+      "Secret Day 3 Vault Opener Class with Spin",
+      "Two additional live implementation hours with Spin",
+      "Private room details delivered after purchase",
+      "30 days of NuAmenti 3 Gold",
+      "Full NuAmenti 3 Day recording",
     ],
   },
   intensive: {
@@ -152,8 +148,7 @@ export const UPSELLS: Record<UpsellProduct["id"], UpsellProduct> = {
     id: "mentorship",
     name: "8-Week Mentorship & Work-Along",
     priceCents: 800000,
-    summary:
-      "Eight weeks of guided building with the NuAmenti team for approved applicants.",
+    summary: "Eight weeks of guided building with the NuAmenti team for approved applicants.",
     bullets: [
       "Eight-week guided implementation",
       "Application required",

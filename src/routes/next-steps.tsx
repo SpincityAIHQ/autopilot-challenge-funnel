@@ -188,7 +188,7 @@ function getExitConfirmation(
       envKey: "VITE_SUMMIT_VIDEO_EXIT_INTENSIVE",
       eyebrow: "Verified · Full Summit Path + Strategy & Build Intensive",
       headline: "Thank you, family — your private Strategy & Build Intensive is confirmed.",
-      body: "You have the full Summit path, including the live sessions on August 29–30, the VIP Build Lab immediately after Day 2, the Implementation Vault, and your private session. Our team will email you from Info@NuAmenti.com with the scheduling link.",
+      body: "You have the full Summit path, including the live sessions on August 29–30, the VIP builder toolkit, the Emerald Vault Key with the Secret Day 3 Vault Opener Class, and your private session. Our team will email you from Info@NuAmenti.com with the scheduling link.",
     };
   }
 
@@ -196,12 +196,11 @@ function getExitConfirmation(
     return {
       level: "vault",
       videoUrl: cfg.sectionVideos.exitVault,
-      videoLabel: "Your Vault confirmation and next steps",
+      videoLabel: "Your Emerald confirmation and next steps",
       envKey: "VITE_SUMMIT_VIDEO_EXIT_VAULT",
-      eyebrow: "Verified · Implementation Vault",
-      headline:
-        "Thank you, family — your Summit, VIP, and Implementation Vault access are confirmed.",
-      body: "You are all set for the live Summit on August 29–30, the VIP Build Lab on Sunday from 4:15–5:45 PM Eastern, and the Vault. Your NuAmenti email will include the secure route to your maps, agent sheets, app plans, workflow templates, and marketing tools.",
+      eyebrow: "Verified · Emerald Vault Key",
+      headline: "Thank you, family — your Summit, VIP, and Emerald Vault Key access are confirmed.",
+      body: "You are all set for the live Summit, the VIP builder toolkit, and the Secret Day 3 Vault Opener Class with Spin. Your private Emerald room details arrive by email and text.",
     };
   }
 
@@ -213,7 +212,7 @@ function getExitConfirmation(
       envKey: "VITE_SUMMIT_VIDEO_EXIT_VIP",
       eyebrow: "Verified · VIP Implementation Experience",
       headline: "Thank you, family — your General Admission and VIP access are confirmed.",
-      body: "You are all set for the live Summit on August 29–30 from 1:00–4:00 PM Eastern, 30-day recordings, and the VIP Build Lab immediately after Day 2 on Sunday from 4:15–5:45 PM Eastern.",
+      body: "You are all set for the live Summit, 30-day recordings, the VIP Build Lab, the MVP App Builder, AI Business GPS, and Internal Agent Builder Skill.",
     };
   }
 

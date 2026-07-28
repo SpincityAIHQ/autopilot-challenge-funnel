@@ -6,6 +6,7 @@
 - **Day 2:** Sunday, August 30, 2026 · 1:00–4:00 PM Eastern
 - **Room opens:** 12:45 PM Eastern both days
 - **VIP Build Lab:** Sunday, August 30, 2026 · 4:15–5:45 PM Eastern, immediately after Day 2
+- **Secret Day 3 Vault Opener Class:** Monday, August 31, 2026 · 1:00–3:00 PM Eastern, Emerald only
 
 The message is the same everywhere:
 
@@ -19,11 +20,11 @@ The main Summit is the value event. The paid ascension happens while the value i
 
 1. Day 2 core teaching runs from 1:00–3:30 PM Eastern.
 2. From 3:30–3:45, attendees finish their 30-day build order and Q&A.
-3. From 3:45–4:00, Spin closes the main Summit and presents the $77 VIP Build Lab.
+3. From 3:45–4:00, Spin closes the main Summit and presents the $77 VIP Implementation Experience.
 4. From 4:00–4:15, attendees take a short break and GA buyers may upgrade live.
 5. The VIP Build Lab starts at 4:15 PM in the same event flow.
-6. The $199 Vault is presented during the final part of the VIP Lab.
-7. A verified Vault buyer is redirected to the $1,000 Strategy & Build Intensive page.
+6. The $199 Emerald Vault Key is presented during the final part of the VIP Lab.
+7. A verified Emerald buyer is redirected to the $1,000 Strategy & Build Intensive page.
 8. Anyone who declines an offer goes to the confirmation and next-steps page for the highest level they actually bought.
 
 ## Non-negotiables
@@ -45,6 +46,8 @@ The main Summit is the value event. The paid ascension happens while the value i
 - `AAS26 · CURRENT · INTENSIVE`
 
 The hidden merge field `SUMMITLVL` carries `GA`, `VIP`, `VAULT`, or `INTENSIVE`.
+`VAULT` remains the internal tag and contract value for the buyer-facing
+**Emerald Vault Key**.
 
 ## Transactional emails
 
@@ -85,16 +88,29 @@ Thank you, family. You now have General Admission plus:
 
 - 30-day Summit recordings
 - Priority question access
+- MVP App Builder
+- AI Business GPS
+- Internal Agent Builder Skill
 - AI Agent Hiring + Workflow Kit
-- **VIP Build Lab: Sunday, August 30 · 4:15–5:45 PM Eastern**
+- **One 90-minute VIP Build Lab: Sunday, August 30 · 4:15–5:45 PM Eastern**
 
 The Lab starts 15 minutes after Day 2 ends. Stay in the room or use the private VIP link in this email.
 
-### Vault purchase confirmation
+### Emerald Vault Key purchase confirmation
 
-**Subject:** Your AI AutoPilot Implementation Vault is ready
+**Subject:** Your Emerald Vault Key is confirmed
 
-Confirm the Vault purchase and send the secure access route for the maps, agent job sheets, app plans, workflow templates, loops, and marketing tools. Do not say the Vault changes admission; it is an additional resource library.
+Confirm that Emerald includes everything in General Admission and VIP, then
+confirm these Emerald additions:
+
+- Secret Day 3 Vault Opener Class with Spin: Monday, August 31 · 1:00–3:00 PM Eastern
+- Two additional live implementation hours with Spin
+- Private Day 3 room details delivered by email and text after purchase
+- 30 days of NuAmenti 3 Gold beginning August 10
+- Full NuAmenti 3 Day recording
+
+Use `VAULT` only as the internal product/tag identifier. Do not revive the
+retired asset-library pitch.
 
 ### Intensive purchase confirmation
 
@@ -166,7 +182,7 @@ One button: Enter Day 1.
 Send:
 
 - Day 1 recap
-- AI Business GPS homework
+- Business goals, rules, facts, numbers, and next-step homework
 - The unanswered-question form
 - Day 2 reminder: Sunday at 1:00 PM Eastern; room opens 12:45
 
@@ -194,7 +210,7 @@ One button: Enter Day 2.
 
 The live pitch is simple:
 
-> “The main Summit ends at 4:00. VIP begins at 4:15. Stay with us if you want the recordings, the deeper Build Lab, priority questions, and the agent and workflow kit. Your GA ticket is still complete if you pass.”
+> “The main Summit ends at 4:00. VIP begins at 4:15. Stay with us if you want 30-day recordings, priority questions, the MVP App Builder, AI Business GPS, Internal Agent Builder Skill, AI Agent Hiring and Workflow Kit, and one 90-minute Build Lab. Your GA ticket is still complete if you pass.”
 
 Place the verified VIP offer link in:
 
@@ -211,7 +227,7 @@ Explain what VIP adds, state that the Lab begins in 27 minutes, and use one CTA 
 
 ### 3:50 PM Eastern — GA-only SMS
 
-“VIP Build Lab starts at 4:15 PM ET, right after Day 2. Add recordings, the live Lab, priority questions, and the Agent Hiring + Workflow Kit: [VIP_LINK]. Reply STOP to opt out; HELP for help.”
+“VIP Build Lab starts at 4:15 PM ET, right after Day 2. Add 30-day recordings, priority questions, the MVP App Builder, AI Business GPS, Internal Agent Builder Skill, and one 90-minute Lab: [VIP_LINK]. Reply STOP to opt out; HELP for help.”
 
 ### 4:00–4:15 PM Eastern — reset and upgrade window
 
@@ -237,17 +253,23 @@ Work through real agent roles, app plans, workflows, loops, handoffs, approval r
 
 Answer the highest-value implementation questions collected before and during the Summit.
 
-### 5:25–5:40 — present the Vault
+### 5:25–5:40 — present the Emerald Vault Key
 
-Explain that VIP provides deeper access, support, and recordings. The Vault provides reusable operating assets. Present the $199 Vault without pretending VIP is incomplete.
+Confirm that VIP already includes the MVP App Builder, AI Business GPS,
+Internal Agent Builder Skill, recordings, priority questions, and the
+90-minute Lab. Present the $199 Emerald Vault Key as more live time with Spin:
+the Secret Day 3 Vault Opener Class, two additional live implementation hours,
+private room details after purchase, 30 days of NuAmenti 3 Gold beginning
+August 10, and the full NuAmenti 3 Day recording. Never imply VIP is
+incomplete.
 
-Place the Vault link in:
+Place the Emerald link (`[VAULT_LINK]` remains the internal variable) in:
 
 - VIP room chat
 - VIP-only email
 - VIP-only SMS, when consent exists
 
-A verified Vault purchase redirects to the private Intensive page.
+A verified Emerald purchase redirects to the private Intensive page.
 
 ### 5:40–5:45 — close
 
@@ -259,7 +281,7 @@ A verified Vault purchase redirects to the private Intensive page.
 
 - GA: GA confirmation and core resources
 - VIP: VIP confirmation, recording expectations, and Lab next steps
-- Vault: Vault confirmation and secure resource orientation
+- Emerald (`VAULT` internal level): Emerald confirmation and private Day 3 delivery details
 - Intensive: full-path confirmation and scheduling instructions
 
 ## Post-Summit sequence
@@ -269,6 +291,10 @@ A verified Vault purchase redirects to the private Intensive page.
 **Subject:** What should you build first?
 
 Point them back to the 30-day build order. Ask them to choose one working system, not ten unfinished ideas.
+
+For Emerald buyers, also send the private Secret Day 3 room details before
+the 1:00 PM Eastern Vault Opener Class. Do not expose the room link to any
+other level.
 
 ### Tuesday, September 1
 
@@ -306,11 +332,17 @@ Send the live-event path, core resources, and optional VIP explanation before th
 
 ### VIP
 
-Send the live-event path, recording details, priority-question form, and the immediate post-Day-2 Lab access. Stop VIP sales messages.
+Send the live-event path, 30-day recording details, priority-question form,
+MVP App Builder, AI Business GPS, Internal Agent Builder Skill, and access to
+the single 90-minute post-Day-2 Lab. Stop VIP sales messages.
 
-### Vault
+### Emerald Vault Key (`VAULT` internal level)
 
-Send everything in VIP plus the secure Vault orientation and implementation checklist. Stop VIP and Vault sales messages.
+Send everything in VIP plus the Secret Day 3 Vault Opener Class details, two
+additional live hours with Spin, 30 days of NuAmenti 3 Gold beginning August
+10, and the full NuAmenti 3 Day recording. Deliver the private Day 3 room
+details by email and text only after verified purchase. Stop VIP and Emerald
+sales messages.
 
 ### Intensive
 
@@ -325,14 +357,14 @@ Send only to people with recorded SMS consent. Every marketing SMS ends with: `R
 - **Aug 29, 12:45 PM ET:** “The Day 1 room is open now. Use the link in your NuAmenti email. Reply STOP to opt out; HELP for help.”
 - **Aug 30, 11:00 AM ET:** “Day 2 starts in 2 hours. Today we build the AI team, workflows, loops, and money path. Reply STOP to opt out; HELP for help.”
 - **Aug 30, 12:45 PM ET:** “The Day 2 room is open now. Use the link in your NuAmenti email. Reply STOP to opt out; HELP for help.”
-- **Aug 30, 3:50 PM ET, GA only:** “VIP Build Lab starts at 4:15 PM ET, right after Day 2. Add recordings, the Lab, priority questions, and the Agent Hiring + Workflow Kit: [VIP_LINK]. Reply STOP to opt out; HELP for help.”
-- **Aug 30, 5:25 PM ET, VIP only:** “The Implementation Vault gives you the reusable maps, agent sheets, app plans, workflows, loops, and marketing tools: [VAULT_LINK]. Reply STOP to opt out; HELP for help.”
+- **Aug 30, 3:50 PM ET, GA only:** “VIP Build Lab starts at 4:15 PM ET, right after Day 2. Add 30-day recordings, priority questions, the MVP App Builder, AI Business GPS, Internal Agent Builder Skill, and one 90-minute Lab: [VIP_LINK]. Reply STOP to opt out; HELP for help.”
+- **Aug 30, 5:25 PM ET, VIP only:** “Emerald adds the Secret Day 3 Vault Opener Class with Spin, two more live hours, 30 days of NuAmenti 3 Gold from Aug 10, and the full NuAmenti 3 Day recording. Private room details arrive after purchase: [VAULT_LINK]. Reply STOP to opt out; HELP for help.”
 
 ## AI welcome call
 
 Use only with documented AI-call consent.
 
-“Peace Family. This is AI Spin calling for SpinCityHQ and NuAmenti. I am an AI voice. The AI AutoPilot 2-Day Summit is Saturday, August 29 and Sunday, August 30 from 1:00 to 4:00 PM Eastern. The room opens at 12:45 both days. The optional VIP Build Lab begins 15 minutes after Day 2 ends. I have three short questions to help Spin prepare the live teaching. What business, skill, offer, or idea are you bringing? What repeated task takes the most time now? What is the number-one question you want addressed? To stop future NuAmenti calls, press 9. To request a human, press 0.”
+“Peace Family. This is AI Spin calling for SpinCityHQ and NuAmenti. I am an AI voice. The AI AutoPilot 2-Day Summit is Saturday, August 29 and Sunday, August 30 from 1:00 to 4:00 PM Eastern. The room opens at 12:45 both days. The optional 90-minute VIP Build Lab begins 15 minutes after Day 2 ends. I have three short questions to help Spin prepare the live teaching. What business, skill, offer, or idea are you bringing? What repeated task takes the most time now? What is the number-one question you want addressed? To stop future NuAmenti calls, press 9. To request a human, press 0.”
 
 Record the answers by topic:
 
@@ -350,7 +382,8 @@ Record the answers by topic:
 ## Suppression and hygiene
 
 - A verified purchase removes the buyer from the sales sequence for that product.
-- A VIP purchase stops VIP sales. A Vault purchase stops VIP and Vault sales. An Intensive purchase stops all funnel sales.
+- A VIP purchase stops VIP sales. An Emerald purchase (`VAULT` internally)
+  stops VIP and Emerald sales. An Intensive purchase stops all funnel sales.
 - A refund or dispute removes the buyer from post-purchase delivery for the reversed product and recalculates the highest active level.
 - An unsubscribe stops marketing but never deletes the purchase record.
 - Do not send more than one Summit marketing email per calendar day to one address. Transactional access and urgent event changes remain separate.

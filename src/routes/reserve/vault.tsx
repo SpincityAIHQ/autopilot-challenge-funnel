@@ -81,13 +81,13 @@ function ReserveVaultPage() {
             <section className="reserve-card--vault p-6 sm:p-8">
               <p className="reserve-eyebrow reserve-gold-text">Choose your complete access level</p>
               <p className="mt-4 reserve-body-lg">
-                Your VIP reservation is held. Choose VIP access for $99 or unlock the complete
-                Summit + VIP + Emerald Vault Key package for $298.
+                Your VIP reservation is held. Choose VIP access for $99 or add the Emerald Vault Key
+                and private Day 3 access for $298 total.
               </p>
               <p className="mt-6 reserve-eyebrow reserve-jewel">The complete package</p>
               <p className="mt-3 reserve-mono-price text-[48px] reserve-jewel">$298 Total</p>
               <p className="mt-2 reserve-note-15" style={{ opacity: 0.78 }}>
-                AI AutoPilot Summit + VIP + Emerald Vault Key
+                AI AutoPilot Summit + VIP + Emerald Vault Key + private Day 3
               </p>
               <a
                 href={gaVipVaultUrl!}
@@ -126,8 +126,11 @@ function ReserveVaultPage() {
                   <ul className="mt-5 space-y-2 reserve-body-lg">
                     <li>• Both live Summit days</li>
                     <li>• All six build workbooks</li>
-                    <li>• Two hours with me after each day</li>
+                    <li>• VIP Build Lab immediately after Day 2</li>
                     <li>• 30 days of Summit recordings</li>
+                    <li>• MVP App Builder</li>
+                    <li>• AI Business GPS</li>
+                    <li>• Internal Agent Builder Skill</li>
                   </ul>
                   <p className="mt-4 reserve-note-15" style={{ opacity: 0.7 }}>
                     Best if you want the complete live experience, replay access, and added build
@@ -135,24 +138,27 @@ function ReserveVaultPage() {
                   </p>
                 </div>
                 <div>
-                  <p className="reserve-eyebrow reserve-jewel">Emerald Key Holder adds</p>
+                  <p className="reserve-eyebrow reserve-jewel">
+                    Emerald Key Holder adds Spin's time
+                  </p>
                   <p className="mt-5 reserve-body-lg">
-                    You're not getting a course about our system. You're getting the system files we
-                    use to plan apps, align AI tools, and build for clients paying $20,000 and up.
+                    This is not another stack of tools. Emerald unlocks a private, unlisted Day 3
+                    Vault Opener Class with Spin so you can open the system, connect it to your
+                    business, and work through your implementation questions live.
                   </p>
                   <ul className="mt-5 space-y-2 reserve-body-lg">
-                    <li>• MVP App Builder</li>
-                    <li>• AI Business GPS</li>
+                    <li>• Secret Day 3 Vault Opener Class with Spin</li>
+                    <li>• Two additional live hours with Spin</li>
+                    <li>• Private room details delivered after purchase</li>
                     <li>
-                      • 30 days of NuAmenti 3 Gold — emailed August 10, use it for three weeks
-                      before the Summit
+                      • 30 days of NuAmenti 3 Gold — emailed August 10 for use before the Summit
                     </li>
                     <li>• Full NuAmenti 3 Day recording</li>
                   </ul>
                 </div>
               </div>
               <p className="mt-4 reserve-note-15" style={{ opacity: 0.7 }}>
-                Choose the access level that matches the build support and system files you want.
+                Choose the access level that matches the live support and private time you want.
               </p>
             </section>
           </RevealOnView>

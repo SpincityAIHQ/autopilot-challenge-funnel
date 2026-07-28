@@ -5,11 +5,7 @@ import { ProductThankYou } from "@/components/ProductThankYou";
 import { TestimonialSection } from "@/components/TestimonialSection";
 import { useIntensiveSlotsRemaining } from "@/hooks/use-intensive-slots";
 import { useQaReviewMode } from "@/hooks/use-qa-review";
-import {
-  getCommasConfig,
-  isHandoffAllowed,
-  resolveCheckoutUrl,
-} from "@/lib/challenge-config";
+import { getCommasConfig, isHandoffAllowed, resolveCheckoutUrl } from "@/lib/challenge-config";
 import { formatUsd, UPSELLS } from "@/lib/tiers";
 
 export const Route = createFileRoute("/strategy-intensive")({
@@ -39,8 +35,7 @@ function StrategyIntensiveRoute() {
 
       <OfferGate
         predicate={(access) =>
-          (access.hasVault || access.hasIntensiveEligibility) &&
-          !access.hasIntensive
+          (access.hasVault || access.hasIntensiveEligibility) && !access.hasIntensive
         }
         ineligibleMessage="This private option is only for confirmed Vault buyers and approved attendees. Open the secure link in your NuAmenti email on the same browser."
       >
@@ -112,9 +107,9 @@ function IntensiveContent() {
 
       <ProductThankYou
         verified={true}
-        eyebrow="Verified · Implementation Vault"
-        headline="Thank you, family — your Vault access is confirmed."
-        body="You now have the maps, agent job sheets, app plans, workflow templates, and marketing tools inside the Vault. The private session is optional."
+        eyebrow="Verified · Emerald Vault Key"
+        headline="Thank you, family — your Emerald Vault Key access is confirmed."
+        body="You have everything in VIP plus the Secret Day 3 Vault Opener Class with Spin. The private Strategy & Build Intensive is optional."
         videoUrl={null}
         videoLabel="Vault welcome"
         className="mt-6 rounded-md border border-[color:var(--gold)] bg-[color:var(--surface)] p-6"
@@ -160,9 +155,7 @@ function IntensiveContent() {
       </section>
 
       <section className="mt-8 surface p-6">
-        <h3 className="font-heading text-lg text-foreground">
-          What the private session adds
-        </h3>
+        <h3 className="font-heading text-lg text-foreground">What the private session adds</h3>
         <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
           {intensive.bullets.map((bullet) => (
             <li key={bullet}>· {bullet}</li>

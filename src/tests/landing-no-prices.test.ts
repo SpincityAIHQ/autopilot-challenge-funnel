@@ -61,6 +61,17 @@ describe("landing page — no prices, no later-offer links", () => {
     expect(source.match(/Go VIP/)).toBeNull();
   });
 
+  it("keeps the lead fields collapsed until the reservation button is opened", () => {
+    expect(form).toContain("Collapsible");
+    expect(form).toContain("CollapsibleTrigger");
+    expect(form).toContain("CollapsibleContent");
+    expect(form).toContain('id="reserve-seat"');
+    expect(form).toContain("Reserve General Admission");
+    expect(form).not.toContain("1. Hold your GA seat");
+    expect(form).not.toContain("2. Watch the GA ticket video");
+    expect(form).not.toContain("3. Choose your ticket and check out");
+  });
+
   it("has no public tier selector or tier query parameter", () => {
     expect(source.includes('name="tier"')).toBe(false);
     expect(source.match(/\/checkout\?/)).toBeNull();

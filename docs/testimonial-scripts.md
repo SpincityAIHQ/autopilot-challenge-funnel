@@ -32,7 +32,7 @@ Audience: cold visitors who don't yet know NuAmenti. The testimonial answers
 2. **Moment of clarity** (15s) — the first thing that shifted for them.
 3. **Concrete change** (20s) — the one specific thing they now do
    differently in their business.
-4. **Who they'd recommend it to** (10s) — a plain "if you are ____, this
+4. **Who they'd recommend it to** (10s) — a plain "if you are \_\_\_\_, this
    is for you" close.
 
 ### Text prompt (2–4 sentences)
@@ -44,7 +44,7 @@ Audience: cold visitors who don't yet know NuAmenti. The testimonial answers
 
 ### Outreach message
 
-> Hey ____ — the Summit is opening registration for Aug 24–25. Would you
+> Hey \_\_\_\_ — the Summit is opening registration for Aug 29–30. Would you
 > record a 45–60 second phone-camera video sharing what you were stuck on
 > before, what shifted, and who you'd tell about it? I'll send a short
 > release once you're happy with the take. Zero pressure — one take is
@@ -69,45 +69,51 @@ answers "was the first step worth it?"
 ## Stage 3 · $77 VIP Implementation Experience
 
 Audience: verified GA holders deciding whether deeper implementation
-matters. This is about the value of recordings, the VIP Implementation
-Lab, priority Q&A, and the outreach vault.
+matters. This is about the value of recordings, the VIP Build
+Lab, priority Q&A, MVP App Builder, AI Business GPS, and Internal Agent
+Builder Skill.
 
 ### 45–60s video framework
 
-1. Which VIP benefit they actually used (Lab, recordings, priority Q&A,
-   or the outreach kit).
+1. Which VIP benefit they actually used (the MVP App Builder, AI Business
+   GPS, Internal Agent Builder Skill, recordings, priority Q&A, or the
+   single 90-minute Lab).
 2. One specific thing they built or shipped because of that benefit.
 3. Why they'd pick VIP again.
 
 ### Text prompt
 
-> Which VIP benefit — the Lab, recordings, priority Q&A, or the outreach
-> kit — moved the needle for you, and what did you do with it?
+> Which VIP benefit — the MVP App Builder, AI Business GPS, Internal Agent
+> Builder Skill, recordings, priority Q&A, or the 90-minute Lab — helped
+> you most, and what did you do with it?
 
-## Stage 4 · $199 Implementation Vault
+## Stage 4 · $199 Emerald Vault Key
 
-Audience: verified VIP registrants. This is where numbers can start to
-appear — but only ones the client can verify from their own records.
+Audience: verified VIP registrants deciding whether they want the Secret
+Day 3 Vault Opener Class and two additional live implementation hours with
+Spin. `vault` remains the internal page/tag identifier.
 
 ### 45–60s video framework
 
-1. Which Vault tool/template/system they actually used.
-2. What they built with it.
-3. A measurable operational result: hours saved per week, response time
-   cut, number of proposals sent, or another concrete metric they can
-   verify.
+1. Why they added the Emerald Vault Key after VIP.
+2. What became clearer or moved forward during the two-hour Secret Day 3
+   class with Spin.
+3. How they used either the 30 days of NuAmenti 3 Gold beginning August 10
+   or the full NuAmenti 3 Day recording.
+4. Who would benefit from the extra live implementation time.
 
 ### Text prompt
 
-> Which Vault asset did you pick up first? What did you build with it,
-> and what operational result can you point at? Only include numbers you
-> can verify from your own records.
+> What made you add the Emerald Vault Key, what moved forward during the
+> Secret Day 3 class with Spin, and how did the extra two live hours,
+> NuAmenti 3 Gold, or the NuAmenti 3 Day recording support your build?
+> Only include results you can verify from your own records.
 
 ## Stage 5 · $1,000 Strategy & Build Intensive
 
-Audience: verified Vault holders. The strongest, most specific testimonial
-in the funnel — a private 1-on-1 either produced something concrete or it
-didn't.
+Audience: verified Emerald Vault Key holders. The strongest, most specific
+testimonial in the funnel — a private 1-on-1 either produced something
+concrete or it didn't.
 
 ### 45–60s video framework
 

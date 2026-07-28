@@ -1,13 +1,15 @@
 import { describe, expect, it } from "bun:test";
-import {
-  RESOURCE_METAS,
-  listResourceMetas,
-  getResourceMeta,
-} from "@/lib/resource-metadata";
+import { RESOURCE_METAS, listResourceMetas, getResourceMeta } from "@/lib/resource-metadata";
 import {
   RESOURCE_INDEX as SERVER_INDEX,
   getResource as getServerResource,
 } from "@/lib/resource-content.server";
+
+const VIP_PRODUCT_RESOURCES = [
+  { slug: "company-brain", name: "AI Business GPS" },
+  { slug: "prompt-stack", name: "Internal Agent Builder Skill" },
+  { slug: "site-blueprint", name: "MVP App Builder" },
+] as const;
 
 describe("resource metadata (public)", () => {
   it("has at least 11 resources across ga/vip/vault", () => {
@@ -26,6 +28,15 @@ describe("resource metadata (public)", () => {
   it("returns null for unknown slug", () => {
     expect(getResourceMeta("does-not-exist")).toBeNull();
   });
+  it("publishes the three named VIP product resources under their stable slugs", () => {
+    for (const expected of VIP_PRODUCT_RESOURCES) {
+      const resource = getResourceMeta(expected.slug);
+      expect(resource).not.toBeNull();
+      expect(resource!.slug).toBe(expected.slug);
+      expect(resource!.tier).toBe("vip");
+      expect(resource!.name).toBe(expected.name);
+    }
+  });
 });
 
 describe("resource content (server-only)", () => {
@@ -42,5 +53,14 @@ describe("resource content (server-only)", () => {
   });
   it("server index has at least as many entries as public metadata", () => {
     expect(SERVER_INDEX.length).toBeGreaterThanOrEqual(RESOURCE_METAS.length);
+  });
+  it("keeps the server-only VIP product records aligned with public metadata", () => {
+    for (const expected of VIP_PRODUCT_RESOURCES) {
+      const resource = getServerResource(expected.slug);
+      expect(resource).not.toBeNull();
+      expect(resource!.slug).toBe(expected.slug);
+      expect(resource!.tier).toBe("vip");
+      expect(resource!.name).toBe(expected.name);
+    }
   });
 });

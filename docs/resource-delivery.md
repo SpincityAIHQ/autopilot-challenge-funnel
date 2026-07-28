@@ -13,19 +13,19 @@ There is no `ga < vip < vault` comparison anywhere in code or docs.
 
 ## Tier manifest
 
-| Slug | Tier | Name |
-|---|---|---|
-| action-guide | ga | Summit Action Guide |
-| ai-readiness-scorecard | ga | AI Readiness Scorecard |
-| buyer-offer-canvas | ga | Buyer + Offer Canvas |
-| vip-proposal-kit | vip | VIP Proposal + Outreach Kit |
-| company-brain | vault | Company Brain Starter Kit |
-| prompt-stack | vault | AI Sales + Follow-up Prompt Stack |
-| site-blueprint | vault | Lovable Funnel + Site Blueprint |
-| campaign-calendar | vault | 30-Day Campaign Calendar |
-| proposal-builder | vault | Corporate Proposal Builder |
-| autonomy-map | vault | Autonomy Map + SOP Templates |
-| affiliate-directory | vault | Verified Tool Stack + Affiliate Directory |
+| Slug                   | Tier  | Name                                      |
+| ---------------------- | ----- | ----------------------------------------- |
+| action-guide           | ga    | Summit Action Guide                       |
+| ai-readiness-scorecard | ga    | AI Readiness Scorecard                    |
+| buyer-offer-canvas     | ga    | Buyer + Offer Canvas                      |
+| vip-proposal-kit       | vip   | VIP Proposal + Outreach Kit               |
+| company-brain          | vip   | AI Business GPS                           |
+| prompt-stack           | vip   | Internal Agent Builder Skill              |
+| site-blueprint         | vip   | MVP App Builder                           |
+| campaign-calendar      | vault | 30-Day Campaign Calendar                  |
+| proposal-builder       | vault | Corporate Proposal Builder                |
+| autonomy-map           | vault | Autonomy Map + SOP Templates              |
+| affiliate-directory    | vault | Verified Tool Stack + Affiliate Directory |
 
 ## Content isolation
 
@@ -59,10 +59,10 @@ There is no `ga < vip < vault` comparison anywhere in code or docs.
    - inserts a `resource_sessions` row storing ONLY the SHA-256 hash of a
      newly minted random session token, the buyer email, source-token
      hash, expiry, and an `issued_scopes` audit column.
-   The raw session token is returned exclusively as
-   `Set-Cookie: summit_rs=…; HttpOnly; Secure; SameSite=Lax; Max-Age=…`.
-   The JSON body contains only `{ok, expiresAt}`. No response ever
-   contains the raw magic token.
+     The raw session token is returned exclusively as
+     `Set-Cookie: summit_rs=…; HttpOnly; Secure; SameSite=Lax; Max-Age=…`.
+     The JSON body contains only `{ok, expiresAt}`. No response ever
+     contains the raw magic token.
 4. **Read.** `/api/public/resources/read` accepts only `{slug}`, reads
    the session cookie, calls `session_active_scopes` (which re-checks
    CURRENT active entitlements on every read — refunds/revocations block
@@ -89,14 +89,14 @@ The next attempted exchange fails with `token not exchangeable` (401).
 
 ## Failure modes
 
-| Status | Meaning |
-|---|---|
-| 200 | Cookie set (exchange) or sections returned (read). |
-| 400 | Body malformed or oversize (>4KB). |
-| 401 | Token unknown/expired/revoked/already-used, or session cookie missing/expired. |
-| 403 | Session lacks a scope that grants this resource tier. |
-| 404 | Unknown resource slug. |
-| 500 | Server error. |
+| Status | Meaning                                                                        |
+| ------ | ------------------------------------------------------------------------------ |
+| 200    | Cookie set (exchange) or sections returned (read).                             |
+| 400    | Body malformed or oversize (>4KB).                                             |
+| 401    | Token unknown/expired/revoked/already-used, or session cookie missing/expired. |
+| 403    | Session lacks a scope that grants this resource tier.                          |
+| 404    | Unknown resource slug.                                                         |
+| 500    | Server error.                                                                  |
 
 ## What the client cannot do
 
