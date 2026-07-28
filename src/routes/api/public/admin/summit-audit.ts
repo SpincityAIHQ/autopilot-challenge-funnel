@@ -115,10 +115,11 @@ export const Route = createFileRoute("/api/public/admin/summit-audit")({
         const { data, error } = await supabaseAdmin
           .from("summit_audit")
           .select(
-            "id, created_at, email, business_type, revenue_stage, bottleneck, what_stops, ai_tools, team_size, attendance, top_question, autonomy_goal, anything_else, entitlement_tier",
+            "id, created_at, email, business_type, revenue_stage, bottleneck, what_stops, ai_tools, team_size, attendance, top_question, autonomy_goal, anything_else, entitlement_tier, verification",
           )
           .order("created_at", { ascending: false })
           .limit(5000);
+
 
         if (error) return respond(500, "Server error");
         const rows = (data ?? []) as AuditRow[];
