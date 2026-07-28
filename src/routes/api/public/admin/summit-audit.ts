@@ -51,7 +51,9 @@ interface AuditRow {
   autonomy_goal: string | null;
   anything_else: string | null;
   entitlement_tier: string | null;
+  verification: string | null;
 }
+
 
 type TierKey = "ga" | "vip" | "vault" | "none";
 
