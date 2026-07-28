@@ -20,7 +20,7 @@ export const Route = createFileRoute("/checkout")({
   validateSearch: (input) => searchSchema.parse(input),
   head: () => ({
     meta: [
-      { title: "Get Your Ticket — AI AutoPilot 2-Day Summit" },
+      { title: "Reserve My Seat — AI AutoPilot 2-Day Summit" },
       {
         name: "description",
         content:
@@ -45,9 +45,9 @@ function Checkout() {
 
   const buttonDisabled = !qaReview && !gateAllowed;
   const buttonLabel = qaReview
-    ? "Get Your Ticket Now — Preview, No Payment"
+    ? "Reserve My Seat — Preview, No Payment"
     : gateAllowed
-      ? `Get Your Ticket Now · ${formatUsd(ticket.priceCents)}`
+      ? `Reserve My Seat · ${formatUsd(ticket.priceCents)}`
       : "Checkout Link Being Connected";
 
   function handleContinue() {
@@ -128,7 +128,7 @@ function Checkout() {
 
         {showLegalPrompt ? (
           <p role="alert" className="mt-3 text-sm text-[color:var(--gold)]">
-            Check the policy box, then tap Get Your Ticket Now again.
+            Check the policy box, then tap Reserve My Seat again.
           </p>
         ) : null}
       </section>

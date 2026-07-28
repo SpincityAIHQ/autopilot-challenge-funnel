@@ -86,7 +86,7 @@ function Hero({ heroVideoUrl }: { heroVideoUrl: string | null }) {
           to="/checkout"
           className="inline-flex w-full items-center justify-center rounded-md bg-primary px-6 py-3.5 font-heading text-base font-semibold text-primary-foreground shadow-[0_0_28px_rgba(218,177,72,0.18)] transition hover:opacity-90 sm:w-auto"
         >
-          Get Your Ticket Now
+          Reserve My Seat
         </Link>
       </div>
 
@@ -348,7 +348,7 @@ function FinalCta() {
         to="/checkout"
         className="mt-7 inline-flex w-full items-center justify-center rounded-md bg-primary px-6 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90 sm:w-auto"
       >
-        Get Your Ticket Now
+        Reserve My Seat
       </Link>
     </section>
   );
