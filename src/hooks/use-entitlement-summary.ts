@@ -50,6 +50,7 @@ export function useEntitlementSummary(): EntitlementSummary {
         const j = (await res.json()) as {
           authenticated: boolean;
           scopes?: unknown;
+          email?: unknown;
         };
         if (!alive) return;
         if (!j.authenticated) {
@@ -59,7 +60,9 @@ export function useEntitlementSummary(): EntitlementSummary {
         const scopes = Array.isArray(j.scopes)
           ? j.scopes.filter((s): s is string => typeof s === "string")
           : [];
-        setState({ status: "ok", scopes });
+        const email = typeof j.email === "string" ? j.email : null;
+        setState({ status: "ok", scopes, email });
+
       } catch {
         if (alive) setState({ status: "error" });
       }
