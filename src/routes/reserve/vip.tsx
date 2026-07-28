@@ -4,6 +4,8 @@ import { z } from "zod";
 import { applyReserveNoStoreHeaders } from "@/lib/reserve-headers";
 import { ReserveFrame } from "@/components/reserve/ReserveFrame";
 import { RevealOnView } from "@/components/reserve/RevealOnView";
+import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
+import { getCommasConfig } from "@/lib/challenge-config";
 import { isValidReservationToken } from "@/lib/reservation-token";
 import { getReservationByToken } from "@/lib/reservation.functions";
 import { resolveReserveCheckoutUrl } from "@/lib/reserve-checkout";
@@ -19,7 +21,9 @@ export const Route = createFileRoute("/reserve/vip")({
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
-  beforeLoad: async () => { await applyReserveNoStoreHeaders(); },
+  beforeLoad: async () => {
+    await applyReserveNoStoreHeaders();
+  },
   loaderDeps: ({ search }) => ({ t: search.t }),
   loader: async ({ deps }) => {
     if (!deps.t || !isValidReservationToken(deps.t)) {
@@ -34,6 +38,7 @@ export const Route = createFileRoute("/reserve/vip")({
 
 function ReserveVipPage() {
   const { first_name, tier, token } = Route.useLoaderData();
+  const cfg = getCommasConfig();
   const gaUrl = resolveReserveCheckoutUrl("ga");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,9 +52,7 @@ function ReserveVipPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, step: "vip" }),
       });
-      const body = (await res.json().catch(() => null)) as
-        | { ok?: boolean; next?: string }
-        | null;
+      const body = (await res.json().catch(() => null)) as { ok?: boolean; next?: string } | null;
       if (!res.ok || !body?.ok || !body.next) {
         setError("Couldn't upgrade the reservation. Try again.");
         return;
@@ -78,39 +81,60 @@ function ReserveVipPage() {
           </p>
         </RevealOnView>
 
-        <div className="mt-12 sm:mt-16 space-y-12">
-          {/* CARD A */}
-          <RevealOnView delayMs={80}>
-            <section className="reserve-card p-6 sm:p-8">
-              <p className="reserve-eyebrow reserve-gold-text">Complete your reservation</p>
-              <p className="mt-3 reserve-mono-price text-[34px]">$22</p>
+        <RevealOnView delayMs={80}>
+          <FunnelVideoSlot
+            url={cfg.sectionVideos.vipOffer}
+            label="Watch the VIP reservation invitation"
+            envKey="VITE_SUMMIT_VIDEO_VIP_OFFER"
+            className="mt-8"
+          />
+        </RevealOnView>
+
+        <div className="mt-5 space-y-10">
+          <RevealOnView delayMs={160}>
+            <section className="reserve-card reserve-card--emerald p-6 sm:p-8">
+              <p className="reserve-eyebrow reserve-gold-text">Upgrade this reservation to VIP</p>
+              <p className="mt-3 reserve-mono-price text-[44px]">$99 Total</p>
+              <button
+                type="button"
+                onClick={upgrade}
+                disabled={busy || tier === "ga_vip_vault"}
+                className="reserve-cta-primary mt-5 w-full rounded-xl py-4 reserve-body-lg"
+              >
+                {busy ? "Upgrading…" : "Upgrade My Reservation"}
+              </button>
+              <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
+                Nothing is charged here. Your $99 total is settled once at checkout.
+              </p>
+
+              <div className="my-6 flex items-center gap-4">
+                <div className="reserve-hairline flex-1" />
+                <span className="reserve-eyebrow reserve-gold-text" style={{ paddingTop: 0 }}>
+                  or
+                </span>
+                <div className="reserve-hairline flex-1" />
+              </div>
+
               <a
                 href={gaUrl ?? "#"}
                 aria-disabled={!gaUrl}
-                onClick={(e) => { if (!gaUrl) e.preventDefault(); }}
-                className={`mt-6 block w-full text-center rounded-xl py-4 reserve-body-lg reserve-gold-btn ${!gaUrl ? "pointer-events-none opacity-50" : ""}`}
+                onClick={(e) => {
+                  if (!gaUrl) e.preventDefault();
+                }}
+                className={`block w-full rounded-xl py-4 text-center reserve-body-lg reserve-gold-btn ${
+                  !gaUrl ? "pointer-events-none opacity-50" : ""
+                }`}
               >
-                Spend $22 Now
+                Keep General Admission · Settle $22
               </a>
               {!gaUrl ? (
-                <p className="mt-3 reserve-note-15" style={{ opacity: 0.7 }}>
+                <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
                   Checkout is being configured. Please try again shortly.
                 </p>
               ) : null}
-            </section>
-          </RevealOnView>
 
-          <div className="flex items-center gap-4">
-            <div className="reserve-hairline flex-1" />
-            <span className="reserve-eyebrow reserve-gold-text" style={{ paddingTop: 0 }}>or</span>
-            <div className="reserve-hairline flex-1" />
-          </div>
-
-          {/* CARD B */}
-          <RevealOnView delayMs={160}>
-            <section className="reserve-card reserve-card--emerald p-6 sm:p-8">
-              <p className="reserve-eyebrow reserve-gold-text">Upgrade to VIP</p>
-              <p className="mt-3 reserve-mono-price text-[44px]">$99 Total</p>
+              <div className="mt-8 reserve-hairline" />
+              <p className="mt-7 reserve-eyebrow reserve-gold-text">What VIP adds</p>
               <ul className="mt-5 space-y-2 reserve-body-lg">
                 <li>• All six build workbooks</li>
                 <li>• Two hours with me after each day</li>
@@ -120,16 +144,12 @@ function ReserveVipPage() {
                 You're holding $22. VIP adds $77.
               </p>
               <div role="alert" aria-live="polite" className="min-h-[1.25rem] mt-3">
-                {error ? <p className="reserve-note-15" style={{ color: "#FFB4B4" }}>{error}</p> : null}
+                {error ? (
+                  <p className="reserve-note-15" style={{ color: "#FFB4B4" }}>
+                    {error}
+                  </p>
+                ) : null}
               </div>
-              <button
-                type="button"
-                onClick={upgrade}
-                disabled={busy || tier === "ga_vip_vault"}
-                className="reserve-cta-primary mt-6 w-full rounded-xl py-4 reserve-body-lg"
-              >
-                {busy ? "Upgrading…" : "Upgrade My Reservation"}
-              </button>
             </section>
           </RevealOnView>
         </div>

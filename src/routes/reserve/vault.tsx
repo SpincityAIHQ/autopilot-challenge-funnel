@@ -4,6 +4,8 @@ import { z } from "zod";
 import { applyReserveNoStoreHeaders } from "@/lib/reserve-headers";
 import { ReserveFrame } from "@/components/reserve/ReserveFrame";
 import { RevealOnView } from "@/components/reserve/RevealOnView";
+import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
+import { getCommasConfig } from "@/lib/challenge-config";
 import { isValidReservationToken } from "@/lib/reservation-token";
 import { getReservationByToken } from "@/lib/reservation.functions";
 import { resolveReserveCheckoutUrl } from "@/lib/reserve-checkout";
@@ -19,7 +21,9 @@ export const Route = createFileRoute("/reserve/vault")({
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
-  beforeLoad: async () => { await applyReserveNoStoreHeaders(); },
+  beforeLoad: async () => {
+    await applyReserveNoStoreHeaders();
+  },
   loaderDeps: ({ search }) => ({ t: search.t }),
   loader: async ({ deps }) => {
     if (!deps.t || !isValidReservationToken(deps.t)) {
@@ -37,6 +41,7 @@ export const Route = createFileRoute("/reserve/vault")({
 
 function ReserveVaultPage() {
   const { first_name, token } = Route.useLoaderData();
+  const cfg = getCommasConfig();
   const gaVipUrl = resolveReserveCheckoutUrl("ga_vip");
   const gaVipVaultReady = resolveReserveCheckoutUrl("ga_vip_vault") !== null;
   const [busy, setBusy] = useState(false);
@@ -51,9 +56,11 @@ function ReserveVaultPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, step: "vault" }),
       });
-      const body = (await res.json().catch(() => null)) as
-        | { ok?: boolean; next?: string | null; error?: string }
-        | null;
+      const body = (await res.json().catch(() => null)) as {
+        ok?: boolean;
+        next?: string | null;
+        error?: string;
+      } | null;
       if (!res.ok || !body?.ok || !body.next) {
         setError("Couldn't upgrade the reservation. Try again.");
         return;
@@ -83,68 +90,85 @@ function ReserveVaultPage() {
           ) : null}
         </RevealOnView>
 
-        <div className="mt-12 sm:mt-16 space-y-12">
-          {/* CARD A */}
-          <RevealOnView delayMs={80}>
-            <section className="reserve-card p-6 sm:p-8">
-              <p className="reserve-eyebrow reserve-gold-text">Complete your reservation</p>
-              <p className="mt-3 reserve-mono-price text-[34px]">$99</p>
-              <a
-                href={gaVipUrl ?? "#"}
-                aria-disabled={!gaVipUrl}
-                onClick={(e) => { if (!gaVipUrl) e.preventDefault(); }}
-                className={`mt-6 block w-full text-center rounded-xl py-4 reserve-body-lg reserve-gold-btn ${!gaVipUrl ? "pointer-events-none opacity-50" : ""}`}
-              >
-                Pay $99 Now
-              </a>
-              {!gaVipUrl ? (
-                <p className="mt-3 reserve-note-15" style={{ opacity: 0.7 }}>
-                  Checkout is being configured. Please try again shortly.
-                </p>
-              ) : null}
-            </section>
-          </RevealOnView>
+        <RevealOnView delayMs={80}>
+          <FunnelVideoSlot
+            url={cfg.sectionVideos.thankYouVip}
+            label="Watch the Emerald Vault invitation"
+            envKey="VITE_SUMMIT_VIDEO_THANK_YOU_VIP"
+            className="mt-8"
+          />
+        </RevealOnView>
 
-          <div className="flex items-center gap-4">
-            <div className="reserve-hairline flex-1" />
-            <span className="reserve-eyebrow reserve-gold-text" style={{ paddingTop: 0 }}>or</span>
-            <div className="reserve-hairline flex-1" />
-          </div>
-
-          {/* CARD B — jewel treatment (Vault exception) */}
+        <div className="mt-5 space-y-10">
           <RevealOnView delayMs={160}>
             <section className="reserve-card--vault p-6 sm:p-8">
               <p className="reserve-eyebrow reserve-jewel">Become an Emerald Vault Key Holder</p>
-              <p className="mt-3 reserve-mono-price text-[48px] reserve-jewel">
-                $298 Total
+              <p className="mt-3 reserve-mono-price text-[48px] reserve-jewel">$298 Total</p>
+              <button
+                type="button"
+                onClick={becomeKeyHolder}
+                disabled={busy || !gaVipVaultReady}
+                className="reserve-cta-primary mt-5 w-full rounded-xl py-4 reserve-body-lg"
+              >
+                {busy ? "Working…" : "Become a Key Holder"}
+              </button>
+              <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
+                Nothing is charged here. Your $298 total is settled once at checkout.
               </p>
+
+              <div className="my-6 flex items-center gap-4">
+                <div className="reserve-hairline flex-1" />
+                <span className="reserve-eyebrow reserve-gold-text" style={{ paddingTop: 0 }}>
+                  or
+                </span>
+                <div className="reserve-hairline flex-1" />
+              </div>
+
+              <a
+                href={gaVipUrl ?? "#"}
+                aria-disabled={!gaVipUrl}
+                onClick={(e) => {
+                  if (!gaVipUrl) e.preventDefault();
+                }}
+                className={`block w-full rounded-xl py-4 text-center reserve-body-lg reserve-gold-btn ${
+                  !gaVipUrl ? "pointer-events-none opacity-50" : ""
+                }`}
+              >
+                Keep VIP · Settle $99
+              </a>
+              {!gaVipUrl ? (
+                <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
+                  Checkout is being configured. Please try again shortly.
+                </p>
+              ) : null}
+
+              <div className="mt-8 reserve-hairline" />
               <p className="mt-5 reserve-body-lg">
-                You're not getting a course about our system. You're getting our system.
-                The MVP App Builder and the AI Business GPS are the actual files we run
-                when we build for clients paying $20,000 and up.
+                You're not getting a course about our system. You're getting our system. The MVP App
+                Builder and the AI Business GPS are the actual files we run when we build for
+                clients paying $20,000 and up.
               </p>
               <ul className="mt-5 space-y-2 reserve-body-lg">
                 <li>• MVP App Builder</li>
                 <li>• AI Business GPS</li>
-                <li>• 30 days of NuAmenti 3 Gold — emailed August 10, use it for three weeks before the Summit</li>
+                <li>
+                  • 30 days of NuAmenti 3 Gold — emailed August 10, use it for three weeks before
+                  the Summit
+                </li>
                 <li>• Full NuAmenti 3 Day recording</li>
               </ul>
               <p className="mt-4 reserve-note-15" style={{ opacity: 0.7 }}>
                 Your VIP reservation carries forward. The Vault adds $199.
               </p>
               <div role="alert" aria-live="polite" className="min-h-[1.25rem] mt-3">
-                {error ? <p className="reserve-note-15" style={{ color: "#FFB4B4" }}>{error}</p> : null}
+                {error ? (
+                  <p className="reserve-note-15" style={{ color: "#FFB4B4" }}>
+                    {error}
+                  </p>
+                ) : null}
               </div>
-              <button
-                type="button"
-                onClick={becomeKeyHolder}
-                disabled={busy || !gaVipVaultReady}
-                className="reserve-cta-primary mt-6 w-full rounded-xl py-4 reserve-body-lg"
-              >
-                {busy ? "Working…" : "Become a Key Holder"}
-              </button>
               {!gaVipVaultReady ? (
-                <p className="mt-3 reserve-note-15" style={{ opacity: 0.7 }}>
+                <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
                   Checkout is being configured. Please try again shortly.
                 </p>
               ) : null}

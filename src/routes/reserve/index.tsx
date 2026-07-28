@@ -4,6 +4,8 @@ import { applyReserveNoStoreHeaders } from "@/lib/reserve-headers";
 import { ReserveFrame } from "@/components/reserve/ReserveFrame";
 import { WingedPlaneMark } from "@/components/reserve/WingedPlaneMark";
 import { RevealOnView } from "@/components/reserve/RevealOnView";
+import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
+import { getCommasConfig } from "@/lib/challenge-config";
 
 export const Route = createFileRoute("/reserve/")({
   head: () => ({
@@ -11,13 +13,14 @@ export const Route = createFileRoute("/reserve/")({
       { title: "Reserve your seat — AI AutoPilot 2-Day Summit" },
       {
         name: "description",
-        content:
-          "Reserve your seat for the AI AutoPilot 2-Day Summit — August 29-30, 1-4 PM ET.",
+        content: "Reserve your seat for the AI AutoPilot 2-Day Summit — August 29-30, 1-4 PM ET.",
       },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
-  beforeLoad: async () => { await applyReserveNoStoreHeaders(); },
+  beforeLoad: async () => {
+    await applyReserveNoStoreHeaders();
+  },
   component: ReservePage,
 });
 
@@ -42,6 +45,7 @@ function validate(v: { first_name: string; email: string; phone: string }): Fiel
 }
 
 function ReservePage() {
+  const cfg = getCommasConfig();
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
@@ -72,9 +76,11 @@ function ReservePage() {
           phone: phone.trim(),
         }),
       });
-      const body = (await res.json().catch(() => null)) as
-        | { ok?: boolean; next?: string; error?: string }
-        | null;
+      const body = (await res.json().catch(() => null)) as {
+        ok?: boolean;
+        next?: string;
+        error?: string;
+      } | null;
       if (!res.ok || !body?.ok || !body.next) {
         setGlobalError("We couldn't reserve your seat. Check your details and try again.");
         return;
@@ -112,13 +118,24 @@ function ReservePage() {
         </RevealOnView>
 
         <RevealOnView delayMs={160}>
+          <FunnelVideoSlot
+            url={cfg.sectionVideos.checkout}
+            label="Watch before you reserve your Summit seat"
+            envKey="VITE_SUMMIT_VIDEO_CHECKOUT"
+            className="mt-8"
+          />
+        </RevealOnView>
+
+        <RevealOnView delayMs={240}>
           <form
             onSubmit={onSubmit}
-            className="mt-12 space-y-5"
+            className="mt-7 space-y-5"
             aria-describedby={globalError ? "rf-global-error" : undefined}
           >
             <div>
-              <label htmlFor="rf-first" className="reserve-label block mb-2">First name</label>
+              <label htmlFor="rf-first" className="reserve-label block mb-2">
+                First name
+              </label>
               <input
                 id="rf-first"
                 name="first_name"
@@ -140,7 +157,9 @@ function ReservePage() {
               ) : null}
             </div>
             <div>
-              <label htmlFor="rf-email" className="reserve-label block mb-2">Email</label>
+              <label htmlFor="rf-email" className="reserve-label block mb-2">
+                Email
+              </label>
               <input
                 id="rf-email"
                 name="email"
@@ -161,7 +180,9 @@ function ReservePage() {
               ) : null}
             </div>
             <div>
-              <label htmlFor="rf-phone" className="reserve-label block mb-2">Phone</label>
+              <label htmlFor="rf-phone" className="reserve-label block mb-2">
+                Phone
+              </label>
               <input
                 id="rf-phone"
                 name="phone"

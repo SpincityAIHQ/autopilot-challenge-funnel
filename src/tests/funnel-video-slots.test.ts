@@ -8,9 +8,22 @@ const VIP = readFileSync("src/routes/offer/vip-upgrade.tsx", "utf8");
 const VAULT = readFileSync("src/routes/offer/implementation-vault.tsx", "utf8");
 const INTENSIVE = readFileSync("src/routes/strategy-intensive.tsx", "utf8");
 const NEXT_STEPS = readFileSync("src/routes/next-steps.tsx", "utf8");
+const RESERVE = readFileSync("src/routes/reserve/index.tsx", "utf8");
+const RESERVE_VIP = readFileSync("src/routes/reserve/vip.tsx", "utf8");
+const RESERVE_VAULT = readFileSync("src/routes/reserve/vault.tsx", "utf8");
 const CONFIG = readFileSync("src/lib/challenge-config.ts", "utf8");
 
-const ROUTES = [CHECKOUT, CONFIRMED, VIP, VAULT, INTENSIVE, NEXT_STEPS];
+const ROUTES = [
+  CHECKOUT,
+  CONFIRMED,
+  VIP,
+  VAULT,
+  INTENSIVE,
+  NEXT_STEPS,
+  RESERVE,
+  RESERVE_VIP,
+  RESERVE_VAULT,
+];
 
 describe("mobile funnel video slots", () => {
   it("uses a responsive 16:9 full-width slot", () => {
@@ -27,6 +40,22 @@ describe("mobile funnel video slots", () => {
     for (const route of ROUTES) {
       expect(route).toContain("FunnelVideoSlot");
     }
+  });
+
+  it("keeps the VSL before the decision action on every reserve page", () => {
+    expect(RESERVE.indexOf("<FunnelVideoSlot")).toBeLessThan(RESERVE.indexOf("<form"));
+    expect(RESERVE_VIP.indexOf("<FunnelVideoSlot")).toBeLessThan(
+      RESERVE_VIP.indexOf("Upgrade My Reservation"),
+    );
+    expect(RESERVE_VAULT.indexOf("<FunnelVideoSlot")).toBeLessThan(
+      RESERVE_VAULT.indexOf("Become a Key Holder"),
+    );
+  });
+
+  it("reuses the recorded funnel video slots in the reserve-then-settle path", () => {
+    expect(RESERVE).toContain("VITE_SUMMIT_VIDEO_CHECKOUT");
+    expect(RESERVE_VIP).toContain("VITE_SUMMIT_VIDEO_VIP_OFFER");
+    expect(RESERVE_VAULT).toContain("VITE_SUMMIT_VIDEO_THANK_YOU_VIP");
   });
 
   it("places the final video between the page intro and verified card", () => {
