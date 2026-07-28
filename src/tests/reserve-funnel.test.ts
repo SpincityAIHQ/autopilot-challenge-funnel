@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { generateReservationToken, isValidReservationToken } from "@/lib/reservation-token";
 import {
+  CANONICAL_RESERVE_CHECKOUT_URL,
   RESERVE_ENV_KEY,
   resolveReserveCheckoutUrl,
   validateReserveCheckoutUrl,
@@ -91,9 +92,9 @@ describe("reserve checkout URL — pure validator", () => {
     expect(RESERVE_ENV_KEY.ga_vip).toBe("VITE_SHOPIFY_URL_GA_VIP");
     expect(RESERVE_ENV_KEY.ga_vip_vault).toBe("VITE_SHOPIFY_URL_GA_VIP_VAULT");
   });
-  it("live resolver fails closed in this test env", () => {
+  it("live resolver always falls back to the canonical public Shopify links", () => {
     for (const b of ["ga", "ga_vip", "ga_vip_vault"] as ReserveBundle[]) {
-      expect(resolveReserveCheckoutUrl(b)).toBeNull();
+      expect(resolveReserveCheckoutUrl(b)).toBe(CANONICAL_RESERVE_CHECKOUT_URL[b]);
     }
   });
 });
@@ -213,12 +214,35 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     const vip = readReserveVip();
     const vault = readReserveVault();
     expect(vip.includes('resolveReserveCheckoutUrl("ga")')).toBe(true);
-    expect(vip.includes('href={gaUrl ?? "#"}')).toBe(true);
+    expect(vip.includes("href={gaUrl!}")).toBe(true);
     expect(vault.includes('resolveReserveCheckoutUrl("ga_vip")')).toBe(true);
     expect(vault.includes('resolveReserveCheckoutUrl("ga_vip_vault")')).toBe(true);
-    expect(vault.includes('href={gaVipUrl ?? "#"}')).toBe(true);
-    expect(vault.includes("window.location.assign(gaVipVaultUrl)")).toBe(true);
+    expect(vault.includes("href={gaVipUrl!}")).toBe(true);
+    expect(vault.includes("href={gaVipVaultUrl!}")).toBe(true);
     expect(readUpgradeApi().includes("resolveReserveCheckoutUrlFromProcessEnv")).toBe(false);
+  });
+  it("never disables or intercepts a public purchase CTA", () => {
+    for (const src of [readReserveVip(), readReserveVault()]) {
+      expect(src.includes("pointer-events-none opacity-50")).toBe(false);
+      expect(src.includes('href={gaUrl ?? "#"}')).toBe(false);
+      expect(src.includes('href={gaVipUrl ?? "#"}')).toBe(false);
+      expect(src.includes("disabled={busy")).toBe(false);
+    }
+    expect(readReserveVault().includes("disabled={busy || !gaVipVaultUrl}")).toBe(false);
+  });
+  it("advances from VIP without waiting on the reservation database", () => {
+    const vip = readReserveVip();
+    const vault = readReserveVault();
+    expect(vip.includes('to="/reserve/vault"')).toBe(true);
+    expect(vip.includes("keepalive: true")).toBe(true);
+    expect(vault.includes("keepalive: true")).toBe(true);
+    expect(vault.includes('r.tier_reserved === "ga"')).toBe(false);
+  });
+  it("shows a visible home/start-over link on every reserve page", () => {
+    const frame = readFrame();
+    expect(frame.includes('to="/"')).toBe(true);
+    expect(frame.includes("← Home / Start Over")).toBe(true);
+    expect(frame.includes('aria-label="Funnel navigation"')).toBe(true);
   });
   it("uses token (never id) in every URL surface", () => {
     const files = [
