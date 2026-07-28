@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useEntitlementSummary } from "@/hooks/use-entitlement-summary";
+
 
 export const Route = createFileRoute("/audit")({
   head: () => ({
