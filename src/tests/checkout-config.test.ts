@@ -27,6 +27,7 @@ const cfg = {
 describe("isAllowedCheckoutUrl", () => {
   it("accepts https on allowlisted host", () => {
     expect(isAllowedCheckoutUrl("https://www.fanbasis.com/i/x")).toBe(true);
+    expect(isAllowedCheckoutUrl("https://commas.com/checkout/example")).toBe(true);
   });
   it("rejects http, other hosts, malformed, empty, embedded creds", () => {
     expect(isAllowedCheckoutUrl("http://www.fanbasis.com/i/x")).toBe(false);
@@ -62,4 +63,3 @@ describe("isHandoffAllowed", () => {
     expect(isHandoffAllowed("ga", { ...cfg, legalReady: false })).toBe(false);
   });
 });
-

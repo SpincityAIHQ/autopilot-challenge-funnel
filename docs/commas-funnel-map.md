@@ -6,13 +6,13 @@ The landing page captures the lead first. The visitor then watches one VSL per
 decision page, chooses the highest level they want, and completes one Commas
 checkout for the full chosen total.
 
-| Decision       | Page             | Action                           | Total charged | Checkout environment variable                           | Success redirect                       |
-| -------------- | ---------------- | -------------------------------- | ------------: | ------------------------------------------------------- | -------------------------------------- |
-| Reserve GA     | `/`              | Name + email + phone; no payment |            $0 | None                                                    | `/reserve/vip?t=[reservation-token]`   |
-| Keep GA        | `/reserve/vip`   | Settle General Admission         |           $22 | `VITE_COMMAS_URL_GA=[PASTE $22 COMMAS LINK]`            | `/confirmed`                           |
-| Upgrade to VIP | `/reserve/vip`   | Reserve VIP; no payment yet      |            $0 | None                                                    | `/reserve/vault?t=[reservation-token]` |
-| Keep VIP       | `/reserve/vault` | Settle GA + VIP bundle           |           $99 | `VITE_COMMAS_URL_GA_VIP=[PASTE $99 COMMAS LINK]`        | `/confirmed`                           |
-| Add Emerald    | `/reserve/vault` | Settle GA + VIP + Emerald bundle |          $298 | `VITE_COMMAS_URL_GA_VIP_VAULT=[PASTE $298 COMMAS LINK]` | `/confirmed`                           |
+| Decision       | Page             | Action                           | Total charged | Checkout environment variable                                   | Success redirect                       |
+| -------------- | ---------------- | -------------------------------- | ------------: | --------------------------------------------------------------- | -------------------------------------- |
+| Reserve GA     | `/`              | Name + email + phone; no payment |            $0 | None                                                            | `/reserve/vip?t=[reservation-token]`   |
+| Keep GA        | `/reserve/vip`   | Settle General Admission         |           $22 | `VITE_COMMAS_URL_GA=https://commas.com/checkout/NXwzpMvMT1b5f6` | `/confirmed`                           |
+| Upgrade to VIP | `/reserve/vip`   | Reserve VIP; no payment yet      |            $0 | None                                                            | `/reserve/vault?t=[reservation-token]` |
+| Keep VIP       | `/reserve/vault` | Settle GA + VIP bundle           |           $99 | `VITE_COMMAS_URL_GA_VIP=[PASTE $99 COMMAS LINK]`                | `/confirmed`                           |
+| Add Emerald    | `/reserve/vault` | Settle GA + VIP + Emerald bundle |          $298 | `VITE_COMMAS_URL_GA_VIP_VAULT=[PASTE $298 COMMAS LINK]`         | `/confirmed`                           |
 
 Each paid Commas product needs a distinct product ID for webhook fulfillment:
 

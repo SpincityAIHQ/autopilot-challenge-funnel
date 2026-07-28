@@ -133,6 +133,7 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
   const readReserveApi = () => read("src/routes/api/public/reserve.ts");
   const readFrame = () => read("src/components/reserve/ReserveFrame.tsx");
   const readEnvExample = () => read(".env.example");
+  const readProductionEnv = () => read(".env.production");
 
   it("/reserve landing has NO prices", () => {
     const src = readReserveIndex();
@@ -227,6 +228,13 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(env.includes("VITE_COMMAS_URL_GA=")).toBe(true);
     expect(env.includes("VITE_COMMAS_URL_GA_VIP=")).toBe(true);
     expect(env.includes("VITE_COMMAS_URL_GA_VIP_VAULT=")).toBe(true);
+  });
+  it("production maps the $22 GA button to the approved Commas checkout", () => {
+    const env = readProductionEnv();
+    expect(env).toContain("VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS=commas.com");
+    expect(env).toContain("VITE_COMMAS_URL_GA=https://commas.com/checkout/NXwzpMvMT1b5f6");
+    expect(env).not.toContain("VITE_COMMAS_URL_GA_VIP=");
+    expect(env).not.toContain("VITE_COMMAS_URL_GA_VIP_VAULT=");
   });
 
   it("did NOT modify tiers.ts price ladder or webhook bundle contract", () => {

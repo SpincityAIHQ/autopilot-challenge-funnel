@@ -21,6 +21,7 @@ export const CHALLENGE_START_ISO = SUMMIT_START_ISO;
 
 export const DEFAULT_COMMAS_CHECKOUT_HOSTS: readonly string[] = [
   "www.fanbasis.com",
+  "commas.com",
 ];
 
 export interface SectionVideoUrls {
