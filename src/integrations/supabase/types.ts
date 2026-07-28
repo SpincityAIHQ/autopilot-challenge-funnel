@@ -754,6 +754,42 @@ export type Database = {
         }
         Relationships: []
       }
+      summit_reservations: {
+        Row: {
+          created_at: string
+          email: string | null
+          first_name: string | null
+          id: string
+          phone: string | null
+          settled: boolean
+          tier_reserved: string
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          phone?: string | null
+          settled?: boolean
+          tier_reserved?: string
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          phone?: string | null
+          settled?: boolean
+          tier_reserved?: string
+          token?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       summit_vault_purchases: {
         Row: {
           amount_cents: number

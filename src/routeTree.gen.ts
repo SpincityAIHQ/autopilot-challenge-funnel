@@ -27,7 +27,10 @@ import { Route as CommunicationPreferencesRouteImport } from './routes/communica
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AuditRouteImport } from './routes/audit'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ReserveIndexRouteImport } from './routes/reserve/index'
 import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
+import { Route as ReserveVipRouteImport } from './routes/reserve/vip'
+import { Route as ReserveVaultRouteImport } from './routes/reserve/vault'
 import { Route as OfferVipUpgradeRouteImport } from './routes/offer/vip-upgrade'
 import { Route as OfferStrategyIntensiveRouteImport } from './routes/offer/strategy-intensive'
 import { Route as OfferMentorshipRouteImport } from './routes/offer/mentorship'
@@ -39,6 +42,8 @@ import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.
 import { Route as ApplyMentorshipRouteImport } from './routes/apply.mentorship'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as ApiPublicSummitAuditRouteImport } from './routes/api/public/summit-audit'
+import { Route as ApiPublicReserveUpgradeRouteImport } from './routes/api/public/reserve-upgrade'
+import { Route as ApiPublicReserveRouteImport } from './routes/api/public/reserve'
 import { Route as ApiPublicMentorshipApplicationRouteImport } from './routes/api/public/mentorship-application'
 import { Route as ApiPublicKeynoteWaitlistRouteImport } from './routes/api/public/keynote-waitlist'
 import { Route as ApiPublicCommunicationPreferencesRouteImport } from './routes/api/public/communication-preferences'
@@ -140,10 +145,25 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReserveIndexRoute = ReserveIndexRouteImport.update({
+  id: '/reserve/',
+  path: '/reserve/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => ResourcesRoute,
+} as any)
+const ReserveVipRoute = ReserveVipRouteImport.update({
+  id: '/reserve/vip',
+  path: '/reserve/vip',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReserveVaultRoute = ReserveVaultRouteImport.update({
+  id: '/reserve/vault',
+  path: '/reserve/vault',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const OfferVipUpgradeRoute = OfferVipUpgradeRouteImport.update({
   id: '/offer/vip-upgrade',
@@ -200,6 +220,16 @@ const AdminAuditRoute = AdminAuditRouteImport.update({
 const ApiPublicSummitAuditRoute = ApiPublicSummitAuditRouteImport.update({
   id: '/api/public/summit-audit',
   path: '/api/public/summit-audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicReserveUpgradeRoute = ApiPublicReserveUpgradeRouteImport.update({
+  id: '/api/public/reserve-upgrade',
+  path: '/api/public/reserve-upgrade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicReserveRoute = ApiPublicReserveRouteImport.update({
+  id: '/api/public/reserve',
+  path: '/api/public/reserve',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicMentorshipApplicationRoute =
@@ -284,10 +314,15 @@ export interface FileRoutesByFullPath {
   '/offer/mentorship': typeof OfferMentorshipRoute
   '/offer/strategy-intensive': typeof OfferStrategyIntensiveRoute
   '/offer/vip-upgrade': typeof OfferVipUpgradeRoute
+  '/reserve/vault': typeof ReserveVaultRoute
+  '/reserve/vip': typeof ReserveVipRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/reserve/': typeof ReserveIndexRoute
   '/api/public/communication-preferences': typeof ApiPublicCommunicationPreferencesRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/reserve': typeof ApiPublicReserveRoute
+  '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
@@ -325,10 +360,15 @@ export interface FileRoutesByTo {
   '/offer/mentorship': typeof OfferMentorshipRoute
   '/offer/strategy-intensive': typeof OfferStrategyIntensiveRoute
   '/offer/vip-upgrade': typeof OfferVipUpgradeRoute
+  '/reserve/vault': typeof ReserveVaultRoute
+  '/reserve/vip': typeof ReserveVipRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/reserve': typeof ReserveIndexRoute
   '/api/public/communication-preferences': typeof ApiPublicCommunicationPreferencesRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/reserve': typeof ApiPublicReserveRoute
+  '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
@@ -367,10 +407,15 @@ export interface FileRoutesById {
   '/offer/mentorship': typeof OfferMentorshipRoute
   '/offer/strategy-intensive': typeof OfferStrategyIntensiveRoute
   '/offer/vip-upgrade': typeof OfferVipUpgradeRoute
+  '/reserve/vault': typeof ReserveVaultRoute
+  '/reserve/vip': typeof ReserveVipRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/reserve/': typeof ReserveIndexRoute
   '/api/public/communication-preferences': typeof ApiPublicCommunicationPreferencesRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/reserve': typeof ApiPublicReserveRoute
+  '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
@@ -410,10 +455,15 @@ export interface FileRouteTypes {
     | '/offer/mentorship'
     | '/offer/strategy-intensive'
     | '/offer/vip-upgrade'
+    | '/reserve/vault'
+    | '/reserve/vip'
     | '/resources/$slug'
+    | '/reserve/'
     | '/api/public/communication-preferences'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/reserve'
+    | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
     | '/api/public/admin/summit-audit'
     | '/api/public/resources/entitlement-summary'
@@ -451,10 +501,15 @@ export interface FileRouteTypes {
     | '/offer/mentorship'
     | '/offer/strategy-intensive'
     | '/offer/vip-upgrade'
+    | '/reserve/vault'
+    | '/reserve/vip'
     | '/resources/$slug'
+    | '/reserve'
     | '/api/public/communication-preferences'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/reserve'
+    | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
     | '/api/public/admin/summit-audit'
     | '/api/public/resources/entitlement-summary'
@@ -492,10 +547,15 @@ export interface FileRouteTypes {
     | '/offer/mentorship'
     | '/offer/strategy-intensive'
     | '/offer/vip-upgrade'
+    | '/reserve/vault'
+    | '/reserve/vip'
     | '/resources/$slug'
+    | '/reserve/'
     | '/api/public/communication-preferences'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/reserve'
+    | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
     | '/api/public/admin/summit-audit'
     | '/api/public/resources/entitlement-summary'
@@ -534,9 +594,14 @@ export interface RootRouteChildren {
   OfferMentorshipRoute: typeof OfferMentorshipRoute
   OfferStrategyIntensiveRoute: typeof OfferStrategyIntensiveRoute
   OfferVipUpgradeRoute: typeof OfferVipUpgradeRoute
+  ReserveVaultRoute: typeof ReserveVaultRoute
+  ReserveVipRoute: typeof ReserveVipRoute
+  ReserveIndexRoute: typeof ReserveIndexRoute
   ApiPublicCommunicationPreferencesRoute: typeof ApiPublicCommunicationPreferencesRoute
   ApiPublicKeynoteWaitlistRoute: typeof ApiPublicKeynoteWaitlistRoute
   ApiPublicMentorshipApplicationRoute: typeof ApiPublicMentorshipApplicationRoute
+  ApiPublicReserveRoute: typeof ApiPublicReserveRoute
+  ApiPublicReserveUpgradeRoute: typeof ApiPublicReserveUpgradeRoute
   ApiPublicSummitAuditRoute: typeof ApiPublicSummitAuditRoute
   ApiPublicAdminSummitAuditRoute: typeof ApiPublicAdminSummitAuditRoute
   ApiPublicResourcesEntitlementSummaryRoute: typeof ApiPublicResourcesEntitlementSummaryRoute
@@ -674,12 +739,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reserve/': {
+      id: '/reserve/'
+      path: '/reserve'
+      fullPath: '/reserve/'
+      preLoaderRoute: typeof ReserveIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/resources/$slug': {
       id: '/resources/$slug'
       path: '/$slug'
       fullPath: '/resources/$slug'
       preLoaderRoute: typeof ResourcesSlugRouteImport
       parentRoute: typeof ResourcesRoute
+    }
+    '/reserve/vip': {
+      id: '/reserve/vip'
+      path: '/reserve/vip'
+      fullPath: '/reserve/vip'
+      preLoaderRoute: typeof ReserveVipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reserve/vault': {
+      id: '/reserve/vault'
+      path: '/reserve/vault'
+      fullPath: '/reserve/vault'
+      preLoaderRoute: typeof ReserveVaultRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/offer/vip-upgrade': {
       id: '/offer/vip-upgrade'
@@ -756,6 +842,20 @@ declare module '@tanstack/react-router' {
       path: '/api/public/summit-audit'
       fullPath: '/api/public/summit-audit'
       preLoaderRoute: typeof ApiPublicSummitAuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/reserve-upgrade': {
+      id: '/api/public/reserve-upgrade'
+      path: '/api/public/reserve-upgrade'
+      fullPath: '/api/public/reserve-upgrade'
+      preLoaderRoute: typeof ApiPublicReserveUpgradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/reserve': {
+      id: '/api/public/reserve'
+      path: '/api/public/reserve'
+      fullPath: '/api/public/reserve'
+      preLoaderRoute: typeof ApiPublicReserveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/mentorship-application': {
@@ -865,10 +965,15 @@ const rootRouteChildren: RootRouteChildren = {
   OfferMentorshipRoute: OfferMentorshipRoute,
   OfferStrategyIntensiveRoute: OfferStrategyIntensiveRoute,
   OfferVipUpgradeRoute: OfferVipUpgradeRoute,
+  ReserveVaultRoute: ReserveVaultRoute,
+  ReserveVipRoute: ReserveVipRoute,
+  ReserveIndexRoute: ReserveIndexRoute,
   ApiPublicCommunicationPreferencesRoute:
     ApiPublicCommunicationPreferencesRoute,
   ApiPublicKeynoteWaitlistRoute: ApiPublicKeynoteWaitlistRoute,
   ApiPublicMentorshipApplicationRoute: ApiPublicMentorshipApplicationRoute,
+  ApiPublicReserveRoute: ApiPublicReserveRoute,
+  ApiPublicReserveUpgradeRoute: ApiPublicReserveUpgradeRoute,
   ApiPublicSummitAuditRoute: ApiPublicSummitAuditRoute,
   ApiPublicAdminSummitAuditRoute: ApiPublicAdminSummitAuditRoute,
   ApiPublicResourcesEntitlementSummaryRoute:
