@@ -17,7 +17,7 @@ export const Route = createFileRoute("/reserve/")({
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
-  beforeLoad: () => { applyReserveNoStoreHeaders(); },
+  beforeLoad: async () => { await applyReserveNoStoreHeaders(); },
   component: ReservePage,
 });
 

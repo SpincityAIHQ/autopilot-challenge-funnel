@@ -1,9 +1,15 @@
 /**
  * Reserve funnel — art-deco winged-plane mark.
  *
- * Pure inline SVG (no third-party image, no remote embed). Emerald + gold
- * on cosmic black. The whole frame is always visible (object-fit contain
- * is enforced by the SVG's own viewBox; there is no cropping).
+ * Pure inline SVG (no third-party image, no remote embed). Rendered as a
+ * premium gold-and-neutral art-deco mark on the cosmic black shell.
+ * Emerald is deliberately reserved for prices, the primary CTA, and the
+ * Vault exception, so the fallback illustration uses ONLY the exact
+ * project gold gradient stops (#F0DFA0, #D4AF37, #8B7220) plus deep
+ * neutrals — no emerald anywhere.
+ *
+ * The whole frame is always visible (contain via viewBox +
+ * preserveAspectRatio; there is no cropping).
  */
 export function WingedPlaneMark({ className = "" }: { className?: string }) {
   return (
@@ -20,12 +26,12 @@ export function WingedPlaneMark({ className = "" }: { className?: string }) {
           <stop offset="45%" stopColor="#D4AF37" />
           <stop offset="100%" stopColor="#8B7220" />
         </linearGradient>
-        <linearGradient id="wp-emerald" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#30D68B" />
-          <stop offset="100%" stopColor="#067F53" />
+        <linearGradient id="wp-body" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#2A2417" />
+          <stop offset="100%" stopColor="#141210" />
         </linearGradient>
         <radialGradient id="wp-glow" cx="50%" cy="50%" r="60%">
-          <stop offset="0%" stopColor="#30D68B" stopOpacity="0.35" />
+          <stop offset="0%" stopColor="#D4AF37" stopOpacity="0.18" />
           <stop offset="70%" stopColor="#0B0C0E" stopOpacity="0" />
         </radialGradient>
       </defs>
@@ -73,8 +79,8 @@ export function WingedPlaneMark({ className = "" }: { className?: string }) {
       <circle cx="200" cy="205" r="76" fill="none" stroke="url(#wp-gold)" strokeWidth="1" opacity="0.6" />
       <circle cx="200" cy="205" r="60" fill="none" stroke="url(#wp-gold)" strokeWidth="1" opacity="0.3" />
 
-      {/* Winged plane — stylized, symmetric */}
-      <g fill="url(#wp-emerald)" stroke="url(#wp-gold)" strokeWidth="1.25">
+      {/* Winged plane — stylized, symmetric, gold-lined on dark body */}
+      <g fill="url(#wp-body)" stroke="url(#wp-gold)" strokeWidth="1.25">
         {/* Fuselage */}
         <path d="M200 130 L212 235 L200 260 L188 235 Z" />
         {/* Nose cone highlight */}
