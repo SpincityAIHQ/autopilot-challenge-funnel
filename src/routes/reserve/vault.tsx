@@ -1,5 +1,4 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useState } from "react";
 import { z } from "zod";
 import { applyReserveNoStoreHeaders } from "@/lib/reserve-headers";
 import { ReserveFrame } from "@/components/reserve/ReserveFrame";
@@ -31,10 +30,7 @@ export const Route = createFileRoute("/reserve/vault")({
     }
     const r = await getReservationByToken({ data: { token: deps.t } });
     if (!r) throw redirect({ to: "/reserve" });
-    if (r.tier_reserved === "ga") {
-      throw redirect({ to: "/reserve/vip", search: { t: deps.t } });
-    }
-    return { first_name: r.first_name, tier: r.tier_reserved, token: deps.t };
+    return { first_name: r.first_name, token: deps.t };
   },
   component: ReserveVaultPage,
 });
@@ -44,33 +40,14 @@ function ReserveVaultPage() {
   const cfg = getCommasConfig();
   const gaVipUrl = resolveReserveCheckoutUrl("ga_vip");
   const gaVipVaultUrl = resolveReserveCheckoutUrl("ga_vip_vault");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  async function becomeKeyHolder() {
-    setError(null);
-    setBusy(true);
-    try {
-      const res = await fetch("/api/public/reserve-upgrade", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, step: "vault" }),
-      });
-      const body = (await res.json().catch(() => null)) as {
-        ok?: boolean;
-        next?: string | null;
-        error?: string;
-      } | null;
-      if (!res.ok || !body?.ok || !gaVipVaultUrl) {
-        setError("Couldn't upgrade the reservation. Try again.");
-        return;
-      }
-      window.location.assign(gaVipVaultUrl);
-    } catch {
-      setError("Network hiccup. Try again.");
-    } finally {
-      setBusy(false);
-    }
+  function recordVaultReservation() {
+    void fetch("/api/public/reserve-upgrade", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, step: "vault" }),
+      keepalive: true,
+    }).catch(() => undefined);
   }
 
   return (
@@ -112,14 +89,13 @@ function ReserveVaultPage() {
               <p className="mt-2 reserve-note-15" style={{ opacity: 0.78 }}>
                 AI AutoPilot Summit + VIP + Emerald Vault Key
               </p>
-              <button
-                type="button"
-                onClick={becomeKeyHolder}
-                disabled={busy || !gaVipVaultUrl}
-                className="reserve-cta-primary mt-5 w-full rounded-xl py-4 reserve-body-lg"
+              <a
+                href={gaVipVaultUrl!}
+                onClick={recordVaultReservation}
+                className="reserve-cta-primary mt-5 block w-full rounded-xl py-4 text-center reserve-body-lg"
               >
-                {busy ? "Opening Checkout…" : "Get the Emerald Vault Key · $298"}
-              </button>
+                Get the Emerald Vault Key · $298
+              </a>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
                 Complete your secure payment through SpincityHQ.
               </p>
@@ -133,26 +109,14 @@ function ReserveVaultPage() {
               </div>
 
               <a
-                href={gaVipUrl ?? "#"}
-                aria-disabled={!gaVipUrl}
-                onClick={(e) => {
-                  if (!gaVipUrl) e.preventDefault();
-                }}
-                className={`block w-full rounded-xl py-4 text-center reserve-body-lg reserve-gold-btn ${
-                  !gaVipUrl ? "pointer-events-none opacity-50" : ""
-                }`}
+                href={gaVipUrl!}
+                className="block w-full rounded-xl py-4 text-center reserve-body-lg reserve-gold-btn"
               >
                 Get VIP Access · $99
               </a>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
                 Complete your secure VIP payment through SpincityHQ.
               </p>
-              {!gaVipUrl ? (
-                <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                  Checkout is being configured. Please try again shortly.
-                </p>
-              ) : null}
-
               <div className="mt-8 reserve-hairline" />
               <div className="mt-7 grid gap-7 sm:grid-cols-2">
                 <div>
@@ -188,18 +152,6 @@ function ReserveVaultPage() {
               <p className="mt-4 reserve-note-15" style={{ opacity: 0.7 }}>
                 Choose the access level that matches the build support and system files you want.
               </p>
-              <div role="alert" aria-live="polite" className="min-h-[1.25rem] mt-3">
-                {error ? (
-                  <p className="reserve-note-15" style={{ color: "#FFB4B4" }}>
-                    {error}
-                  </p>
-                ) : null}
-              </div>
-              {!gaVipVaultUrl ? (
-                <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                  Checkout is being configured. Please try again shortly.
-                </p>
-              ) : null}
             </section>
           </RevealOnView>
         </div>
