@@ -93,10 +93,10 @@ function ReserveVipPage() {
         <div className="mt-5 space-y-10">
           <RevealOnView delayMs={160}>
             <section className="reserve-card reserve-card--emerald p-6 sm:p-8">
-              <p className="reserve-eyebrow reserve-gold-text">Choose once · Pay once</p>
+              <p className="reserve-eyebrow reserve-gold-text">Choose your Summit experience</p>
               <p className="mt-4 reserve-body-lg">
                 Your General Admission seat is already held. Choose the level that matches how much
-                access and implementation support you want, then complete one Commas checkout.
+                access and implementation support you want.
               </p>
               <p className="mt-5 reserve-eyebrow reserve-gold-text">Option 1 · Upgrade to VIP</p>
               <p className="mt-3 reserve-mono-price text-[44px]">$99 Total</p>
@@ -112,8 +112,7 @@ function ReserveVipPage() {
                 {busy ? "Upgrading…" : "Upgrade My Reservation to VIP"}
               </button>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Nothing is charged by this button. Next, watch the VIP video and either settle the
-                $99 total or continue to Emerald Key Holder.
+                Continue to the VIP video to review VIP and the Emerald Vault Key before you pay.
               </p>
 
               <div className="my-6 flex items-center gap-4">
@@ -134,10 +133,10 @@ function ReserveVipPage() {
                   !gaUrl ? "pointer-events-none opacity-50" : ""
                 }`}
               >
-                Keep General Admission · Settle $22
+                Get General Admission · $22
               </a>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Opens the secure Commas checkout for one $22 General Admission payment.
+                Complete your secure payment through SpincityHQ.
               </p>
               {!gaUrl ? (
                 <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>

@@ -210,7 +210,7 @@ function ReservePage() {
             </button>
 
             <p className="text-center reserve-note-15" style={{ opacity: 0.7 }}>
-              Nothing is charged. You choose how to settle on the next page.
+              Nothing is charged. You choose your ticket on the next page.
             </p>
           </form>
         </RevealOnView>

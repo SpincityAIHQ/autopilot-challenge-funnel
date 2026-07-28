@@ -7,7 +7,6 @@ import {
   isAtOrAbove,
   type ReserveTier,
 } from "@/lib/reserve-tier-transition";
-import { resolveReserveCheckoutUrlFromProcessEnv } from "@/lib/reserve-checkout";
 
 const NO_STORE = {
   "Content-Type": "application/json",
@@ -21,10 +20,10 @@ const bodySchema = z.object({
 });
 
 function neutral(status: number, error: string, extra?: Record<string, unknown>) {
-  return new Response(
-    JSON.stringify({ ok: false, error, ...(extra ?? {}) }),
-    { status, headers: NO_STORE },
-  );
+  return new Response(JSON.stringify({ ok: false, error, ...(extra ?? {}) }), {
+    status,
+    headers: NO_STORE,
+  });
 }
 
 export const Route = createFileRoute("/api/public/reserve-upgrade")({
@@ -60,9 +59,7 @@ export const Route = createFileRoute("/api/public/reserve-upgrade")({
         const { token, step } = check.data;
         if (!isValidReservationToken(token)) return neutral(400, "invalid");
 
-        const { supabaseAdmin } = await import(
-          "@/integrations/supabase/client.server"
-        );
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
         // Compare-and-set loop: never write a lower tier than what's already
         // in the row. On concurrent race we re-read and only accept a state
@@ -83,26 +80,16 @@ export const Route = createFileRoute("/api/public/reserve-upgrade")({
             return neutral(409, "vip_required", { next: `/reserve/vip?t=${token}` });
           }
 
-          // For the vault step, resolve + validate the checkout URL BEFORE
-          // committing / returning success. Fail closed if missing.
-          let nextUrl: string | null = null;
-          if (step === "vip") {
-            nextUrl = `/reserve/vault?t=${token}`;
-          } else {
-            nextUrl = resolveReserveCheckoutUrlFromProcessEnv("ga_vip_vault");
-            if (!nextUrl) {
-              return new Response(
-                JSON.stringify({ ok: false, error: "unavailable" }),
-                { status: 503, headers: NO_STORE },
-              );
-            }
-          }
+          // The API records the requested reservation level. Payment URLs stay
+          // in the browser's validated Shopify configuration and are never
+          // returned by this endpoint.
+          const nextUrl = `/reserve/vault?t=${token}`;
 
           if (decision.kind === "noop") {
-            return new Response(
-              JSON.stringify({ ok: true, next: nextUrl }),
-              { status: 200, headers: NO_STORE },
-            );
+            return new Response(JSON.stringify({ ok: true, next: nextUrl }), {
+              status: 200,
+              headers: NO_STORE,
+            });
           }
 
           // Compare-and-set: only update rows still at currentTier.
@@ -115,10 +102,10 @@ export const Route = createFileRoute("/api/public/reserve-upgrade")({
             .select("tier_reserved");
           if (updErr) return neutral(500, "unavailable");
           if (updated && updated.length > 0) {
-            return new Response(
-              JSON.stringify({ ok: true, next: nextUrl }),
-              { status: 200, headers: NO_STORE },
-            );
+            return new Response(JSON.stringify({ ok: true, next: nextUrl }), {
+              status: 200,
+              headers: NO_STORE,
+            });
           }
           // Concurrent update. Re-read; accept if already at-or-above target.
           const { data: recheck } = await supabaseAdmin
@@ -129,10 +116,10 @@ export const Route = createFileRoute("/api/public/reserve-upgrade")({
           if (!recheck) return neutral(404, "not_found");
           const observed = recheck.tier_reserved as ReserveTier;
           if (isAtOrAbove(observed, target)) {
-            return new Response(
-              JSON.stringify({ ok: true, next: nextUrl }),
-              { status: 200, headers: NO_STORE },
-            );
+            return new Response(JSON.stringify({ ok: true, next: nextUrl }), {
+              status: 200,
+              headers: NO_STORE,
+            });
           }
           // Otherwise loop and retry with the fresh observed tier.
         }

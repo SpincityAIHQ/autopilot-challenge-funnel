@@ -55,7 +55,7 @@ function Confirmed() {
         <ol className="mt-4 space-y-3 text-sm text-muted-foreground">
           <li>
             <span className="font-heading text-foreground">1. Check your receipt.</span> Keep the
-            Commas payment receipt for your records.
+            SpincityHQ order confirmation for your records.
           </li>
           <li>
             <span className="font-heading text-foreground">2. Watch your email and phone.</span>{" "}

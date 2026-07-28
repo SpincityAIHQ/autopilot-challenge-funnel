@@ -4,10 +4,7 @@ import { getCommasConfig } from "@/lib/challenge-config";
 
 import { ProductThankYou } from "@/components/ProductThankYou";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
-import {
-  useEntitlementSummary,
-  derivedAccess,
-} from "@/hooks/use-entitlement-summary";
+import { useEntitlementSummary, derivedAccess } from "@/hooks/use-entitlement-summary";
 
 export const Route = createFileRoute("/next-steps")({
   head: () => ({
@@ -48,8 +45,7 @@ interface ExitConfirmation {
 function NextSteps() {
   const cfg = getCommasConfig();
   const summary = useEntitlementSummary();
-  const access =
-    summary.status === "ok" ? derivedAccess(summary.scopes) : null;
+  const access = summary.status === "ok" ? derivedAccess(summary.scopes) : null;
   const confirmation = access ? getExitConfirmation(access, cfg) : null;
 
   return (
@@ -59,8 +55,8 @@ function NextSteps() {
         Your confirmation and next steps
       </h1>
       <p className="mt-3 text-muted-foreground">
-        Your current purchase is safe. Save the dates, watch for your NuAmenti
-        email, and gather the business information you will bring to Day 1.
+        Your current purchase is safe. Save the dates, watch for your NuAmenti email, and gather the
+        business information you will bring to Day 1.
       </p>
 
       {confirmation ? (
@@ -87,12 +83,10 @@ function NextSteps() {
 
       <AuditCallout />
 
-
       <section className="mt-10 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">Save the dates</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Both Summit days run from 1:00–4:00 PM Eastern. The room opens at
-          12:45 PM Eastern.
+          Both Summit days run from 1:00–4:00 PM Eastern. The room opens at 12:45 PM Eastern.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <a
@@ -112,48 +106,36 @@ function NextSteps() {
           <div className="mt-5 rounded-md border border-[color:var(--emerald-signal)]/40 bg-secondary/30 p-4">
             <p className="label-mono">VIP Build Lab</p>
             <p className="mt-2 text-sm text-muted-foreground">
-              Sunday, August 30 · 4:15–5:45 PM Eastern. It begins 15 minutes
-              after Day 2 ends, while the work is still fresh. Stay in the room
-              or use the private VIP link in your email.
+              Sunday, August 30 · 4:15–5:45 PM Eastern. It begins 15 minutes after Day 2 ends, while
+              the work is still fresh. Stay in the room or use the private VIP link in your email.
             </p>
           </div>
         ) : null}
       </section>
 
       <section className="mt-8 surface-raised p-6">
-        <h2 className="font-heading text-lg text-foreground">
-          Watch your inbox
-        </h2>
+        <h2 className="font-heading text-lg text-foreground">Watch your inbox</h2>
         <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-          <li>· Keep every FanBasis receipt connected to your purchases.</li>
+          <li>· Keep every SpincityHQ order confirmation connected to your purchases.</li>
           <li>
             · Look for the NuAmenti welcome email from{" "}
             <span className="text-foreground">Info@NuAmenti.com</span>.
           </li>
           <li>· Check Promotions and Spam if you do not see it.</li>
-          <li>
-            · Your emails and resources will match the highest ticket level you
-            purchased.
-          </li>
-          <li>
-            · If you joined text updates, reply HELP for help or STOP to leave.
-          </li>
+          <li>· Your emails and resources will match the highest ticket level you purchased.</li>
+          <li>· If you joined text updates, reply HELP for help or STOP to leave.</li>
         </ul>
       </section>
 
       <section className="mt-8 surface-raised p-6">
-        <h2 className="font-heading text-lg text-foreground">
-          Your secure resources
-        </h2>
+        <h2 className="font-heading text-lg text-foreground">Your secure resources</h2>
         <p className="mt-3 text-sm text-muted-foreground">
-          Your NuAmenti email contains a private access link. That link opens
-          only the Summit resources tied to the purchases confirmed for your
-          email address. Do not share it.
+          Your NuAmenti email contains a private access link. That link opens only the Summit
+          resources tied to the purchases confirmed for your email address. Do not share it.
         </p>
         <p className="mt-3 text-sm text-muted-foreground">
-          Missing your link? Email{" "}
-          <span className="text-foreground">Info@NuAmenti.com</span> from the
-          same address you used to buy.
+          Missing your link? Email <span className="text-foreground">Info@NuAmenti.com</span> from
+          the same address you used to buy.
         </p>
         <p className="mt-3 text-sm text-muted-foreground">
           Change your email, text, or call choices on the{" "}
@@ -165,9 +147,7 @@ function NextSteps() {
       </section>
 
       <section className="mt-8 surface p-6">
-        <h2 className="font-heading text-lg text-foreground">
-          Bring this to Day 1
-        </h2>
+        <h2 className="font-heading text-lg text-foreground">Bring this to Day 1</h2>
         <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
           <li>· One business, skill, offer, or clear idea.</li>
           <li>· A list of the tasks that take too much time.</li>
@@ -207,8 +187,7 @@ function getExitConfirmation(
       videoLabel: "Your full-path confirmation and next steps",
       envKey: "VITE_SUMMIT_VIDEO_EXIT_INTENSIVE",
       eyebrow: "Verified · Full Summit Path + Strategy & Build Intensive",
-      headline:
-        "Thank you, family — your private Strategy & Build Intensive is confirmed.",
+      headline: "Thank you, family — your private Strategy & Build Intensive is confirmed.",
       body: "You have the full Summit path, including the live sessions on August 29–30, the VIP Build Lab immediately after Day 2, the Implementation Vault, and your private session. Our team will email you from Info@NuAmenti.com with the scheduling link.",
     };
   }
@@ -233,8 +212,7 @@ function getExitConfirmation(
       videoLabel: "Your VIP confirmation and next steps",
       envKey: "VITE_SUMMIT_VIDEO_EXIT_VIP",
       eyebrow: "Verified · VIP Implementation Experience",
-      headline:
-        "Thank you, family — your General Admission and VIP access are confirmed.",
+      headline: "Thank you, family — your General Admission and VIP access are confirmed.",
       body: "You are all set for the live Summit on August 29–30 from 1:00–4:00 PM Eastern, 30-day recordings, and the VIP Build Lab immediately after Day 2 on Sunday from 4:15–5:45 PM Eastern.",
     };
   }
@@ -246,8 +224,7 @@ function getExitConfirmation(
       videoLabel: "Your General Admission confirmation and next steps",
       envKey: "VITE_SUMMIT_VIDEO_EXIT_GA",
       eyebrow: "Verified · General Admission",
-      headline:
-        "Thank you, family — your General Admission seat is confirmed.",
+      headline: "Thank you, family — your General Admission seat is confirmed.",
       body: "You are all set for Saturday, August 29 and Sunday, August 30 from 1:00–4:00 PM Eastern. The room opens at 12:45 PM both days. Your ticket stays complete even when you pass on every optional upgrade.",
     };
   }
@@ -263,9 +240,7 @@ function VerificationNotice({
   const loading = status === "loading";
   return (
     <section className="mt-8 rounded-md border border-[color:var(--gold)]/60 bg-[color:var(--surface)] p-6">
-      <p className="eyebrow">
-        {loading ? "Checking your access" : "Secure confirmation needed"}
-      </p>
+      <p className="eyebrow">{loading ? "Checking your access" : "Secure confirmation needed"}</p>
       <h2 className="mt-2 font-display text-2xl text-foreground">
         {loading
           ? "We are loading your exact ticket confirmation."

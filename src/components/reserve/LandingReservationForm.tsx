@@ -108,7 +108,9 @@ export function LandingReservationForm() {
       <div className="mt-4 grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
         <p className="rounded-md border border-border px-3 py-2">1. Hold your GA seat</p>
         <p className="rounded-md border border-border px-3 py-2">2. Watch the GA ticket video</p>
-        <p className="rounded-md border border-border px-3 py-2">3. Choose once and pay once</p>
+        <p className="rounded-md border border-border px-3 py-2">
+          3. Choose your ticket and check out
+        </p>
       </div>
 
       <div className="mt-5 grid gap-4 md:grid-cols-3">

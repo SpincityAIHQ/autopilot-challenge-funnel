@@ -31,47 +31,37 @@ function Terms() {
 
       <div className="mt-8 space-y-4 text-sm leading-relaxed">
         <p>
-          These pre-launch draft terms describe how the AI AutoPilot Summit
-          funnel operates today. Public checkout remains disabled until
-          operator-approved final terms are posted and accepted at checkout.
+          These pre-launch draft terms describe how the AI AutoPilot Summit funnel operates today.
+          Public checkout remains disabled until operator-approved final terms are posted and
+          accepted at checkout.
         </p>
 
-        <h2 className="mt-6 font-heading text-base text-foreground">
-          What you get
-        </h2>
+        <h2 className="mt-6 font-heading text-base text-foreground">What you get</h2>
         <p>
-          The Summit is a two-day live online event on August 24–25, 2026.
-          Exact session start times are announced to registrants closer to the
-          event. GA, VIP, Vault, Strategy &amp; Build Intensive, and
-          Mentorship are separate products with their own inclusions listed
-          on the sales page.
+          The Summit is a two-day live online event on August 24–25, 2026. Exact session start times
+          are announced to registrants closer to the event. GA, VIP, Vault, Strategy &amp; Build
+          Intensive, and Mentorship are separate products with their own inclusions listed on the
+          sales page.
         </p>
 
-        <h2 className="mt-6 font-heading text-base text-foreground">
-          No guarantees
-        </h2>
+        <h2 className="mt-6 font-heading text-base text-foreground">No guarantees</h2>
         <p>
-          No income, sales, or specific business-outcome guarantees are made.
-          What you build during and after the Summit depends on the work you
-          bring and the effort you continue after the sessions end.
+          No income, sales, or specific business-outcome guarantees are made. What you build during
+          and after the Summit depends on the work you bring and the effort you continue after the
+          sessions end.
         </p>
 
-        <h2 className="mt-6 font-heading text-base text-foreground">
-          Payments and provider roles
-        </h2>
+        <h2 className="mt-6 font-heading text-base text-foreground">Payments and provider roles</h2>
         <p>
-          Payments are processed by FanBasis on their hosted checkout. Their
-          terms and privacy policy also apply to the payment step. Our
-          fulfillment matches verified payments to your registration, grants
-          entitlements, and delivers access through a single-use magic link.
+          Payments are processed by Shopify on the SpincityHQ checkout. Their terms and privacy
+          policy also apply to the payment step. Our fulfillment matches verified payments to your
+          registration, grants entitlements, and delivers access through a single-use magic link.
         </p>
 
-        <h2 className="mt-6 font-heading text-base text-foreground">
-          Conduct
-        </h2>
+        <h2 className="mt-6 font-heading text-base text-foreground">Conduct</h2>
         <p>
-          By registering you agree to attend the live sessions as scheduled
-          and follow the participation guidelines shared before Day 1.
+          By registering you agree to attend the live sessions as scheduled and follow the
+          participation guidelines shared before Day 1.
         </p>
 
         <p className="mt-8 text-xs">
@@ -79,8 +69,8 @@ function Terms() {
           <a className="underline" href="mailto:Info@NuAmenti.com">
             Info@NuAmenti.com
           </a>
-          . This is a pre-launch draft pending counsel review and will be
-          replaced with the final version before public checkout opens.
+          . This is a pre-launch draft pending counsel review and will be replaced with the final
+          version before public checkout opens.
         </p>
       </div>
     </main>

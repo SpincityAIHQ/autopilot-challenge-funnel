@@ -4,11 +4,7 @@ import { z } from "zod";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { TestimonialSection } from "@/components/TestimonialSection";
 import { useQaReviewMode } from "@/hooks/use-qa-review";
-import {
-  getCommasConfig,
-  isHandoffAllowed,
-  resolveCheckoutUrl,
-} from "@/lib/challenge-config";
+import { getCommasConfig, isHandoffAllowed, resolveCheckoutUrl } from "@/lib/challenge-config";
 import { formatUsd, TIER_MAP } from "@/lib/tiers";
 
 const searchSchema = z.object({
@@ -65,9 +61,7 @@ function Checkout() {
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-12">
-      <p className="eyebrow">
-        SpinCityHQ &amp; NuAmenti present · AI AutoPilot 2-Day Summit
-      </p>
+      <p className="eyebrow">SpinCityHQ &amp; NuAmenti present · AI AutoPilot 2-Day Summit</p>
       <h1 className="mt-3 font-display text-2xl text-foreground sm:text-3xl">
         Get your General Admission ticket
       </h1>
@@ -134,8 +128,8 @@ function Checkout() {
       </section>
 
       <p className="mt-5 text-sm text-muted-foreground">
-        Saturday, August 29 and Sunday, August 30 · 1:00–4:00 PM Eastern ·
-        live online. The room opens at 12:45 PM both days.
+        Saturday, August 29 and Sunday, August 30 · 1:00–4:00 PM Eastern · live online. The room
+        opens at 12:45 PM both days.
       </p>
 
       <section className="mt-8 surface-raised p-6">
@@ -154,18 +148,16 @@ function Checkout() {
           ))}
         </ul>
         <p className="mt-4 text-xs text-muted-foreground">
-          Deeper build support is offered one step at a time only after each
-          earlier purchase is confirmed.
+          Deeper build support is offered one step at a time only after each earlier purchase is
+          confirmed.
         </p>
       </section>
 
       <section className="mt-6 surface-raised p-6">
-        <h2 className="font-heading text-lg text-foreground">
-          How communication works
-        </h2>
+        <h2 className="font-heading text-lg text-foreground">How communication works</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          FanBasis handles the secure payment. NuAmenti sends your access,
-          calendar links, preparation steps, and ticket-specific resources.
+          Complete your secure payment through SpincityHQ. NuAmenti sends your access, calendar
+          links, preparation steps, and ticket-specific resources.
         </p>
       </section>
 

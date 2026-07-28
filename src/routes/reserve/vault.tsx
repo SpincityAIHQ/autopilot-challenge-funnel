@@ -43,7 +43,7 @@ function ReserveVaultPage() {
   const { first_name, token } = Route.useLoaderData();
   const cfg = getCommasConfig();
   const gaVipUrl = resolveReserveCheckoutUrl("ga_vip");
-  const gaVipVaultReady = resolveReserveCheckoutUrl("ga_vip_vault") !== null;
+  const gaVipVaultUrl = resolveReserveCheckoutUrl("ga_vip_vault");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,11 +61,11 @@ function ReserveVaultPage() {
         next?: string | null;
         error?: string;
       } | null;
-      if (!res.ok || !body?.ok || !body.next) {
+      if (!res.ok || !body?.ok || !gaVipVaultUrl) {
         setError("Couldn't upgrade the reservation. Try again.");
         return;
       }
-      window.location.assign(body.next);
+      window.location.assign(gaVipVaultUrl);
     } catch {
       setError("Network hiccup. Try again.");
     } finally {
@@ -102,29 +102,26 @@ function ReserveVaultPage() {
         <div className="mt-5 space-y-10">
           <RevealOnView delayMs={160}>
             <section className="reserve-card--vault p-6 sm:p-8">
-              <p className="reserve-eyebrow reserve-gold-text">Choose once · Pay once</p>
+              <p className="reserve-eyebrow reserve-gold-text">Choose your complete access level</p>
               <p className="mt-4 reserve-body-lg">
-                Your VIP reservation is already held. You can settle the $99 VIP total now or add
-                the Emerald Key Holder system and complete one $298 Commas checkout.
+                Your VIP reservation is held. Choose VIP access for $99 or unlock the complete
+                Summit + VIP + Emerald Vault Key package for $298.
               </p>
-              <p className="mt-6 reserve-eyebrow reserve-jewel">
-                Option 1 · Become an Emerald Key Holder
-              </p>
+              <p className="mt-6 reserve-eyebrow reserve-jewel">The complete package</p>
               <p className="mt-3 reserve-mono-price text-[48px] reserve-jewel">$298 Total</p>
               <p className="mt-2 reserve-note-15" style={{ opacity: 0.78 }}>
-                General Admission and VIP are included. Emerald adds $199.
+                AI AutoPilot Summit + VIP + Emerald Vault Key
               </p>
               <button
                 type="button"
                 onClick={becomeKeyHolder}
-                disabled={busy || !gaVipVaultReady}
+                disabled={busy || !gaVipVaultUrl}
                 className="reserve-cta-primary mt-5 w-full rounded-xl py-4 reserve-body-lg"
               >
-                {busy ? "Opening Checkout…" : "Become an Emerald Key Holder · Pay $298"}
+                {busy ? "Opening Checkout…" : "Get the Emerald Vault Key · $298"}
               </button>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Opens the secure Commas checkout for one $298 payment. There is no second charge for
-                General Admission or VIP.
+                Complete your secure payment through SpincityHQ.
               </p>
 
               <div className="my-6 flex items-center gap-4">
@@ -145,10 +142,10 @@ function ReserveVaultPage() {
                   !gaVipUrl ? "pointer-events-none opacity-50" : ""
                 }`}
               >
-                Keep VIP · Settle $99
+                Get VIP Access · $99
               </a>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Opens the secure Commas checkout for one $99 VIP payment.
+                Complete your secure VIP payment through SpincityHQ.
               </p>
               {!gaVipUrl ? (
                 <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
@@ -189,7 +186,7 @@ function ReserveVaultPage() {
                 </div>
               </div>
               <p className="mt-4 reserve-note-15" style={{ opacity: 0.7 }}>
-                Your VIP reservation carries forward. The Vault adds $199.
+                Choose the access level that matches the build support and system files you want.
               </p>
               <div role="alert" aria-live="polite" className="min-h-[1.25rem] mt-3">
                 {error ? (
@@ -198,7 +195,7 @@ function ReserveVaultPage() {
                   </p>
                 ) : null}
               </div>
-              {!gaVipVaultReady ? (
+              {!gaVipVaultUrl ? (
                 <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
                   Checkout is being configured. Please try again shortly.
                 </p>

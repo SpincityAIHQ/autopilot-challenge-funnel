@@ -6,7 +6,7 @@ const VIP = readFileSync("src/routes/offer/vip-upgrade.tsx", "utf8");
 const VAULT = readFileSync("src/routes/offer/implementation-vault.tsx", "utf8");
 const INTENSIVE = readFileSync("src/routes/strategy-intensive.tsx", "utf8");
 const ROOT = readFileSync("src/routes/__root.tsx", "utf8");
-const MAP = readFileSync("docs/commas-funnel-map.md", "utf8");
+const MAP = readFileSync("docs/shopify-funnel-map.md", "utf8");
 
 describe("simple owner funnel walkthrough", () => {
   it("removes opening-soon language from every payment step", () => {
@@ -26,16 +26,14 @@ describe("simple owner funnel walkthrough", () => {
     expect(ROOT).not.toContain("QaReviewPanel");
   });
 
-  it("documents every Commas checkout placeholder and redirect", () => {
-    expect(MAP).toContain("VITE_COMMAS_URL_GA");
-    expect(MAP).toContain("VITE_COMMAS_URL_GA_VIP");
-    expect(MAP).toContain("VITE_COMMAS_URL_GA_VIP_VAULT");
-    expect(MAP).toContain("VITE_COMMAS_CHECKOUT_URL_VIP_UPGRADE");
-    expect(MAP).toContain("VITE_COMMAS_CHECKOUT_URL_VAULT");
-    expect(MAP).toContain("VITE_COMMAS_CHECKOUT_URL_INTENSIVE");
+  it("documents every active Shopify checkout and redirect", () => {
+    expect(MAP).toContain("VITE_SHOPIFY_URL_GA");
+    expect(MAP).toContain("VITE_SHOPIFY_URL_GA_VIP");
+    expect(MAP).toContain("VITE_SHOPIFY_URL_GA_VIP_VAULT");
+    expect(MAP).toContain("50980696129783");
+    expect(MAP).toContain("50980697571575");
+    expect(MAP).toContain("50980698194167");
     expect(MAP).toContain("/confirmed");
-    expect(MAP).toContain("/offer/implementation-vault");
-    expect(MAP).toContain("/strategy-intensive");
-    expect(MAP).toContain("/next-steps");
+    expect(MAP).toContain("Shopify Thank You page");
   });
 });

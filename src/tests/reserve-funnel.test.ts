@@ -33,50 +33,63 @@ describe("reservation tokens", () => {
 });
 
 describe("reserve checkout URL — pure validator", () => {
-  const GOOD = "https://www.fanbasis.com/i/example";
+  const GOOD = "https://spincityhq.com/cart/50980696129783:1?checkout";
 
-  it("accepts a valid HTTPS URL on the default allowed host", () => {
-    expect(validateReserveCheckoutUrl("ga", { VITE_COMMAS_URL_GA: GOOD })).toBe(GOOD);
+  it("accepts a permanent Shopify cart permalink on the store host", () => {
+    expect(validateReserveCheckoutUrl("ga", { VITE_SHOPIFY_URL_GA: GOOD })).toBe(GOOD);
   });
   it("rejects HTTP (non-HTTPS)", () => {
     expect(
       validateReserveCheckoutUrl("ga", {
-        VITE_COMMAS_URL_GA: "http://www.fanbasis.com/i/x",
+        VITE_SHOPIFY_URL_GA: "http://spincityhq.com/cart/50980696129783:1?checkout",
       }),
     ).toBeNull();
   });
   it("rejects URLs with embedded credentials", () => {
     expect(
       validateReserveCheckoutUrl("ga", {
-        VITE_COMMAS_URL_GA: "https://user:pass@www.fanbasis.com/i/x",
+        VITE_SHOPIFY_URL_GA: "https://user:pass@spincityhq.com/cart/50980696129783:1?checkout",
       }),
     ).toBeNull();
   });
   it("rejects off-allowlist hosts", () => {
     expect(
       validateReserveCheckoutUrl("ga", {
-        VITE_COMMAS_URL_GA: "https://evil.example.com/x",
+        VITE_SHOPIFY_URL_GA: "https://evil.example.com/cart/50980696129783:1?checkout",
       }),
     ).toBeNull();
   });
   it("fails closed when the variable is missing or empty", () => {
     expect(validateReserveCheckoutUrl("ga", {})).toBeNull();
-    expect(validateReserveCheckoutUrl("ga", { VITE_COMMAS_URL_GA: "   " })).toBeNull();
+    expect(validateReserveCheckoutUrl("ga", { VITE_SHOPIFY_URL_GA: "   " })).toBeNull();
   });
   it("honors the additional allowed-hosts env variable", () => {
-    const url = "https://checkout.partner.co/x";
-    expect(validateReserveCheckoutUrl("ga", { VITE_COMMAS_URL_GA: url })).toBeNull();
+    const url = "https://checkout.partner.co/cart/50980696129783:1?checkout";
+    expect(validateReserveCheckoutUrl("ga", { VITE_SHOPIFY_URL_GA: url })).toBeNull();
     expect(
       validateReserveCheckoutUrl("ga", {
-        VITE_COMMAS_URL_GA: url,
-        VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS: "checkout.partner.co",
+        VITE_SHOPIFY_URL_GA: url,
+        VITE_SHOPIFY_ALLOWED_CHECKOUT_HOSTS: "checkout.partner.co",
       }),
     ).toBe(url);
   });
+  it("rejects temporary Shopify sessions and non-checkout product pages", () => {
+    expect(
+      validateReserveCheckoutUrl("ga", {
+        VITE_SHOPIFY_URL_GA: "https://spincityhq.com/checkouts/cn/temporary-session/en-us",
+      }),
+    ).toBeNull();
+    expect(
+      validateReserveCheckoutUrl("ga", {
+        VITE_SHOPIFY_URL_GA:
+          "https://spincityhq.com/products/ai-autopilot-summit-general-admission",
+      }),
+    ).toBeNull();
+  });
   it("declares the exact env variable names", () => {
-    expect(RESERVE_ENV_KEY.ga).toBe("VITE_COMMAS_URL_GA");
-    expect(RESERVE_ENV_KEY.ga_vip).toBe("VITE_COMMAS_URL_GA_VIP");
-    expect(RESERVE_ENV_KEY.ga_vip_vault).toBe("VITE_COMMAS_URL_GA_VIP_VAULT");
+    expect(RESERVE_ENV_KEY.ga).toBe("VITE_SHOPIFY_URL_GA");
+    expect(RESERVE_ENV_KEY.ga_vip).toBe("VITE_SHOPIFY_URL_GA_VIP");
+    expect(RESERVE_ENV_KEY.ga_vip_vault).toBe("VITE_SHOPIFY_URL_GA_VIP_VAULT");
   });
   it("live resolver fails closed in this test env", () => {
     for (const b of ["ga", "ga_vip", "ga_vip_vault"] as ReserveBundle[]) {
@@ -143,9 +156,7 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
   });
   it("/reserve landing has exact reassurance + CTA copy", () => {
     const src = readReserveIndex();
-    expect(src.includes("Nothing is charged. You choose how to settle on the next page.")).toBe(
-      true,
-    );
+    expect(src.includes("Nothing is charged. You choose your ticket on the next page.")).toBe(true);
     expect(src.includes("Reserve My Seat")).toBe(true);
   });
   it("the live landing page captures the lead and advances directly to the GA decision", () => {
@@ -169,7 +180,7 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     const src = readReserveVip();
     expect(src.includes("$22")).toBe(true);
     expect(src.includes("$99 Total")).toBe(true);
-    expect(src.includes("Keep General Admission · Settle $22")).toBe(true);
+    expect(src.includes("Get General Admission · $22")).toBe(true);
     expect(src.includes("Upgrade My Reservation to VIP")).toBe(true);
     expect(src.includes("General Admission includes")).toBe(true);
     expect(src.includes("All six build workbooks")).toBe(true);
@@ -182,9 +193,9 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     const src = readReserveVault();
     expect(src.includes("$99")).toBe(true);
     expect(src.includes("$298 Total")).toBe(true);
-    expect(src.includes("Keep VIP · Settle $99")).toBe(true);
-    expect(src.includes("Become an Emerald Key Holder · Pay $298")).toBe(true);
-    expect(src.includes("one $298 payment")).toBe(true);
+    expect(src.includes("Get VIP Access · $99")).toBe(true);
+    expect(src.includes("Get the Emerald Vault Key · $298")).toBe(true);
+    expect(src.includes("AI AutoPilot Summit + VIP + Emerald Vault Key")).toBe(true);
     expect(src.includes("MVP App Builder")).toBe(true);
     expect(src.includes("AI Business GPS")).toBe(true);
     expect(
@@ -195,10 +206,10 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
         ),
     ).toBe(true);
     expect(src.includes("Full NuAmenti 3 Day recording")).toBe(true);
-    expect(src.includes("Your VIP reservation carries forward. The Vault adds $199.")).toBe(true);
+    expect(src.includes("Choose the access level that matches")).toBe(true);
   });
 
-  it("every settle button resolves the matching Commas bundle URL", () => {
+  it("every payment button resolves the matching Shopify checkout URL", () => {
     const vip = readReserveVip();
     const vault = readReserveVault();
     expect(vip.includes('resolveReserveCheckoutUrl("ga")')).toBe(true);
@@ -206,9 +217,8 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(vault.includes('resolveReserveCheckoutUrl("ga_vip")')).toBe(true);
     expect(vault.includes('resolveReserveCheckoutUrl("ga_vip_vault")')).toBe(true);
     expect(vault.includes('href={gaVipUrl ?? "#"}')).toBe(true);
-    expect(
-      readUpgradeApi().includes('resolveReserveCheckoutUrlFromProcessEnv("ga_vip_vault")'),
-    ).toBe(true);
+    expect(vault.includes("window.location.assign(gaVipVaultUrl)")).toBe(true);
+    expect(readUpgradeApi().includes("resolveReserveCheckoutUrlFromProcessEnv")).toBe(false);
   });
   it("uses token (never id) in every URL surface", () => {
     const files = [
@@ -223,18 +233,24 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(readUpgradeApi().includes("/reserve/vault?t=${token}")).toBe(true);
     expect(readUpgradeApi().includes("/reserve/vip?t=${token}")).toBe(true);
   });
-  it(".env.example declares the three reserve-bundle env variables", () => {
+  it(".env.example declares the three Shopify checkout variables", () => {
     const env = readEnvExample();
-    expect(env.includes("VITE_COMMAS_URL_GA=")).toBe(true);
-    expect(env.includes("VITE_COMMAS_URL_GA_VIP=")).toBe(true);
-    expect(env.includes("VITE_COMMAS_URL_GA_VIP_VAULT=")).toBe(true);
+    expect(env.includes("VITE_SHOPIFY_URL_GA=")).toBe(true);
+    expect(env.includes("VITE_SHOPIFY_URL_GA_VIP=")).toBe(true);
+    expect(env.includes("VITE_SHOPIFY_URL_GA_VIP_VAULT=")).toBe(true);
   });
-  it("production maps the $22 GA button to the approved Commas checkout", () => {
+  it("production maps all three buttons to permanent Shopify cart permalinks", () => {
     const env = readProductionEnv();
-    expect(env).toContain("VITE_COMMAS_ALLOWED_CHECKOUT_HOSTS=commas.com");
-    expect(env).toContain("VITE_COMMAS_URL_GA=https://commas.com/checkout/NXwzpMvMT1b5f6");
-    expect(env).not.toContain("VITE_COMMAS_URL_GA_VIP=");
-    expect(env).not.toContain("VITE_COMMAS_URL_GA_VIP_VAULT=");
+    expect(env).toContain("VITE_SHOPIFY_ALLOWED_CHECKOUT_HOSTS=spincityhq.com");
+    expect(env).toContain(
+      "VITE_SHOPIFY_URL_GA=https://spincityhq.com/cart/50980696129783:1?checkout",
+    );
+    expect(env).toContain(
+      "VITE_SHOPIFY_URL_GA_VIP=https://spincityhq.com/cart/50980697571575:1?checkout",
+    );
+    expect(env).toContain(
+      "VITE_SHOPIFY_URL_GA_VIP_VAULT=https://spincityhq.com/cart/50980698194167:1?checkout",
+    );
   });
 
   it("did NOT modify tiers.ts price ladder or webhook bundle contract", () => {
@@ -262,12 +278,40 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     }
   });
 
-  it("the vault upgrade API server-validates the vault checkout URL before returning", () => {
+  it("the vault upgrade API records the reservation without exposing a payment URL", () => {
     const src = readUpgradeApi();
-    expect(src.includes("resolveReserveCheckoutUrlFromProcessEnv")).toBe(true);
-    expect(src.includes('"ga_vip_vault"')).toBe(true);
-    // Compare-and-set predicate
+    expect(src.includes("resolveReserveCheckoutUrlFromProcessEnv")).toBe(false);
+    expect(src.includes("The API records the requested reservation level")).toBe(true);
     expect(src.includes('.eq("tier_reserved", currentTier)')).toBe(true);
+  });
+
+  it("has no retired payment-provider copy on visitor-facing funnel pages", () => {
+    const publicCopy = [
+      readReserveIndex(),
+      readLandingForm(),
+      readReserveVip(),
+      readReserveVault(),
+      read("src/routes/confirmed.tsx"),
+      read("src/routes/checkout.tsx"),
+      read("src/routes/privacy.tsx"),
+      read("src/routes/terms.tsx"),
+      read("src/routes/refund-policy.tsx"),
+      read("src/routes/next-steps.tsx"),
+      read("src/components/OfferGate.tsx"),
+    ].join("\n");
+    for (const retiredCopy of [
+      "Commas checkout",
+      "Commas payment",
+      "FanBasis handles",
+      "from FanBasis",
+      "processed by FanBasis",
+      "inside FanBasis",
+      "FanBasis receipt",
+      "FanBasis checkout",
+    ]) {
+      expect(publicCopy).not.toContain(retiredCopy);
+    }
+    expect(publicCopy).not.toContain("Settle");
   });
 
   it("design tokens are exact and NO legacy reserve-funnel emerald values remain anywhere under reserve/", () => {

@@ -1,9 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import {
-  useEntitlementSummary,
-  derivedAccess,
-} from "@/hooks/use-entitlement-summary";
+import { useEntitlementSummary, derivedAccess } from "@/hooks/use-entitlement-summary";
 
 /**
  * Keeps each paid offer private until the secure session proves the buyer owns
@@ -28,9 +25,7 @@ export function OfferGate({
 
   if (summary.status === "unauthenticated" || summary.status === "error") {
     return (
-      <SecureLinkPanel
-        message="This page is only for confirmed Summit buyers. Open the secure link in your NuAmenti email. If you cannot find it, email Info@NuAmenti.com."
-      />
+      <SecureLinkPanel message="This page is only for confirmed Summit buyers. Open the secure link in your NuAmenti email. If you cannot find it, email Info@NuAmenti.com." />
     );
   }
 
@@ -50,11 +45,7 @@ export function OfferGate({
 }
 
 function PendingPanel({ label }: { label: string }) {
-  return (
-    <section className="mt-10 surface p-6 text-sm text-muted-foreground">
-      {label}
-    </section>
-  );
+  return <section className="mt-10 surface p-6 text-sm text-muted-foreground">{label}</section>;
 }
 
 function SecureLinkPanel({ message }: { message: string }) {
@@ -80,8 +71,7 @@ function SecureLinkPanel({ message }: { message: string }) {
         </a>
       </div>
       <p className="mt-4 text-xs text-muted-foreground">
-        A return page from FanBasis does not prove a purchase. The private link
-        in your NuAmenti email confirms what you can open.
+        Your private NuAmenti email link confirms which resources you can open.
       </p>
     </section>
   );
