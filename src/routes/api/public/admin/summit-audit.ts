@@ -129,6 +129,7 @@ export const Route = createFileRoute("/api/public/admin/summit-audit")({
           const header = [
             "created_at",
             "email",
+            "verification",
             "entitlement_tier",
             "business_type",
             "revenue_stage",
@@ -141,6 +142,7 @@ export const Route = createFileRoute("/api/public/admin/summit-audit")({
             "top_question",
             "anything_else",
           ];
+
           const lines = [header.join(",")];
           for (const r of rows) {
             lines.push(
