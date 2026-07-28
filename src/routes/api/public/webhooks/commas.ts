@@ -154,6 +154,52 @@ export const Route = createFileRoute("/api/public/webhooks/commas")({
           return new Response("Ignored", { status: 200 });
         }
 
+        // Bundle path (self-satisfying — no sequential preconditions).
+        const bundle = resolveBundleFromItem(payment.baseItemId, env);
+        if (bundle) {
+          const expectedBundle = expectedBundleTotalCents(bundle);
+          if (payment.amountCents !== expectedBundle) {
+            const err = await setTerminal(
+              supabaseAdmin,
+              envelope.id,
+              "rejected",
+              "amount-mismatch",
+              bundle,
+              payment.paymentId,
+            );
+            if (err) return new Response("Server error", { status: 500 });
+            return new Response("Ignored", { status: 200 });
+          }
+          const scopes = BUNDLE_SCOPES[bundle];
+          const { error: bundleErr } = await supabaseAdmin.rpc(
+            "fulfill_summit_bundle",
+            {
+              _scopes: scopes,
+              _commas_payment_id: payment.paymentId,
+              _amount_cents: payment.amountCents,
+              _currency: payment.currency,
+              _full_name: payment.buyer.fullName,
+              _email: payment.buyer.email,
+              _phone: payment.buyer.phone ?? "",
+              _first_touch: null,
+              _last_touch: null,
+            },
+          );
+          if (bundleErr) return new Response("Server error", { status: 500 });
+          const err = await setTerminal(
+            supabaseAdmin,
+            envelope.id,
+            "fulfilled",
+            null,
+            bundle,
+            payment.paymentId,
+          );
+          if (err) return new Response("Server error", { status: 500 });
+          return new Response("ok", { status: 200 });
+        }
+
+        // Legacy single-product path (still supported for Intensive and any
+        // stray VIP-upgrade / Vault single-SKU payments).
         const product = resolveProductFromItem(payment.baseItemId, env);
         if (!product) {
           const err = await setTerminal(
@@ -165,6 +211,7 @@ export const Route = createFileRoute("/api/public/webhooks/commas")({
           if (err) return new Response("Server error", { status: 500 });
           return new Response("Ignored", { status: 200 });
         }
+
 
         const expected = expectedTotalCents(product);
         if (payment.amountCents !== expected) {
