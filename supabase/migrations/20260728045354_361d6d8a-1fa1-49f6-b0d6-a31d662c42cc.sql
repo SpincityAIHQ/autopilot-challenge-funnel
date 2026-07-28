@@ -1,1 +1,0 @@
-DELETE FROM public.summit_reservations WHERE email LIKE 'qa+%@example.invalid';
