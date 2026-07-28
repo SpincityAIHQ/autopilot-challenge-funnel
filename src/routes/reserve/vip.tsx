@@ -1,5 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { z } from "zod";
 import { applyReserveNoStoreHeaders } from "@/lib/reserve-headers";
 import { ReserveFrame } from "@/components/reserve/ReserveFrame";
@@ -37,32 +36,17 @@ export const Route = createFileRoute("/reserve/vip")({
 });
 
 function ReserveVipPage() {
-  const { first_name, tier, token } = Route.useLoaderData();
+  const { first_name, token } = Route.useLoaderData();
   const cfg = getCommasConfig();
   const gaUrl = resolveReserveCheckoutUrl("ga");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  async function upgrade() {
-    setError(null);
-    setBusy(true);
-    try {
-      const res = await fetch("/api/public/reserve-upgrade", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, step: "vip" }),
-      });
-      const body = (await res.json().catch(() => null)) as { ok?: boolean; next?: string } | null;
-      if (!res.ok || !body?.ok || !body.next) {
-        setError("Couldn't upgrade the reservation. Try again.");
-        return;
-      }
-      window.location.assign(body.next);
-    } catch {
-      setError("Network hiccup. Try again.");
-    } finally {
-      setBusy(false);
-    }
+  function recordVipReservation() {
+    void fetch("/api/public/reserve-upgrade", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, step: "vip" }),
+      keepalive: true,
+    }).catch(() => undefined);
   }
 
   return (
@@ -103,14 +87,14 @@ function ReserveVipPage() {
               <p className="mt-2 reserve-note-15" style={{ opacity: 0.78 }}>
                 Your $22 General Admission reservation carries forward. VIP adds $77.
               </p>
-              <button
-                type="button"
-                onClick={upgrade}
-                disabled={busy || tier === "ga_vip_vault"}
-                className="reserve-cta-primary mt-5 w-full rounded-xl py-4 reserve-body-lg"
+              <Link
+                to="/reserve/vault"
+                search={{ t: token }}
+                onClick={recordVipReservation}
+                className="reserve-cta-primary mt-5 block w-full rounded-xl py-4 text-center reserve-body-lg"
               >
-                {busy ? "Upgrading…" : "Upgrade My Reservation to VIP"}
-              </button>
+                Upgrade My Reservation to VIP
+              </Link>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
                 Continue to the VIP video to review VIP and the Emerald Vault Key before you pay.
               </p>
@@ -124,26 +108,14 @@ function ReserveVipPage() {
               </div>
 
               <a
-                href={gaUrl ?? "#"}
-                aria-disabled={!gaUrl}
-                onClick={(e) => {
-                  if (!gaUrl) e.preventDefault();
-                }}
-                className={`block w-full rounded-xl py-4 text-center reserve-body-lg reserve-gold-btn ${
-                  !gaUrl ? "pointer-events-none opacity-50" : ""
-                }`}
+                href={gaUrl!}
+                className="block w-full rounded-xl py-4 text-center reserve-body-lg reserve-gold-btn"
               >
                 Get General Admission · $22
               </a>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
                 Complete your secure payment through SpincityHQ.
               </p>
-              {!gaUrl ? (
-                <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                  Checkout is being configured. Please try again shortly.
-                </p>
-              ) : null}
-
               <div className="mt-8 reserve-hairline" />
               <div className="mt-7 grid gap-7 sm:grid-cols-2">
                 <div>
@@ -170,13 +142,6 @@ function ReserveVipPage() {
                     You're holding $22. VIP adds $77.
                   </p>
                 </div>
-              </div>
-              <div role="alert" aria-live="polite" className="min-h-[1.25rem] mt-3">
-                {error ? (
-                  <p className="reserve-note-15" style={{ color: "#FFB4B4" }}>
-                    {error}
-                  </p>
-                ) : null}
               </div>
             </section>
           </RevealOnView>
