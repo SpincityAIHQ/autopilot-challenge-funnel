@@ -162,10 +162,51 @@ export function resolveProductFromItem(
   env: Record<string, string | undefined>,
 ): ProductId | null {
   if (!itemId) return null;
-  if (itemId === env.COMMAS_PRODUCT_ID_GA) return "ga";
   if (itemId === env.COMMAS_PRODUCT_ID_VIP_UPGRADE) return "vip_upgrade";
   if (itemId === env.COMMAS_PRODUCT_ID_VAULT) return "vault";
   if (itemId === env.COMMAS_PRODUCT_ID_INTENSIVE) return "intensive";
+  return null;
+}
+
+/**
+ * Bundle SKUs sold through Commas. Each bundle is a single product ID
+ * that grants an ARRAY of entitlement scopes atomically in one payment.
+ *
+ *   ga            → ['ga']                      $22
+ *   ga_vip        → ['ga','vip']                $99
+ *   ga_vip_vault  → ['ga','vip','vault']        $298
+ *
+ * Bundles are self-satisfying — VIP inside a bundle does NOT require a
+ * pre-existing GA registration because both arrive in the same payment.
+ * Preconditions still apply to legacy single-product IDs.
+ */
+export type BundleId = "ga" | "ga_vip" | "ga_vip_vault";
+
+export const BUNDLE_SCOPES: Record<BundleId, Array<"ga" | "vip" | "vault">> = {
+  ga: ["ga"],
+  ga_vip: ["ga", "vip"],
+  ga_vip_vault: ["ga", "vip", "vault"],
+};
+
+export function expectedBundleTotalCents(bundle: BundleId): number {
+  switch (bundle) {
+    case "ga":
+      return 2200;
+    case "ga_vip":
+      return 9900;
+    case "ga_vip_vault":
+      return 29800;
+  }
+}
+
+export function resolveBundleFromItem(
+  itemId: string | null,
+  env: Record<string, string | undefined>,
+): BundleId | null {
+  if (!itemId) return null;
+  if (itemId === env.COMMAS_PRODUCT_ID_GA) return "ga";
+  if (itemId === env.COMMAS_PRODUCT_ID_GA_VIP) return "ga_vip";
+  if (itemId === env.COMMAS_PRODUCT_ID_GA_VIP_VAULT) return "ga_vip_vault";
   return null;
 }
 
@@ -177,9 +218,10 @@ export interface WebhookConfigResult {
 }
 
 /**
- * Webhook activation gate. Requires enabled flag, secret, and the four
- * current sale product IDs (GA, VIP_UPGRADE, Vault, Intensive), pairwise
- * distinct. Direct-VIP admission is not a current launch product.
+ * Webhook activation gate. Requires enabled flag, secret, and the three
+ * bundle product IDs (GA, GA+VIP, GA+VIP+Vault) plus the Intensive
+ * single-product ID, all pairwise distinct. Legacy single-product
+ * VIP/Vault IDs remain optional; if set they must not collide.
  */
 export function validateWebhookConfig(
   env: Record<string, string | undefined>,
@@ -189,22 +231,27 @@ export function validateWebhookConfig(
   const secret = env.COMMAS_WEBHOOK_SECRET;
   if (!secret || secret.trim() === "")
     return { ok: false, reason: "no secret" };
-  const ids = [
+  const required = [
     env.COMMAS_PRODUCT_ID_GA,
-    env.COMMAS_PRODUCT_ID_VIP_UPGRADE,
-    env.COMMAS_PRODUCT_ID_VAULT,
+    env.COMMAS_PRODUCT_ID_GA_VIP,
+    env.COMMAS_PRODUCT_ID_GA_VIP_VAULT,
     env.COMMAS_PRODUCT_ID_INTENSIVE,
   ];
-  for (const id of ids) {
+  for (const id of required) {
     if (!id || typeof id !== "string" || id.trim() === "") {
       return { ok: false, reason: "missing product id" };
     }
   }
-  const set = new Set(ids.map((s) => (s as string).trim()));
-  if (set.size !== ids.length)
+  const optional = [
+    env.COMMAS_PRODUCT_ID_VIP_UPGRADE,
+    env.COMMAS_PRODUCT_ID_VAULT,
+  ].filter((v): v is string => typeof v === "string" && v.trim() !== "");
+  const all = [...required.map((v) => (v as string).trim()), ...optional.map((v) => v.trim())];
+  if (new Set(all).size !== all.length)
     return { ok: false, reason: "duplicate product id" };
   return { ok: true };
 }
+
 
 /** Redacted audit payload. Excludes buyer name, email, phone, address, metadata. */
 export function redactEventPayload(
