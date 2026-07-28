@@ -33,6 +33,7 @@ import { Route as OfferImplementationVaultRouteImport } from './routes/offer/imp
 import { Route as CalendarDay2DoticsRouteImport } from './routes/calendar.day2[.]ics'
 import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.]ics'
 import { Route as ApplyMentorshipRouteImport } from './routes/apply.mentorship'
+import { Route as ApiPublicSummitAuditRouteImport } from './routes/api/public/summit-audit'
 import { Route as ApiPublicMentorshipApplicationRouteImport } from './routes/api/public/mentorship-application'
 import { Route as ApiPublicKeynoteWaitlistRouteImport } from './routes/api/public/keynote-waitlist'
 import { Route as ApiPublicCommunicationPreferencesRouteImport } from './routes/api/public/communication-preferences'
@@ -164,6 +165,11 @@ const ApplyMentorshipRoute = ApplyMentorshipRouteImport.update({
   path: '/apply/mentorship',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicSummitAuditRoute = ApiPublicSummitAuditRouteImport.update({
+  id: '/api/public/summit-audit',
+  path: '/api/public/summit-audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicMentorshipApplicationRoute =
   ApiPublicMentorshipApplicationRouteImport.update({
     id: '/api/public/mentorship-application',
@@ -239,6 +245,7 @@ export interface FileRoutesByFullPath {
   '/api/public/communication-preferences': typeof ApiPublicCommunicationPreferencesRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
@@ -273,6 +280,7 @@ export interface FileRoutesByTo {
   '/api/public/communication-preferences': typeof ApiPublicCommunicationPreferencesRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
@@ -308,6 +316,7 @@ export interface FileRoutesById {
   '/api/public/communication-preferences': typeof ApiPublicCommunicationPreferencesRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
+  '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
@@ -344,6 +353,7 @@ export interface FileRouteTypes {
     | '/api/public/communication-preferences'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/summit-audit'
     | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
     | '/api/public/resources/logout'
@@ -378,6 +388,7 @@ export interface FileRouteTypes {
     | '/api/public/communication-preferences'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/summit-audit'
     | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
     | '/api/public/resources/logout'
@@ -412,6 +423,7 @@ export interface FileRouteTypes {
     | '/api/public/communication-preferences'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
+    | '/api/public/summit-audit'
     | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
     | '/api/public/resources/logout'
@@ -446,6 +458,7 @@ export interface RootRouteChildren {
   ApiPublicCommunicationPreferencesRoute: typeof ApiPublicCommunicationPreferencesRoute
   ApiPublicKeynoteWaitlistRoute: typeof ApiPublicKeynoteWaitlistRoute
   ApiPublicMentorshipApplicationRoute: typeof ApiPublicMentorshipApplicationRoute
+  ApiPublicSummitAuditRoute: typeof ApiPublicSummitAuditRoute
   ApiPublicResourcesEntitlementSummaryRoute: typeof ApiPublicResourcesEntitlementSummaryRoute
   ApiPublicResourcesExchangeRoute: typeof ApiPublicResourcesExchangeRoute
   ApiPublicResourcesLogoutRoute: typeof ApiPublicResourcesLogoutRoute
@@ -623,6 +636,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApplyMentorshipRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/summit-audit': {
+      id: '/api/public/summit-audit'
+      path: '/api/public/summit-audit'
+      fullPath: '/api/public/summit-audit'
+      preLoaderRoute: typeof ApiPublicSummitAuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/mentorship-application': {
       id: '/api/public/mentorship-application'
       path: '/api/public/mentorship-application'
@@ -722,6 +742,7 @@ const rootRouteChildren: RootRouteChildren = {
     ApiPublicCommunicationPreferencesRoute,
   ApiPublicKeynoteWaitlistRoute: ApiPublicKeynoteWaitlistRoute,
   ApiPublicMentorshipApplicationRoute: ApiPublicMentorshipApplicationRoute,
+  ApiPublicSummitAuditRoute: ApiPublicSummitAuditRoute,
   ApiPublicResourcesEntitlementSummaryRoute:
     ApiPublicResourcesEntitlementSummaryRoute,
   ApiPublicResourcesExchangeRoute: ApiPublicResourcesExchangeRoute,
