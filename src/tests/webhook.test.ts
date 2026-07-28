@@ -141,29 +141,57 @@ describe("extractPaymentIdForReversal", () => {
   });
 });
 
-describe("resolveProductFromItem", () => {
+describe("resolveProductFromItem (legacy single-product)", () => {
   const env = {
-    COMMAS_PRODUCT_ID_GA: "prod_ga",
     COMMAS_PRODUCT_ID_VIP_UPGRADE: "prod_vipup",
     COMMAS_PRODUCT_ID_VAULT: "prod_vault",
     COMMAS_PRODUCT_ID_INTENSIVE: "prod_int",
   };
-  it("maps every current sale product id", () => {
-    expect(resolveProductFromItem("prod_ga", env)).toBe("ga");
+  it("maps legacy single-product ids", () => {
     expect(resolveProductFromItem("prod_vipup", env)).toBe("vip_upgrade");
     expect(resolveProductFromItem("prod_vault", env)).toBe("vault");
     expect(resolveProductFromItem("prod_int", env)).toBe("intensive");
   });
-  it("does NOT resolve legacy direct-VIP product for fulfillment", () => {
-    // Even if a stale env var were still set, direct-VIP admission is not
-    // a current sale product — payment.succeeded on it grants nothing.
+  it("does NOT resolve GA as a single product (bundles own GA)", () => {
+    const withGa = { ...env, COMMAS_PRODUCT_ID_GA: "prod_ga" };
+    expect(resolveProductFromItem("prod_ga", withGa)).toBeNull();
+  });
+  it("returns null for unknown, missing, or legacy direct-VIP", () => {
+    expect(resolveProductFromItem("prod_other", env)).toBeNull();
+    expect(resolveProductFromItem(null, env)).toBeNull();
     const legacy = { ...env, COMMAS_PRODUCT_ID_VIP: "prod_vip_legacy" };
     expect(resolveProductFromItem("prod_vip_legacy", legacy)).toBeNull();
   });
-  it("returns null for unknown or missing", () => {
-    expect(resolveProductFromItem("prod_other", env)).toBeNull();
-    expect(resolveProductFromItem(null, env)).toBeNull();
-    expect(resolveProductFromItem("prod_ga", {})).toBeNull();
+});
+
+import {
+  resolveBundleFromItem,
+  BUNDLE_SCOPES,
+  expectedBundleTotalCents,
+} from "@/lib/webhook-helpers";
+
+describe("bundle SKUs", () => {
+  const env = {
+    COMMAS_PRODUCT_ID_GA: "prod_ga",
+    COMMAS_PRODUCT_ID_GA_VIP: "prod_ga_vip",
+    COMMAS_PRODUCT_ID_GA_VIP_VAULT: "prod_ga_vip_vault",
+  };
+  it("resolves each bundle product id", () => {
+    expect(resolveBundleFromItem("prod_ga", env)).toBe("ga");
+    expect(resolveBundleFromItem("prod_ga_vip", env)).toBe("ga_vip");
+    expect(resolveBundleFromItem("prod_ga_vip_vault", env)).toBe("ga_vip_vault");
+    expect(resolveBundleFromItem("prod_other", env)).toBeNull();
+    expect(resolveBundleFromItem(null, env)).toBeNull();
+  });
+  it("maps to the correct scope array", () => {
+    expect(BUNDLE_SCOPES.ga).toEqual(["ga"]);
+    expect(BUNDLE_SCOPES.ga_vip).toEqual(["ga", "vip"]);
+    expect(BUNDLE_SCOPES.ga_vip_vault).toEqual(["ga", "vip", "vault"]);
+  });
+  it("validates the expected bundle totals in cents", () => {
+    expect(expectedBundleTotalCents("ga")).toBe(2200);
+    expect(expectedBundleTotalCents("ga_vip")).toBe(9900);
+    expect(expectedBundleTotalCents("ga_vip_vault")).toBe(29800);
   });
 });
 
@@ -172,24 +200,35 @@ describe("validateWebhookConfig", () => {
     COMMAS_WEBHOOKS_ENABLED: "true",
     COMMAS_WEBHOOK_SECRET: "x",
     COMMAS_PRODUCT_ID_GA: "a",
-    COMMAS_PRODUCT_ID_VIP_UPGRADE: "c",
-    COMMAS_PRODUCT_ID_VAULT: "d",
-    COMMAS_PRODUCT_ID_INTENSIVE: "e",
+    COMMAS_PRODUCT_ID_GA_VIP: "b",
+    COMMAS_PRODUCT_ID_GA_VIP_VAULT: "c",
+    COMMAS_PRODUCT_ID_INTENSIVE: "d",
   };
-  it("requires all 4 current-sale product ids, secret, and enabled=true", () => {
+  it("requires bundle IDs + Intensive + secret + enabled=true", () => {
     expect(validateWebhookConfig(full).ok).toBe(true);
     expect(validateWebhookConfig({ ...full, COMMAS_WEBHOOKS_ENABLED: "false" }).ok).toBe(false);
     expect(validateWebhookConfig({ ...full, COMMAS_WEBHOOK_SECRET: "" }).ok).toBe(false);
+    expect(validateWebhookConfig({ ...full, COMMAS_PRODUCT_ID_GA_VIP: "" }).ok).toBe(false);
+    expect(validateWebhookConfig({ ...full, COMMAS_PRODUCT_ID_GA_VIP_VAULT: "" }).ok).toBe(false);
     expect(validateWebhookConfig({ ...full, COMMAS_PRODUCT_ID_INTENSIVE: "" }).ok).toBe(false);
   });
-  it("rejects duplicate product ids", () => {
-    expect(validateWebhookConfig({ ...full, COMMAS_PRODUCT_ID_VIP_UPGRADE: "a" }).ok).toBe(false);
+  it("rejects duplicate product ids across bundle + legacy", () => {
+    expect(validateWebhookConfig({ ...full, COMMAS_PRODUCT_ID_GA_VIP: "a" }).ok).toBe(false);
+    expect(
+      validateWebhookConfig({ ...full, COMMAS_PRODUCT_ID_VIP_UPGRADE: "a" }).ok,
+    ).toBe(false);
   });
-  it("does not require the legacy direct-VIP product id", () => {
-    // No COMMAS_PRODUCT_ID_VIP in `full` — activation is still ok.
-    expect(validateWebhookConfig(full).ok).toBe(true);
+  it("accepts optional legacy single-product IDs when present and distinct", () => {
+    expect(
+      validateWebhookConfig({
+        ...full,
+        COMMAS_PRODUCT_ID_VIP_UPGRADE: "e",
+        COMMAS_PRODUCT_ID_VAULT: "f",
+      }).ok,
+    ).toBe(true);
   });
 });
+
 
 describe("redactEventPayload", () => {
   it("omits buyer PII", () => {
