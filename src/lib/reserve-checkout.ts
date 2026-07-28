@@ -15,6 +15,17 @@ export const RESERVE_ENV_KEY: Record<ReserveBundle, string> = {
   ga_vip_vault: "VITE_SHOPIFY_URL_GA_VIP_VAULT",
 };
 
+/**
+ * These are public Shopify cart permalinks, not secrets. Keeping a canonical
+ * source fallback prevents preview/dev deployments from disabling every
+ * purchase button when Vite does not load `.env.production`.
+ */
+export const CANONICAL_RESERVE_CHECKOUT_URL: Record<ReserveBundle, string> = {
+  ga: "https://spincityhq.com/cart/50980696129783:1?checkout",
+  ga_vip: "https://spincityhq.com/cart/50980697571575:1?checkout",
+  ga_vip_vault: "https://spincityhq.com/cart/50980698194167:1?checkout",
+};
+
 const ALLOWED_HOSTS_ENV_KEY = "VITE_SHOPIFY_ALLOWED_CHECKOUT_HOSTS";
 const DEFAULT_SHOPIFY_CHECKOUT_HOSTS = ["spincityhq.com"] as const;
 
@@ -46,7 +57,10 @@ export function validateReserveCheckoutUrl(
 }
 
 export function resolveReserveCheckoutUrl(bundle: ReserveBundle): string | null {
-  return validateReserveCheckoutUrl(bundle, import.meta.env as Record<string, string | undefined>);
+  return (
+    validateReserveCheckoutUrl(bundle, import.meta.env as Record<string, string | undefined>) ??
+    CANONICAL_RESERVE_CHECKOUT_URL[bundle]
+  );
 }
 
 export function isReserveCheckoutReady(bundle: ReserveBundle): boolean {
