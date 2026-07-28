@@ -33,7 +33,7 @@ should display a clear button labeled:
 
 That button points to:
 
-`https://autopilot-challenge-funnel.lovable.app/confirmed`
+`https://ai-autopilot-summit.lovable.app/confirmed`
 
 The confirmation page hosts the thank-you VSL, email and text instructions,
 calendar links, and preparation steps. It does not present another offer.
