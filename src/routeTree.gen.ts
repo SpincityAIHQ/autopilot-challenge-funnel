@@ -13,6 +13,8 @@ import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as VaultWelcomeRouteImport } from './routes/vault-welcome'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StrategyIntensiveRouteImport } from './routes/strategy-intensive'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -71,6 +73,16 @@ const TermsRoute = TermsRouteImport.update({
 const StrategyIntensiveRoute = StrategyIntensiveRouteImport.update({
   id: '/strategy-intensive',
   path: '/strategy-intensive',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResourcesRoute = ResourcesRouteImport.update({
@@ -293,6 +305,8 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/resources': typeof ResourcesRouteWithChildren
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/strategy-intensive': typeof StrategyIntensiveRoute
   '/terms': typeof TermsRoute
   '/vault-welcome': typeof VaultWelcomeRoute
@@ -338,6 +352,8 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/resources': typeof ResourcesRouteWithChildren
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/strategy-intensive': typeof StrategyIntensiveRoute
   '/terms': typeof TermsRoute
   '/vault-welcome': typeof VaultWelcomeRoute
@@ -384,6 +400,8 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/resources': typeof ResourcesRouteWithChildren
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/strategy-intensive': typeof StrategyIntensiveRoute
   '/terms': typeof TermsRoute
   '/vault-welcome': typeof VaultWelcomeRoute
@@ -431,6 +449,8 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/refund-policy'
     | '/resources'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/strategy-intensive'
     | '/terms'
     | '/vault-welcome'
@@ -476,6 +496,8 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/refund-policy'
     | '/resources'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/strategy-intensive'
     | '/terms'
     | '/vault-welcome'
@@ -521,6 +543,8 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/refund-policy'
     | '/resources'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/strategy-intensive'
     | '/terms'
     | '/vault-welcome'
@@ -567,6 +591,8 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   RefundPolicyRoute: typeof RefundPolicyRoute
   ResourcesRoute: typeof ResourcesRouteWithChildren
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StrategyIntensiveRoute: typeof StrategyIntensiveRoute
   TermsRoute: typeof TermsRoute
   VaultWelcomeRoute: typeof VaultWelcomeRoute
@@ -626,6 +652,20 @@ declare module '@tanstack/react-router' {
       path: '/strategy-intensive'
       fullPath: '/strategy-intensive'
       preLoaderRoute: typeof StrategyIntensiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/resources': {
@@ -930,6 +970,8 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   RefundPolicyRoute: RefundPolicyRoute,
   ResourcesRoute: ResourcesRouteWithChildren,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   StrategyIntensiveRoute: StrategyIntensiveRoute,
   TermsRoute: TermsRoute,
   VaultWelcomeRoute: VaultWelcomeRoute,
