@@ -81,12 +81,13 @@ export async function sendTemplateEmail(
       },
       { apiKey, sendUrl: process.env.LOVABLE_SEND_URL }
     )
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof EmailAPIError && error.code === 'recipient_suppressed') {
       return { sent: false, reason: 'recipient_suppressed' }
     }
     throw error
   }
+
 
   return { sent: true }
 }
