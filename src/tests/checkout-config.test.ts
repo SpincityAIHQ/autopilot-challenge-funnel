@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import {
+  DEFAULT_SUMMIT_CHECKOUT_VIDEO_URL,
   DEFAULT_SUMMIT_HERO_VIDEO_URL,
   getCommasConfig,
   isAllowedCheckoutUrl,
@@ -57,9 +58,11 @@ describe("resolveCheckoutUrl", () => {
 });
 
 describe("summit video configuration", () => {
-  it("ships the supplied landing-page Vimeo VSL as the production default", () => {
+  it("ships the supplied landing and General Admission Vimeo VSLs as production defaults", () => {
     expect(DEFAULT_SUMMIT_HERO_VIDEO_URL).toBe("https://vimeo.com/1213741553");
+    expect(DEFAULT_SUMMIT_CHECKOUT_VIDEO_URL).toBe("https://vimeo.com/1213757805");
     expect(getCommasConfig().sectionVideos.hero).toBe(DEFAULT_SUMMIT_HERO_VIDEO_URL);
+    expect(getCommasConfig().sectionVideos.checkout).toBe(DEFAULT_SUMMIT_CHECKOUT_VIDEO_URL);
   });
 });
 

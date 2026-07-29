@@ -26,6 +26,9 @@ describe("video embed normalization", () => {
     expect(normalizeVideoEmbedUrl("https://vimeo.com/1213741553?share=copy&fl=sv&fe=ci")).toBe(
       "https://player.vimeo.com/video/1213741553",
     );
+    expect(normalizeVideoEmbedUrl("https://vimeo.com/1213757805?share=copy&fl=sv&fe=ci")).toBe(
+      "https://player.vimeo.com/video/1213757805",
+    );
   });
 
   it("fails closed on non-allowlisted origins", () => {
