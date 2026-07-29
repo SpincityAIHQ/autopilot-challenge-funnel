@@ -48,6 +48,7 @@ import { Route as ApiPublicReserveRouteImport } from './routes/api/public/reserv
 import { Route as ApiPublicMentorshipApplicationRouteImport } from './routes/api/public/mentorship-application'
 import { Route as ApiPublicKeynoteWaitlistRouteImport } from './routes/api/public/keynote-waitlist'
 import { Route as ApiPublicCommunicationPreferencesRouteImport } from './routes/api/public/communication-preferences'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as ApiPublicWebhooksCommasRouteImport } from './routes/api/public/webhooks/commas'
 import { Route as ApiPublicResourcesReadRouteImport } from './routes/api/public/resources/read'
 import { Route as ApiPublicResourcesLogoutRouteImport } from './routes/api/public/resources/logout'
@@ -256,6 +257,12 @@ const ApiPublicCommunicationPreferencesRoute =
     path: '/api/public/communication-preferences',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicWebhooksCommasRoute = ApiPublicWebhooksCommasRouteImport.update({
   id: '/api/public/webhooks/commas',
   path: '/api/public/webhooks/commas',
@@ -337,6 +344,7 @@ export interface FileRoutesByFullPath {
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -384,6 +392,7 @@ export interface FileRoutesByTo {
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -432,6 +441,7 @@ export interface FileRoutesById {
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -481,6 +491,7 @@ export interface FileRouteTypes {
     | '/api/public/resources/logout'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
+    | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -528,6 +539,7 @@ export interface FileRouteTypes {
     | '/api/public/resources/logout'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
+    | '/lovable/email/transactional/preview'
   id:
     | '__root__'
     | '/'
@@ -575,6 +587,7 @@ export interface FileRouteTypes {
     | '/api/public/resources/logout'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
+    | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -622,6 +635,7 @@ export interface RootRouteChildren {
   ApiPublicResourcesLogoutRoute: typeof ApiPublicResourcesLogoutRoute
   ApiPublicResourcesReadRoute: typeof ApiPublicResourcesReadRoute
   ApiPublicWebhooksCommasRoute: typeof ApiPublicWebhooksCommasRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -899,6 +913,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCommunicationPreferencesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhooks/commas': {
       id: '/api/public/webhooks/commas'
       path: '/api/public/webhooks/commas'
@@ -1003,6 +1024,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicResourcesLogoutRoute: ApiPublicResourcesLogoutRoute,
   ApiPublicResourcesReadRoute: ApiPublicResourcesReadRoute,
   ApiPublicWebhooksCommasRoute: ApiPublicWebhooksCommasRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
