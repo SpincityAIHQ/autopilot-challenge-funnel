@@ -26,8 +26,19 @@ describe("video embed normalization", () => {
     expect(normalizeVideoEmbedUrl("https://vimeo.com/1213741553?share=copy&fl=sv&fe=ci")).toBe(
       "https://player.vimeo.com/video/1213741553",
     );
-    expect(normalizeVideoEmbedUrl("https://vimeo.com/1213757805?share=copy&fl=sv&fe=ci")).toBe(
-      "https://player.vimeo.com/video/1213757805",
+    expect(normalizeVideoEmbedUrl("https://vimeo.com/1213770573?share=copy&fl=sv&fe=ci")).toBe(
+      "https://player.vimeo.com/video/1213770573",
+    );
+    expect(normalizeVideoEmbedUrl("https://vimeo.com/1213770432?share=copy&fl=sv&fe=ci")).toBe(
+      "https://player.vimeo.com/video/1213770432",
+    );
+    expect(
+      normalizeVideoEmbedUrl("https://player.vimeo.com/video/1213770573?h=4e82a76d61"),
+    ).toBe("https://player.vimeo.com/video/1213770573?h=4e82a76d61");
+    expect(
+      normalizeVideoEmbedUrl("https://player.vimeo.com/video/1213770432?h=35a1c7fcf8"),
+    ).toBe(
+      "https://player.vimeo.com/video/1213770432?h=35a1c7fcf8",
     );
   });
 

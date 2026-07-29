@@ -20,7 +20,10 @@ export const SUMMIT_START_ISO = SUMMIT_DAY_1_ISO;
 export const CHALLENGE_START_ISO = SUMMIT_START_ISO;
 
 export const DEFAULT_SUMMIT_HERO_VIDEO_URL = "https://vimeo.com/1213741553";
-export const DEFAULT_SUMMIT_CHECKOUT_VIDEO_URL = "https://vimeo.com/1213757805";
+export const DEFAULT_SUMMIT_CHECKOUT_VIDEO_URL =
+  "https://player.vimeo.com/video/1213770573?h=4e82a76d61";
+export const DEFAULT_SUMMIT_THANK_YOU_VIP_VIDEO_URL =
+  "https://player.vimeo.com/video/1213770432?h=35a1c7fcf8";
 
 export const DEFAULT_COMMAS_CHECKOUT_HOSTS: readonly string[] = ["www.fanbasis.com", "commas.com"];
 
@@ -96,7 +99,9 @@ export function getCommasConfig(): CommasConfig {
       confirmedThankYou: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU"),
       auditIntro: readEnv("VITE_SUMMIT_VIDEO_AUDIT"),
       thankYouGa: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_GA"),
-      thankYouVip: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_VIP"),
+      thankYouVip:
+        readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_VIP") ??
+        DEFAULT_SUMMIT_THANK_YOU_VIP_VIDEO_URL,
       thankYouVault: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_VAULT"),
       thankYouIntensive: readEnv("VITE_SUMMIT_VIDEO_THANK_YOU_INTENSIVE"),
       exitGa: readEnv("VITE_SUMMIT_VIDEO_EXIT_GA"),
