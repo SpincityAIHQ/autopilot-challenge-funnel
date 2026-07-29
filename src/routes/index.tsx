@@ -7,30 +7,107 @@ import { TestimonialSection } from "@/components/TestimonialSection";
 import { LandingReservationForm } from "@/components/reserve/LandingReservationForm";
 import { captureAttribution } from "@/lib/attribution";
 import { getCommasConfig } from "@/lib/challenge-config";
+import {
+  CANONICAL_HOME_URL,
+  SOCIAL_IMAGE_ALT,
+  SOCIAL_IMAGE_URL,
+  SUMMIT_DESCRIPTION,
+  SUMMIT_TITLE,
+} from "@/lib/site-meta";
+
+const JSON_LD_EVENT = {
+  "@context": "https://schema.org",
+  "@type": "Event",
+  name: "AI AutoPilot 2-Day Summit",
+  description: SUMMIT_DESCRIPTION,
+  image: [SOCIAL_IMAGE_URL],
+  url: CANONICAL_HOME_URL,
+  startDate: "2026-08-29T13:00:00-04:00",
+  endDate: "2026-08-30T16:00:00-04:00",
+  eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+  eventStatus: "https://schema.org/EventScheduled",
+  location: {
+    "@type": "VirtualLocation",
+    url: CANONICAL_HOME_URL,
+  },
+  organizer: {
+    "@type": "Organization",
+    name: "SpinCityHQ x NuAmenti",
+    url: CANONICAL_HOME_URL,
+    logo: SOCIAL_IMAGE_URL,
+    email: "Sebastian@spincityhq.com",
+  },
+  subEvent: [
+    {
+      "@type": "Event",
+      name: "AI AutoPilot 2-Day Summit — Day 1: Build the Business Foundation",
+      startDate: "2026-08-29T13:00:00-04:00",
+      endDate: "2026-08-29T16:00:00-04:00",
+      eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+      eventStatus: "https://schema.org/EventScheduled",
+      location: {
+        "@type": "VirtualLocation",
+        url: CANONICAL_HOME_URL,
+      },
+    },
+    {
+      "@type": "Event",
+      name: "AI AutoPilot 2-Day Summit — Day 2: Hire the AI Team",
+      startDate: "2026-08-30T13:00:00-04:00",
+      endDate: "2026-08-30T16:00:00-04:00",
+      eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+      eventStatus: "https://schema.org/EventScheduled",
+      location: {
+        "@type": "VirtualLocation",
+        url: CANONICAL_HOME_URL,
+      },
+    },
+  ],
+};
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "AI AutoPilot 2-Day Summit — SpinCityHQ & NuAmenti" },
+      { title: SUMMIT_TITLE },
       {
         name: "description",
-        content:
-          "Build a business system powered by AI agents, apps, workflows, and loops. Live online Saturday, August 29 and Sunday, August 30 from 1:00–4:00 PM Eastern.",
+        content: SUMMIT_DESCRIPTION,
+      },
+      {
+        name: "robots",
+        content: "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1",
       },
       {
         property: "og:title",
-        content: "AI AutoPilot 2-Day Summit — SpinCityHQ & NuAmenti",
+        content: SUMMIT_TITLE,
       },
       {
         property: "og:description",
-        content:
-          "Stop just prompting. Build the business, hire the AI team, and put repeat work on autopilot.",
+        content: SUMMIT_DESCRIPTION,
       },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "SpinCityHQ x NuAmenti" },
+      { property: "og:locale", content: "en_US" },
+      { property: "og:url", content: CANONICAL_HOME_URL },
+      { property: "og:image", content: SOCIAL_IMAGE_URL },
+      { property: "og:image:secure_url", content: SOCIAL_IMAGE_URL },
+      { property: "og:image:type", content: "image/png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: SOCIAL_IMAGE_ALT },
       { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:url", content: "/" },
+      { name: "twitter:title", content: SUMMIT_TITLE },
+      { name: "twitter:description", content: SUMMIT_DESCRIPTION },
+      { name: "twitter:image", content: SOCIAL_IMAGE_URL },
+      { name: "twitter:image:alt", content: SOCIAL_IMAGE_ALT },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: CANONICAL_HOME_URL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(JSON_LD_EVENT),
+      },
+    ],
   }),
   component: Landing,
 });

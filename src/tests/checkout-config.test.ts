@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 import {
   DEFAULT_SUMMIT_CHECKOUT_VIDEO_URL,
   DEFAULT_SUMMIT_HERO_VIDEO_URL,
+  DEFAULT_SUMMIT_THANK_YOU_VIP_VIDEO_URL,
   getCommasConfig,
   isAllowedCheckoutUrl,
   resolveCheckoutUrl,
@@ -58,11 +59,19 @@ describe("resolveCheckoutUrl", () => {
 });
 
 describe("summit video configuration", () => {
-  it("ships the supplied landing and General Admission Vimeo VSLs as production defaults", () => {
+  it("ships the supplied landing, GA, and VIP-decision Vimeo VSLs as production defaults", () => {
     expect(DEFAULT_SUMMIT_HERO_VIDEO_URL).toBe("https://vimeo.com/1213741553");
-    expect(DEFAULT_SUMMIT_CHECKOUT_VIDEO_URL).toBe("https://vimeo.com/1213757805");
+    expect(DEFAULT_SUMMIT_CHECKOUT_VIDEO_URL).toBe(
+      "https://player.vimeo.com/video/1213770573?h=4e82a76d61",
+    );
+    expect(DEFAULT_SUMMIT_THANK_YOU_VIP_VIDEO_URL).toBe(
+      "https://player.vimeo.com/video/1213770432?h=35a1c7fcf8",
+    );
     expect(getCommasConfig().sectionVideos.hero).toBe(DEFAULT_SUMMIT_HERO_VIDEO_URL);
     expect(getCommasConfig().sectionVideos.checkout).toBe(DEFAULT_SUMMIT_CHECKOUT_VIDEO_URL);
+    expect(getCommasConfig().sectionVideos.thankYouVip).toBe(
+      DEFAULT_SUMMIT_THANK_YOU_VIP_VIDEO_URL,
+    );
   });
 });
 

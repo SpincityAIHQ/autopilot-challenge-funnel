@@ -13,6 +13,13 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BrandFrame } from "@/components/BrandFrame";
+import {
+  CANONICAL_HOME_URL,
+  SOCIAL_IMAGE_ALT,
+  SOCIAL_IMAGE_URL,
+  SUMMIT_DESCRIPTION,
+  SUMMIT_TITLE,
+} from "@/lib/site-meta";
 
 function NotFoundComponent() {
   return (
@@ -75,81 +82,61 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
-const JSON_LD_EVENT = {
-  "@context": "https://schema.org",
-  "@type": "Event",
-  name: "AI AutoPilot 2-Day Summit",
-  description:
-    "A two-day live online build event from SpinCityHQ and NuAmenti. Attendees map the business foundation, create an AI readiness blueprint, plan an internal app, structure AI agent jobs, and connect marketing and monetization workflows.",
-  startDate: "2026-08-29",
-  endDate: "2026-08-30",
-  eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
-  eventStatus: "https://schema.org/EventScheduled",
-  organizer: {
-    "@type": "Organization",
-    name: "SpinCityHQ & NuAmenti",
-    email: "Sebastian@spincityhq.com",
-  },
-  subEvent: [
-    {
-      "@type": "Event",
-      name: "AI AutoPilot 2-Day Summit — Day 1: Build the Business Foundation",
-      startDate: "2026-08-29",
-      endDate: "2026-08-29",
-      eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
-      eventStatus: "https://schema.org/EventScheduled",
-    },
-    {
-      "@type": "Event",
-      name: "AI AutoPilot 2-Day Summit — Day 2: Hire the AI Team",
-      startDate: "2026-08-30",
-      endDate: "2026-08-30",
-      eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
-      eventStatus: "https://schema.org/EventScheduled",
-    },
-  ],
-};
-
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       {
-        title: "AI AutoPilot 2-Day Summit — SpinCityHQ & NuAmenti",
+        title: SUMMIT_TITLE,
       },
       {
         name: "description",
-        content:
-          "Build the business system, structure an AI agent team, and connect workflows that research, analyze, do the math, market, follow up, and improve.",
+        content: SUMMIT_DESCRIPTION,
       },
       { name: "author", content: "SpinCityHQ & NuAmenti" },
+      { name: "application-name", content: "AI AutoPilot Summit" },
+      { name: "apple-mobile-web-app-title", content: "AI AutoPilot Summit" },
+      {
+        name: "robots",
+        content: "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1",
+      },
       { name: "theme-color", content: "#070b0d" },
       {
         property: "og:site_name",
-        content: "AI AutoPilot 2-Day Summit",
+        content: "SpinCityHQ x NuAmenti",
       },
+      { property: "og:locale", content: "en_US" },
       { property: "og:type", content: "website" },
       {
         property: "og:title",
-        content: "AI AutoPilot 2-Day Summit — SpinCityHQ & NuAmenti",
+        content: SUMMIT_TITLE,
       },
       {
         property: "og:description",
-        content:
-          "Stop just prompting. Build the system, hire the AI team, and put repeatable business work on autopilot.",
+        content: SUMMIT_DESCRIPTION,
       },
+      { property: "og:url", content: CANONICAL_HOME_URL },
+      { property: "og:image", content: SOCIAL_IMAGE_URL },
+      { property: "og:image:secure_url", content: SOCIAL_IMAGE_URL },
+      { property: "og:image:type", content: "image/png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: SOCIAL_IMAGE_ALT },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: SUMMIT_TITLE },
+      { name: "twitter:description", content: SUMMIT_DESCRIPTION },
+      { name: "twitter:image", content: SOCIAL_IMAGE_URL },
+      { name: "twitter:image:alt", content: SOCIAL_IMAGE_ALT },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
-    ],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify(JSON_LD_EVENT),
-      },
+      { rel: "icon", href: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
+      { rel: "manifest", href: "/site.webmanifest" },
+      { rel: "canonical", href: CANONICAL_HOME_URL },
+      { rel: "image_src", href: SOCIAL_IMAGE_URL },
     ],
   }),
   shellComponent: RootShell,

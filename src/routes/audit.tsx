@@ -2,11 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useEntitlementSummary } from "@/hooks/use-entitlement-summary";
 
-
 export const Route = createFileRoute("/audit")({
   head: () => ({
     meta: [
       { title: "Pre-Summit alignment audit — AI AutoPilot 2-Day Summit" },
+      { name: "robots", content: "noindex,nofollow" },
       {
         name: "description",
         content:
@@ -115,11 +115,9 @@ const INITIAL: FormState = {
   website: "",
 };
 
-
 function AuditPage() {
   const summary = useEntitlementSummary();
-  const sessionEmail =
-    summary.status === "ok" && summary.email ? summary.email : null;
+  const sessionEmail = summary.status === "ok" && summary.email ? summary.email : null;
   const hasSession = sessionEmail !== null;
 
   const [form, setForm] = useState<FormState>(INITIAL);
@@ -128,10 +126,7 @@ function AuditPage() {
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const progress = useMemo(
-    () => computeProgress(form, hasSession),
-    [form, hasSession],
-  );
+  const progress = useMemo(() => computeProgress(form, hasSession), [form, hasSession]);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -198,7 +193,6 @@ function AuditPage() {
     }
   }
 
-
   if (submitted) {
     return (
       <main className="mx-auto max-w-2xl px-5 py-16">
@@ -207,9 +201,9 @@ function AuditPage() {
           Thank you, family — your answers are in.
         </h1>
         <p className="mt-4 text-muted-foreground">
-          This is what actually shapes the Day 1 and Day 2 material. If your
-          answer changes between now and the Summit, come back to this page
-          and update it — the form remembers you by email.
+          This is what actually shapes the Day 1 and Day 2 material. If your answer changes between
+          now and the Summit, come back to this page and update it — the form remembers you by
+          email.
         </p>
         <button
           type="button"
@@ -229,9 +223,8 @@ function AuditPage() {
         3 minutes. It changes what I teach.
       </h1>
       <p className="mt-3 text-muted-foreground">
-        Ten questions. Your answers directly shape Day 1 and Day 2. Every field
-        after your email is optional — the more you share, the sharper the room
-        gets.
+        Ten questions. Your answers directly shape Day 1 and Day 2. Every field after your email is
+        optional — the more you share, the sharper the room gets.
       </p>
 
       <ProgressBar percent={progress} />
@@ -266,8 +259,7 @@ function AuditPage() {
               {sessionEmail}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
-              Verified from your session — we'll attach your answers to this
-              address.
+              Verified from your session — we'll attach your answers to this address.
             </p>
           </Field>
         ) : (
@@ -286,7 +278,6 @@ function AuditPage() {
             </p>
           </Field>
         )}
-
 
         <SelectField
           label="2. What best describes your business?"
@@ -390,10 +381,7 @@ function AuditPage() {
             {notice}
           </p>
         ) : null}
-        {error ? (
-          <p className="text-sm text-[color:var(--gold)]">{error}</p>
-        ) : null}
-
+        {error ? <p className="text-sm text-[color:var(--gold)]">{error}</p> : null}
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <button
@@ -428,7 +416,6 @@ function computeProgress(form: FormState, hasSession: boolean): number {
   const done = fields.filter((v) => (v ?? "").length > 0).length;
   return Math.round((done / fields.length) * 100);
 }
-
 
 function ProgressBar({ percent }: { percent: number }) {
   return (
@@ -466,9 +453,7 @@ function Field({
     <label className="block">
       <span className="font-heading text-sm text-foreground">
         {label}
-        {required ? (
-          <span className="ml-1 text-[color:var(--gold)]">*</span>
-        ) : null}
+        {required ? <span className="ml-1 text-[color:var(--gold)]">*</span> : null}
       </span>
       <div className="mt-2">{children}</div>
     </label>
