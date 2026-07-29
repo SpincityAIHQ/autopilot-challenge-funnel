@@ -3,7 +3,10 @@ import { readFileSync } from "node:fs";
 
 const LANDING = readFileSync("src/routes/index.tsx", "utf8");
 const FORM = readFileSync("src/components/reserve/LandingReservationForm.tsx", "utf8");
-const ROOT_METADATA = readFileSync("src/routes/__root.tsx", "utf8");
+const ROOT_METADATA = [
+  readFileSync("src/routes/__root.tsx", "utf8"),
+  readFileSync("src/lib/site-meta.ts", "utf8"),
+].join("\n");
 const GENERAL_ADMISSION_CALENDAR = readFileSync("src/lib/ics.ts", "utf8");
 
 describe("landing reservation disclosure", () => {
