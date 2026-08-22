@@ -45,7 +45,7 @@ describe("collapseLeads", () => {
   const leads = collapseLeads(rows);
 
   it("collapses duplicates by lowercased email and drops rows without email", () => {
-    expect(leads).toHaveLength(2);
+    expect((leads).length).toBe(2);
     expect(leads.map((l) => l.email).sort()).toEqual([
       "lindsey@example.com",
       "seb@example.com",
@@ -74,14 +74,14 @@ describe("filterLeads", () => {
   const leads = collapseLeads(rows);
 
   it("filters by tier", () => {
-    expect(filterLeads(leads, { tier: "ga_vip_vault" })).toHaveLength(1);
-    expect(filterLeads(leads, { tier: "ga" })).toHaveLength(0);
+    expect((filterLeads(leads, { tier: "ga_vip_vault" })).length).toBe(1);
+    expect((filterLeads(leads, { tier: "ga" })).length).toBe(0);
   });
 
   it("searches name, email and phone digits", () => {
-    expect(filterLeads(leads, { q: "linds" })).toHaveLength(1);
-    expect(filterLeads(leads, { q: "seb@" })).toHaveLength(1);
-    expect(filterLeads(leads, { q: "5550100" })).toHaveLength(1);
+    expect((filterLeads(leads, { q: "linds" })).length).toBe(1);
+    expect((filterLeads(leads, { q: "seb@" })).length).toBe(1);
+    expect((filterLeads(leads, { q: "5550100" })).length).toBe(1);
   });
 
   it("sorts newest activity first by default and oldest contact on request", () => {
