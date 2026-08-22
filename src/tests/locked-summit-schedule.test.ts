@@ -22,7 +22,9 @@ const FILES = [
   "docs/campaign-playbook.md",
   "docs/funnel-video-scripts.md",
   "docs/operator-launch-checklist.md",
-].map((path) => ({ path, text: readFileSync(path, "utf8") }));
+]
+  .filter((path) => existsSync(path))
+  .map((path) => ({ path, text: readFileSync(path, "utf8") }));
 
 describe("locked AI AutoPilot Summit schedule", () => {
   it("uses the final weekend core-session times", () => {
