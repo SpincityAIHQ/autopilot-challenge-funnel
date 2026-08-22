@@ -104,9 +104,15 @@ function AdminAuditPage() {
           This page is only visible to the Summit owner.
         </h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          Open the private access link from your owner email in the same
-          browser session.
+          If you have the owner password, log in below. Otherwise, open the
+          private access link from your owner email in the same browser session.
         </p>
+        <a
+          href="/admin/owner-login"
+          className="mt-5 inline-block rounded-lg bg-gradient-to-r from-[#BFA46F] to-[#D4B87A] px-5 py-3 font-semibold text-[#0A0A0A] shadow-lg transition-opacity hover:opacity-90"
+        >
+          Owner login
+        </a>
       </main>
     );
   }
