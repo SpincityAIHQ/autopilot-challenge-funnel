@@ -41,6 +41,7 @@ import { Route as CalendarVaultWithSpinDoticsRouteImport } from './routes/calend
 import { Route as CalendarDay2DoticsRouteImport } from './routes/calendar.day2[.]ics'
 import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.]ics'
 import { Route as ApplyMentorshipRouteImport } from './routes/apply.mentorship'
+import { Route as AdminOwnerLoginRouteImport } from './routes/admin.owner-login'
 import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as ApiPublicSummitAuditRouteImport } from './routes/api/public/summit-audit'
@@ -57,6 +58,7 @@ import { Route as ApiPublicResourcesExchangeRouteImport } from './routes/api/pub
 import { Route as ApiPublicResourcesEntitlementSummaryRouteImport } from './routes/api/public/resources/entitlement-summary'
 import { Route as ApiPublicAdminSummitLeadsRouteImport } from './routes/api/public/admin/summit-leads'
 import { Route as ApiPublicAdminSummitAuditRouteImport } from './routes/api/public/admin/summit-audit'
+import { Route as ApiPublicAdminOwnerLoginRouteImport } from './routes/api/public/admin/owner-login'
 
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
@@ -221,6 +223,11 @@ const ApplyMentorshipRoute = ApplyMentorshipRouteImport.update({
   path: '/apply/mentorship',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminOwnerLoginRoute = AdminOwnerLoginRouteImport.update({
+  id: '/admin/owner-login',
+  path: '/admin/owner-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLeadsRoute = AdminLeadsRouteImport.update({
   id: '/admin/leads',
   path: '/admin/leads',
@@ -310,6 +317,12 @@ const ApiPublicAdminSummitAuditRoute =
     path: '/api/public/admin/summit-audit',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicAdminOwnerLoginRoute =
+  ApiPublicAdminOwnerLoginRouteImport.update({
+    id: '/api/public/admin/owner-login',
+    path: '/api/public/admin/owner-login',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -333,6 +346,7 @@ export interface FileRoutesByFullPath {
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/leads': typeof AdminLeadsRoute
+  '/admin/owner-login': typeof AdminOwnerLoginRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
@@ -352,6 +366,7 @@ export interface FileRoutesByFullPath {
   '/api/public/reserve': typeof ApiPublicReserveRoute
   '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
+  '/api/public/admin/owner-login': typeof ApiPublicAdminOwnerLoginRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
@@ -383,6 +398,7 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/leads': typeof AdminLeadsRoute
+  '/admin/owner-login': typeof AdminOwnerLoginRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
@@ -402,6 +418,7 @@ export interface FileRoutesByTo {
   '/api/public/reserve': typeof ApiPublicReserveRoute
   '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
+  '/api/public/admin/owner-login': typeof ApiPublicAdminOwnerLoginRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
@@ -434,6 +451,7 @@ export interface FileRoutesById {
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/leads': typeof AdminLeadsRoute
+  '/admin/owner-login': typeof AdminOwnerLoginRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
@@ -453,6 +471,7 @@ export interface FileRoutesById {
   '/api/public/reserve': typeof ApiPublicReserveRoute
   '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
+  '/api/public/admin/owner-login': typeof ApiPublicAdminOwnerLoginRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
@@ -486,6 +505,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/admin/audit'
     | '/admin/leads'
+    | '/admin/owner-login'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
@@ -505,6 +525,7 @@ export interface FileRouteTypes {
     | '/api/public/reserve'
     | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
+    | '/api/public/admin/owner-login'
     | '/api/public/admin/summit-audit'
     | '/api/public/admin/summit-leads'
     | '/api/public/resources/entitlement-summary'
@@ -536,6 +557,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/admin/audit'
     | '/admin/leads'
+    | '/admin/owner-login'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
@@ -555,6 +577,7 @@ export interface FileRouteTypes {
     | '/api/public/reserve'
     | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
+    | '/api/public/admin/owner-login'
     | '/api/public/admin/summit-audit'
     | '/api/public/admin/summit-leads'
     | '/api/public/resources/entitlement-summary'
@@ -586,6 +609,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/admin/audit'
     | '/admin/leads'
+    | '/admin/owner-login'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
@@ -605,6 +629,7 @@ export interface FileRouteTypes {
     | '/api/public/reserve'
     | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
+    | '/api/public/admin/owner-login'
     | '/api/public/admin/summit-audit'
     | '/api/public/admin/summit-leads'
     | '/api/public/resources/entitlement-summary'
@@ -637,6 +662,7 @@ export interface RootRouteChildren {
   WelcomeRoute: typeof WelcomeRoute
   AdminAuditRoute: typeof AdminAuditRoute
   AdminLeadsRoute: typeof AdminLeadsRoute
+  AdminOwnerLoginRoute: typeof AdminOwnerLoginRoute
   ApplyMentorshipRoute: typeof ApplyMentorshipRoute
   CalendarDay1DoticsRoute: typeof CalendarDay1DoticsRoute
   CalendarDay2DoticsRoute: typeof CalendarDay2DoticsRoute
@@ -655,6 +681,7 @@ export interface RootRouteChildren {
   ApiPublicReserveRoute: typeof ApiPublicReserveRoute
   ApiPublicReserveUpgradeRoute: typeof ApiPublicReserveUpgradeRoute
   ApiPublicSummitAuditRoute: typeof ApiPublicSummitAuditRoute
+  ApiPublicAdminOwnerLoginRoute: typeof ApiPublicAdminOwnerLoginRoute
   ApiPublicAdminSummitAuditRoute: typeof ApiPublicAdminSummitAuditRoute
   ApiPublicAdminSummitLeadsRoute: typeof ApiPublicAdminSummitLeadsRoute
   ApiPublicResourcesEntitlementSummaryRoute: typeof ApiPublicResourcesEntitlementSummaryRoute
@@ -891,6 +918,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApplyMentorshipRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/owner-login': {
+      id: '/admin/owner-login'
+      path: '/admin/owner-login'
+      fullPath: '/admin/owner-login'
+      preLoaderRoute: typeof AdminOwnerLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/leads': {
       id: '/admin/leads'
       path: '/admin/leads'
@@ -1003,6 +1037,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAdminSummitAuditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/admin/owner-login': {
+      id: '/api/public/admin/owner-login'
+      path: '/api/public/admin/owner-login'
+      fullPath: '/api/public/admin/owner-login'
+      preLoaderRoute: typeof ApiPublicAdminOwnerLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1040,6 +1081,7 @@ const rootRouteChildren: RootRouteChildren = {
   WelcomeRoute: WelcomeRoute,
   AdminAuditRoute: AdminAuditRoute,
   AdminLeadsRoute: AdminLeadsRoute,
+  AdminOwnerLoginRoute: AdminOwnerLoginRoute,
   ApplyMentorshipRoute: ApplyMentorshipRoute,
   CalendarDay1DoticsRoute: CalendarDay1DoticsRoute,
   CalendarDay2DoticsRoute: CalendarDay2DoticsRoute,
@@ -1059,6 +1101,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicReserveRoute: ApiPublicReserveRoute,
   ApiPublicReserveUpgradeRoute: ApiPublicReserveUpgradeRoute,
   ApiPublicSummitAuditRoute: ApiPublicSummitAuditRoute,
+  ApiPublicAdminOwnerLoginRoute: ApiPublicAdminOwnerLoginRoute,
   ApiPublicAdminSummitAuditRoute: ApiPublicAdminSummitAuditRoute,
   ApiPublicAdminSummitLeadsRoute: ApiPublicAdminSummitLeadsRoute,
   ApiPublicResourcesEntitlementSummaryRoute:
