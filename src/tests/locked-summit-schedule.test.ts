@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import {
   SUMMIT_DAY_1_ISO,
   SUMMIT_DAY_1_END_ISO,
