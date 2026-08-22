@@ -41,6 +41,7 @@ import { Route as CalendarVaultWithSpinDoticsRouteImport } from './routes/calend
 import { Route as CalendarDay2DoticsRouteImport } from './routes/calendar.day2[.]ics'
 import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.]ics'
 import { Route as ApplyMentorshipRouteImport } from './routes/apply.mentorship'
+import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as ApiPublicSummitAuditRouteImport } from './routes/api/public/summit-audit'
 import { Route as ApiPublicReserveUpgradeRouteImport } from './routes/api/public/reserve-upgrade'
@@ -54,6 +55,7 @@ import { Route as ApiPublicResourcesReadRouteImport } from './routes/api/public/
 import { Route as ApiPublicResourcesLogoutRouteImport } from './routes/api/public/resources/logout'
 import { Route as ApiPublicResourcesExchangeRouteImport } from './routes/api/public/resources/exchange'
 import { Route as ApiPublicResourcesEntitlementSummaryRouteImport } from './routes/api/public/resources/entitlement-summary'
+import { Route as ApiPublicAdminSummitLeadsRouteImport } from './routes/api/public/admin/summit-leads'
 import { Route as ApiPublicAdminSummitAuditRouteImport } from './routes/api/public/admin/summit-audit'
 
 const WelcomeRoute = WelcomeRouteImport.update({
@@ -219,6 +221,11 @@ const ApplyMentorshipRoute = ApplyMentorshipRouteImport.update({
   path: '/apply/mentorship',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminLeadsRoute = AdminLeadsRouteImport.update({
+  id: '/admin/leads',
+  path: '/admin/leads',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAuditRoute = AdminAuditRouteImport.update({
   id: '/admin/audit',
   path: '/admin/audit',
@@ -291,6 +298,12 @@ const ApiPublicResourcesEntitlementSummaryRoute =
     path: '/api/public/resources/entitlement-summary',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicAdminSummitLeadsRoute =
+  ApiPublicAdminSummitLeadsRouteImport.update({
+    id: '/api/public/admin/summit-leads',
+    path: '/api/public/admin/summit-leads',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicAdminSummitAuditRoute =
   ApiPublicAdminSummitAuditRouteImport.update({
     id: '/api/public/admin/summit-audit',
@@ -319,6 +332,7 @@ export interface FileRoutesByFullPath {
   '/vault-welcome': typeof VaultWelcomeRoute
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
@@ -339,6 +353,7 @@ export interface FileRoutesByFullPath {
   '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
+  '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
@@ -367,6 +382,7 @@ export interface FileRoutesByTo {
   '/vault-welcome': typeof VaultWelcomeRoute
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
@@ -387,6 +403,7 @@ export interface FileRoutesByTo {
   '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
+  '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
@@ -416,6 +433,7 @@ export interface FileRoutesById {
   '/vault-welcome': typeof VaultWelcomeRoute
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
@@ -436,6 +454,7 @@ export interface FileRoutesById {
   '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
+  '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
@@ -466,6 +485,7 @@ export interface FileRouteTypes {
     | '/vault-welcome'
     | '/welcome'
     | '/admin/audit'
+    | '/admin/leads'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
@@ -486,6 +506,7 @@ export interface FileRouteTypes {
     | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
     | '/api/public/admin/summit-audit'
+    | '/api/public/admin/summit-leads'
     | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
     | '/api/public/resources/logout'
@@ -514,6 +535,7 @@ export interface FileRouteTypes {
     | '/vault-welcome'
     | '/welcome'
     | '/admin/audit'
+    | '/admin/leads'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
@@ -534,6 +556,7 @@ export interface FileRouteTypes {
     | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
     | '/api/public/admin/summit-audit'
+    | '/api/public/admin/summit-leads'
     | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
     | '/api/public/resources/logout'
@@ -562,6 +585,7 @@ export interface FileRouteTypes {
     | '/vault-welcome'
     | '/welcome'
     | '/admin/audit'
+    | '/admin/leads'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
@@ -582,6 +606,7 @@ export interface FileRouteTypes {
     | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
     | '/api/public/admin/summit-audit'
+    | '/api/public/admin/summit-leads'
     | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
     | '/api/public/resources/logout'
@@ -611,6 +636,7 @@ export interface RootRouteChildren {
   VaultWelcomeRoute: typeof VaultWelcomeRoute
   WelcomeRoute: typeof WelcomeRoute
   AdminAuditRoute: typeof AdminAuditRoute
+  AdminLeadsRoute: typeof AdminLeadsRoute
   ApplyMentorshipRoute: typeof ApplyMentorshipRoute
   CalendarDay1DoticsRoute: typeof CalendarDay1DoticsRoute
   CalendarDay2DoticsRoute: typeof CalendarDay2DoticsRoute
@@ -630,6 +656,7 @@ export interface RootRouteChildren {
   ApiPublicReserveUpgradeRoute: typeof ApiPublicReserveUpgradeRoute
   ApiPublicSummitAuditRoute: typeof ApiPublicSummitAuditRoute
   ApiPublicAdminSummitAuditRoute: typeof ApiPublicAdminSummitAuditRoute
+  ApiPublicAdminSummitLeadsRoute: typeof ApiPublicAdminSummitLeadsRoute
   ApiPublicResourcesEntitlementSummaryRoute: typeof ApiPublicResourcesEntitlementSummaryRoute
   ApiPublicResourcesExchangeRoute: typeof ApiPublicResourcesExchangeRoute
   ApiPublicResourcesLogoutRoute: typeof ApiPublicResourcesLogoutRoute
@@ -864,6 +891,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApplyMentorshipRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/leads': {
+      id: '/admin/leads'
+      path: '/admin/leads'
+      fullPath: '/admin/leads'
+      preLoaderRoute: typeof AdminLeadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/audit': {
       id: '/admin/audit'
       path: '/admin/audit'
@@ -955,6 +989,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicResourcesEntitlementSummaryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/admin/summit-leads': {
+      id: '/api/public/admin/summit-leads'
+      path: '/api/public/admin/summit-leads'
+      fullPath: '/api/public/admin/summit-leads'
+      preLoaderRoute: typeof ApiPublicAdminSummitLeadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/admin/summit-audit': {
       id: '/api/public/admin/summit-audit'
       path: '/api/public/admin/summit-audit'
@@ -998,6 +1039,7 @@ const rootRouteChildren: RootRouteChildren = {
   VaultWelcomeRoute: VaultWelcomeRoute,
   WelcomeRoute: WelcomeRoute,
   AdminAuditRoute: AdminAuditRoute,
+  AdminLeadsRoute: AdminLeadsRoute,
   ApplyMentorshipRoute: ApplyMentorshipRoute,
   CalendarDay1DoticsRoute: CalendarDay1DoticsRoute,
   CalendarDay2DoticsRoute: CalendarDay2DoticsRoute,
@@ -1018,6 +1060,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicReserveUpgradeRoute: ApiPublicReserveUpgradeRoute,
   ApiPublicSummitAuditRoute: ApiPublicSummitAuditRoute,
   ApiPublicAdminSummitAuditRoute: ApiPublicAdminSummitAuditRoute,
+  ApiPublicAdminSummitLeadsRoute: ApiPublicAdminSummitLeadsRoute,
   ApiPublicResourcesEntitlementSummaryRoute:
     ApiPublicResourcesEntitlementSummaryRoute,
   ApiPublicResourcesExchangeRoute: ApiPublicResourcesExchangeRoute,

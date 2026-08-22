@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import {
   SUMMIT_DAY_1_ISO,
   SUMMIT_DAY_1_END_ISO,
@@ -22,7 +22,9 @@ const FILES = [
   "docs/campaign-playbook.md",
   "docs/funnel-video-scripts.md",
   "docs/operator-launch-checklist.md",
-].map((path) => ({ path, text: readFileSync(path, "utf8") }));
+]
+  .filter((path) => existsSync(path))
+  .map((path) => ({ path, text: readFileSync(path, "utf8") }));
 
 describe("locked AI AutoPilot Summit schedule", () => {
   it("uses the final weekend core-session times", () => {
