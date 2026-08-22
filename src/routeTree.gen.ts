@@ -54,6 +54,7 @@ import { Route as ApiPublicResourcesReadRouteImport } from './routes/api/public/
 import { Route as ApiPublicResourcesLogoutRouteImport } from './routes/api/public/resources/logout'
 import { Route as ApiPublicResourcesExchangeRouteImport } from './routes/api/public/resources/exchange'
 import { Route as ApiPublicResourcesEntitlementSummaryRouteImport } from './routes/api/public/resources/entitlement-summary'
+import { Route as ApiPublicAdminSummitLeadsRouteImport } from './routes/api/public/admin/summit-leads'
 import { Route as ApiPublicAdminSummitAuditRouteImport } from './routes/api/public/admin/summit-audit'
 
 const WelcomeRoute = WelcomeRouteImport.update({
@@ -291,6 +292,12 @@ const ApiPublicResourcesEntitlementSummaryRoute =
     path: '/api/public/resources/entitlement-summary',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicAdminSummitLeadsRoute =
+  ApiPublicAdminSummitLeadsRouteImport.update({
+    id: '/api/public/admin/summit-leads',
+    path: '/api/public/admin/summit-leads',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicAdminSummitAuditRoute =
   ApiPublicAdminSummitAuditRouteImport.update({
     id: '/api/public/admin/summit-audit',
@@ -339,6 +346,7 @@ export interface FileRoutesByFullPath {
   '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
+  '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
@@ -387,6 +395,7 @@ export interface FileRoutesByTo {
   '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
+  '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
@@ -436,6 +445,7 @@ export interface FileRoutesById {
   '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
+  '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
@@ -486,6 +496,7 @@ export interface FileRouteTypes {
     | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
     | '/api/public/admin/summit-audit'
+    | '/api/public/admin/summit-leads'
     | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
     | '/api/public/resources/logout'
@@ -534,6 +545,7 @@ export interface FileRouteTypes {
     | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
     | '/api/public/admin/summit-audit'
+    | '/api/public/admin/summit-leads'
     | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
     | '/api/public/resources/logout'
@@ -582,6 +594,7 @@ export interface FileRouteTypes {
     | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
     | '/api/public/admin/summit-audit'
+    | '/api/public/admin/summit-leads'
     | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
     | '/api/public/resources/logout'
@@ -630,6 +643,7 @@ export interface RootRouteChildren {
   ApiPublicReserveUpgradeRoute: typeof ApiPublicReserveUpgradeRoute
   ApiPublicSummitAuditRoute: typeof ApiPublicSummitAuditRoute
   ApiPublicAdminSummitAuditRoute: typeof ApiPublicAdminSummitAuditRoute
+  ApiPublicAdminSummitLeadsRoute: typeof ApiPublicAdminSummitLeadsRoute
   ApiPublicResourcesEntitlementSummaryRoute: typeof ApiPublicResourcesEntitlementSummaryRoute
   ApiPublicResourcesExchangeRoute: typeof ApiPublicResourcesExchangeRoute
   ApiPublicResourcesLogoutRoute: typeof ApiPublicResourcesLogoutRoute
@@ -955,6 +969,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicResourcesEntitlementSummaryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/admin/summit-leads': {
+      id: '/api/public/admin/summit-leads'
+      path: '/api/public/admin/summit-leads'
+      fullPath: '/api/public/admin/summit-leads'
+      preLoaderRoute: typeof ApiPublicAdminSummitLeadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/admin/summit-audit': {
       id: '/api/public/admin/summit-audit'
       path: '/api/public/admin/summit-audit'
@@ -1018,6 +1039,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicReserveUpgradeRoute: ApiPublicReserveUpgradeRoute,
   ApiPublicSummitAuditRoute: ApiPublicSummitAuditRoute,
   ApiPublicAdminSummitAuditRoute: ApiPublicAdminSummitAuditRoute,
+  ApiPublicAdminSummitLeadsRoute: ApiPublicAdminSummitLeadsRoute,
   ApiPublicResourcesEntitlementSummaryRoute:
     ApiPublicResourcesEntitlementSummaryRoute,
   ApiPublicResourcesExchangeRoute: ApiPublicResourcesExchangeRoute,
