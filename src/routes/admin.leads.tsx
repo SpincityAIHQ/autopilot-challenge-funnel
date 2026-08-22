@@ -111,7 +111,7 @@ function LeadsContent({ data }: { data: LeadsPayload }) {
   const [sort, setSort] = useState("newest");
 
   const rows = useMemo(
-    () => filterLeads(collapseLeads([]).concat(data.leads), { q, tier, sort }),
+    () => filterLeads(data.leads, { q, tier, sort }),
     [data.leads, q, tier, sort],
   );
 

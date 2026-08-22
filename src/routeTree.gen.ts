@@ -41,6 +41,7 @@ import { Route as CalendarVaultWithSpinDoticsRouteImport } from './routes/calend
 import { Route as CalendarDay2DoticsRouteImport } from './routes/calendar.day2[.]ics'
 import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.]ics'
 import { Route as ApplyMentorshipRouteImport } from './routes/apply.mentorship'
+import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as ApiPublicSummitAuditRouteImport } from './routes/api/public/summit-audit'
 import { Route as ApiPublicReserveUpgradeRouteImport } from './routes/api/public/reserve-upgrade'
@@ -220,6 +221,11 @@ const ApplyMentorshipRoute = ApplyMentorshipRouteImport.update({
   path: '/apply/mentorship',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminLeadsRoute = AdminLeadsRouteImport.update({
+  id: '/admin/leads',
+  path: '/admin/leads',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAuditRoute = AdminAuditRouteImport.update({
   id: '/admin/audit',
   path: '/admin/audit',
@@ -326,6 +332,7 @@ export interface FileRoutesByFullPath {
   '/vault-welcome': typeof VaultWelcomeRoute
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
@@ -375,6 +382,7 @@ export interface FileRoutesByTo {
   '/vault-welcome': typeof VaultWelcomeRoute
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
@@ -425,6 +433,7 @@ export interface FileRoutesById {
   '/vault-welcome': typeof VaultWelcomeRoute
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
@@ -476,6 +485,7 @@ export interface FileRouteTypes {
     | '/vault-welcome'
     | '/welcome'
     | '/admin/audit'
+    | '/admin/leads'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
@@ -525,6 +535,7 @@ export interface FileRouteTypes {
     | '/vault-welcome'
     | '/welcome'
     | '/admin/audit'
+    | '/admin/leads'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
@@ -574,6 +585,7 @@ export interface FileRouteTypes {
     | '/vault-welcome'
     | '/welcome'
     | '/admin/audit'
+    | '/admin/leads'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
@@ -624,6 +636,7 @@ export interface RootRouteChildren {
   VaultWelcomeRoute: typeof VaultWelcomeRoute
   WelcomeRoute: typeof WelcomeRoute
   AdminAuditRoute: typeof AdminAuditRoute
+  AdminLeadsRoute: typeof AdminLeadsRoute
   ApplyMentorshipRoute: typeof ApplyMentorshipRoute
   CalendarDay1DoticsRoute: typeof CalendarDay1DoticsRoute
   CalendarDay2DoticsRoute: typeof CalendarDay2DoticsRoute
@@ -878,6 +891,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApplyMentorshipRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/leads': {
+      id: '/admin/leads'
+      path: '/admin/leads'
+      fullPath: '/admin/leads'
+      preLoaderRoute: typeof AdminLeadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/audit': {
       id: '/admin/audit'
       path: '/admin/audit'
@@ -1019,6 +1039,7 @@ const rootRouteChildren: RootRouteChildren = {
   VaultWelcomeRoute: VaultWelcomeRoute,
   WelcomeRoute: WelcomeRoute,
   AdminAuditRoute: AdminAuditRoute,
+  AdminLeadsRoute: AdminLeadsRoute,
   ApplyMentorshipRoute: ApplyMentorshipRoute,
   CalendarDay1DoticsRoute: CalendarDay1DoticsRoute,
   CalendarDay2DoticsRoute: CalendarDay2DoticsRoute,
