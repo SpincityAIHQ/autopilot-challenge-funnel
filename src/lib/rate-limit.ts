@@ -29,13 +29,30 @@ export function assertSameOrigin(request: Request): boolean {
   // least one of Origin or Referer. Reject when both are absent so a
   // scripted or curl-style POST cannot slip past the check.
   if (!origin && !referer) return false;
-  const host = request.headers.get("host") ?? "";
+  // Behind a proxy/preview host the Host header can be an internal name,
+  // so accept any of the forwarded host candidates.
+  const hosts = new Set(
+    [
+      request.headers.get("host"),
+      request.headers.get("x-forwarded-host"),
+      (() => {
+        try {
+          return new URL(request.url).host;
+        } catch {
+          return null;
+        }
+      })(),
+    ]
+      .filter(Boolean)
+      .map((h) => (h as string).toLowerCase()),
+  );
   const src = origin ?? referer ?? "";
   try {
-    return new URL(src).host === host;
+    return hosts.has(new URL(src).host.toLowerCase());
   } catch {
     return false;
   }
+
 }
 
 // ---------- Caller identity (never stored raw) ----------
