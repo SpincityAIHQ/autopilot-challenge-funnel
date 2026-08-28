@@ -2,9 +2,9 @@
 
 The AI AutoPilot Summit is a two-day live online implementation event:
 
-- **Day 1:** Saturday, August 29, 2026 · **1:00–4:00 PM Eastern**
-- **Day 2:** Sunday, August 30, 2026 · **1:00–4:00 PM Eastern**
-- **Room opens:** 12:45 PM Eastern both days
+- **Day 1:** Saturday, August 29, 2026 · **11:00 AM–4:00 PM Eastern**
+- **Day 2:** Sunday, August 30, 2026 · **11:00 AM–4:00 PM Eastern**
+- **Room opens:** 10:45 AM Eastern both days
 - **VIP Build Lab:** Sunday, August 30, 2026 · **4:15–5:45 PM Eastern**, immediately after Day 2
 
 This app is a standalone Lovable Cloud project — it does not share code,
@@ -48,25 +48,21 @@ NuAmenti verification + access email plus the resulting HttpOnly session.
 
 ## Locked event flow
 
-### Day 1 — Saturday, August 29 · 1:00–4:00 PM Eastern
+### Day 1 — Saturday, August 29 · 11:00 AM–4:00 PM Eastern
 
-- 12:45 — Room opens
-- 1:00 — Welcome, goals, and build setup
-- 1:20 — Niche and pressing problem
-- 2:00 — Customer, offer, price, and business math
-- 2:40 — Ten-minute break
-- 2:50 — Business infrastructure and internal app plan
-- 3:25 — AI Business GPS and Day 1 homework
+- 10:45 — Room opens
+- 11:00–1:00 — Spin: energy, mindset, AI-for-business literacy, keywords, model roles, LLM workspace setup, and best practices
+- 1:00–2:30 — AKU: _Marching Orders: VSM for Autonomous Agentic Businesses_ — 60-minute lecture + 30-minute live VSM Autonomy Audit
+- 2:30–4:00 — Spin: Marketing + Advertising Deployment Lab — tools, sites, content-to-lead route, advertising setup, and economic scorecard
 
-### Day 2 — Sunday, August 30 · 1:00–4:00 PM Eastern
+### Day 2 — Sunday, August 30 · 11:00 AM–4:00 PM Eastern
 
-- 12:45 — Room opens
-- 1:00 — Day 1 recap and system check
-- 1:20 — AI agent roles, jobs, tools, and rules
-- 2:00 — Workflows and improvement loops
-- 2:40 — Ten-minute break
-- 2:50 — Marketing, follow-up, sales, and monetization
-- 3:30 — 30-day build order, Q&A, and live next-step close
+- 10:45 — Room opens
+- 11:00 — Re-Ignite + Hire the AI Team: system check, roles, jobs, tools, rules, and human approvals
+- 12:00 — Give Every Agent a Job: inputs, outputs, handoffs, limits, and reporting
+- 1:00 — Connect the Money Path: marketing, lead capture, sales, follow-up, fulfillment, and measurement
+- 2:00 — Live Deployment Sprint: build, connect, or test one workflow with timed and partner work
+- 3:00 — Measure + Launch: economic receipt, scorecard, 30-day build order, Q&A, and live next-step close
 - 4:00 — Main Summit ends; 15-minute reset and upgrade window
 
 ### VIP Build Lab — Sunday, August 30 · 4:15–5:45 PM Eastern
@@ -194,7 +190,7 @@ after the entitlement summary confirms the required prior scope.
 ## Pre-launch checklist (P0)
 
 - [ ] **Schedule:** all visible pages, metadata, email templates, SMS, call
-      scripts, calendar files, and videos say Aug 29–30 at 1:00–4:00 PM ET;
+      scripts, calendar files, and videos say Aug 29–30 at 11:00 AM–4:00 PM ET;
       VIP materials say Sun Aug 30 at 4:15–5:45 PM ET immediately after Day 2.
 - [ ] **Live conversion:** VIP checkout link is ready in the Day 2 room, email,
       and SMS before the 3:30 PM close; Vault and Intensive paths are tested.

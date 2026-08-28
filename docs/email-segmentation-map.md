@@ -44,8 +44,8 @@ highest level. It does not remove historical purchase tags.
 
 ## Locked event timing
 
-- Day 1: Saturday, August 29, 2026 · 1:00–4:00 PM Eastern
-- Day 2: Sunday, August 30, 2026 · 1:00–4:00 PM Eastern
+- Day 1: Saturday, August 29, 2026 · 11:00 AM–4:00 PM Eastern
+- Day 2: Sunday, August 30, 2026 · 11:00 AM–4:00 PM Eastern
 - VIP Build Lab: Sunday, August 30 · 4:15–5:45 PM Eastern, immediately after Day 2
 - Secret Day 3 Vault Opener Class: Monday, August 31 · 1:00–3:00 PM Eastern, Emerald only
 - GA-to-VIP live upgrade window: Sunday, August 30 · 3:45–4:15 PM Eastern

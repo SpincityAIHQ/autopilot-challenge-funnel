@@ -89,6 +89,11 @@ STALE_PATTERNS=(
   'Thursday, September 3'
   'Thu Sep 3'
   '12[–-]4 ?PM'
+  # Replaced public schedule: 11:00 AM–4:00 PM, doors at 10:45 AM.
+  '1:00[–-]4:00 PM (Eastern|ET)'
+  '\b1[–-]4 PM ET\b'
+  '\b1-4 PM (Eastern|ET)\b'
+  '12:45 PM (Eastern|ET)'
   '\bFounder Seat\b'
   '\bBundle Tier\b'
   '\$111\b'

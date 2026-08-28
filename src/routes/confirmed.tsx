@@ -50,8 +50,8 @@ function Confirmed() {
       <section className="mt-6 rounded-md border border-[color:var(--emerald-signal)]/40 bg-[color:var(--surface)] p-5 sm:p-6">
         <h2 className="font-heading text-lg text-foreground">What happens next</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          You're in. AI AutoPilot 2-Day Summit, August 29–30, 1:00–4:00 PM ET both days. Room opens
-          at 12:45.
+          You're in. AI AutoPilot 2-Day Summit, August 29–30, 11:00 AM–4:00 PM ET both days. Room
+          opens at 10:45 AM.
         </p>
         <ol className="mt-4 space-y-3 text-sm text-muted-foreground">
           <li>
@@ -66,8 +66,8 @@ function Confirmed() {
           </li>
           <li>
             <span className="font-heading text-foreground">3. Save both live dates.</span> Saturday,
-            August 29 and Sunday, August 30. Room opens at 12:45 PM Eastern; training begins at 1:00
-            PM.
+            August 29 and Sunday, August 30. Room opens at 10:45 AM Eastern; training begins at
+            11:00 AM.
           </li>
           <li>
             <span className="font-heading text-foreground">4. Prepare your build.</span> Bring a
@@ -99,7 +99,7 @@ function Confirmed() {
         verified={verifiedGaOnly}
         eyebrow="Verified · General Admission"
         headline="Thank you, family — your General Admission seat is confirmed."
-        body="You are set for both live days: Saturday, August 29 and Sunday, August 30 from 1:00–4:00 PM Eastern."
+        body="You are set for both live days: Saturday, August 29 and Sunday, August 30 from 11:00 AM–4:00 PM Eastern."
         videoUrl={null}
         videoLabel="General Admission welcome"
       />

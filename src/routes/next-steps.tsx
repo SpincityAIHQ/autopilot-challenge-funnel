@@ -86,20 +86,20 @@ function NextSteps() {
       <section className="mt-10 surface-raised p-6">
         <h2 className="font-heading text-lg text-foreground">Save the dates</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Both Summit days run from 1:00–4:00 PM Eastern. The room opens at 12:45 PM Eastern.
+          Both Summit days run from 11:00 AM–4:00 PM Eastern. The room opens at 10:45 AM Eastern.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <a
             href="/calendar/day1.ics"
             className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
           >
-            Day 1 — Sat Aug 29 · 1–4 PM ET
+            Day 1 — Sat Aug 29 · 11 AM–4 PM ET
           </a>
           <a
             href="/calendar/day2.ics"
             className="inline-flex items-center rounded-md bg-primary px-4 py-2.5 font-heading text-sm font-semibold text-primary-foreground hover:opacity-90"
           >
-            Day 2 — Sun Aug 30 · 1–4 PM ET
+            Day 2 — Sun Aug 30 · 11 AM–4 PM ET
           </a>
         </div>
         {access?.hasVip ? (
@@ -224,7 +224,7 @@ function getExitConfirmation(
       envKey: "VITE_SUMMIT_VIDEO_EXIT_GA",
       eyebrow: "Verified · General Admission",
       headline: "Thank you, family — your General Admission seat is confirmed.",
-      body: "You are all set for Saturday, August 29 and Sunday, August 30 from 1:00–4:00 PM Eastern. The room opens at 12:45 PM both days. Your ticket stays complete even when you pass on every optional upgrade.",
+      body: "You are all set for Saturday, August 29 and Sunday, August 30 from 11:00 AM–4:00 PM Eastern. The room opens at 10:45 AM both days. Your ticket stays complete even when you pass on every optional upgrade.",
     };
   }
 

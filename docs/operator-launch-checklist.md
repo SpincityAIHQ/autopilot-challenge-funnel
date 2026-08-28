@@ -6,9 +6,9 @@ minimum bar to sell.
 
 ## Locked event schedule
 
-- Day 1: Saturday, August 29, 2026 · 1:00–4:00 PM Eastern
-- Day 2: Sunday, August 30, 2026 · 1:00–4:00 PM Eastern
-- Room opens: 12:45 PM Eastern both days
+- Day 1: Saturday, August 29, 2026 · 11:00 AM–4:00 PM Eastern
+- Day 2: Sunday, August 30, 2026 · 11:00 AM–4:00 PM Eastern
+- Room opens: 10:45 AM Eastern both days
 - VIP Build Lab: Sunday, August 30, 2026 · 4:15–5:45 PM Eastern, immediately after Day 2
 - Secret Day 3 Vault Opener Class: Monday, August 31, 2026 · 1:00–3:00 PM Eastern, Emerald only
 - Live upgrade/reset window: Sunday, August 30 · 4:00–4:15 PM Eastern
@@ -100,7 +100,7 @@ scope from the HttpOnly session — not from `?tier=` and not from the URL.
 
 ### Schedule and content
 
-- [ ] Landing page, checkout, confirmation pages, next-steps page, and metadata all say Aug 29–30, 1:00–4:00 PM Eastern.
+- [ ] Landing page, checkout, confirmation pages, next-steps page, and metadata all say Aug 29–30, 11:00 AM–4:00 PM Eastern.
 - [ ] Every Day 1 and Day 2 calendar file carries the real start/end time and a 15-minute reminder.
 - [ ] VIP page, confirmation, emails, scripts, and delivery all include MVP App Builder, AI Business GPS, Internal Agent Builder Skill, 30-day recordings, priority questions, and one 90-minute Build Lab on Sun Aug 30, 4:15–5:45 PM Eastern.
 - [ ] Emerald pages, confirmations, emails, scripts, and delivery include the Secret Day 3 Vault Opener Class on Mon Aug 31, 1:00–3:00 PM Eastern, two additional live hours with Spin, private room details after purchase, 30 days of NuAmenti 3 Gold beginning Aug 10, and the full NuAmenti 3 Day recording.

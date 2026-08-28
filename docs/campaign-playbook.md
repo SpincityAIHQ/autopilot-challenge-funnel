@@ -2,11 +2,17 @@
 
 ## Locked schedule
 
-- **Day 1:** Saturday, August 29, 2026 · 1:00–4:00 PM Eastern
-- **Day 2:** Sunday, August 30, 2026 · 1:00–4:00 PM Eastern
-- **Room opens:** 12:45 PM Eastern both days
+- **Day 1:** Saturday, August 29, 2026 · 11:00 AM–4:00 PM Eastern
+- **Day 2:** Sunday, August 30, 2026 · 11:00 AM–4:00 PM Eastern
+- **Room opens:** 10:45 AM Eastern both days
 - **VIP Build Lab:** Sunday, August 30, 2026 · 4:15–5:45 PM Eastern, immediately after Day 2
 - **Secret Day 3 Vault Opener Class:** Monday, August 31, 2026 · 1:00–3:00 PM Eastern, Emerald only
+
+### Day 1 faculty itinerary
+
+- **11:00 AM–1:00 PM — Spin:** energy, mindset, AI-for-business literacy, keywords and terms, LLM workspace setup, and best practices
+- **1:00–2:30 PM — AKU:** _Marching Orders: VSM for Autonomous Agentic Businesses_ — 60-minute lecture + 30-minute live VSM Autonomy Audit
+- **2:30–4:00 PM — Spin:** Marketing + Advertising Deployment Lab — tools, sites, content-to-lead route, advertising setup, and the time-and-money scorecard
 
 The message is the same everywhere:
 
@@ -61,9 +67,11 @@ Hi [FIRST_NAME],
 
 Thank you, family. Your General Admission seat is confirmed.
 
-**Day 1:** Saturday, August 29 · 1:00–4:00 PM Eastern  
-**Day 2:** Sunday, August 30 · 1:00–4:00 PM Eastern  
-**Room opens:** 12:45 PM Eastern both days
+**Day 1:** Saturday, August 29 · 11:00 AM–4:00 PM Eastern
+
+**Day 2:** Sunday, August 30 · 11:00 AM–4:00 PM Eastern
+
+**Room opens:** 10:45 AM Eastern both days
 
 Add both days to your calendar:
 
@@ -141,6 +149,7 @@ Ask them to prepare:
 - Their current offer or best offer idea
 - Prices, goals, costs, and basic numbers
 - The tasks that take too much time
+- One real process they want to pressure-test in AKU's VSM Autonomy Audit
 
 ### Thursday, August 27 — two days before
 
@@ -150,24 +159,24 @@ Ask them to list repeated work across research, analysis, business math, app bui
 
 ### Friday, August 28 — one day before
 
-**Subject:** We start tomorrow at 1:00 PM Eastern
+**Subject:** We start tomorrow at 11:00 AM Eastern
 
 Include:
 
 - Day 1 date and time
-- Room opens at 12:45 PM Eastern
+- Room opens at 10:45 AM Eastern
 - Private room link
 - Laptop reminder
 - Calendar links
 - Safe-data reminder
 
-### Saturday, August 29 — 11:00 AM Eastern
+### Saturday, August 29 — 9:00 AM Eastern
 
 **Subject:** Day 1 begins in two hours
 
-Keep it short. Include the room link, 12:45 opening time, and the Day 1 build target.
+Keep it short. Include the room link, 10:45 opening time, and the Day 1 build target.
 
-### Saturday, August 29 — 12:45 PM Eastern
+### Saturday, August 29 — 10:45 AM Eastern
 
 **Subject:** The Day 1 room is open
 
@@ -184,15 +193,15 @@ Send:
 - Day 1 recap
 - Business goals, rules, facts, numbers, and next-step homework
 - The unanswered-question form
-- Day 2 reminder: Sunday at 1:00 PM Eastern; room opens 12:45
+- Day 2 reminder: Sunday at 11:00 AM Eastern; room opens 10:45 AM
 
-### Sunday, August 30 — 11:00 AM Eastern
+### Sunday, August 30 — 9:00 AM Eastern
 
 **Subject:** Day 2 begins in two hours
 
 Include the room link and today’s promise: build the AI team, workflows, loops, marketing, follow-up, and 30-day build order.
 
-### Sunday, August 30 — 12:45 PM Eastern
+### Sunday, August 30 — 10:45 AM Eastern
 
 **Subject:** The Day 2 room is open
 
@@ -352,11 +361,11 @@ Send the full path plus scheduling and private-session preparation. Stop every r
 
 Send only to people with recorded SMS consent. Every marketing SMS ends with: `Reply STOP to opt out; HELP for help.`
 
-- **Aug 28:** “AI AutoPilot Summit starts tomorrow. Day 1 is Sat Aug 29, 1–4 PM ET. Room opens 12:45. Check your NuAmenti email for the link. Reply STOP to opt out; HELP for help.”
-- **Aug 29, 11:00 AM ET:** “Day 1 starts in 2 hours. Room opens 12:45 PM ET. Your private link is in your NuAmenti email. Reply STOP to opt out; HELP for help.”
-- **Aug 29, 12:45 PM ET:** “The Day 1 room is open now. Use the link in your NuAmenti email. Reply STOP to opt out; HELP for help.”
-- **Aug 30, 11:00 AM ET:** “Day 2 starts in 2 hours. Today we build the AI team, workflows, loops, and money path. Reply STOP to opt out; HELP for help.”
-- **Aug 30, 12:45 PM ET:** “The Day 2 room is open now. Use the link in your NuAmenti email. Reply STOP to opt out; HELP for help.”
+- **Aug 28:** “AI AutoPilot Summit starts tomorrow. Day 1 is Sat Aug 29, 11 AM–4 PM ET. Room opens 10:45 AM. Check your NuAmenti email for the link. Reply STOP to opt out; HELP for help.”
+- **Aug 29, 9:00 AM ET:** “Day 1 starts in 2 hours. Room opens 10:45 AM ET. Your private link is in your NuAmenti email. Reply STOP to opt out; HELP for help.”
+- **Aug 29, 10:45 AM ET:** “The Day 1 room is open now. Use the link in your NuAmenti email. Reply STOP to opt out; HELP for help.”
+- **Aug 30, 9:00 AM ET:** “Day 2 starts in 2 hours. Today we build the AI team, workflows, loops, and money path. Reply STOP to opt out; HELP for help.”
+- **Aug 30, 10:45 AM ET:** “The Day 2 room is open now. Use the link in your NuAmenti email. Reply STOP to opt out; HELP for help.”
 - **Aug 30, 3:50 PM ET, GA only:** “VIP Build Lab starts at 4:15 PM ET, right after Day 2. Add 30-day recordings, priority questions, the MVP App Builder, AI Business GPS, Internal Agent Builder Skill, and one 90-minute Lab: [VIP_LINK]. Reply STOP to opt out; HELP for help.”
 - **Aug 30, 5:25 PM ET, VIP only:** “Emerald adds the Secret Day 3 Vault Opener Class with Spin, two more live hours, 30 days of NuAmenti 3 Gold from Aug 10, and the full NuAmenti 3 Day recording. Private room details arrive after purchase: [VAULT_LINK]. Reply STOP to opt out; HELP for help.”
 
@@ -364,7 +373,7 @@ Send only to people with recorded SMS consent. Every marketing SMS ends with: `R
 
 Use only with documented AI-call consent.
 
-“Peace Family. This is AI Spin calling for SpinCityHQ and NuAmenti. I am an AI voice. The AI AutoPilot 2-Day Summit is Saturday, August 29 and Sunday, August 30 from 1:00 to 4:00 PM Eastern. The room opens at 12:45 both days. The optional 90-minute VIP Build Lab begins 15 minutes after Day 2 ends. I have three short questions to help Spin prepare the live teaching. What business, skill, offer, or idea are you bringing? What repeated task takes the most time now? What is the number-one question you want addressed? To stop future NuAmenti calls, press 9. To request a human, press 0.”
+“Peace Family. This is AI Spin calling for SpinCityHQ and NuAmenti. I am an AI voice. The AI AutoPilot 2-Day Summit is Saturday, August 29 and Sunday, August 30 from 11:00 AM to 4:00 PM Eastern. The room opens at 10:45 AM both days. The optional 90-minute VIP Build Lab begins 15 minutes after Day 2 ends. I have three short questions to help Spin prepare the live teaching. What business, skill, offer, or idea are you bringing? What repeated task takes the most time now? What is the number-one question you want addressed? To stop future NuAmenti calls, press 9. To request a human, press 0.”
 
 Record the answers by topic:
 

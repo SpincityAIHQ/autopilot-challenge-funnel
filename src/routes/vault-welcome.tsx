@@ -149,8 +149,8 @@ function VaultWelcomeContent() {
       <section className="mt-8 rounded-md border border-[color:var(--emerald-signal)]/40 bg-[color:var(--surface)] p-5 sm:p-6">
         <h2 className="font-heading text-lg text-foreground">What happens next</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          You're in. AI AutoPilot 2-Day Summit, August 29–30, 1:00–4:00 PM ET both days. Room opens
-          at 12:45.
+          You're in. AI AutoPilot 2-Day Summit, August 29–30, 11:00 AM–4:00 PM ET both days. Room
+          opens at 10:45 AM.
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
           Your access link and calendar invite arrive within 24 hours.

@@ -20,7 +20,7 @@ export const Route = createFileRoute("/checkout")({
       {
         name: "description",
         content:
-          "Join the AI AutoPilot 2-Day Summit live Saturday, August 29 and Sunday, August 30 from 1:00–4:00 PM Eastern.",
+          "Join the AI AutoPilot 2-Day Summit live Saturday, August 29 and Sunday, August 30 from 11:00 AM–4:00 PM Eastern.",
       },
       { name: "robots", content: "noindex" },
       { property: "og:url", content: "/checkout" },
@@ -128,8 +128,8 @@ function Checkout() {
       </section>
 
       <p className="mt-5 text-sm text-muted-foreground">
-        Saturday, August 29 and Sunday, August 30 · 1:00–4:00 PM Eastern · live online. The room
-        opens at 12:45 PM both days.
+        Saturday, August 29 and Sunday, August 30 · 11:00 AM–4:00 PM Eastern · live online. The room
+        opens at 10:45 AM both days.
       </p>
 
       <section className="mt-8 surface-raised p-6">

@@ -29,8 +29,9 @@ describe("SpinCityHQ and NuAmenti Summit branding", () => {
 
   it("keeps the autonomous-business promise in plain language", () => {
     expect(LANDING).toContain("BUILD THE BUSINESS");
+    expect(LANDING).toContain("OWN THE SOFTWARE");
     expect(LANDING).toContain("HIRE THE AI TEAM");
-    expect(LANDING).toContain("PUT THE WORK ON AUTOPILOT");
+    expect(LANDING).toContain("PUT REPEATABLE WORK ON AUTOPILOT");
     expect(LANDING).toContain("AI Readiness Blueprint");
     expect(LANDING).not.toContain("AI Business GPS");
     expect(LANDING).toContain("Internal Business App Plan");
@@ -40,15 +41,15 @@ describe("SpinCityHQ and NuAmenti Summit branding", () => {
 
 describe("video-first conversion order", () => {
   it("puts the landing VSL directly after the headline and the reservation form directly after the VSL", () => {
-    const headline = LANDING.indexOf("PUT THE WORK ON AUTOPILOT");
+    const headline = LANDING.indexOf("PUT REPEATABLE WORK ON AUTOPILOT");
     const video = LANDING.indexOf("<FunnelVideoSlot", headline);
     const form = LANDING.indexOf("<LandingReservationForm", video);
-    const supportingCopy = LANDING.indexOf("In two live days", form);
+    const supportingCopy = LANDING.indexOf("This is a live, two-day business build", form);
 
     expect(headline).toBeGreaterThan(-1);
     expect(video).toBeGreaterThan(headline);
     expect(form).toBeGreaterThan(video);
-    expect(LANDING_FORM).toContain("Reserve My General Admission Seat");
+    expect(LANDING_FORM).toContain("Take My General Admission Seat");
     expect(supportingCopy).toBeGreaterThan(form);
   });
 

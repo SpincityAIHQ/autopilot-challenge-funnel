@@ -77,7 +77,7 @@ describe("brand-owned share metadata", () => {
     expect(ROOT).not.toContain("application/ld+json");
     expect(LANDING).toContain("application/ld+json");
     expect(LANDING).toContain("VirtualLocation");
-    expect(LANDING).toContain("2026-08-29T13:00:00-04:00");
+    expect(LANDING).toContain("2026-08-29T11:00:00-04:00");
     expect(LANDING).toContain("2026-08-30T16:00:00-04:00");
     expect(AUDIT).toContain('name: "robots", content: "noindex,nofollow"');
   });

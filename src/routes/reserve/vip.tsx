@@ -125,7 +125,7 @@ function ReserveVipPage() {
                     <li>• Both live Summit days, August 29-30</li>
                     <li>• The autonomous-business foundation build</li>
                     <li>• Niche, offer, infrastructure, and AI team mapping</li>
-                    <li>• Live access from 1-4 PM Eastern both days</li>
+                    <li>• Live access from 11 AM-4 PM Eastern both days</li>
                   </ul>
                   <p className="mt-4 reserve-note-15" style={{ opacity: 0.7 }}>
                     Best if you can attend live and want the core build experience.

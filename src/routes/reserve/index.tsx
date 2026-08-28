@@ -11,7 +11,8 @@ export const Route = createFileRoute("/reserve/")({
       { title: "Reserve your seat — AI AutoPilot 2-Day Summit" },
       {
         name: "description",
-        content: "Reserve your seat for the AI AutoPilot 2-Day Summit — August 29-30, 1-4 PM ET.",
+        content:
+          "Reserve your seat for the AI AutoPilot 2-Day Summit — August 29-30, 11 AM-4 PM ET.",
       },
       { name: "robots", content: "noindex, nofollow" },
     ],
@@ -109,7 +110,7 @@ function ReservePage() {
                 AI AutoPilot 2-Day Summit
               </span>
               <br />
-              August 29-30 · 1-4 PM ET both days
+              August 29-30 · 11 AM-4 PM ET both days
             </p>
           </div>
         </RevealOnView>

@@ -10,13 +10,13 @@ interface CalendarDay {
 const CALENDAR_DAYS: readonly CalendarDay[] = [
   {
     shortName: "Day 1",
-    dateLabel: "Saturday, August 29 · 1:00–4:00 PM ET",
+    dateLabel: "Saturday, August 29 · 11:00 AM–4:00 PM ET",
     event: SUMMIT_DAY_1,
     icsHref: "/calendar/day1.ics",
   },
   {
     shortName: "Day 2",
-    dateLabel: "Sunday, August 30 · 1:00–4:00 PM ET",
+    dateLabel: "Sunday, August 30 · 11:00 AM–4:00 PM ET",
     event: SUMMIT_DAY_2,
     icsHref: "/calendar/day2.ics",
   },

@@ -53,7 +53,7 @@ describe("landing page — no prices, no later-offer links", () => {
 
   it("captures the lead on-page before any checkout", () => {
     expect(source.includes("<LandingReservationForm")).toBe(true);
-    expect(form.includes("Reserve My General Admission Seat")).toBe(true);
+    expect(form.includes("Take My General Admission Seat")).toBe(true);
     expect(form.includes('fetch("/api/public/reserve"')).toBe(true);
     expect(source.includes('to="/checkout"')).toBe(false);
     expect(source.includes('to="/reserve"')).toBe(false);
@@ -66,7 +66,7 @@ describe("landing page — no prices, no later-offer links", () => {
     expect(form).toContain("CollapsibleTrigger");
     expect(form).toContain("CollapsibleContent");
     expect(form).toContain('id="reserve-seat"');
-    expect(form).toContain("Reserve General Admission");
+    expect(form).toContain("Take My General Admission Seat");
     expect(form).not.toContain("1. Hold your GA seat");
     expect(form).not.toContain("2. Watch the GA ticket video");
     expect(form).not.toContain("3. Choose your ticket and check out");

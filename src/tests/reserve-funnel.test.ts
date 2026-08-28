@@ -174,7 +174,7 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(landing.includes('to="/reserve"')).toBe(false);
     expect(form.includes('id="reserve-seat"')).toBe(true);
     expect(form.includes('fetch("/api/public/reserve"')).toBe(true);
-    expect(form.includes("Reserve My General Admission Seat")).toBe(true);
+    expect(form.includes("Take My General Admission Seat")).toBe(true);
     expect(form.includes("first_name")).toBe(true);
     expect(form.includes('name="email"')).toBe(true);
     expect(form.includes('name="phone"')).toBe(true);
@@ -186,7 +186,7 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(form.includes("CollapsibleContent")).toBe(true);
     expect(form.includes('id="reserve-seat"')).toBe(true);
     expect(form.includes('type="button"')).toBe(true);
-    expect(form.includes("Reserve General Admission")).toBe(true);
+    expect(form.includes("Take My General Admission Seat")).toBe(true);
     expect(form.indexOf("<CollapsibleTrigger")).toBeLessThan(form.indexOf("<CollapsibleContent"));
     expect(form.indexOf("<CollapsibleContent")).toBeLessThan(form.indexOf("<form"));
     expect(form.includes("1. Hold your GA seat")).toBe(false);
@@ -195,7 +195,7 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(form.includes("On the next page, Spin explains")).toBe(false);
   });
   it("uses the exact hyphen date punctuation on all reserve pages", () => {
-    expect(readReserveIndex().includes("August 29-30 · 1-4 PM ET both days")).toBe(true);
+    expect(readReserveIndex().includes("August 29-30 · 11 AM-4 PM ET both days")).toBe(true);
     expect(readReserveVip().includes("August 29-30")).toBe(true);
   });
   it("/reserve/vip has correct bullets, prices and does NOT have the removed line", () => {

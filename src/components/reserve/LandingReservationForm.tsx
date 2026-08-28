@@ -107,7 +107,7 @@ export function LandingReservationForm({ open, onOpenChange }: LandingReservatio
           disabled={submitting}
           className="flex w-full items-center justify-between gap-4 rounded-xl border border-[color:var(--gold)]/55 bg-primary px-5 py-4 text-left font-heading text-base font-semibold text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_0_30px_rgba(15,191,127,0.22)] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-55 sm:px-6"
         >
-          <span>Reserve General Admission</span>
+          <span>Take My General Admission Seat</span>
           <span
             aria-hidden="true"
             className={`text-xl leading-none transition-transform duration-200 ${
@@ -218,7 +218,7 @@ export function LandingReservationForm({ open, onOpenChange }: LandingReservatio
             disabled={submitting}
             className="mt-2 inline-flex w-full items-center justify-center rounded-md bg-primary px-6 py-3.5 font-heading text-base font-semibold text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_0_28px_rgba(15,191,127,0.22)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-55 sm:w-auto"
           >
-            {submitting ? "Reserving…" : "Reserve My General Admission Seat"}
+            {submitting ? "Reserving…" : "Take My General Admission Seat"}
           </button>
 
           <p className="mt-3 text-xs text-muted-foreground">

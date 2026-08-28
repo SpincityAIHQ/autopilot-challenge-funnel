@@ -42,11 +42,7 @@ export function Countdown() {
       return <LiveStatus>Day 1 is live now — check your NuAmenti access email.</LiveStatus>;
     }
     if (now >= day1End && now < day2Start) {
-      return (
-        <LiveStatus>
-          Day 1 is complete. Day 2 begins Sunday at 1:00 PM Eastern.
-        </LiveStatus>
-      );
+      return <LiveStatus>Day 1 is complete. Day 2 begins Sunday at 11:00 AM Eastern.</LiveStatus>;
     }
     if (now >= day2Start && now < day2End) {
       return <LiveStatus>Day 2 is live now — check your NuAmenti access email.</LiveStatus>;
@@ -87,10 +83,7 @@ export function Countdown() {
 
 function LiveStatus({ children }: { children: string }) {
   return (
-    <p
-      role="status"
-      className="font-heading text-lg text-[color:var(--emerald-signal)]"
-    >
+    <p role="status" className="font-heading text-lg text-[color:var(--emerald-signal)]">
       {children}
     </p>
   );
@@ -99,9 +92,7 @@ function LiveStatus({ children }: { children: string }) {
 function TimeCell({ value, label }: { value: string; label: string }) {
   return (
     <div className="surface-raised px-2 py-3 text-center">
-      <div className="font-display text-2xl text-foreground tabular-nums sm:text-3xl">
-        {value}
-      </div>
+      <div className="font-display text-2xl text-foreground tabular-nums sm:text-3xl">{value}</div>
       <div className="label-mono mt-1">{label}</div>
     </div>
   );

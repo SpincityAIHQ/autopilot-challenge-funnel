@@ -13,13 +13,24 @@ import { buildGoogleCalendarUrl, buildIcs, SUMMIT_DAY_1, SUMMIT_DAY_2 } from "..
 const FILES = [
   "src/routes/index.tsx",
   "src/routes/checkout.tsx",
+  "src/routes/reserve/index.tsx",
+  "src/routes/reserve/vip.tsx",
   "src/routes/confirmed.tsx",
   "src/routes/next-steps.tsx",
+  "src/routes/welcome.tsx",
+  "src/routes/vault-welcome.tsx",
   "src/routes/offer/vip-upgrade.tsx",
+  "src/components/Countdown.tsx",
+  "src/components/SummitCalendarActions.tsx",
+  "src/lib/challenge-config.ts",
+  "src/lib/ics.ts",
+  "src/lib/site-meta.ts",
   "src/lib/tiers.ts",
+  "public/og-ai-autopilot-summit.svg",
   "README_SETUP.md",
   ".lovable/plan.md",
   "docs/campaign-playbook.md",
+  "docs/email-segmentation-map.md",
   "docs/funnel-video-scripts.md",
   "docs/operator-launch-checklist.md",
 ]
@@ -28,9 +39,9 @@ const FILES = [
 
 describe("locked AI AutoPilot Summit schedule", () => {
   it("uses the final weekend core-session times", () => {
-    expect(SUMMIT_DAY_1_ISO).toBe("2026-08-29T13:00:00-04:00");
+    expect(SUMMIT_DAY_1_ISO).toBe("2026-08-29T11:00:00-04:00");
     expect(SUMMIT_DAY_1_END_ISO).toBe("2026-08-29T16:00:00-04:00");
-    expect(SUMMIT_DAY_2_ISO).toBe("2026-08-30T13:00:00-04:00");
+    expect(SUMMIT_DAY_2_ISO).toBe("2026-08-30T11:00:00-04:00");
     expect(SUMMIT_DAY_2_END_ISO).toBe("2026-08-30T16:00:00-04:00");
   });
 
@@ -41,10 +52,10 @@ describe("locked AI AutoPilot Summit schedule", () => {
 
   it("creates timed calendar files for both main Summit days", () => {
     expect(SUMMIT_DAY_1.dateYyyyMmDd).toBe("20260829");
-    expect(SUMMIT_DAY_1.startHHmm).toBe("130000");
+    expect(SUMMIT_DAY_1.startHHmm).toBe("110000");
     expect(SUMMIT_DAY_1.endHHmm).toBe("160000");
     expect(SUMMIT_DAY_2.dateYyyyMmDd).toBe("20260830");
-    expect(SUMMIT_DAY_2.startHHmm).toBe("130000");
+    expect(SUMMIT_DAY_2.startHHmm).toBe("110000");
     expect(SUMMIT_DAY_2.endHHmm).toBe("160000");
   });
 
@@ -58,11 +69,28 @@ describe("locked AI AutoPilot Summit schedule", () => {
       expect(url.searchParams.get("action")).toBe("TEMPLATE");
       expect(url.searchParams.get("ctz")).toBe("America/New_York");
       expect(url.searchParams.get("location")).toContain("secure room link");
-      expect(url.searchParams.get("details")).toContain("Room opens at 12:45 PM Eastern");
+      expect(url.searchParams.get("details")).toContain("Room opens at 10:45 AM Eastern");
     }
 
-    expect(day1.searchParams.get("dates")).toBe("20260829T130000/20260829T160000");
-    expect(day2.searchParams.get("dates")).toBe("20260830T130000/20260830T160000");
+    expect(day1.searchParams.get("dates")).toBe("20260829T110000/20260829T160000");
+    expect(day2.searchParams.get("dates")).toBe("20260830T110000/20260830T160000");
+  });
+
+  it("removes the previous public time from active Summit surfaces", () => {
+    const stale = [
+      "1:00–4:00 PM Eastern",
+      "1:00–4:00 PM ET",
+      "from 1:00 to 4:00 PM Eastern",
+      "Room opens at 12:45",
+    ];
+
+    for (const file of FILES) {
+      for (const phrase of stale) {
+        if (file.text.includes(phrase)) {
+          throw new Error(`${file.path} contains previous public time: ${phrase}`);
+        }
+      }
+    }
   });
 
   it("keeps Apple and Outlook imports complete and private-link safe", () => {

@@ -1,6 +1,6 @@
 /**
  * .ics generator for the two Summit days.
- * Times are locked to America/New_York and include the real three-hour
+ * Times are locked to America/New_York and include the real five-hour
  * implementation windows.
  */
 
@@ -92,23 +92,23 @@ export function buildIcs(day: IcsDay): string {
 
 export const SUMMIT_DAY_1: IcsDay = {
   uid: "ai-autopilot-summit-day-1-2026-08-29@spincityhq",
-  summary: "AI AutoPilot Summit — Day 1: Build the Business Foundation",
+  summary: "AI AutoPilot Summit — Day 1: Ignite + Architect the Business",
   description:
-    "Live online. Room opens at 12:45 PM Eastern. From 1:00–4:00 PM Eastern we choose the niche and problem, map the customer, offer and business numbers, design the business infrastructure, plan the internal app and map an AI readiness blueprint. Use the secure room link in your email from Sebastian@spincityhq.com.",
+    "Live online. Room opens at 10:45 AM Eastern. From 11:00 AM–1:00 PM Spin leads energy, mindset, AI-for-business literacy and LLM setup. From 1:00–2:30 PM AKU leads Marching Orders: VSM for Autonomous Agentic Businesses, including the live VSM Autonomy Audit. From 2:30–4:00 PM Spin leads the Marketing + Advertising Deployment Lab. The connected Day 1 output contributes to the AI readiness blueprint. Bring a laptop and one real business process. Use the secure room link in your email from Sebastian@spincityhq.com.",
   location: "Online — secure room link arrives by email and text",
   dateYyyyMmDd: "20260829",
-  startHHmm: "130000",
+  startHHmm: "110000",
   endHHmm: "160000",
 };
 
 export const SUMMIT_DAY_2: IcsDay = {
   uid: "ai-autopilot-summit-day-2-2026-08-30@spincityhq",
-  summary: "AI AutoPilot Summit — Day 2: Hire the AI Team",
+  summary: "AI AutoPilot Summit — Day 2: Build, Connect + Deploy",
   description:
-    "Live online. Room opens at 12:45 PM Eastern. From 1:00–4:00 PM Eastern we structure the AI agent team, connect workflows and improvement loops, and set up marketing, follow-up, sales and monetization. Use the secure room link in your email from Sebastian@spincityhq.com.",
+    "Live online. Room opens at 10:45 AM Eastern. From 11:00 AM–4:00 PM Eastern we hire the AI agent team, connect marketing, follow-up, sales and operations, run live timed build sprints, test one measurable workflow, and lock the 30-day deployment order. Bring a laptop and use the secure room link in your email from Sebastian@spincityhq.com.",
   location: "Online — secure room link arrives by email and text",
   dateYyyyMmDd: "20260830",
-  startHHmm: "130000",
+  startHHmm: "110000",
   endHHmm: "160000",
 };
 

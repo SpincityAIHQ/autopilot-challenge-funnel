@@ -2,9 +2,9 @@
 
 ## Locked schedule
 
-- Day 1: Saturday, August 29, 2026 · 1:00–4:00 PM Eastern
-- Day 2: Sunday, August 30, 2026 · 1:00–4:00 PM Eastern
-- Room opens: 12:45 PM Eastern both days
+- Day 1: Saturday, August 29, 2026 · 11:00 AM–4:00 PM Eastern
+- Day 2: Sunday, August 30, 2026 · 11:00 AM–4:00 PM Eastern
+- Room opens: 10:45 AM Eastern both days
 - VIP Build Lab: Sunday, August 30, 2026 · 4:15–5:45 PM Eastern, immediately after Day 2
 - Secret Day 3 Vault Opener Class: Monday, August 31, 2026 · 1:00–3:00 PM Eastern, Emerald only
 
@@ -40,19 +40,17 @@ This is not an event where you sit for two days, hear a list of tools, and still
 
 This is a working Summit.
 
-Day 1 is Saturday, August 29, from 1:00 to 4:00 PM Eastern.
+Day 1 is Saturday, August 29, from 11:00 AM to 4:00 PM Eastern.
 
-We build the business foundation.
+From 11:00 AM to 1:00 PM, Spin opens with energy and operator mindset, explains what this information can change for a business and family, brings the room up to speed on AI-for-business language, and helps participants configure their LLM workspace with the right keywords, model roles, guardrails, and best practices.
 
-You will choose the niche you want to serve. You will define the problem you want to solve. You will map the customer, the offer, the work, and the numbers.
+From 1:00 to 2:30 PM, AKU leads _Marching Orders: VSM for Autonomous Agentic Businesses_. The first 60 minutes translate Stafford Beer's Viable System Model into operations, coordination, control, audit, intelligence, policy, and safe human/agent authority. The final 30 minutes are a live VSM Autonomy Audit on one real process.
 
-You will create your Business Infrastructure Map so you can see the pages, apps, data, tools, people, and handoffs your business needs.
+Each participant leaves that block with a VSM Autonomy Prescription: what not to automate, what to fix first, what to delegate, what to keep human, what to monitor, and when to escalate.
 
-You will plan an internal business app.
+From 2:30 to 4:00 PM, Spin returns for the Marketing + Advertising Deployment Lab. Participants select the tools and sites, connect the content-to-lead route, prepare the marketing and advertising system for what they built, and define the time-and-money scorecard that proves whether the automation earns its place.
 
-And you will organize the goals, rules, facts, numbers, and next steps your AI tools need.
-
-Day 2 is Sunday, August 30, from 1:00 to 4:00 PM Eastern.
+Day 2 is Sunday, August 30, from 11:00 AM to 4:00 PM Eastern.
 
 We hire the AI team.
 
@@ -84,7 +82,7 @@ We are building real infrastructure.
 
 You will leave with a Niche and Offer Map, a Business Infrastructure Map, organized business inputs, an AI Agent Team Chart, a starter internal app plan, a workflow and loop plan, and a clear 30-day build order.
 
-The room opens at 12:45 PM Eastern both days.
+The room opens at 10:45 AM Eastern both days.
 
 The goal is simple.
 
@@ -108,7 +106,7 @@ Peace Family. I will see you inside.
 
 Peace Family. You made it to the final step to reserve your seat.
 
-The Summit is live Saturday, August 29 and Sunday, August 30 from 1:00 to 4:00 PM Eastern. The room opens at 12:45 both days.
+The Summit is live Saturday, August 29 and Sunday, August 30 from 11:00 AM to 4:00 PM Eastern. The room opens at 10:45 AM both days.
 
 Your General Admission ticket gives you both live days.
 
@@ -134,7 +132,7 @@ Peace Family. Thank you.
 
 Your General Admission seat is confirmed.
 
-You are joining us Saturday, August 29 and Sunday, August 30 from 1:00 to 4:00 PM Eastern. The room opens at 12:45 both days.
+You are joining us Saturday, August 29 and Sunday, August 30 from 11:00 AM to 4:00 PM Eastern. The room opens at 10:45 AM both days.
 
 Watch for your NuAmenti welcome email, calendar links, preparation steps, private room link, and the resources connected to your ticket.
 
@@ -280,7 +278,7 @@ Peace Family. You are all set with General Admission.
 
 Your ticket is complete.
 
-You are joining us Saturday, August 29 and Sunday, August 30 from 1:00 to 4:00 PM Eastern. The room opens at 12:45 both days.
+You are joining us Saturday, August 29 and Sunday, August 30 from 11:00 AM to 4:00 PM Eastern. The room opens at 10:45 AM both days.
 
 Watch for your NuAmenti email with the calendar links, private room link, preparation steps, and the core resources connected to General Admission.
 

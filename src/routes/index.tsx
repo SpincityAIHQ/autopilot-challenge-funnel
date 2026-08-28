@@ -22,7 +22,7 @@ const JSON_LD_EVENT = {
   description: SUMMIT_DESCRIPTION,
   image: [SOCIAL_IMAGE_URL],
   url: CANONICAL_HOME_URL,
-  startDate: "2026-08-29T13:00:00-04:00",
+  startDate: "2026-08-29T11:00:00-04:00",
   endDate: "2026-08-30T16:00:00-04:00",
   eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
   eventStatus: "https://schema.org/EventScheduled",
@@ -40,8 +40,8 @@ const JSON_LD_EVENT = {
   subEvent: [
     {
       "@type": "Event",
-      name: "AI AutoPilot 2-Day Summit — Day 1: Build the Business Foundation",
-      startDate: "2026-08-29T13:00:00-04:00",
+      name: "AI AutoPilot 2-Day Summit — Day 1: Ignite + Architect the Business",
+      startDate: "2026-08-29T11:00:00-04:00",
       endDate: "2026-08-29T16:00:00-04:00",
       eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
       eventStatus: "https://schema.org/EventScheduled",
@@ -52,8 +52,20 @@ const JSON_LD_EVENT = {
     },
     {
       "@type": "Event",
-      name: "AI AutoPilot 2-Day Summit — Day 2: Hire the AI Team",
-      startDate: "2026-08-30T13:00:00-04:00",
+      name: "Marching Orders: VSM for Autonomous Agentic Businesses with AKU",
+      startDate: "2026-08-29T13:00:00-04:00",
+      endDate: "2026-08-29T14:30:00-04:00",
+      eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+      eventStatus: "https://schema.org/EventScheduled",
+      location: {
+        "@type": "VirtualLocation",
+        url: CANONICAL_HOME_URL,
+      },
+    },
+    {
+      "@type": "Event",
+      name: "AI AutoPilot 2-Day Summit — Day 2: Build, Connect + Deploy",
+      startDate: "2026-08-30T11:00:00-04:00",
       endDate: "2026-08-30T16:00:00-04:00",
       eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
       eventStatus: "https://schema.org/EventScheduled",
@@ -124,6 +136,7 @@ function Landing() {
         reservationOpen={reservationOpen}
         onReservationOpenChange={setReservationOpen}
       />
+      <EconomicOutcomes />
       <Outputs />
       <Agenda />
       <OperatingLoop />
@@ -151,12 +164,30 @@ function Hero({
       <BrandSignature />
 
       <div className="mt-10 max-w-5xl">
-        <p className="eyebrow">Live online · Sat Aug 29 + Sun Aug 30 · 1:00–4:00 PM Eastern</p>
+        <p className="eyebrow">Live online · Sat Aug 29 + Sun Aug 30 · 11:00 AM–4:00 PM Eastern</p>
         <h1 className="rise-in mt-4 font-display text-3xl leading-tight text-foreground sm:text-5xl md:text-6xl">
           BUILD THE BUSINESS.
+          <span className="block text-[color:var(--gold)]">OWN THE SOFTWARE.</span>
           <span className="block text-[color:var(--emerald-signal)]">HIRE THE AI TEAM.</span>
-          <span className="block text-[color:var(--gold)]">PUT THE WORK ON AUTOPILOT.</span>
+          <span className="block text-[color:var(--gold)]">PUT REPEATABLE WORK ON AUTOPILOT.</span>
         </h1>
+        <p className="mt-5 font-display text-sm tracking-[0.13em] text-foreground sm:text-base">
+          RECLAIM THE HOURS. PROTECT THE MONEY. KEEP THE REWARD.
+        </p>
+        <p className="mt-4 max-w-4xl text-base text-muted-foreground sm:text-lg">
+          A paid, two-day working Summit—not another AI tool tour. Bring one real business
+          bottleneck. Set up the LLM cockpit, architect the business, and build and test a
+          controlled workflow designed to reclaim time, protect money, and improve service.
+        </p>
+      </div>
+
+      <div
+        role="note"
+        className="mt-6 max-w-4xl rounded-md border border-[color:var(--gold)]/55 bg-[color:var(--surface)] px-4 py-3"
+      >
+        <p className="font-mono text-xs font-semibold tracking-[0.12em] text-[color:var(--gold)]">
+          SCHEDULE UPDATED · BOTH DAYS NOW 11:00 AM–4:00 PM ET · DOORS OPEN 10:45 AM
+        </p>
       </div>
 
       <FunnelVideoSlot
@@ -170,31 +201,35 @@ function Hero({
 
       <div className="mt-6 max-w-3xl border-l-2 border-[color:var(--emerald-signal)]/35 pl-4">
         <p className="font-heading text-lg text-muted-foreground sm:text-xl">
-          In two live days, you will choose the niche you want to serve, build the core business
-          system, and learn how to hire AI agents that research, analyze, do the math, market,
-          follow up, and improve the work.
+          This is a live, two-day business build where AI meets the infrastructure that makes a
+          company move: strategy, marketing, sales, follow-up, operations, and automation.
         </p>
         <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-          This is not just prompting. You will build connected workflows, loops, and internal tools
-          your business can use again and again.
+          You will not sit through another tool tour. You will configure your LLM workspace, map the
+          business, design the AI team, and test a connected workflow using live activity timers and
+          partner working breaks.
         </p>
       </div>
 
       <div className="mt-8 grid max-w-4xl gap-4 sm:grid-cols-2">
         <article className="surface-raised border-[color:var(--gold)]/40 p-5">
           <p className="label-mono">Day 1 · Saturday, August 29</p>
-          <p className="mt-2 font-display text-lg text-[color:var(--gold)]">1:00–4:00 PM Eastern</p>
+          <p className="mt-2 font-display text-lg text-[color:var(--gold)]">
+            11:00 AM–4:00 PM Eastern
+          </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Build the business foundation. Room opens at 12:45 PM Eastern.
+            Ignite the operator. Learn the language. Architect the business. Room opens at 10:45 AM
+            Eastern.
           </p>
         </article>
         <article className="surface-raised border-[color:var(--emerald-signal)]/40 p-5">
           <p className="label-mono">Day 2 · Sunday, August 30</p>
           <p className="mt-2 font-display text-lg text-[color:var(--emerald-signal)]">
-            1:00–4:00 PM Eastern
+            11:00 AM–4:00 PM Eastern
           </p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Hire the AI team and connect the work. Room opens at 12:45 PM Eastern.
+            Build the AI team. Connect the money path. Deploy the workflow. Room opens at 10:45 AM
+            Eastern.
           </p>
         </article>
       </div>
@@ -208,9 +243,65 @@ function Hero({
   );
 }
 
+function EconomicOutcomes() {
+  const outcomes = [
+    [
+      "Reclaim the hours",
+      "Identify repeated work, measure how often it happens, and decide what AI should remove from your plate.",
+    ],
+    [
+      "Protect the money",
+      "Give every tool an economic test: subscription, setup, oversight, risk, and the value it must return.",
+    ],
+    [
+      "Keep the reward",
+      "Build capacity that can improve service, protect margin, and create more room for the people and family you are building for.",
+    ],
+  ] as const;
+
+  return (
+    <section className="border-y border-border bg-[color:var(--surface)]/45">
+      <div className="mx-auto max-w-6xl px-5 py-14">
+        <p className="eyebrow">The economic standard</p>
+        <h2 className="mt-3 max-w-4xl font-heading text-2xl text-foreground sm:text-3xl">
+          The automation must pay rent.
+        </h2>
+        <p className="mt-4 max-w-3xl text-muted-foreground">
+          No tool earns a place because it looks impressive. It must remove named work, return more
+          value than its subscription, setup, and oversight cost, and improve the experience for
+          customers or students.
+        </p>
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          {outcomes.map(([title, body]) => (
+            <article key={title} className="surface-raised p-5">
+              <h3 className="font-display text-sm text-[color:var(--gold)]">{title}</h3>
+              <p className="mt-3 text-sm text-muted-foreground">{body}</p>
+            </article>
+          ))}
+        </div>
+        <p className="mt-5 text-xs text-muted-foreground">
+          These are measurable goals, not guaranteed outcomes. Results depend on the business,
+          implementation, and follow-through.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 function Outputs() {
   const outputs = [
-    ["Niche + Offer Map", "Choose who you help, the problem you solve, and what you sell."],
+    [
+      "Time + Money Baseline",
+      "Name the repeated work, current cost, frequency, and hours you want the system to return.",
+    ],
+    [
+      "LLM Business Cockpit",
+      "Choose the right model, learn the key terms, organize your workspace, and set safe-use rules.",
+    ],
+    [
+      "Customer + Offer Economics Map",
+      "Clarify the customer or use case, costly problem, offer, price logic, and value path.",
+    ],
     [
       "Business Infrastructure Map",
       "See the pages, apps, tools, data, and handoffs your business needs.",
@@ -221,9 +312,14 @@ function Outputs() {
     ],
     ["AI Agent Team Chart", "Name the AI jobs, what each agent owns, and where a human approves."],
     [
-      "Internal Business App Plan",
-      "Plan or begin one internal business app that keeps the work in one place.",
+      "VSM Autonomy Prescription",
+      "Name what not to automate, what to fix first, what agents may own, what stays human, and when to escalate.",
     ],
+    [
+      "Internal Business App Plan",
+      "Plan or prototype one owned internal app layer that keeps the business logic and work connected.",
+    ],
+    ["Measured Workflow", "Build or map one loop with a clear before, after, owner, and score."],
     ["30-Day Build Order", "Know what to build first, second, and third after the Summit."],
   ] as const;
 
@@ -231,7 +327,8 @@ function Outputs() {
     <section className="mx-auto max-w-5xl px-5 py-16">
       <p className="eyebrow">What you leave with</p>
       <h2 className="mt-3 max-w-4xl font-heading text-2xl text-foreground sm:text-3xl">
-        A clear plan for a business that can run more work without you doing every step by hand.
+        A business operating blueprint designed to return time, protect money, and increase capacity
+        without you doing every step by hand.
       </h2>
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {outputs.map(([title, body], index) => (
@@ -255,42 +352,132 @@ function Outputs() {
 }
 
 function Agenda() {
+  const dayOne = [
+    [
+      "11:00 AM–1:00 PM",
+      "SPIN · ENERGY, MINDSET + AI BUSINESS LITERACY",
+      "Open with the Summit roadmap and economic promise, bring every founder up to speed on AI-for-business language, learn the keywords and model roles, and configure the LLM workspace with safe-use best practices.",
+    ],
+    [
+      "1:00–2:30 PM",
+      "AKU · MARCHING ORDERS: VSM FOR AUTONOMOUS AGENTIC BUSINESSES",
+      "Use Stafford Beer's Viable System Model to diagnose organizational readiness, define human and agent authority, and complete a live VSM Autonomy Audit on one real business process.",
+    ],
+    [
+      "2:30–4:00 PM",
+      "SPIN · MARKETING + ADVERTISING DEPLOYMENT LAB",
+      "Turn the build into demand: set up the marketing and advertising route, select the tools and sites, connect the content-to-lead path, and define the time-and-money scorecard.",
+    ],
+  ] as const;
+
+  const dayTwo = [
+    [
+      "11:00–12:00",
+      "RE-IGNITE + HIRE THE AI TEAM",
+      "Run the system check, turn repeated work into clear agent roles, and choose what stays human.",
+    ],
+    [
+      "12:00–1:00",
+      "GIVE EVERY AGENT A JOB",
+      "Set each agent's goal, tools, inputs, rules, reporting format, limits, and approval gate.",
+    ],
+    [
+      "1:00–2:00",
+      "CONNECT THE MONEY PATH",
+      "Join marketing, lead capture, sales, follow-up, fulfillment, and measurement into one operating route.",
+    ],
+    [
+      "2:00–3:00",
+      "LIVE DEPLOYMENT SPRINT",
+      "Build, connect, or test one real workflow with an activity timer, partner working break, and live troubleshooting.",
+    ],
+    [
+      "3:00–4:00",
+      "MEASURE + LAUNCH",
+      "Create the economic receipt, test the human controls, lock the scorecard, and finish the 30-day deployment order.",
+    ],
+  ] as const;
+
   return (
     <section id="agenda" className="mx-auto max-w-5xl px-5 py-16">
-      <p className="eyebrow">Two days · one connected build</p>
+      <p className="eyebrow">Two days · named faculty · one connected build</p>
       <h2 className="mt-3 font-heading text-2xl text-foreground sm:text-3xl">
-        What we build, hour by hour
+        Watch less. Build more. Leave with the next 30 days already ordered.
       </h2>
+      <p className="mt-4 max-w-3xl text-muted-foreground">
+        Every block ends with something built, chosen, tested, or measured. Short resets, visible
+        activity timers, and partner working breaks keep the room moving together.
+      </p>
       <div className="mt-8 grid gap-5 md:grid-cols-2">
         <article className="surface-raised p-6">
-          <p className="label-mono">Day 1 · Sat Aug 29 · 1:00–4:00 PM ET</p>
+          <p className="label-mono">Day 1 · Sat Aug 29 · 11:00 AM–4:00 PM ET</p>
           <h3 className="mt-2 font-display text-xl text-[color:var(--gold)]">
-            BUILD THE BUSINESS FOUNDATION
+            IGNITE + ARCHITECT THE BUSINESS
           </h3>
-          <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-            <li>· Choose the niche and costly problem you want to solve.</li>
-            <li>· Map the customer, offer, price, and business numbers.</li>
-            <li>· Design your business infrastructure.</li>
-            <li>· Plan your internal business app.</li>
-            <li>
-              · Map the goals, rules, facts, numbers, and next steps your AI system will need.
-            </li>
-          </ul>
+          <ol className="mt-5 space-y-4">
+            {dayOne.map(([time, title, body]) => (
+              <li key={time} className="border-l border-[color:var(--gold)]/35 pl-4">
+                <p className="font-mono text-xs text-[color:var(--gold)]">{time} ET</p>
+                <h4 className="mt-1 font-display text-sm text-foreground">{title}</h4>
+                <p className="mt-1 text-sm text-muted-foreground">{body}</p>
+              </li>
+            ))}
+          </ol>
         </article>
         <article className="surface-raised border-[color:var(--emerald-signal)]/35 p-6">
-          <p className="label-mono">Day 2 · Sun Aug 30 · 1:00–4:00 PM ET</p>
+          <p className="label-mono">Day 2 · Sun Aug 30 · 11:00 AM–4:00 PM ET</p>
           <h3 className="mt-2 font-display text-xl text-[color:var(--emerald-signal)]">
-            HIRE THE AI TEAM
+            BUILD + CONNECT + DEPLOY
           </h3>
-          <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-            <li>· Build AI agent roles, jobs, tools, and rules.</li>
-            <li>· Connect agents into workflows and improvement loops.</li>
-            <li>· Set human approval points and limits.</li>
-            <li>· Build marketing, follow-up, sales, and monetization paths.</li>
-            <li>· Finish your 30-day build order.</li>
-          </ul>
+          <ol className="mt-5 space-y-4">
+            {dayTwo.map(([time, title, body]) => (
+              <li key={time} className="border-l border-[color:var(--emerald-signal)]/35 pl-4">
+                <p className="font-mono text-xs text-[color:var(--emerald-signal)]">{time} ET</p>
+                <h4 className="mt-1 font-display text-sm text-foreground">{title}</h4>
+                <p className="mt-1 text-sm text-muted-foreground">{body}</p>
+              </li>
+            ))}
+          </ol>
         </article>
       </div>
+      <article className="surface-raised mt-5 border-[color:var(--gold)]/45 p-6">
+        <p className="label-mono">Guest faculty spotlight · Day 1 · 1:00–2:30 PM ET</p>
+        <h3 className="mt-2 font-display text-xl text-[color:var(--gold)]">
+          AKU · MARCHING ORDERS: VSM FOR AUTONOMOUS AGENTIC BUSINESSES
+        </h3>
+        <p className="mt-4 max-w-4xl text-muted-foreground">
+          Most businesses begin with “What can we automate?” AKU begins with the harder, more useful
+          question: “Is the business structurally ready to become autonomous?” This 90-minute
+          working session uses Stafford Beer’s Viable System Model to map agents to operations,
+          coordination, control, audit, intelligence, and policy—without surrendering human
+          authority.
+        </p>
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          <div className="surface p-5">
+            <p className="font-display text-sm text-[color:var(--gold)]">60-MINUTE LECTURE</p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Escape the Autopilot Trap, translate VSM Systems 1–5 and System 3* into agentic
+              architecture, test automation readiness, and design bounded autonomy with explicit
+              human and AI decision rights.
+            </p>
+          </div>
+          <div className="surface border-[color:var(--emerald-signal)]/35 p-5">
+            <p className="font-display text-sm text-[color:var(--emerald-signal)]">
+              30-MINUTE LIVE VSM AUTONOMY AUDIT
+            </p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Pressure-test one real process, classify automate versus supervise versus human
+              control, identify missing infrastructure, and set feedback, audit, exception, and
+              escalation rules.
+            </p>
+          </div>
+        </div>
+        <p className="mt-5 border-l-2 border-[color:var(--emerald-signal)]/45 pl-4 text-sm text-muted-foreground">
+          <span className="font-heading text-foreground">You leave with:</span> the VSM Autonomy
+          Prescription—what not to automate, what to fix first, what to delegate, what to keep
+          human, what to monitor, and when to escalate.
+        </p>
+      </article>
     </section>
   );
 }
@@ -309,7 +496,8 @@ function OperatingLoop() {
     <section className="mx-auto max-w-6xl px-5 py-16">
       <p className="eyebrow">Workflows and loops</p>
       <h2 className="mt-3 max-w-4xl font-heading text-2xl text-foreground sm:text-3xl">
-        A prompt gives one answer. A loop keeps the work moving.
+        A prompt gives one answer. An operating loop keeps work moving—and makes the result
+        measurable.
       </h2>
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {steps.map(([title, body], index) => (
@@ -403,12 +591,20 @@ function Faq() {
       "It maps the goals, rules, facts, numbers, and next steps your future AI system will need.",
     ],
     [
+      "What does “own the software” mean?",
+      "You own the business logic, context, workflows, data choices, and internal app layer you build. Third-party LLMs and tools remain their providers' platforms.",
+    ],
+    [
+      "What does “hire the AI team” mean?",
+      "You design controlled agent roles with clear jobs, tools, rules, handoffs, limits, and human approval points. It does not mean unsupervised replacement of your team.",
+    ],
+    [
       "What will I leave with?",
       "A niche and offer map, infrastructure map, AI readiness blueprint, agent-team chart, internal app plan, and 30-day build order.",
     ],
     [
       "When is the Summit?",
-      "Saturday, August 29 and Sunday, August 30 from 1:00–4:00 PM Eastern. The room opens at 12:45 PM.",
+      "Saturday, August 29 and Sunday, August 30 from 11:00 AM–4:00 PM Eastern. The room opens at 10:45 AM both days.",
     ],
     [
       "Are recordings included?",
@@ -436,17 +632,18 @@ function FinalCta({ onReserve }: { onReserve: () => void }) {
     <section className="mx-auto max-w-4xl px-5 py-20 text-center">
       <p className="eyebrow">SpinCityHQ &amp; NuAmenti present</p>
       <h2 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
-        Stop doing every business task by hand.
+        Your business should reward the people who built it.
       </h2>
       <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-        Join us live August 29 and 30 and build the system your AI team can run.
+        Join the live working Summit. Build the system. Hire the AI team. Put repeatable work on
+        autopilot—and create more capacity for your customers, your team, and your family.
       </p>
       <a
         href="#reserve-seat"
         onClick={onReserve}
         className="mt-7 inline-flex w-full items-center justify-center rounded-md bg-primary px-6 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90 sm:w-auto"
       >
-        Reserve General Admission
+        Take My General Admission Seat
       </a>
     </section>
   );

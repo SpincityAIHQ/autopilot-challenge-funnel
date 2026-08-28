@@ -2,7 +2,7 @@ export const FALLBACK_SITE_URL = "https://ai-autopilot-summit.lovable.app";
 export const SOCIAL_IMAGE_PATH = "/og-ai-autopilot-summit.png";
 export const SUMMIT_TITLE = "AI AutoPilot 2-Day Summit | SpinCityHQ x NuAmenti";
 export const SUMMIT_DESCRIPTION =
-  "Build an AI readiness blueprint, hire the AI team, and put repeatable business work on autopilot. Live online August 29–30, 2026, 1:00–4:00 PM Eastern.";
+  "Build an AI readiness blueprint, hire the AI team, and put repeatable work on autopilot. Live working Summit August 29–30, 2026, 11:00 AM–4:00 PM Eastern.";
 export const SOCIAL_IMAGE_ALT =
   "SpinCityHQ and NuAmenti present the AI AutoPilot 2-Day Summit, live online August 29–30, 2026.";
 
