@@ -1,17 +1,25 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ReservationConsentFields } from "@/components/reserve/ReservationConsentFields";
 
 type FieldErrors = {
   first_name?: string;
   email?: string;
   phone?: string;
+  signer_name?: string;
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^[+()\-.\s\d]{6,32}$/;
 
-function validate(values: { first_name: string; email: string; phone: string }): FieldErrors {
+function validate(values: {
+  first_name: string;
+  email: string;
+  phone: string;
+  ai_call_consent: boolean;
+  signer_name: string;
+}): FieldErrors {
   const errors: FieldErrors = {};
 
   if (!values.first_name.trim()) {
@@ -32,6 +40,10 @@ function validate(values: { first_name: string; email: string; phone: string }):
     errors.phone = "Enter a valid phone number.";
   }
 
+  if (values.ai_call_consent && values.signer_name.trim().length < 2) {
+    errors.signer_name = "Type your full legal name to consent to AI/prerecorded calls.";
+  }
+
   return errors;
 }
 
@@ -45,13 +57,26 @@ export function LandingReservationForm({ open, onOpenChange }: LandingReservatio
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [emailConsent, setEmailConsent] = useState(false);
+  const [smsConsent, setSmsConsent] = useState(false);
+  const [aiCallConsent, setAiCallConsent] = useState(false);
+  const [signerName, setSignerName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [attempted, setAttempted] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
 
   const errors = useMemo(
-    () => (attempted ? validate({ first_name: firstName, email, phone }) : {}),
-    [attempted, firstName, email, phone],
+    () =>
+      attempted
+        ? validate({
+            first_name: firstName,
+            email,
+            phone,
+            ai_call_consent: aiCallConsent,
+            signer_name: signerName,
+          })
+        : {},
+    [attempted, firstName, email, phone, aiCallConsent, signerName],
   );
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -63,6 +88,8 @@ export function LandingReservationForm({ open, onOpenChange }: LandingReservatio
       first_name: firstName,
       email,
       phone,
+      ai_call_consent: aiCallConsent,
+      signer_name: signerName,
     });
     if (Object.keys(nextErrors).length > 0) return;
 
@@ -75,6 +102,12 @@ export function LandingReservationForm({ open, onOpenChange }: LandingReservatio
           first_name: firstName.trim(),
           email: email.trim(),
           phone: phone.trim(),
+          consents: {
+            email: emailConsent,
+            sms: smsConsent,
+            ai_call: aiCallConsent,
+            signer_name: aiCallConsent ? signerName.trim() : "",
+          },
         }),
       });
       const body = (await response.json().catch(() => null)) as {
@@ -203,6 +236,19 @@ export function LandingReservationForm({ open, onOpenChange }: LandingReservatio
               ) : null}
             </label>
           </div>
+
+          <ReservationConsentFields
+            idPrefix="landing"
+            emailConsent={emailConsent}
+            onEmailConsentChange={setEmailConsent}
+            smsConsent={smsConsent}
+            onSmsConsentChange={setSmsConsent}
+            aiCallConsent={aiCallConsent}
+            onAiCallConsentChange={setAiCallConsent}
+            signerName={signerName}
+            onSignerNameChange={setSignerName}
+            signerNameError={errors.signer_name}
+          />
 
           <div
             id="landing-reserve-error"

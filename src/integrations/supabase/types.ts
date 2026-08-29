@@ -443,6 +443,7 @@ export type Database = {
           granted_at: string | null
           id: string
           phone: string | null
+          reservation_id: string | null
           request_hash: string | null
           revoked_at: string | null
           seller: string | null
@@ -461,6 +462,7 @@ export type Database = {
           granted_at?: string | null
           id?: string
           phone?: string | null
+          reservation_id?: string | null
           request_hash?: string | null
           revoked_at?: string | null
           seller?: string | null
@@ -479,6 +481,7 @@ export type Database = {
           granted_at?: string | null
           id?: string
           phone?: string | null
+          reservation_id?: string | null
           request_hash?: string | null
           revoked_at?: string | null
           seller?: string | null
@@ -488,7 +491,15 @@ export type Database = {
           subject_email?: string
           user_agent_hash?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "marketing_consents_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "summit_reservations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mentorship_applications: {
         Row: {
@@ -900,6 +911,28 @@ export type Database = {
           ok: boolean
           retry_after: number
         }[]
+      }
+      create_summit_reservation_with_consents: {
+        Args: {
+          _ai_call_consent_text: string
+          _ai_call_granted: boolean
+          _ai_call_signer_name: string | null
+          _copy_version: string
+          _email: string
+          _email_consent_text: string
+          _email_granted: boolean
+          _first_name: string
+          _phone: string
+          _request_hash: string
+          _seller: string
+          _sms_consent_text: string
+          _sms_granted: boolean
+          _source: string
+          _source_route: string
+          _token: string
+          _user_agent_hash: string
+        }
+        Returns: undefined
       }
       entitlement_by_token_hash: {
         Args: { _token_hash: string }

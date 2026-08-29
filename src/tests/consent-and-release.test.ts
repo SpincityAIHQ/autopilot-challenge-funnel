@@ -7,13 +7,41 @@ const pageSrc = readFileSync("src/routes/communication-preferences.tsx", "utf8")
 
 describe("consent copy + seller identity", () => {
   it("uses the versioned copy string requested in the punch-list", () => {
-    expect(CONSENT_COPY_VERSION).toBe("2026-07-25-v1");
+    expect(CONSENT_COPY_VERSION).toBe("2026-08-29-v2");
   });
   it("brands as SpincityHQ LLC / NuAmenti (no unverified DBA)", () => {
     expect(SELLER_IDENTITY).toBe("SpincityHQ LLC / NuAmenti");
     for (const ch of ["email", "sms", "ai_call"] as const) {
       expect(CONSENT_COPY[ch].includes(SELLER_IDENTITY)).toBe(true);
       expect(CONSENT_COPY[ch].toLowerCase().includes("dba")).toBe(false);
+    }
+  });
+  it("uses specific automated-marketing disclosures for SMS and AI calls", () => {
+    const sms = CONSENT_COPY.sms.toLowerCase();
+    for (const phrase of [
+      "recurring automated marketing and promotional text messages",
+      "summit and related offers",
+      "phone number i provide",
+      "message frequency may vary",
+      "consent is not required to purchase",
+      "message and data rates may apply",
+      "reply stop",
+      "help for help",
+    ]) {
+      expect(sms).toContain(phrase);
+    }
+
+    const aiCall = CONSENT_COPY.ai_call.toLowerCase();
+    for (const phrase of [
+      "automated marketing and promotional calls",
+      "summit and related offers",
+      "phone number i provide",
+      "ai-generated or artificial voice",
+      "prerecorded voice",
+      "not a condition of purchase",
+      "revoke it at any time",
+    ]) {
+      expect(aiCall).toContain(phrase);
     }
   });
 });
