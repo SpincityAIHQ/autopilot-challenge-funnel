@@ -4,6 +4,7 @@ import { applyReserveNoStoreHeaders } from "@/lib/reserve-headers";
 import { ReserveFrame } from "@/components/reserve/ReserveFrame";
 import { WingedPlaneMark } from "@/components/reserve/WingedPlaneMark";
 import { RevealOnView } from "@/components/reserve/RevealOnView";
+import { ReservationConsentFields } from "@/components/reserve/ReservationConsentFields";
 
 export const Route = createFileRoute("/reserve/")({
   head: () => ({
@@ -27,12 +28,19 @@ type FieldErrors = {
   first_name?: string;
   email?: string;
   phone?: string;
+  signer_name?: string;
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^[+()\-.\s\d]{6,32}$/;
 
-function validate(v: { first_name: string; email: string; phone: string }): FieldErrors {
+function validate(v: {
+  first_name: string;
+  email: string;
+  phone: string;
+  ai_call_consent: boolean;
+  signer_name: string;
+}): FieldErrors {
   const errors: FieldErrors = {};
   if (!v.first_name.trim()) errors.first_name = "Please enter your first name.";
   else if (v.first_name.trim().length > 80) errors.first_name = "First name is too long.";
@@ -40,6 +48,9 @@ function validate(v: { first_name: string; email: string; phone: string }): Fiel
   else if (!EMAIL_RE.test(v.email.trim())) errors.email = "Enter a valid email address.";
   if (!v.phone.trim()) errors.phone = "Please enter your phone number.";
   else if (!PHONE_RE.test(v.phone.trim())) errors.phone = "Enter a valid phone number.";
+  if (v.ai_call_consent && v.signer_name.trim().length < 2) {
+    errors.signer_name = "Type your full legal name to consent to AI/prerecorded calls.";
+  }
   return errors;
 }
 
@@ -48,20 +59,39 @@ function ReservePage() {
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [emailConsent, setEmailConsent] = useState(false);
+  const [smsConsent, setSmsConsent] = useState(false);
+  const [aiCallConsent, setAiCallConsent] = useState(false);
+  const [signerName, setSignerName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [attempted, setAttempted] = useState(false);
 
   const errors = useMemo(
-    () => (attempted ? validate({ first_name: firstName, email, phone }) : {}),
-    [attempted, firstName, email, phone],
+    () =>
+      attempted
+        ? validate({
+            first_name: firstName,
+            email,
+            phone,
+            ai_call_consent: aiCallConsent,
+            signer_name: signerName,
+          })
+        : {},
+    [attempted, firstName, email, phone, aiCallConsent, signerName],
   );
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setAttempted(true);
     setGlobalError(null);
-    const errs = validate({ first_name: firstName, email, phone });
+    const errs = validate({
+      first_name: firstName,
+      email,
+      phone,
+      ai_call_consent: aiCallConsent,
+      signer_name: signerName,
+    });
     if (Object.keys(errs).length > 0) return;
     setSubmitting(true);
     try {
@@ -72,6 +102,12 @@ function ReservePage() {
           first_name: firstName.trim(),
           email: email.trim(),
           phone: phone.trim(),
+          consents: {
+            email: emailConsent,
+            sms: smsConsent,
+            ai_call: aiCallConsent,
+            signer_name: aiCallConsent ? signerName.trim() : "",
+          },
         }),
       });
       const body = (await res.json().catch(() => null)) as {
@@ -193,6 +229,19 @@ function ReservePage() {
                 </p>
               ) : null}
             </div>
+
+            <ReservationConsentFields
+              idPrefix="reserve"
+              emailConsent={emailConsent}
+              onEmailConsentChange={setEmailConsent}
+              smsConsent={smsConsent}
+              onSmsConsentChange={setSmsConsent}
+              aiCallConsent={aiCallConsent}
+              onAiCallConsentChange={setAiCallConsent}
+              signerName={signerName}
+              onSignerNameChange={setSignerName}
+              signerNameError={errors.signer_name}
+            />
 
             <div id="rf-global-error" role="alert" aria-live="polite" className="min-h-[1.25rem]">
               {globalError ? (

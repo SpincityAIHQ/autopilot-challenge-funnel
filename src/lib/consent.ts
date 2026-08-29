@@ -22,14 +22,14 @@ export interface ConsentRecord {
   copy_version: string;
 }
 
-export const CONSENT_COPY_VERSION = "2026-07-25-v1";
+export const CONSENT_COPY_VERSION = "2026-08-29-v2";
 
 export const SELLER_IDENTITY = "SpincityHQ LLC / NuAmenti";
 
 export const CONSENT_COPY: Record<ConsentChannel, string> = {
   email:
     "Yes, email me implementation notes, Summit updates, and offers from SpincityHQ LLC / NuAmenti. I can unsubscribe any time.",
-  sms: "Yes, text me Summit reminders and implementation nudges from SpincityHQ LLC / NuAmenti. Message and data rates may apply. Reply STOP to opt out, HELP for help.",
+  sms: "Yes, I consent to receive recurring automated marketing and promotional text messages from SpincityHQ LLC / NuAmenti about the Summit and related offers at the phone number I provide. Message frequency may vary. Consent is not required to purchase. Message and data rates may apply. Reply STOP to opt out or HELP for help.",
   ai_call:
-    "I explicitly consent to receiving AI-assisted or prerecorded marketing calls from SpincityHQ LLC / NuAmenti about this Summit and related offers. I understand my consent is not required to purchase, applies to the phone number I provide, discloses the use of AI/prerecorded voice, and can be revoked at any time by writing Sebastian@spincityhq.com.",
+    "I expressly consent to receive automated marketing and promotional calls from SpincityHQ LLC / NuAmenti about the Summit and related offers at the phone number I provide, including calls using AI-generated or artificial voice and prerecorded voice. My consent is not a condition of purchase. I may revoke it at any time by writing Sebastian@spincityhq.com.",
 };

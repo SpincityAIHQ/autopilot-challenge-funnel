@@ -5,7 +5,9 @@ import { assertSameOrigin, consumeRateLimit } from "@/lib/rate-limit";
 import {
   collapseLeads,
   filterLeads,
+  latestConsentEvidenceByEmail,
   leadsToCsv,
+  type MarketingConsentRow,
   type ReservationRow,
 } from "@/lib/leads";
 
@@ -20,6 +22,7 @@ import {
  */
 
 const SESSION_COOKIE = "summit_rs";
+const CONSENT_PAGE_SIZE = 500;
 
 function noStore(contentType?: string): Headers {
   const h = new Headers({
@@ -44,9 +47,7 @@ async function verifyOwner(): Promise<boolean> {
   const sessionToken = getCookie(SESSION_COOKIE);
   if (!sessionToken || sessionToken.length < 32) return false;
   const sessionHash = hashToken(sessionToken);
-  const { supabaseAdmin } = await import(
-    "@/integrations/supabase/client.server"
-  );
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin.rpc("session_active_scopes", {
     _session_hash: sessionHash,
   });
@@ -73,9 +74,7 @@ export const Route = createFileRoute("/api/public/admin/summit-leads")({
 
         if (!(await verifyOwner())) return respond(404, "Not found");
 
-        const { supabaseAdmin } = await import(
-          "@/integrations/supabase/client.server"
-        );
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { data, error } = await supabaseAdmin
           .from("summit_reservations")
           .select("first_name, email, phone, tier_reserved, settled, created_at")
@@ -92,12 +91,40 @@ export const Route = createFileRoute("/api/public/admin/summit-leads")({
         });
 
         if (url.searchParams.get("format") === "csv") {
+          const exportedEmails = new Set(filtered.map((lead) => lead.email));
+          const consentRows: MarketingConsentRow[] = [];
+
+          if (exportedEmails.size > 0) {
+            for (let offset = 0; ; offset += CONSENT_PAGE_SIZE) {
+              const { data: consentPage, error: consentError } = await supabaseAdmin
+                .from("marketing_consents")
+                .select(
+                  "id, subject_email, channel, granted, granted_at, revoked_at, source, source_route, copy_version, created_at, signer_name, phone",
+                )
+                .order("created_at", { ascending: false })
+                .order("id", { ascending: false })
+                .range(offset, offset + CONSENT_PAGE_SIZE - 1);
+              if (consentError) return respond(500, "Server error");
+
+              const page = (consentPage ?? []) as MarketingConsentRow[];
+              for (const row of page) {
+                if (exportedEmails.has(row.subject_email.trim().toLowerCase())) {
+                  consentRows.push(row);
+                }
+              }
+              if (page.length < CONSENT_PAGE_SIZE) break;
+            }
+          }
+
           const h = noStore("text/csv; charset=utf-8");
           h.set(
             "content-disposition",
             `attachment; filename="summit-leads-${new Date().toISOString().slice(0, 10)}.csv"`,
           );
-          return new Response(leadsToCsv(filtered), { status: 200, headers: h });
+          return new Response(leadsToCsv(filtered, latestConsentEvidenceByEmail(consentRows)), {
+            status: 200,
+            headers: h,
+          });
         }
 
         return respond(
@@ -108,9 +135,7 @@ export const Route = createFileRoute("/api/public/admin/summit-leads")({
             tiers: {
               ga: leads.filter((l) => l.tier_reserved === "ga").length,
               ga_vip: leads.filter((l) => l.tier_reserved === "ga_vip").length,
-              ga_vip_vault: leads.filter(
-                (l) => l.tier_reserved === "ga_vip_vault",
-              ).length,
+              ga_vip_vault: leads.filter((l) => l.tier_reserved === "ga_vip_vault").length,
             },
             leads: filtered,
           }),
