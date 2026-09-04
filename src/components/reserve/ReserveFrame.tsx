@@ -7,23 +7,32 @@ import type { ReactNode } from "react";
  * every card/button/label draws from the same tokens:
  *  --void, --panel, --emerald, --emerald-lo, --gold-gradient.
  */
-export function ReserveFrame({ children }: { children: ReactNode }) {
+export function ReserveFrame({
+  children,
+  showHomeLink = true,
+}: {
+  children: ReactNode;
+  showHomeLink?: boolean;
+}) {
   return (
     <div className="reserve-shell min-h-screen">
       <div aria-hidden="true" className="reserve-noise pointer-events-none fixed inset-0" />
       <div aria-hidden="true" className="reserve-vignette pointer-events-none fixed inset-0" />
       <div className="relative z-10">
-        <nav
-          aria-label="Funnel navigation"
-          className="mx-auto flex w-full max-w-6xl items-center px-5 pt-5"
-        >
-          <Link
-            to="/"
-            className="reserve-home-link inline-flex min-h-11 items-center rounded-lg px-4 py-2"
+        {showHomeLink ? (
+          <nav
+            aria-label="Funnel navigation"
+            className="mx-auto flex w-full max-w-6xl items-center px-5 pt-5"
           >
-            ← Home / Start Over
-          </Link>
-        </nav>
+            <Link
+              to="/"
+              className="reserve-home-link inline-flex min-h-11 items-center rounded-lg px-4 py-2"
+            >
+              ← Home / Start Over
+            </Link>
+          </nav>
+        ) : null}
+
         {children}
       </div>
       <style>{`
