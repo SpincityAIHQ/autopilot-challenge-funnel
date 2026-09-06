@@ -151,7 +151,8 @@ function Home() {
             <h3>Make it real</h3>
             <p>
               Turn the idea into a job card for your own business, check your decisions, and submit
-              it for instructor review.
+              it for instructor review. Keep your answers and feed them straight into your own AI so
+              it learns how your business runs.
             </p>
           </article>
           <article className="academy-card">
