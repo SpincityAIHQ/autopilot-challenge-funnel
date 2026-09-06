@@ -34,11 +34,11 @@ export function GuideAvatar({
 }
 export function AcademyFrame({
   children,
-  ticket,
 }: {
   children: ReactNode;
   ticket?: Ticket | null;
 }) {
+
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const session = useAcademySession();
   const [mounted, setMounted] = useState(false);
