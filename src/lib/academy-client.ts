@@ -52,3 +52,25 @@ export async function academyApi<T>(path: string, body?: unknown): Promise<T> {
   if (!response.ok) throw new Error(result.error || "The request could not be completed.");
   return result as T;
 }
+
+export type Catalogue = {
+  lessons: import("./academy").LessonMeta[];
+  connected: string[];
+  bookingConfigured: boolean;
+};
+/** Public slot map: which recordings are connected. Booleans only, never URLs. */
+export function useCatalogue() {
+  const [catalogue, setCatalogue] = useState<Catalogue | null>(null);
+  useEffect(() => {
+    let active = true;
+    academyApi<Catalogue>("catalogue")
+      .then((c) => {
+        if (active) setCatalogue(c);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+  return catalogue;
+}

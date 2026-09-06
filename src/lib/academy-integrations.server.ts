@@ -1,19 +1,36 @@
 import { timingSafeEqual } from "node:crypto";
 import { academyDb } from "./academy.server";
 import { reconcileShopifyOrder } from "./academy-commerce.server";
-import { LESSONS, tierAllows } from "./academy";
+import { LESSONS, formatTime, tierAllows, watchSummary, type Interval } from "./academy";
 import { redeemedGrants } from "./academy-access.server";
 import type { User } from "@supabase/supabase-js";
-export function learningDeliveryEligible(
-  name: string,
-  p: {
-    workbook_status: string;
-    quiz_score: number | null;
-    quiz_total: number | null;
-    updated_at: string;
-  } | null,
-) {
+export type DeliveryProgress = {
+  workbook_status: string;
+  quiz_score: number | null;
+  quiz_total: number | null;
+  updated_at: string;
+  intervals?: Interval[];
+  duration?: number;
+  position?: number;
+  lesson_id?: string;
+};
+/**
+ * Re-checked at delivery time so a learner who improved never receives a stale
+ * nudge. Session replays only qualify for the drop-off reminder.
+ */
+export function learningDeliveryEligible(name: string, p: DeliveryProgress | null) {
   if (!p) return false;
+  const isSession = LESSONS.find((l) => l.id === p.lesson_id)?.kind === "session";
+  if (name === "learning_dropoff") {
+    if (!p.duration) return false;
+    const w = watchSummary({
+      intervals: p.intervals ?? [],
+      duration: p.duration,
+      position: p.position ?? 0,
+    });
+    return w.coverage >= 5 && w.coverage < 90 && Date.now() - Date.parse(p.updated_at) >= 86400000;
+  }
+  if (isSession) return false;
   if (name === "learning_feedback") return p.workbook_status === "needs_revision";
   if (name === "learning_approved") return p.workbook_status === "approved";
   if (name === "learning_practice")
@@ -112,7 +129,9 @@ export async function processAcademyIntegrations(request: Request) {
           const lessonId = String(row.payload?.lessonId ?? "");
           const p = await db
             .from("academy_progress")
-            .select("workbook_status,quiz_score,quiz_total,updated_at,content_version")
+            .select(
+              "lesson_id,workbook_status,quiz_score,quiz_total,updated_at,content_version,media_version,intervals,duration,position",
+            )
             .eq("user_id", row.user_id)
             .eq("lesson_id", lessonId)
             .maybeSingle();
@@ -122,18 +141,34 @@ export async function processAcademyIntegrations(request: Request) {
             id: row.user_id,
             email: profile.data.email,
           } as User);
+          // A replaced recording or revised lesson cancels the reminder queued against the old version.
+          const versionMatches =
+            row.name === "learning_dropoff"
+              ? p.data?.media_version === row.payload?.mediaVersion
+              : p.data?.content_version === row.payload?.contentVersion;
           learningAllowed =
             process.env.ACADEMY_LEARNING_NUDGES_ENABLED === "true" &&
             Boolean(lesson && tierAllows(grants, lesson.tier)) &&
-            p.data?.content_version === row.payload?.contentVersion &&
-            learningDeliveryEligible(row.name, p.data);
+            versionMatches &&
+            learningDeliveryEligible(row.name, p.data as DeliveryProgress | null);
+          const watch = p.data?.duration
+            ? watchSummary({
+                intervals: (p.data.intervals ?? []) as Interval[],
+                duration: p.data.duration,
+                position: p.data.position ?? 0,
+              })
+            : null;
           learningPayload = {
             assistant: "AI Spin",
             lesson_id: lessonId,
             lesson_title: lesson?.title,
+            lesson_stage: lesson?.stage,
             quiz_score: p.data?.quiz_score,
             quiz_total: p.data?.quiz_total,
             workbook_status: p.data?.workbook_status,
+            watched_percent: watch?.coverage ?? 0,
+            stopped_at: watch?.dropOffAt === null || !watch ? null : formatTime(watch.dropOffAt),
+            resume_seconds: watch?.dropOffAt ?? null,
             lesson_url: `https://aiautopilotsummit.com${lessonId === "free-webinar" ? "/class" : `/lesson/${encodeURIComponent(lessonId)}`}`,
           };
         }

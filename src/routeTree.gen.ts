@@ -32,6 +32,7 @@ import { Route as ConfirmedRouteImport } from './routes/confirmed'
 import { Route as CommunicationPreferencesRouteImport } from './routes/communication-preferences'
 import { Route as ClassRouteImport } from './routes/class'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as BookRouteImport } from './routes/book'
 import { Route as AuditRouteImport } from './routes/audit'
 import { Route as AiSpinRouteImport } from './routes/ai-spin'
 import { Route as AcceleratorRouteImport } from './routes/accelerator'
@@ -186,6 +187,11 @@ const ClassRoute = ClassRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookRoute = BookRouteImport.update({
+  id: '/book',
+  path: '/book',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuditRoute = AuditRouteImport.update({
@@ -403,6 +409,7 @@ export interface FileRoutesByFullPath {
   '/accelerator': typeof AcceleratorRoute
   '/ai-spin': typeof AiSpinRoute
   '/audit': typeof AuditRoute
+  '/book': typeof BookRoute
   '/checkout': typeof CheckoutRoute
   '/class': typeof ClassRoute
   '/communication-preferences': typeof CommunicationPreferencesRoute
@@ -467,6 +474,7 @@ export interface FileRoutesByTo {
   '/accelerator': typeof AcceleratorRoute
   '/ai-spin': typeof AiSpinRoute
   '/audit': typeof AuditRoute
+  '/book': typeof BookRoute
   '/checkout': typeof CheckoutRoute
   '/class': typeof ClassRoute
   '/communication-preferences': typeof CommunicationPreferencesRoute
@@ -532,6 +540,7 @@ export interface FileRoutesById {
   '/accelerator': typeof AcceleratorRoute
   '/ai-spin': typeof AiSpinRoute
   '/audit': typeof AuditRoute
+  '/book': typeof BookRoute
   '/checkout': typeof CheckoutRoute
   '/class': typeof ClassRoute
   '/communication-preferences': typeof CommunicationPreferencesRoute
@@ -598,6 +607,7 @@ export interface FileRouteTypes {
     | '/accelerator'
     | '/ai-spin'
     | '/audit'
+    | '/book'
     | '/checkout'
     | '/class'
     | '/communication-preferences'
@@ -662,6 +672,7 @@ export interface FileRouteTypes {
     | '/accelerator'
     | '/ai-spin'
     | '/audit'
+    | '/book'
     | '/checkout'
     | '/class'
     | '/communication-preferences'
@@ -726,6 +737,7 @@ export interface FileRouteTypes {
     | '/accelerator'
     | '/ai-spin'
     | '/audit'
+    | '/book'
     | '/checkout'
     | '/class'
     | '/communication-preferences'
@@ -791,6 +803,7 @@ export interface RootRouteChildren {
   AcceleratorRoute: typeof AcceleratorRoute
   AiSpinRoute: typeof AiSpinRoute
   AuditRoute: typeof AuditRoute
+  BookRoute: typeof BookRoute
   CheckoutRoute: typeof CheckoutRoute
   ClassRoute: typeof ClassRoute
   CommunicationPreferencesRoute: typeof CommunicationPreferencesRoute
@@ -1011,6 +1024,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/book': {
+      id: '/book'
+      path: '/book'
+      fullPath: '/book'
+      preLoaderRoute: typeof BookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/audit': {
@@ -1306,6 +1326,7 @@ const rootRouteChildren: RootRouteChildren = {
   AcceleratorRoute: AcceleratorRoute,
   AiSpinRoute: AiSpinRoute,
   AuditRoute: AuditRoute,
+  BookRoute: BookRoute,
   CheckoutRoute: CheckoutRoute,
   ClassRoute: ClassRoute,
   CommunicationPreferencesRoute: CommunicationPreferencesRoute,
