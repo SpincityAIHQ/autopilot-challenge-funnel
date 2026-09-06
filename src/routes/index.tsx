@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AcademyFrame } from "@/components/AcademyFrame";
+import { AcademyFrame, GuideAvatar } from "@/components/AcademyFrame";
+import { GUIDES } from "@/lib/academy";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { SUMMIT_TITLE, SUMMIT_DESCRIPTION, CANONICAL_HOME_URL } from "@/lib/site-meta";
 export const Route = createFileRoute("/")({
@@ -14,7 +15,7 @@ function Home() {
     <AcademyFrame>
       <section className="academy-hero">
         <div>
-          <p className="academy-eyebrow">Free training · Autonomous business creation</p>
+          <p className="academy-eyebrow">The AI AutoPilot education experience · by SpinCity</p>
           <h1>
             Your expertise.
             <br />
@@ -23,8 +24,9 @@ function Home() {
             <em>Your AI team.</em>
           </h1>
           <p className="academy-lead">
-            Find the work that keeps coming back to you. Leave with a clear plan for the first job
-            your AI team should handle, and an AI guide that knows exactly where you stopped.
+            An advanced learning environment built by Spin so his students get the best AI business
+            information in the most cutting-edge way. Enjoy both the ingenuity and the wisdom. If
+            you are new to AI business automation, start with the free training.
           </p>
           <div className="academy-hero-actions">
             <a
@@ -70,9 +72,9 @@ function Home() {
               <small>03 · Implement</small>
               <strong>Accelerator</strong>
             </a>
-            <a href="/ai-spin">
+            <a href="/thoth">
               <small>Always on</small>
-              <strong>AI Spin</strong>
+              <strong>Thoth</strong>
             </a>
           </div>
         </div>
@@ -108,37 +110,56 @@ function Home() {
         </div>
       </section>
       <section className="academy-section">
+        <div
+          className="academy-card academy-card-featured academy-holo"
+          style={{ marginBottom: 40 }}
+        >
+          <div className="academy-spin-hero">
+            <GuideAvatar guide={GUIDES.thoth} size={96} />
+            <div>
+              <p className="academy-eyebrow">Meet Thoth · your tutor</p>
+              <h2>The moment you create your account, Thoth watches with you.</h2>
+              <p>
+                Thoth learns you: where you are with learning, where you are with earning, what you
+                watched, what you skipped and where you stopped. Then it tweaks your path to fit,
+                down to the minute of the video you are asking about. Its job is to make sure you
+                succeed here.
+              </p>
+            </div>
+          </div>
+        </div>
         <div className="academy-section-heading">
           <p className="academy-eyebrow">Learn it. Apply it. Keep improving.</p>
-          <h2>A classroom that knows where you are.</h2>
+          <h2>Under every video, three buttons.</h2>
           <p>
-            Every recording keeps a watch map. AI Spin reads it, holds you to your next step, and
-            points you to the exact part you missed.
+            AI Notes with every timed word. An Activity Book for your real business. Ask Thoth, who
+            knows where you stopped and what comes next for your ticket. Inside the Accelerator,
+            Spin’s own AI takes over.
           </p>
         </div>
         <div className="academy-three">
           <article className="academy-card">
-            <span className="academy-number">01 / Learn</span>
-            <h3>Understand the work</h3>
+            <span className="academy-number">01 / AI Notes</span>
+            <h3>Every word, timed</h3>
             <p>
-              Study the lesson, revisit the ideas and identify the decisions that still need your
-              judgment.
+              Search the whole recording, tap any line, and the video jumps there. Key moments show
+              what you watched and what you missed.
             </p>
           </article>
           <article className="academy-card">
-            <span className="academy-number">02 / Practise</span>
-            <h3>Make it concrete</h3>
+            <span className="academy-number">02 / Activity Book</span>
+            <h3>Make it real</h3>
             <p>
-              Use knowledge checks and an activity book to turn a concept into a workflow for your
-              own business.
+              Turn the idea into a job card for your own business, check your decisions, and submit
+              it for instructor review.
             </p>
           </article>
           <article className="academy-card">
-            <span className="academy-number">03 / Build</span>
-            <h3>Follow your next step</h3>
+            <span className="academy-number">03 / Ask Thoth</span>
+            <h3>Thoth guides you</h3>
             <p>
-              Keep your notes, watch maps and progress together. Move into the Summit and
-              Accelerator as your implementation grows.
+              Ask about the exact minute you are on. Thoth answers in Spin’s own words, holds you to
+              your next step, and shows what your next ticket unlocks.
             </p>
           </article>
         </div>

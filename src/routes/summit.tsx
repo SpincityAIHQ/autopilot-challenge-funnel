@@ -15,7 +15,7 @@ function Summit() {
           <h1>Go deeper into the Summit.</h1>
           <p className="academy-lead">
             Choose the sessions that match the work you are ready to do. Every recording keeps your
-            watch map, and AI Spin knows your ticket. Review the current access and refund terms at
+            watch map, and Thoth knows your ticket. Review the current access and refund terms at
             checkout.
           </p>
         </div>

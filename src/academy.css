@@ -2139,3 +2139,89 @@ button.academy-vault-item:hover {
     animation: none !important;
   }
 }
+
+/* ---------- The three buttons under the video ---------- */
+.academy-switch {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 22px;
+}
+.academy-switch button {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  min-height: 78px;
+  border: 1px solid var(--ap-line);
+  border-radius: 14px;
+  background: var(--ap-panel);
+  color: var(--ap-text);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  transition:
+    border-color 0.15s,
+    transform 0.15s,
+    box-shadow 0.15s;
+}
+.academy-switch button:hover {
+  border-color: rgba(94, 240, 176, 0.45);
+  transform: translateY(-2px);
+}
+.academy-switch button[aria-selected="true"] {
+  border-color: var(--ap-green);
+  background: linear-gradient(160deg, rgba(94, 240, 176, 0.14), rgba(8, 13, 17, 0.9));
+  box-shadow:
+    0 0 0 1px rgba(94, 240, 176, 0.25),
+    0 20px 50px -30px rgba(94, 240, 176, 0.7);
+}
+.academy-switch button[data-panel="spin"][aria-selected="true"] {
+  border-color: var(--ap-gold);
+  background: linear-gradient(160deg, rgba(233, 200, 116, 0.16), rgba(8, 13, 17, 0.9));
+  box-shadow:
+    0 0 0 1px rgba(233, 200, 116, 0.25),
+    0 20px 50px -30px rgba(233, 200, 116, 0.7);
+}
+.academy-switch-num {
+  font-family: var(--ap-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--ap-gold);
+  text-shadow: 0 0 14px rgba(233, 200, 116, 0.4);
+}
+.academy-switch-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.academy-switch-text strong {
+  font-family: var(--ap-heading);
+  font-size: 1.12rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.academy-switch-text small {
+  font-size: 0.8rem;
+  color: var(--ap-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.academy-switch .academy-spin-avatar {
+  width: 34px;
+  height: 34px;
+}
+@media (max-width: 860px) {
+  .academy-switch {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .academy-switch button {
+    min-height: 62px;
+    padding: 12px 14px;
+  }
+}

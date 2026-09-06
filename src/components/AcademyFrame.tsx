@@ -1,8 +1,8 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useRouterState } from "@tanstack/react-router";
-import { COMMUNITY_URL, type Ticket } from "@/lib/academy";
+import { COMMUNITY_URL, GUIDES, guideFor, type Guide, type Ticket } from "@/lib/academy";
 import { useAcademySession } from "@/lib/academy-client";
-/** Ticket badge: the student's current stage, named the way AI Spin names it. */
+/** Ticket badge: the student's current stage, named the way the guides name it. */
 export function TicketBadge({ ticket }: { ticket?: Ticket | null }) {
   if (!ticket) return null;
   return (
@@ -11,14 +11,23 @@ export function TicketBadge({ ticket }: { ticket?: Ticket | null }) {
     </span>
   );
 }
-/** AI Spin's face: Thoth, keeper of words and measure, rendered as the guide. */
-export function SpinAvatar({ size = 44, pulse = false }: { size?: number; pulse?: boolean }) {
+/** The guide's face: Thoth on the public floors, AI Spin inside the Accelerator. */
+export function GuideAvatar({
+  guide = GUIDES.thoth,
+  size = 44,
+  pulse = false,
+}: {
+  guide?: Guide;
+  size?: number;
+  pulse?: boolean;
+}) {
   return (
     <span
       className={`academy-spin-avatar ${pulse ? "academy-spin-avatar-live" : ""}`}
+      data-guide={guide.id}
       style={{ width: size, height: size }}
     >
-      <img src="/ai-spin-thoth.webp" alt="AI Spin" width={size} height={size} />
+      <img src={guide.avatar} alt={guide.name} width={size} height={size} />
     </span>
   );
 }
@@ -67,8 +76,8 @@ export function AcademyFrame({
                 <a href="/learn" aria-current={current("/learn")}>
                   My learning
                 </a>
-                <a href="/ai-spin" aria-current={current("/ai-spin")}>
-                  AI Spin
+                <a href={guideFor(ticket).room} aria-current={current(guideFor(ticket).room)}>
+                  {guideFor(ticket).name}
                 </a>
                 {ticket?.accelerator ? (
                   <a href="/book" aria-current={current("/book")}>

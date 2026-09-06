@@ -4,7 +4,7 @@
 
 Free training invitation → free classroom → GA / VIP / Emerald Summit tiers → Shopify payment → private access email → verified account at `/redeem` → matching lessons. Accelerator uses the same purchase and redemption flow. `/ai-spin` provides text help for entitled lessons; a redeemed, active Accelerator entitlement is required for the live avatar.
 
-AI Spin identifies itself as Spin's AI representation. It is briefed with the student's ticket (Free Training, General Admission, Summit + VIP, Emerald Vault Key, Autopilot Accelerator), the current lesson notes and chapters, their watch telemetry (coverage, drop-off timestamp, unwatched spans, missed chapters), their saved quiz/workbook/reviewer feedback, their journey across lessons, the next stage available to them and the platform links. It greets by ticket, never by email; holds the student to the part they missed with warmth; and invites the next stage once per answer, with grace, never with pressure or invented urgency. Accelerator members may be pointed to `/book`. Watching, knowledge checks and instructor-approved application remain separate evidence. Current in-app next steps use transparent rules from these signals; no predictive mastery score is invented. See [vimeo-slots.md](vimeo-slots.md).
+Thoth is the public tutor (every ticket); AI Spin is Spin's AI representation inside the Accelerator only, with the live avatar. AI Spin identifies itself as Spin's AI representation. It is briefed with the student's ticket (Free Training, General Admission, Summit + VIP, Emerald Vault Key, Autopilot Accelerator), the current lesson notes and chapters, their watch telemetry (coverage, drop-off timestamp, unwatched spans, missed chapters), their saved quiz/workbook/reviewer feedback, their journey across lessons, the next stage available to them and the platform links. It greets by ticket, never by email; holds the student to the part they missed with warmth; and invites the next stage once per answer, with grace, never with pressure or invented urgency. Accelerator members may be pointed to `/book`. Watching, knowledge checks and instructor-approved application remain separate evidence. Current in-app next steps use transparent rules from these signals; no predictive mastery score is invented. See [vimeo-slots.md](vimeo-slots.md).
 
 ## Purchase code implementation
 
@@ -18,12 +18,12 @@ Unredeemed codes expire after 30 days and can be regenerated for a still-valid p
 
 ### Current Shopify terms checked September 6
 
-| Tier | What the product currently establishes | Still undefined for the new app |
-|---|---|---|
-| GA | 48-hour replay access | Start anchor; duration of notes, activities and AI chat |
-| VIP | 30-day recording access | Start anchor; duration of workbooks and AI chat |
-| Emerald | Includes VIP; separate thirty-day NuAmenti Gold benefit tied to old August 10 launch | Current Emerald recording/app term; replacement of stale software-benefit date |
-| Accelerator | Fixed September–December 2026 implementation programme | Exact end/date zone, post-program resources and live-avatar access |
+| Tier        | What the product currently establishes                                               | Still undefined for the new app                                                |
+| ----------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| GA          | 48-hour replay access                                                                | Start anchor; duration of notes, activities and AI chat                        |
+| VIP         | 30-day recording access                                                              | Start anchor; duration of workbooks and AI chat                                |
+| Emerald     | Includes VIP; separate thirty-day NuAmenti Gold benefit tied to old August 10 launch | Current Emerald recording/app term; replacement of stale software-benefit date |
+| Accelerator | Fixed September–December 2026 implementation programme                               | Exact end/date zone, post-program resources and live-avatar access             |
 
 Do not treat these as permission to expire every learning feature together. The rolling all-tier policy is an unactivated implementation option; if replay-only expiry, lifetime resources or fixed cohort dates are selected, model those entitlements separately before enabling it.
 
@@ -31,16 +31,16 @@ Do not treat these as permission to expire every learning feature together. The 
 
 The transactional access queue is independent of learner signup and marketing consent. `ACADEMY_GHL_ACCESS_WEBHOOK_URL` must be the inbound URL of a dedicated access workflow on `services.leadconnectorhq.com/hooks/...`. Add idempotency on the immutable `event_id`; never add access codes to analytics or contact-wide public fields. Use a transactional sender with the necessary account configuration.
 
-| Event | Timing / eligibility | Message action |
-|---|---|---|
-| `purchase_access_code` | After verified eligible payment; independent of marketing opt-in | Email the code, tier, redemption link, code expiry and purchased access term |
-| `webinar_registered` | Registration, if optional emails consented | Welcome and free-classroom link |
-| `webinar_not_started` | 24 hours after registration; cancel after recorded viewing or purchase | Invite them back to the free training |
-| `learning_practice` | Latest quiz below 80%, after two hours without a new progress write | Offer a smaller example and AI Spin chat |
-| `learning_feedback` | Instructor requests revision | Link to private instructor feedback |
-| `learning_approved` | Instructor approves submitted work | Acknowledge the reviewed work and invite the next practice |
-| `learning_stalled` | Draft activity with no progress write for three days (lessons only) | Offer help completing one part |
-| `learning_dropoff` | Recording 5–90% watched with no progress write for 24 hours (lessons and Accelerator day replays) | Bring them back to `stopped_at` with the lesson link; payload includes `watched_percent`, `resume_seconds` and `lesson_stage` |
+| Event                  | Timing / eligibility                                                                              | Message action                                                                                                                |
+| ---------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `purchase_access_code` | After verified eligible payment; independent of marketing opt-in                                  | Email the code, tier, redemption link, code expiry and purchased access term                                                  |
+| `webinar_registered`   | Registration, if optional emails consented                                                        | Welcome and free-classroom link                                                                                               |
+| `webinar_not_started`  | 24 hours after registration; cancel after recorded viewing or purchase                            | Invite them back to the free training                                                                                         |
+| `learning_practice`    | Latest quiz below 80%, after two hours without a new progress write                               | Offer a smaller example and AI Spin chat                                                                                      |
+| `learning_feedback`    | Instructor requests revision                                                                      | Link to private instructor feedback                                                                                           |
+| `learning_approved`    | Instructor approves submitted work                                                                | Acknowledge the reviewed work and invite the next practice                                                                    |
+| `learning_stalled`     | Draft activity with no progress write for three days (lessons only)                               | Offer help completing one part                                                                                                |
+| `learning_dropoff`     | Recording 5–90% watched with no progress write for 24 hours (lessons and Accelerator day replays) | Bring them back to `stopped_at` with the lesson link; payload includes `watched_percent`, `resume_seconds` and `lesson_stage` |
 
 The learning scheduler queues at most one new learning message per student per 24 hours and deduplicates each lesson/content-version/signal. Eligibility, consent and paid lesson access are checked again before GHL receives it. Payloads include minimal lesson/quiz/status fields; no workbook text, raw chat, private reviewer feedback or answer keys. Withdrawing optional email consent cancels these messages. These reminders are rule-triggered AI Spin coaching templates, not autonomous AI-written outbound messages.
 

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { PlayCircle } from "lucide-react";
-import { AcademyFrame, SpinAvatar, TicketBadge } from "./AcademyFrame";
+import { AcademyFrame, GuideAvatar, TicketBadge } from "./AcademyFrame";
 import { TrackedLessonVideo } from "./TrackedLessonVideo";
 import { VimeoLessonPlayer } from "./VimeoLessonPlayer";
 import { WatchMap } from "./WatchMap";
@@ -8,6 +8,7 @@ import {
   LESSONS,
   chapterStatus,
   formatTime,
+  guideFor,
   lessonHref,
   nextStep,
   tierAllows,
@@ -67,6 +68,7 @@ function ClassroomSession({
   const [tutorProvider, setTutorProvider] = useState("");
   const [seek, setSeek] = useState<Seek>(null);
   const [search, setSearch] = useState("");
+  const [panel, setPanel] = useState<"notes" | "book" | "spin">("notes");
   const grants = ticket
     ? [
         ...(ticket.summit === "free" ? [] : [ticket.summit]),
@@ -155,6 +157,7 @@ function ClassroomSession({
         lessonId,
         question: q,
         aiConsent,
+        guide: guide.id,
       });
       setThread((t) => [...t, { role: "spin", text: r.answer }]);
     } catch (e) {
@@ -164,6 +167,7 @@ function ClassroomSession({
     }
   }
   const isSession = meta?.kind === "session";
+  const guide = guideFor(ticket);
   const watch = watchSummary(progress);
   const media = lesson?.media ?? null;
   const canSeek = Boolean(media && media.provider === "vimeo" && session.email);
@@ -204,8 +208,6 @@ function ClassroomSession({
       : "Help me apply this to my business.",
     "What is my next step?",
   ];
-  let blockNumber = 0;
-  const num = () => String(++blockNumber).padStart(2, "0");
   return (
     <AcademyFrame ticket={ticket}>
       <div className="academy-workspace academy-workspace-two">
@@ -371,11 +373,47 @@ function ClassroomSession({
                   </span>
                 )}
               </div>
+              <div className="academy-switch" role="tablist" aria-label="Lesson sections">
+                {(
+                  [
+                    [
+                      "notes",
+                      "01",
+                      "AI Notes",
+                      transcript ? "Every word, timed" : "Notes and key moments",
+                    ],
+                    ["book", "02", "Activity Book", "Job card and knowledge check"],
+                    ["spin", "03", `Ask ${guide.name}`, `${guide.name} knows where you stopped`],
+                  ] as const
+                )
+                  .filter(([k]) => !(isSession && k === "book"))
+                  .map(([k, n, title, sub]) => (
+                    <button
+                      key={k}
+                      type="button"
+                      role="tab"
+                      aria-selected={panel === k}
+                      data-panel={k}
+                      onClick={() => setPanel(k)}
+                    >
+                      <span className="academy-switch-num">{n}</span>
+                      <span className="academy-switch-text">
+                        <strong>{title}</strong>
+                        <small>{sub}</small>
+                      </span>
+                      {k === "spin" ? <GuideAvatar guide={guide} size={34} pulse={busy} /> : null}
+                    </button>
+                  ))}
+              </div>
               <div className="academy-stack">
                 {/* ---------- AI NOTES ---------- */}
-                <section className="academy-card academy-block" id="ai-notes">
+                <section
+                  className="academy-card academy-block"
+                  id="ai-notes"
+                  hidden={panel !== "notes"}
+                >
                   <div className="academy-block-head">
-                    <span className="academy-block-num">{num()}</span>
+                    <span className="academy-block-num">01</span>
                     <div>
                       <h2>AI Notes</h2>
                       <p>
@@ -475,9 +513,13 @@ function ClassroomSession({
                 </section>
                 {/* ---------- ACTIVITY BOOK ---------- */}
                 {!isSession ? (
-                  <section className="academy-card academy-block" id="activity-book">
+                  <section
+                    className="academy-card academy-block"
+                    id="activity-book"
+                    hidden={panel !== "book"}
+                  >
                     <div className="academy-block-head">
-                      <span className="academy-block-num">{num()}</span>
+                      <span className="academy-block-num">02</span>
                       <div>
                         <h2>Activity Book</h2>
                         <p>Apply it to a real workflow, then check your decisions.</p>
@@ -598,16 +640,20 @@ function ClassroomSession({
                   </section>
                 ) : null}
                 {/* ---------- ASK AI SPIN ---------- */}
-                <section className="academy-card academy-block academy-holo" id="ask-ai-spin">
+                <section
+                  className="academy-card academy-block academy-holo"
+                  id="ask-ai-spin"
+                  hidden={panel !== "spin"}
+                >
                   <div className="academy-block-head">
-                    <span className="academy-block-num">{num()}</span>
-                    <SpinAvatar size={56} pulse={busy} />
+                    <span className="academy-block-num">03</span>
+                    <GuideAvatar guide={guide} size={56} pulse={busy} />
                     <div>
-                      <h2>Ask AI Spin</h2>
+                      <h2>Ask {guide.name}</h2>
                       <p>
                         {tutorReady
-                          ? "Spin’s AI knows your ticket, where you stopped, every timed word of this recording and what you have saved."
-                          : "Your lesson guide is here. Sign in to talk to AI Spin when chat is connected."}
+                          ? `${guide.name} knows your ticket, where you stopped, every timed word of this recording and what you have saved.`
+                          : `Your lesson guide is here. Sign in to talk to ${guide.name} when chat is connected.`}
                       </p>
                     </div>
                   </div>
@@ -647,9 +693,9 @@ function ClassroomSession({
                               </div>
                             ) : (
                               <div className="academy-bubble" data-role="spin" key={i}>
-                                <SpinAvatar size={34} />
+                                <GuideAvatar guide={guide} size={34} />
                                 <div>
-                                  <small>AI Spin</small>
+                                  <small>{guide.name}</small>
                                   {m.text}
                                 </div>
                               </div>
@@ -657,9 +703,9 @@ function ClassroomSession({
                           )}
                           {busy ? (
                             <div className="academy-bubble" data-role="spin">
-                              <SpinAvatar size={34} pulse />
+                              <GuideAvatar guide={guide} size={34} pulse />
                               <div>
-                                <small>AI Spin</small>
+                                <small>{guide.name}</small>
                                 Thinking…
                               </div>
                             </div>
@@ -686,7 +732,7 @@ function ClassroomSession({
                           className="academy-button"
                           disabled={busy || !question.trim() || !aiConsent}
                         >
-                          Ask AI Spin
+                          Ask {guide.name}
                         </button>
                       </form>
                       <p className="academy-muted">
@@ -698,7 +744,11 @@ function ClassroomSession({
                     <div className="academy-tutor-reply">{nextStep(progress, meta?.kind)}</div>
                   )}
                   <div className="academy-tutor-links">
-                    <a href="/ai-spin">Open the full AI Spin room and live avatar</a>
+                    <a href={guide.room}>
+                      {guide.id === "spin"
+                        ? "Open the AI Spin room and live avatar"
+                        : "Open the Thoth room"}
+                    </a>
                     {ticket?.accelerator ? <a href="/book">Book a 1-on-1 with SpinCity</a> : null}
                     <a href="/learn">My learning progress</a>
                     <a href="mailto:Info@NuAmenti.com">Ask the team for help</a>

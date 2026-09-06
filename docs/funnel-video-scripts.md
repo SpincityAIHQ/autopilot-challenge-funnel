@@ -373,3 +373,67 @@ Emerald also includes 30 days of NuAmenti 3 Gold beginning August 10 and the ful
 VIP is still complete without it.
 
 The Emerald link is in the VIP chat. After purchase, your private Day 3 room details arrive by email and text, and the next page will also show the limited private Strategy and Build Intensive.
+
+---
+
+# Education platform videos — September 6, 2026
+
+The Summit is now an on-demand education experience. These scripts sit above the earlier live-event videos. Plain language, seventh-grade ceiling, no income promises. Two guides: **Thoth**, the tutor on the public floors (free training, Summit, Vault), and **AI Spin**, Spin’s own AI with the live avatar, inside the Accelerator only. Public copy says "Thoth, your tutor". Accelerator copy says "AI Spin".
+
+## 8. Platform VSL — home page, above the fold
+
+**Video slot:** `VITE_ACADEMY_VSL_URL` · **Length:** 75–90 seconds · **Read:** warm, unhurried, certain.
+
+Peace Family. I’m Sebastian “SpinCity” Spencer.
+
+Welcome to the AI AutoPilot education experience.
+
+I built this so my students get the best AI business information, delivered in the most advanced way I know how.
+
+So get ready to enjoy both the ingenuity and the wisdom of SpinCity, right here.
+
+If you are just getting to know AI business automation, start with the free training. It is the first door, and it is open.
+
+Here is what makes this place different.
+
+The moment you create your account, Thoth, your tutor, starts watching with you.
+
+Thoth learns you. Where you are with learning. Where you are with earning. What you watched, what you skipped, and where you stopped.
+
+Then Thoth tweaks your path to fit you. No matter where you are in the app.
+
+Ask a question, and Thoth knows the exact minute of the video you are asking about. It will point you back to the part you missed, in Spin’s own words.
+
+Thoth is your guide. Its job is to make sure you succeed with the AI AutoPilot Summit and everything after it.
+
+We are grateful to have you here, as part of a new education platform designed to make you a success in AI autonomous business.
+
+Start with the free training. Thoth will meet you there.
+
+## 9. Free training — opening minute
+
+**Use:** the first 60 seconds of the free-training recording, or a short intro clip before it.
+
+Welcome to the free training. This is where you find one problem in your business that AI should handle first.
+
+Before we start, look under this video. Three buttons.
+
+AI Notes: every word of this session, timed, so you can search it and jump to any moment.
+
+Activity Book: where you turn the idea into a real job card for your business.
+
+Ask Thoth: your tutor. It knows where you stopped and what you saved. Ask it anything about this session.
+
+When you finish, Thoth will tell you the one next step that fits your ticket. If that step is the Summit, it will show you exactly what it unlocks and why. No pressure. Just the truth about what is next.
+
+Let’s begin.
+
+## 10. How the ticket ladder is presented (for the webinar close and the Summit close)
+
+Thoth speaks the invitation on the public floors and AI Spin inside the Accelerator; these lines keep the video and the app saying the same thing.
+
+- **Free training → Summit.** "You have done the free work. The Summit is where Spin builds the whole system with you across two days, with the VIP rooms and the Emerald intensive on top. Your Thoth tutor carries your progress in with you."
+- **Summit → Emerald Vault Key.** "The Emerald key opens the Vault: the skills, prompts, plug-ins and playbooks Spin actually runs. If you are ready to build with the real tools, this is the door."
+- **Summit → Autopilot Accelerator.** "The Accelerator is the guided build. Every day’s room recorded and tracked, AI Spin himself in text and live avatar, the Vault, and 1-on-1 time with SpinCity. Take advantage of the best we have so you can be the best at this."
+
+Rule for every version: help first, invite once, name the price and the page, never manufacture urgency.
