@@ -75,12 +75,14 @@ export function AcademyFrame({
             {signedIn ? (
               <a href="/learn" aria-current={current("/learn")}>
                 My account
+                {ticket ? <TicketBadge ticket={ticket} /> : null}
               </a>
             ) : (
               <a href="/join" className="academy-nav-cta">
                 Join free
               </a>
             )}
+
           </nav>
 
         </div>
