@@ -2424,3 +2424,50 @@ button.academy-vault-item:hover {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* Focused training hall: the video leads, the lesson list is a drawer below it. */
+.academy-workspace-focus {
+  display: block;
+}
+.academy-outline-drawer {
+  order: 2;
+  margin-top: 28px;
+  width: 100%;
+  position: static;
+}
+.academy-outline-drawer summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 10px 2px;
+  list-style: none;
+}
+.academy-outline-drawer summary::-webkit-details-marker {
+  display: none;
+}
+.academy-outline-drawer summary::before {
+  content: "▸ ";
+}
+.academy-outline-drawer details[open] > summary::before {
+  content: "▾ ";
+}
+.academy-workspace-focus .academy-class {
+  max-width: 980px;
+  margin: 0 auto;
+}
+/* Landing welcome-video placeholder, visible before the video is connected. */
+.academy-vsl-poster {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(120, 255, 200, 0.25);
+  background:
+    radial-gradient(120% 120% at 50% 0%, rgba(20, 241, 170, 0.12), transparent 60%),
+    rgba(6, 14, 13, 0.9);
+}

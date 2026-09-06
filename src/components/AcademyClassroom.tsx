@@ -210,9 +210,10 @@ function ClassroomSession({
   ];
   return (
     <AcademyFrame ticket={ticket}>
-      <div className="academy-workspace academy-workspace-two">
-        <aside className="academy-outline">
-          <p className="academy-eyebrow">Your flight plan</p>
+      <div className="academy-workspace academy-workspace-focus">
+        <aside className="academy-outline academy-outline-drawer">
+          <details>
+            <summary>All lessons · your flight plan</summary>
           {GROUPS.map((g) => {
             const items = LESSONS.filter((l) => g.match(l.stage));
             return (
@@ -260,6 +261,7 @@ function ClassroomSession({
           <a className="academy-text-button" href="/vault">
             ◆ Open the Vault →
           </a>
+          </details>
         </aside>
         <section className="academy-class">
           <div className="academy-class-head">

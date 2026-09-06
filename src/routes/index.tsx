@@ -84,6 +84,7 @@ function Home() {
             label="An invitation from Spin"
             envKey="VITE_ACADEMY_VSL_URL"
             autoplay={false}
+            alwaysVisible
           />
           <div className="academy-card academy-flight-card">
             <p className="academy-eyebrow">Your first flight plan</p>
