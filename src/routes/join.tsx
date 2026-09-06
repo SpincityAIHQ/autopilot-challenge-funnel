@@ -110,7 +110,11 @@ function Join() {
               ? "Welcome back"
               : "Create your free account"}
         </h1>
-        <p>Save your progress, activity book and learning feedback in one place.</p>
+        <p>
+          The moment your account exists, AI Spin, your Thoth tutor, watches with you: what you
+          watched, where you stopped, what you saved. Your progress, activity book and feedback live
+          in one place.
+        </p>
         {session.email ? (
           <p>Signed in as {session.email}</p>
         ) : (
