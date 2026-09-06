@@ -57,14 +57,20 @@ function check<T extends { error: unknown }>(r: T): T {
   if (r.error) throw new AcademyError("Your changes could not be saved. Please try again.", 503);
   return r;
 }
+// Managed Lovable AI Gateway. Key stays server-side; model is a documented supported id.
+const TUTOR_MODEL = "google/gemini-3.7-flash";
+export const TUTOR_PROVIDER = "Lovable AI (Google Gemini)";
+function tutorModel() {
+  return process.env.ACADEMY_TUTOR_MODEL || TUTOR_MODEL;
+}
 function tutorReady() {
   return Boolean(
     process.env.ACADEMY_TUTOR_ENABLED === "true" &&
-    process.env.OPENAI_API_KEY &&
-    process.env.ACADEMY_TUTOR_MODEL &&
+    process.env.LOVABLE_API_KEY &&
     process.env.RATE_LIMIT_HMAC_SECRET,
   );
 }
+
 function safeAttribution(raw: Record<string, unknown>) {
   const out: Record<string, string> = {};
   for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "ref"])
