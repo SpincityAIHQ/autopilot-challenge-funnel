@@ -1,8 +1,8 @@
-export const FALLBACK_SITE_URL = "https://ai-autopilot-summit.lovable.app";
+export const FALLBACK_SITE_URL = "https://aiautopilotsummit.com";
 export const SOCIAL_IMAGE_PATH = "/og-ai-autopilot-summit.png";
-export const SUMMIT_TITLE = "AI AutoPilot 2-Day Summit | SpinCityHQ x NuAmenti";
+export const SUMMIT_TITLE = "AI AutoPilot | Free Webinar, Summit & Learning";
 export const SUMMIT_DESCRIPTION =
-  "Build an AI readiness blueprint, hire the AI team, and put repeatable work on autopilot. Live working Summit August 29–30, 2026, 11:00 AM–4:00 PM Eastern.";
+  "Learn to build an accountable AI team around your business. Start with the free webinar, apply the lessons and explore the AI AutoPilot Summit recordings.";
 export const SOCIAL_IMAGE_ALT =
   "SpinCityHQ and NuAmenti present the AI AutoPilot 2-Day Summit, live online August 29–30, 2026.";
 

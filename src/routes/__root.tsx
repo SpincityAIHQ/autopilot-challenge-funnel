@@ -11,6 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import academyCss from "../academy.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BrandFrame } from "@/components/BrandFrame";
 import {
@@ -131,6 +132,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "stylesheet", href: academyCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "icon", href: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
@@ -162,7 +164,11 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isReserveRoute = pathname === "/reserve" || pathname.startsWith("/reserve/");
+  const isReserveRoute =
+    pathname === "/reserve" ||
+    pathname.startsWith("/reserve/") ||
+    ["/", "/class", "/join", "/learn", "/summit", "/accelerator", "/studio"].includes(pathname) ||
+    pathname.startsWith("/lesson/");
 
   return (
     <QueryClientProvider client={queryClient}>

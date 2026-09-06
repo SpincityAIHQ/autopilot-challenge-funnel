@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as VaultWelcomeRouteImport } from './routes/vault-welcome'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SummitRouteImport } from './routes/summit'
+import { Route as StudioRouteImport } from './routes/studio'
 import { Route as StrategyIntensiveRouteImport } from './routes/strategy-intensive'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
@@ -21,12 +23,16 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as NextStepsRouteImport } from './routes/next-steps'
 import { Route as NextKeynoteRouteImport } from './routes/next-keynote'
 import { Route as MentorshipRouteImport } from './routes/mentorship'
+import { Route as LearnRouteImport } from './routes/learn'
 import { Route as KeynoteRouteImport } from './routes/keynote'
+import { Route as JoinRouteImport } from './routes/join'
 import { Route as IntensiveRouteImport } from './routes/intensive'
 import { Route as ConfirmedRouteImport } from './routes/confirmed'
 import { Route as CommunicationPreferencesRouteImport } from './routes/communication-preferences'
+import { Route as ClassRouteImport } from './routes/class'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AuditRouteImport } from './routes/audit'
+import { Route as AcceleratorRouteImport } from './routes/accelerator'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ReserveIndexRouteImport } from './routes/reserve/index'
 import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
@@ -37,6 +43,7 @@ import { Route as OfferStrategyIntensiveRouteImport } from './routes/offer/strat
 import { Route as OfferMentorshipRouteImport } from './routes/offer/mentorship'
 import { Route as OfferKeynoteRouteImport } from './routes/offer/keynote'
 import { Route as OfferImplementationVaultRouteImport } from './routes/offer/implementation-vault'
+import { Route as LessonLessonIdRouteImport } from './routes/lesson.$lessonId'
 import { Route as CalendarVaultWithSpinDoticsRouteImport } from './routes/calendar.vault-with-spin[.]ics'
 import { Route as CalendarDay2DoticsRouteImport } from './routes/calendar.day2[.]ics'
 import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.]ics'
@@ -50,7 +57,10 @@ import { Route as ApiPublicReserveRouteImport } from './routes/api/public/reserv
 import { Route as ApiPublicMentorshipApplicationRouteImport } from './routes/api/public/mentorship-application'
 import { Route as ApiPublicKeynoteWaitlistRouteImport } from './routes/api/public/keynote-waitlist'
 import { Route as ApiPublicCommunicationPreferencesRouteImport } from './routes/api/public/communication-preferences'
+import { Route as ApiAcademyProcessIntegrationsRouteImport } from './routes/api/academy/process-integrations'
+import { Route as ApiAcademySplatRouteImport } from './routes/api/academy/$'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
+import { Route as ApiPublicWebhooksShopifyRouteImport } from './routes/api/public/webhooks/shopify'
 import { Route as ApiPublicWebhooksCommasRouteImport } from './routes/api/public/webhooks/commas'
 import { Route as ApiPublicResourcesReadRouteImport } from './routes/api/public/resources/read'
 import { Route as ApiPublicResourcesLogoutRouteImport } from './routes/api/public/resources/logout'
@@ -73,6 +83,16 @@ const VaultWelcomeRoute = VaultWelcomeRouteImport.update({
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SummitRoute = SummitRouteImport.update({
+  id: '/summit',
+  path: '/summit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudioRoute = StudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StrategyIntensiveRoute = StrategyIntensiveRouteImport.update({
@@ -120,9 +140,19 @@ const MentorshipRoute = MentorshipRouteImport.update({
   path: '/mentorship',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LearnRoute = LearnRouteImport.update({
+  id: '/learn',
+  path: '/learn',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const KeynoteRoute = KeynoteRouteImport.update({
   id: '/keynote',
   path: '/keynote',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinRoute = JoinRouteImport.update({
+  id: '/join',
+  path: '/join',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IntensiveRoute = IntensiveRouteImport.update({
@@ -141,6 +171,11 @@ const CommunicationPreferencesRoute =
     path: '/communication-preferences',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ClassRoute = ClassRouteImport.update({
+  id: '/class',
+  path: '/class',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
@@ -149,6 +184,11 @@ const CheckoutRoute = CheckoutRouteImport.update({
 const AuditRoute = AuditRouteImport.update({
   id: '/audit',
   path: '/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcceleratorRoute = AcceleratorRouteImport.update({
+  id: '/accelerator',
+  path: '/accelerator',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -202,6 +242,11 @@ const OfferImplementationVaultRoute =
     path: '/offer/implementation-vault',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LessonLessonIdRoute = LessonLessonIdRouteImport.update({
+  id: '/lesson/$lessonId',
+  path: '/lesson/$lessonId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CalendarVaultWithSpinDoticsRoute =
   CalendarVaultWithSpinDoticsRouteImport.update({
     id: '/calendar/vault-with-spin.ics',
@@ -271,10 +316,27 @@ const ApiPublicCommunicationPreferencesRoute =
     path: '/api/public/communication-preferences',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAcademyProcessIntegrationsRoute =
+  ApiAcademyProcessIntegrationsRouteImport.update({
+    id: '/api/academy/process-integrations',
+    path: '/api/academy/process-integrations',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAcademySplatRoute = ApiAcademySplatRouteImport.update({
+  id: '/api/academy/$',
+  path: '/api/academy/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
     path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicWebhooksShopifyRoute =
+  ApiPublicWebhooksShopifyRouteImport.update({
+    id: '/api/public/webhooks/shopify',
+    path: '/api/public/webhooks/shopify',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicWebhooksCommasRoute = ApiPublicWebhooksCommasRouteImport.update({
@@ -326,12 +388,16 @@ const ApiPublicAdminOwnerLoginRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/accelerator': typeof AcceleratorRoute
   '/audit': typeof AuditRoute
   '/checkout': typeof CheckoutRoute
+  '/class': typeof ClassRoute
   '/communication-preferences': typeof CommunicationPreferencesRoute
   '/confirmed': typeof ConfirmedRoute
   '/intensive': typeof IntensiveRoute
+  '/join': typeof JoinRoute
   '/keynote': typeof KeynoteRoute
+  '/learn': typeof LearnRoute
   '/mentorship': typeof MentorshipRoute
   '/next-keynote': typeof NextKeynoteRoute
   '/next-steps': typeof NextStepsRoute
@@ -341,6 +407,8 @@ export interface FileRoutesByFullPath {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/strategy-intensive': typeof StrategyIntensiveRoute
+  '/studio': typeof StudioRoute
+  '/summit': typeof SummitRoute
   '/terms': typeof TermsRoute
   '/vault-welcome': typeof VaultWelcomeRoute
   '/welcome': typeof WelcomeRoute
@@ -351,6 +419,7 @@ export interface FileRoutesByFullPath {
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
   '/calendar/vault-with-spin.ics': typeof CalendarVaultWithSpinDoticsRoute
+  '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/offer/implementation-vault': typeof OfferImplementationVaultRoute
   '/offer/keynote': typeof OfferKeynoteRoute
   '/offer/mentorship': typeof OfferMentorshipRoute
@@ -360,6 +429,8 @@ export interface FileRoutesByFullPath {
   '/reserve/vip': typeof ReserveVipRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/reserve/': typeof ReserveIndexRoute
+  '/api/academy/$': typeof ApiAcademySplatRoute
+  '/api/academy/process-integrations': typeof ApiAcademyProcessIntegrationsRoute
   '/api/public/communication-preferences': typeof ApiPublicCommunicationPreferencesRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
@@ -374,16 +445,21 @@ export interface FileRoutesByFullPath {
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
+  '/api/public/webhooks/shopify': typeof ApiPublicWebhooksShopifyRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/accelerator': typeof AcceleratorRoute
   '/audit': typeof AuditRoute
   '/checkout': typeof CheckoutRoute
+  '/class': typeof ClassRoute
   '/communication-preferences': typeof CommunicationPreferencesRoute
   '/confirmed': typeof ConfirmedRoute
   '/intensive': typeof IntensiveRoute
+  '/join': typeof JoinRoute
   '/keynote': typeof KeynoteRoute
+  '/learn': typeof LearnRoute
   '/mentorship': typeof MentorshipRoute
   '/next-keynote': typeof NextKeynoteRoute
   '/next-steps': typeof NextStepsRoute
@@ -393,6 +469,8 @@ export interface FileRoutesByTo {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/strategy-intensive': typeof StrategyIntensiveRoute
+  '/studio': typeof StudioRoute
+  '/summit': typeof SummitRoute
   '/terms': typeof TermsRoute
   '/vault-welcome': typeof VaultWelcomeRoute
   '/welcome': typeof WelcomeRoute
@@ -403,6 +481,7 @@ export interface FileRoutesByTo {
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
   '/calendar/vault-with-spin.ics': typeof CalendarVaultWithSpinDoticsRoute
+  '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/offer/implementation-vault': typeof OfferImplementationVaultRoute
   '/offer/keynote': typeof OfferKeynoteRoute
   '/offer/mentorship': typeof OfferMentorshipRoute
@@ -412,6 +491,8 @@ export interface FileRoutesByTo {
   '/reserve/vip': typeof ReserveVipRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/reserve': typeof ReserveIndexRoute
+  '/api/academy/$': typeof ApiAcademySplatRoute
+  '/api/academy/process-integrations': typeof ApiAcademyProcessIntegrationsRoute
   '/api/public/communication-preferences': typeof ApiPublicCommunicationPreferencesRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
@@ -426,17 +507,22 @@ export interface FileRoutesByTo {
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
+  '/api/public/webhooks/shopify': typeof ApiPublicWebhooksShopifyRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/accelerator': typeof AcceleratorRoute
   '/audit': typeof AuditRoute
   '/checkout': typeof CheckoutRoute
+  '/class': typeof ClassRoute
   '/communication-preferences': typeof CommunicationPreferencesRoute
   '/confirmed': typeof ConfirmedRoute
   '/intensive': typeof IntensiveRoute
+  '/join': typeof JoinRoute
   '/keynote': typeof KeynoteRoute
+  '/learn': typeof LearnRoute
   '/mentorship': typeof MentorshipRoute
   '/next-keynote': typeof NextKeynoteRoute
   '/next-steps': typeof NextStepsRoute
@@ -446,6 +532,8 @@ export interface FileRoutesById {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/strategy-intensive': typeof StrategyIntensiveRoute
+  '/studio': typeof StudioRoute
+  '/summit': typeof SummitRoute
   '/terms': typeof TermsRoute
   '/vault-welcome': typeof VaultWelcomeRoute
   '/welcome': typeof WelcomeRoute
@@ -456,6 +544,7 @@ export interface FileRoutesById {
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
   '/calendar/day2.ics': typeof CalendarDay2DoticsRoute
   '/calendar/vault-with-spin.ics': typeof CalendarVaultWithSpinDoticsRoute
+  '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/offer/implementation-vault': typeof OfferImplementationVaultRoute
   '/offer/keynote': typeof OfferKeynoteRoute
   '/offer/mentorship': typeof OfferMentorshipRoute
@@ -465,6 +554,8 @@ export interface FileRoutesById {
   '/reserve/vip': typeof ReserveVipRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/reserve/': typeof ReserveIndexRoute
+  '/api/academy/$': typeof ApiAcademySplatRoute
+  '/api/academy/process-integrations': typeof ApiAcademyProcessIntegrationsRoute
   '/api/public/communication-preferences': typeof ApiPublicCommunicationPreferencesRoute
   '/api/public/keynote-waitlist': typeof ApiPublicKeynoteWaitlistRoute
   '/api/public/mentorship-application': typeof ApiPublicMentorshipApplicationRoute
@@ -479,18 +570,23 @@ export interface FileRoutesById {
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
+  '/api/public/webhooks/shopify': typeof ApiPublicWebhooksShopifyRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/accelerator'
     | '/audit'
     | '/checkout'
+    | '/class'
     | '/communication-preferences'
     | '/confirmed'
     | '/intensive'
+    | '/join'
     | '/keynote'
+    | '/learn'
     | '/mentorship'
     | '/next-keynote'
     | '/next-steps'
@@ -500,6 +596,8 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/strategy-intensive'
+    | '/studio'
+    | '/summit'
     | '/terms'
     | '/vault-welcome'
     | '/welcome'
@@ -510,6 +608,7 @@ export interface FileRouteTypes {
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
     | '/calendar/vault-with-spin.ics'
+    | '/lesson/$lessonId'
     | '/offer/implementation-vault'
     | '/offer/keynote'
     | '/offer/mentorship'
@@ -519,6 +618,8 @@ export interface FileRouteTypes {
     | '/reserve/vip'
     | '/resources/$slug'
     | '/reserve/'
+    | '/api/academy/$'
+    | '/api/academy/process-integrations'
     | '/api/public/communication-preferences'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
@@ -533,16 +634,21 @@ export interface FileRouteTypes {
     | '/api/public/resources/logout'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
+    | '/api/public/webhooks/shopify'
     | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/accelerator'
     | '/audit'
     | '/checkout'
+    | '/class'
     | '/communication-preferences'
     | '/confirmed'
     | '/intensive'
+    | '/join'
     | '/keynote'
+    | '/learn'
     | '/mentorship'
     | '/next-keynote'
     | '/next-steps'
@@ -552,6 +658,8 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/strategy-intensive'
+    | '/studio'
+    | '/summit'
     | '/terms'
     | '/vault-welcome'
     | '/welcome'
@@ -562,6 +670,7 @@ export interface FileRouteTypes {
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
     | '/calendar/vault-with-spin.ics'
+    | '/lesson/$lessonId'
     | '/offer/implementation-vault'
     | '/offer/keynote'
     | '/offer/mentorship'
@@ -571,6 +680,8 @@ export interface FileRouteTypes {
     | '/reserve/vip'
     | '/resources/$slug'
     | '/reserve'
+    | '/api/academy/$'
+    | '/api/academy/process-integrations'
     | '/api/public/communication-preferences'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
@@ -585,16 +696,21 @@ export interface FileRouteTypes {
     | '/api/public/resources/logout'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
+    | '/api/public/webhooks/shopify'
     | '/lovable/email/transactional/preview'
   id:
     | '__root__'
     | '/'
+    | '/accelerator'
     | '/audit'
     | '/checkout'
+    | '/class'
     | '/communication-preferences'
     | '/confirmed'
     | '/intensive'
+    | '/join'
     | '/keynote'
+    | '/learn'
     | '/mentorship'
     | '/next-keynote'
     | '/next-steps'
@@ -604,6 +720,8 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/strategy-intensive'
+    | '/studio'
+    | '/summit'
     | '/terms'
     | '/vault-welcome'
     | '/welcome'
@@ -614,6 +732,7 @@ export interface FileRouteTypes {
     | '/calendar/day1.ics'
     | '/calendar/day2.ics'
     | '/calendar/vault-with-spin.ics'
+    | '/lesson/$lessonId'
     | '/offer/implementation-vault'
     | '/offer/keynote'
     | '/offer/mentorship'
@@ -623,6 +742,8 @@ export interface FileRouteTypes {
     | '/reserve/vip'
     | '/resources/$slug'
     | '/reserve/'
+    | '/api/academy/$'
+    | '/api/academy/process-integrations'
     | '/api/public/communication-preferences'
     | '/api/public/keynote-waitlist'
     | '/api/public/mentorship-application'
@@ -637,17 +758,22 @@ export interface FileRouteTypes {
     | '/api/public/resources/logout'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
+    | '/api/public/webhooks/shopify'
     | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AcceleratorRoute: typeof AcceleratorRoute
   AuditRoute: typeof AuditRoute
   CheckoutRoute: typeof CheckoutRoute
+  ClassRoute: typeof ClassRoute
   CommunicationPreferencesRoute: typeof CommunicationPreferencesRoute
   ConfirmedRoute: typeof ConfirmedRoute
   IntensiveRoute: typeof IntensiveRoute
+  JoinRoute: typeof JoinRoute
   KeynoteRoute: typeof KeynoteRoute
+  LearnRoute: typeof LearnRoute
   MentorshipRoute: typeof MentorshipRoute
   NextKeynoteRoute: typeof NextKeynoteRoute
   NextStepsRoute: typeof NextStepsRoute
@@ -657,6 +783,8 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StrategyIntensiveRoute: typeof StrategyIntensiveRoute
+  StudioRoute: typeof StudioRoute
+  SummitRoute: typeof SummitRoute
   TermsRoute: typeof TermsRoute
   VaultWelcomeRoute: typeof VaultWelcomeRoute
   WelcomeRoute: typeof WelcomeRoute
@@ -667,6 +795,7 @@ export interface RootRouteChildren {
   CalendarDay1DoticsRoute: typeof CalendarDay1DoticsRoute
   CalendarDay2DoticsRoute: typeof CalendarDay2DoticsRoute
   CalendarVaultWithSpinDoticsRoute: typeof CalendarVaultWithSpinDoticsRoute
+  LessonLessonIdRoute: typeof LessonLessonIdRoute
   OfferImplementationVaultRoute: typeof OfferImplementationVaultRoute
   OfferKeynoteRoute: typeof OfferKeynoteRoute
   OfferMentorshipRoute: typeof OfferMentorshipRoute
@@ -675,6 +804,8 @@ export interface RootRouteChildren {
   ReserveVaultRoute: typeof ReserveVaultRoute
   ReserveVipRoute: typeof ReserveVipRoute
   ReserveIndexRoute: typeof ReserveIndexRoute
+  ApiAcademySplatRoute: typeof ApiAcademySplatRoute
+  ApiAcademyProcessIntegrationsRoute: typeof ApiAcademyProcessIntegrationsRoute
   ApiPublicCommunicationPreferencesRoute: typeof ApiPublicCommunicationPreferencesRoute
   ApiPublicKeynoteWaitlistRoute: typeof ApiPublicKeynoteWaitlistRoute
   ApiPublicMentorshipApplicationRoute: typeof ApiPublicMentorshipApplicationRoute
@@ -689,6 +820,7 @@ export interface RootRouteChildren {
   ApiPublicResourcesLogoutRoute: typeof ApiPublicResourcesLogoutRoute
   ApiPublicResourcesReadRoute: typeof ApiPublicResourcesReadRoute
   ApiPublicWebhooksCommasRoute: typeof ApiPublicWebhooksCommasRoute
+  ApiPublicWebhooksShopifyRoute: typeof ApiPublicWebhooksShopifyRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
@@ -713,6 +845,20 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/summit': {
+      id: '/summit'
+      path: '/summit'
+      fullPath: '/summit'
+      preLoaderRoute: typeof SummitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/studio': {
+      id: '/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof StudioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/strategy-intensive': {
@@ -778,11 +924,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MentorshipRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/learn': {
+      id: '/learn'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof LearnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/keynote': {
       id: '/keynote'
       path: '/keynote'
       fullPath: '/keynote'
       preLoaderRoute: typeof KeynoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join': {
+      id: '/join'
+      path: '/join'
+      fullPath: '/join'
+      preLoaderRoute: typeof JoinRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/intensive': {
@@ -806,6 +966,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CommunicationPreferencesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/class': {
+      id: '/class'
+      path: '/class'
+      fullPath: '/class'
+      preLoaderRoute: typeof ClassRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checkout': {
       id: '/checkout'
       path: '/checkout'
@@ -818,6 +985,13 @@ declare module '@tanstack/react-router' {
       path: '/audit'
       fullPath: '/audit'
       preLoaderRoute: typeof AuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accelerator': {
+      id: '/accelerator'
+      path: '/accelerator'
+      fullPath: '/accelerator'
+      preLoaderRoute: typeof AcceleratorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -888,6 +1062,13 @@ declare module '@tanstack/react-router' {
       path: '/offer/implementation-vault'
       fullPath: '/offer/implementation-vault'
       preLoaderRoute: typeof OfferImplementationVaultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lesson/$lessonId': {
+      id: '/lesson/$lessonId'
+      path: '/lesson/$lessonId'
+      fullPath: '/lesson/$lessonId'
+      preLoaderRoute: typeof LessonLessonIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/calendar/vault-with-spin.ics': {
@@ -981,11 +1162,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCommunicationPreferencesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/academy/process-integrations': {
+      id: '/api/academy/process-integrations'
+      path: '/api/academy/process-integrations'
+      fullPath: '/api/academy/process-integrations'
+      preLoaderRoute: typeof ApiAcademyProcessIntegrationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/academy/$': {
+      id: '/api/academy/$'
+      path: '/api/academy/$'
+      fullPath: '/api/academy/$'
+      preLoaderRoute: typeof ApiAcademySplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
       fullPath: '/lovable/email/transactional/preview'
       preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/webhooks/shopify': {
+      id: '/api/public/webhooks/shopify'
+      path: '/api/public/webhooks/shopify'
+      fullPath: '/api/public/webhooks/shopify'
+      preLoaderRoute: typeof ApiPublicWebhooksShopifyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/webhooks/commas': {
@@ -1061,12 +1263,16 @@ const ResourcesRouteWithChildren = ResourcesRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AcceleratorRoute: AcceleratorRoute,
   AuditRoute: AuditRoute,
   CheckoutRoute: CheckoutRoute,
+  ClassRoute: ClassRoute,
   CommunicationPreferencesRoute: CommunicationPreferencesRoute,
   ConfirmedRoute: ConfirmedRoute,
   IntensiveRoute: IntensiveRoute,
+  JoinRoute: JoinRoute,
   KeynoteRoute: KeynoteRoute,
+  LearnRoute: LearnRoute,
   MentorshipRoute: MentorshipRoute,
   NextKeynoteRoute: NextKeynoteRoute,
   NextStepsRoute: NextStepsRoute,
@@ -1076,6 +1282,8 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StrategyIntensiveRoute: StrategyIntensiveRoute,
+  StudioRoute: StudioRoute,
+  SummitRoute: SummitRoute,
   TermsRoute: TermsRoute,
   VaultWelcomeRoute: VaultWelcomeRoute,
   WelcomeRoute: WelcomeRoute,
@@ -1086,6 +1294,7 @@ const rootRouteChildren: RootRouteChildren = {
   CalendarDay1DoticsRoute: CalendarDay1DoticsRoute,
   CalendarDay2DoticsRoute: CalendarDay2DoticsRoute,
   CalendarVaultWithSpinDoticsRoute: CalendarVaultWithSpinDoticsRoute,
+  LessonLessonIdRoute: LessonLessonIdRoute,
   OfferImplementationVaultRoute: OfferImplementationVaultRoute,
   OfferKeynoteRoute: OfferKeynoteRoute,
   OfferMentorshipRoute: OfferMentorshipRoute,
@@ -1094,6 +1303,8 @@ const rootRouteChildren: RootRouteChildren = {
   ReserveVaultRoute: ReserveVaultRoute,
   ReserveVipRoute: ReserveVipRoute,
   ReserveIndexRoute: ReserveIndexRoute,
+  ApiAcademySplatRoute: ApiAcademySplatRoute,
+  ApiAcademyProcessIntegrationsRoute: ApiAcademyProcessIntegrationsRoute,
   ApiPublicCommunicationPreferencesRoute:
     ApiPublicCommunicationPreferencesRoute,
   ApiPublicKeynoteWaitlistRoute: ApiPublicKeynoteWaitlistRoute,
@@ -1110,6 +1321,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicResourcesLogoutRoute: ApiPublicResourcesLogoutRoute,
   ApiPublicResourcesReadRoute: ApiPublicResourcesReadRoute,
   ApiPublicWebhooksCommasRoute: ApiPublicWebhooksCommasRoute,
+  ApiPublicWebhooksShopifyRoute: ApiPublicWebhooksShopifyRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
