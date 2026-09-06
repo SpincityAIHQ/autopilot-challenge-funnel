@@ -424,7 +424,9 @@ export async function handleAcademyPost(request: Request, path: string) {
       signal: AbortSignal.timeout(25000),
       body: JSON.stringify({
         model: tutorModel(),
-        max_tokens: 1000,
+        max_tokens: 1500,
+        // Keep the budget for the answer itself; the tutor is short-form advisory feedback.
+        reasoning: { enabled: false },
         messages: [
           {
             role: "system",
