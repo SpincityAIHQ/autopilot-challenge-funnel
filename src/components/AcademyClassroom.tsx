@@ -211,58 +211,13 @@ function ClassroomSession({
   return (
     <AcademyFrame ticket={ticket}>
       <div className="academy-workspace academy-workspace-focus">
-        <aside className="academy-outline academy-outline-drawer">
-          <details>
-            <summary>All lessons · your flight plan</summary>
-          {GROUPS.map((g) => {
-            const items = LESSONS.filter((l) => g.match(l.stage));
-            return (
-              <div className="academy-outline-group" key={g.label}>
-                <span className="academy-label">{g.label}</span>
-                <nav aria-label={`${g.label} lessons`}>
-                  {items.map((l) => {
-                    const i = LESSONS.indexOf(l);
-                    const locked = ticket ? !tierAllows(grants, l.tier) : l.tier !== "free";
-                    const connected = catalogue ? catalogue.connected.includes(l.id) : true;
-                    return (
-                      <a
-                        key={l.id}
-                        href={
-                          locked
-                            ? l.tier === "accelerator"
-                              ? "/accelerator"
-                              : "/summit"
-                            : lessonHref(l.id)
-                        }
-                        aria-current={l.id === lessonId ? "page" : undefined}
-                        data-locked={locked}
-                        data-connected={connected}
-                      >
-                        <span>{String(i + 1).padStart(2, "0")}</span>
-                        <div>
-                          <small>{l.stage}</small>
-                          {l.title}
-                          {l.id === lessonId && progress?.duration ? (
-                            <span className="academy-outline-progress" aria-hidden="true">
-                              <i style={{ width: `${watch.coverage}%` }} />
-                            </span>
-                          ) : null}
-                        </div>
-                      </a>
-                    );
-                  })}
-                </nav>
-              </div>
-            );
-          })}
-          <a className="academy-text-button" href="/learn">
-            View my progress →
+        <nav className="academy-crumbs" aria-label="Breadcrumb">
+          <a href={meta?.tier === "free" ? "/" : "/sessions"}>
+            ← {meta?.tier === "free" ? "Home" : "All Summit sessions"}
           </a>
-          <a className="academy-text-button" href="/vault">
-            ◆ Open the Vault →
-          </a>
-          </details>
-        </aside>
+          <a href="/learn">My learning</a>
+        </nav>
+
         <section className="academy-class">
           <div className="academy-class-head">
             <div>
