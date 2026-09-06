@@ -16,6 +16,17 @@ Unredeemed codes expire after 30 days and can be regenerated for a still-valid p
 
 `ACADEMY_ACCESS_TERMS_JSON` must contain the actual approved term per tier, with `hours`, `starts:"redemption"` and an explicit `version`. There are deliberately no invented default access durations. Fixed event/cohort-end terms need an explicit policy extension before activation. Code issuance/redemption and paid access stay disabled until the Shopify terms match this policy.
 
+### Current Shopify terms checked September 6
+
+| Tier | What the product currently establishes | Still undefined for the new app |
+|---|---|---|
+| GA | 48-hour replay access | Start anchor; duration of notes, activities and AI chat |
+| VIP | 30-day recording access | Start anchor; duration of workbooks and AI chat |
+| Emerald | Includes VIP; separate thirty-day NuAmenti Gold benefit tied to old August 10 launch | Current Emerald recording/app term; replacement of stale software-benefit date |
+| Accelerator | Fixed September–December 2026 implementation programme | Exact end/date zone, post-program resources and live-avatar access |
+
+Do not treat these as permission to expire every learning feature together. The rolling all-tier policy is an unactivated implementation option; if replay-only expiry, lifetime resources or fixed cohort dates are selected, model those entitlements separately before enabling it.
+
 ## GHL workflows to connect
 
 The transactional access queue is independent of learner signup and marketing consent. `ACADEMY_GHL_ACCESS_WEBHOOK_URL` must be the inbound URL of a dedicated access workflow on `services.leadconnectorhq.com/hooks/...`. Add idempotency on the immutable `event_id`; never add access codes to analytics or contact-wide public fields. Use a transactional sender with the necessary account configuration.
@@ -58,9 +69,15 @@ The client closes tracks on cancellation, hidden tab and unmount; a server stop 
 
 ## Validation and release
 
-Implemented in the existing Summit project; preview only. Initial verification: 18 targeted application tests pass, and 14 local PostgreSQL checks pass for code lifecycle, buyer binding, refunds, expired reissue, deletion, RLS, avatar entitlement/concurrency, delivery claims and learning-message dedup/consent. Production build and TypeScript checks are part of the final handoff. Existing legacy landing-copy test failures remain documented separately.
+Implemented in the existing Summit project; preview only. Verification: production build and TypeScript checks pass, 18 targeted application tests pass, and 14 local PostgreSQL checks pass for code lifecycle, buyer binding, refunds, expired reissue, deletion, RLS, avatar entitlement/concurrency, delivery claims and learning-message dedup/consent. The additive migration was applied and recorded in the existing database; all three new tables have RLS and deny anonymous reads/client writes. Existing legacy landing-copy test failures remain documented separately. Daily Revenue Watch was extended to include aggregate code-delivery failures/redemptions and reserved avatar-session time, without exposing tokens or codes or confusing reserved minutes with actual billed use.
 
 Remaining activation inputs: verified Shopify app credentials and subscriptions, confirmed access terms, dedicated code secret, actual GHL inbound workflows and scheduler, LiveAvatar account/identity/voice and plan capacity, final recordings and the browser/email/payment/provider walkthrough. No live Shopify payment, access email, GHL coaching send or HeyGen streaming session is claimed by local tests.
+
+### Preview runtime acceptance
+
+The new `/redeem`, `/ai-spin`, `/learn` and `/class` pages returned HTTP 200. An initial authenticated test exposed missing managed credential injection in the preview web-server process. Lovable repaired the managed binding and restarted the preview server through its supported path; no application source, secret files or activation flags were changed for that repair.
+
+After the repair, a legitimate temporary student session verified `/api/academy/ai-spin` HTTP 200 with provider disclosure, `/api/academy/dashboard` HTTP 200 with saved free-lesson work, and `/api/academy/avatar-start` HTTP 403 for a free learner. One real tutor answer used the synthetic workbook context. Paid/code/email/GHL/avatar integrations remain off/unconfigured. The separate built-preview authentication wall is not an app authentication test. Root database readback confirmed zero remaining synthetic QA accounts after cleanup. Actual purchase-code fulfillment and LiveAvatar streaming still require the activation inputs above.
 
 ## Primary references
 
