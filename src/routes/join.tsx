@@ -157,16 +157,17 @@ function Join() {
           </label>
         ) : null}
         {session.email ? (
-          <button className="academy-button" onClick={register} disabled={busy}>
+          <button type="button" className="academy-button" onClick={register} disabled={busy}>
             Enter the free classroom
           </button>
         ) : (
-          <button className="academy-text-button" onClick={() => setLogin(!login)}>
+          <button type="button" className="academy-text-button" onClick={() => setLogin(!login)}>
             {login ? "Create a free account" : "Already have an account? Sign in"}
           </button>
         )}
         {login && !session.email ? (
           <button
+            type="button"
             className="academy-text-button"
             onClick={async () => {
               if (!email) {
