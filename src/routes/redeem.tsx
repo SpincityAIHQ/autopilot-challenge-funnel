@@ -38,10 +38,11 @@ function Redemption({ session }: { session: ReturnType<typeof useAcademySession>
   return (
     <AcademyFrame>
       <section className="academy-auth academy-card">
-        <p className="academy-eyebrow">YOUR NEXT STAGE</p>
+        <p className="academy-eyebrow">Activate your ticket</p>
         <h1>Redeem your access code.</h1>
         <p>
           Use the code from your purchase email to unlock your Summit tier or Accelerator programme.
+          AI Spin will recognise your ticket the moment it activates.
         </p>
         {session.loading ? (
           <p>Loading your account…</p>
@@ -95,7 +96,9 @@ function Redemption({ session }: { session: ReturnType<typeof useAcademySession>
             </button>
           </>
         )}
-        <p role="status">{message || session.error}</p>
+        <p role="status" className="academy-status">
+          {message || session.error}
+        </p>
         {success ? (
           <a className="academy-button" href="/learn">
             Go to my learning

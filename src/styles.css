@@ -7,7 +7,8 @@
 /*
  * AI AutoPilot 2-Day Summit — NuAmenti visual system.
  * Deep cosmic black, polished gold, and emerald signal light.
- * No runtime web-font requests; local/system fallbacks stay in place.
+ * Brand faces (Orbitron, Rajdhani, Space Mono, Inter) load from Google Fonts in the
+ * root document head with display=swap; system fallbacks stay in every stack.
  */
 
 @theme inline {

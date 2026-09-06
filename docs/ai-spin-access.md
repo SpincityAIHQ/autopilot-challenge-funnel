@@ -4,7 +4,7 @@
 
 Free training invitation → free classroom → GA / VIP / Emerald Summit tiers → Shopify payment → private access email → verified account at `/redeem` → matching lessons. Accelerator uses the same purchase and redemption flow. `/ai-spin` provides text help for entitled lessons; a redeemed, active Accelerator entitlement is required for the live avatar.
 
-AI Spin identifies itself as Spin's AI representation. It uses the current lesson notes and that student's saved quiz/workbook/reviewer feedback. Watching, knowledge checks and instructor-approved application remain separate evidence. Current in-app next steps use transparent rules from these signals; no predictive mastery score is invented.
+AI Spin identifies itself as Spin's AI representation. It is briefed with the student's ticket (Free Training, General Admission, Summit + VIP, Emerald Vault Key, Autopilot Accelerator), the current lesson notes and chapters, their watch telemetry (coverage, drop-off timestamp, unwatched spans, missed chapters), their saved quiz/workbook/reviewer feedback, their journey across lessons, the next stage available to them and the platform links. It greets by ticket, never by email; holds the student to the part they missed with warmth; and invites the next stage once per answer, with grace, never with pressure or invented urgency. Accelerator members may be pointed to `/book`. Watching, knowledge checks and instructor-approved application remain separate evidence. Current in-app next steps use transparent rules from these signals; no predictive mastery score is invented. See [vimeo-slots.md](vimeo-slots.md).
 
 ## Purchase code implementation
 
@@ -39,7 +39,8 @@ The transactional access queue is independent of learner signup and marketing co
 | `learning_practice` | Latest quiz below 80%, after two hours without a new progress write | Offer a smaller example and AI Spin chat |
 | `learning_feedback` | Instructor requests revision | Link to private instructor feedback |
 | `learning_approved` | Instructor approves submitted work | Acknowledge the reviewed work and invite the next practice |
-| `learning_stalled` | Draft activity with no progress write for three days | Offer help completing one part |
+| `learning_stalled` | Draft activity with no progress write for three days (lessons only) | Offer help completing one part |
+| `learning_dropoff` | Recording 5–90% watched with no progress write for 24 hours (lessons and Accelerator day replays) | Bring them back to `stopped_at` with the lesson link; payload includes `watched_percent`, `resume_seconds` and `lesson_stage` |
 
 The learning scheduler queues at most one new learning message per student per 24 hours and deduplicates each lesson/content-version/signal. Eligibility, consent and paid lesson access are checked again before GHL receives it. Payloads include minimal lesson/quiz/status fields; no workbook text, raw chat, private reviewer feedback or answer keys. Withdrawing optional email consent cancels these messages. These reminders are rule-triggered AI Spin coaching templates, not autonomous AI-written outbound messages.
 
@@ -56,6 +57,10 @@ Your {{tier}} purchase is ready to activate. Sign in with this email address at 
 Redeem this code by {{code_expires_at}}. Your purchased access lasts {{access_hours}} hours from redemption under {{terms_version}}. Keep the code private. If you used another account email or need help, contact Info@NuAmenti.com with your Shopify order number.
 
 This is a purchase-access message; it does not enroll the buyer in marketing. The actual workflow must render readable dates/tier names and the verified purchase terms before release.
+
+## 1-on-1 booking
+
+`/book` is part of the Accelerator ticket. `ACADEMY_BOOKING_URL` is returned only to students with active redeemed Accelerator access. Non-members see the Accelerator invitation instead.
 
 ## HeyGen LiveAvatar
 

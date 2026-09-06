@@ -39,9 +39,21 @@ describe("Academy learning evidence", () => {
     expect(tierAllows([], "free")).toBe(true);
   });
   it("has distinct questions for every lesson without exposing keys", () => {
-    const prompts = LESSONS.map((l) => lessonContent(l.id)!.questions[0].prompt);
-    expect(new Set(prompts).size).toBe(LESSONS.length);
+    const lessons = LESSONS.filter((l) => l.kind === "lesson");
+    const prompts = lessons.map((l) => lessonContent(l.id)!.questions[0].prompt);
+    expect(new Set(prompts).size).toBe(lessons.length);
     expect(JSON.stringify(lessonContent("free-webinar"))).not.toContain('"correct"');
+  });
+  it("gives Accelerator session replays a tracked slot but no invented quiz or workbook", () => {
+    const sessions = LESSONS.filter((l) => l.kind === "session");
+    expect(sessions.length).toBeGreaterThan(0);
+    for (const s of sessions) {
+      const c = lessonContent(s.id)!;
+      expect(c.questions).toEqual([]);
+      expect(c.workbook).toEqual([]);
+      expect(s.tier).toBe("accelerator");
+    }
+    expect(scoreAnswers(sessions[0].id, [0, 0, 0]).total).toBe(0);
   });
   it("scores against lesson-specific server keys", () => {
     expect(scoreAnswers("free-webinar", [0, 2, 1]).score).toBe(3);

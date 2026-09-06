@@ -1,4 +1,5 @@
-import { LESSONS, type LessonContent } from "./academy";
+import { LESSONS, parseChapters, type LessonContent, type LessonMedia } from "./academy";
+import { parseVimeoUrl, vimeoEmbedUrl } from "./vimeo";
 
 // Authored teaching notes. These are not verbatim transcripts or invented video timestamps.
 const units: Record<string, { heading: string; text: string }[]> = {
@@ -318,9 +319,32 @@ const checks: Record<string, Check[]> = {
     },
   ],
 };
-export function lessonContent(id: string): LessonContent | null {
-  if (!LESSONS.some((l) => l.id === id)) return null;
+const SESSION_WORKBOOK: LessonContent["workbook"] = [];
+/**
+ * Media for a slot. A Vimeo link in ACADEMY_VIMEO_<KEY> wins; otherwise the free
+ * webinar may use a direct HTTPS recording and paid lessons a private storage
+ * path. The Vimeo duration is confirmed server-side later (see academy-media.server).
+ */
+export function slotMedia(id: string): LessonMedia | null {
   const key = id.replace(/-/g, "_").toUpperCase();
+  const version = process.env[`ACADEMY_MEDIA_VERSION_${key}`];
+  const configuredDuration = Number(process.env[`ACADEMY_MEDIA_DURATION_${key}`]);
+  const duration =
+    Number.isFinite(configuredDuration) && configuredDuration > 0 && configuredDuration <= 43200
+      ? configuredDuration
+      : 0;
+  const captions = process.env[`ACADEMY_CAPTIONS_${key}`] || null;
+  const vimeo = parseVimeoUrl(process.env[`ACADEMY_VIMEO_${key}`]);
+  if (vimeo)
+    return {
+      url: vimeoEmbedUrl(vimeo, `lesson-${id}`),
+      provider: "vimeo",
+      duration,
+      durationVerified: false,
+      version: version || `vimeo:${vimeo.id}`,
+      captions,
+      chapters: parseChapters(process.env[`ACADEMY_CHAPTERS_${key}`], duration || Infinity),
+    };
   const path = process.env[`ACADEMY_MEDIA_PATH_${key}`];
   const url =
     id === "free-webinar"
@@ -328,22 +352,36 @@ export function lessonContent(id: string): LessonContent | null {
       : path
         ? `https://private-media.invalid/${encodeURIComponent(path)}`
         : undefined;
-  let media: LessonContent["media"] = null;
-  const duration = Number(process.env[`ACADEMY_MEDIA_DURATION_${key}`]);
-  if (url && Number.isFinite(duration) && duration > 0 && duration <= 43200) {
-    try {
-      const u = new URL(url);
-      if (u.protocol === "https:" && !u.username && !u.password)
-        media = {
-          url: u.toString(),
-          duration,
-          version: process.env[`ACADEMY_MEDIA_VERSION_${key}`] || "1",
-          captions: process.env[`ACADEMY_CAPTIONS_${key}`] || null,
-        };
-    } catch {
-      /* unavailable */
-    }
+  if (!url || !duration) return null;
+  try {
+    const u = new URL(url);
+    if (u.protocol !== "https:" || u.username || u.password) return null;
+    return {
+      url: u.toString(),
+      provider: "file",
+      duration,
+      durationVerified: true,
+      version: version || "1",
+      captions,
+      chapters: parseChapters(process.env[`ACADEMY_CHAPTERS_${key}`], duration),
+    };
+  } catch {
+    return null;
   }
+}
+export function lessonContent(id: string): LessonContent | null {
+  const meta = LESSONS.find((l) => l.id === id);
+  if (!meta) return null;
+  const media = slotMedia(id);
+  if (meta.kind === "session")
+    return {
+      id,
+      version: "2026-09-06.1",
+      paragraphs: [],
+      media,
+      questions: [],
+      workbook: SESSION_WORKBOOK,
+    };
   return {
     id,
     version: "2026-09-06.1",
@@ -384,7 +422,7 @@ export function lessonContent(id: string): LessonContent | null {
   };
 }
 export function scoreAnswers(id: string, answers: number[]) {
-  const items = checks[id];
+  const items = checks[id] ?? [];
   return {
     score: items.filter((q, i) => q.correct === answers[i]).length,
     total: items.length,

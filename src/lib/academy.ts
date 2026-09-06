@@ -1,5 +1,6 @@
 /** Public catalogue only. Paid lesson text, answer keys and media stay server-side. */
 export type AcademyTier = "free" | "ga" | "vip" | "vault" | "accelerator";
+export type LessonKind = "lesson" | "session";
 export type LessonMeta = {
   id: string;
   title: string;
@@ -7,12 +8,21 @@ export type LessonMeta = {
   tier: AcademyTier;
   summary: string;
   skill: string;
+  /** `lesson` has notes, a knowledge check and an activity book. `session` is a tracked replay. */
+  kind: LessonKind;
+  /** Server environment key suffix for this slot's Vimeo URL and chapters. */
+  envKey: string;
 };
-export const LESSONS: LessonMeta[] = [
+/** Number of Accelerator build-room days that receive a Vimeo slot. Adjust in one place. */
+export const ACCELERATOR_DAY_COUNT = 12;
+export function envKeyFor(id: string) {
+  return id.replace(/-/g, "_").toUpperCase();
+}
+const CORE: Omit<LessonMeta, "kind" | "envKey">[] = [
   {
     id: "free-webinar",
     title: "Your business, cleared for takeoff",
-    stage: "Start here",
+    stage: "Free training",
     tier: "free",
     summary: "Find one business bottleneck and design the first job your AI team should handle.",
     skill: "Define a useful automation",
@@ -60,12 +70,36 @@ export const LESSONS: LessonMeta[] = [
   {
     id: "implementation-lab",
     title: "Build, test, improve",
-    stage: "Autopilot Accelerator",
+    stage: "Accelerator · Lab",
     tier: "accelerator",
     summary: "Take one workflow from a job card to a tested operating routine.",
     skill: "Demonstrate a working system",
   },
 ];
+export const ACCELERATOR_DAYS: LessonMeta[] = Array.from(
+  { length: ACCELERATOR_DAY_COUNT },
+  (_, i) => {
+    const n = String(i + 1).padStart(2, "0");
+    const id = `accelerator-day-${n}`;
+    return {
+      id,
+      title: `Build room · Day ${n}`,
+      stage: `Accelerator · Day ${n}`,
+      tier: "accelerator" as const,
+      summary: "Replay of the live implementation session. Use AI Spin to find the part you need.",
+      skill: "Implement with the group",
+      kind: "session" as const,
+      envKey: envKeyFor(id),
+    };
+  },
+);
+export const LESSONS: LessonMeta[] = [
+  ...CORE.map((l) => ({ ...l, kind: "lesson" as const, envKey: envKeyFor(l.id) })),
+  ...ACCELERATOR_DAYS,
+];
+export function lessonHref(id: string) {
+  return id === "free-webinar" ? "/class" : `/lesson/${id}`;
+}
 export const SUMMIT_OFFERS = [
   {
     tier: "ga",
@@ -92,8 +126,64 @@ export const SUMMIT_OFFERS = [
     url: "https://spincityhq.com/products/ai-autopilot-summit-vip-emerald-vault-key",
   },
 ] as const;
+export const ACCELERATOR_OFFER = {
+  tier: "accelerator",
+  name: "Autopilot Accelerator",
+  price: 4000,
+  label: "Guided implementation",
+  includes:
+    "September–December 2026 group build rooms, every day's replay, live AI Spin avatar and 1-on-1 time with SpinCity",
+  url: "https://spincityhq.com/products/q4-ai-accelerator",
+} as const;
 export const COMMUNITY_URL =
   "https://www.skool.com/the-ascended-masters/about?ref=ce11d00bd3994b97bfd25e10976d9f0b";
+
+/** The "ticket" a student holds: their Summit tier plus whether Accelerator is active. */
+export type Ticket = {
+  summit: "free" | "ga" | "vip" | "vault";
+  accelerator: boolean;
+  label: string;
+  code: string;
+};
+const SUMMIT_LABELS = {
+  free: "Free Training",
+  ga: "General Admission",
+  vip: "Summit + VIP",
+  vault: "Emerald Vault Key",
+} as const;
+export function ticketFor(grants: string[]): Ticket {
+  const rank: Record<string, number> = { ga: 1, vip: 2, vault: 3 };
+  let summit: Ticket["summit"] = "free";
+  for (const g of grants) if ((rank[g] ?? 0) > (rank[summit] ?? 0)) summit = g as Ticket["summit"];
+  const accelerator = grants.includes("accelerator");
+  const parts = [accelerator ? "Autopilot Accelerator" : null, SUMMIT_LABELS[summit]].filter(
+    Boolean,
+  ) as string[];
+  const label = accelerator && summit === "free" ? "Autopilot Accelerator" : parts.join(" + ");
+  return {
+    summit,
+    accelerator,
+    label,
+    code: `${accelerator ? "ACC" : "SMT"}-${summit.toUpperCase()}`,
+  };
+}
+export type Offer = {
+  tier: AcademyTier;
+  name: string;
+  price: number;
+  label: string;
+  includes: string;
+  url: string;
+};
+/** The next stage worth inviting a student into. Null when they already hold everything. */
+export function nextOffer(ticket: Ticket): Offer | null {
+  const order = ["ga", "vip", "vault"] as const;
+  const idx = order.indexOf(ticket.summit as (typeof order)[number]);
+  const nextSummit = order[idx + 1];
+  if (nextSummit) return SUMMIT_OFFERS.find((o) => o.tier === nextSummit) as Offer;
+  if (!ticket.accelerator) return ACCELERATOR_OFFER;
+  return null;
+}
 export type Interval = [number, number];
 /** Union coverage: repeated viewing and seeking never inflate watched duration. */
 export function mergeIntervals(ranges: Interval[], duration: number): Interval[] {
@@ -124,6 +214,18 @@ export function tierAllows(grants: string[], tier: AcademyTier) {
   const rank: Record<string, number> = { ga: 1, vip: 2, vault: 3 };
   return grants.some((g) => (rank[g] ?? 0) >= rank[tier]);
 }
+export type Chapter = { start: number; title: string };
+export type LessonMedia = {
+  url: string;
+  version: string;
+  duration: number;
+  captions: string | null;
+  /** `vimeo` plays through the Vimeo player API; `file` plays a signed HTTPS recording. */
+  provider: "vimeo" | "file";
+  chapters: Chapter[];
+  /** False when the duration could not be confirmed server-side and comes from the player. */
+  durationVerified: boolean;
+};
 export type LessonProgress = {
   lesson_id: string;
   media_version: string;
@@ -137,7 +239,107 @@ export type LessonProgress = {
   reviewer_feedback: string | null;
   updated_at: string;
 };
-export function nextStep(p?: LessonProgress) {
+export function formatTime(seconds: number) {
+  const s = Math.max(0, Math.floor(seconds));
+  const h = Math.floor(s / 3600),
+    m = Math.floor((s % 3600) / 60),
+    r = s % 60;
+  return h > 0
+    ? `${h}:${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`
+    : `${m}:${String(r).padStart(2, "0")}`;
+}
+/**
+ * Parse "0|Intro;312|Job cards" or "0=Intro;5:12=Job cards" into ordered chapters.
+ * Accepts seconds or m:ss / h:mm:ss. Invalid entries are dropped, never invented.
+ */
+export function parseChapters(raw: string | undefined | null, duration = Infinity): Chapter[] {
+  if (!raw) return [];
+  const out: Chapter[] = [];
+  for (const part of raw.split(/[;\n]/)) {
+    const m = part.trim().match(/^([0-9:]+)\s*[|=]\s*(.+)$/);
+    if (!m) continue;
+    const pieces = m[1].split(":").map(Number);
+    if (pieces.some((n) => !Number.isFinite(n))) continue;
+    const start = pieces.reduce((acc, n) => acc * 60 + n, 0);
+    if (start < 0 || start >= duration) continue;
+    out.push({ start, title: m[2].trim().slice(0, 120) });
+  }
+  return out
+    .sort((a, b) => a.start - b.start)
+    .filter((c, i, arr) => i === 0 || c.start > arr[i - 1].start);
+}
+export type ChapterStatus = Chapter & {
+  end: number;
+  watched: number;
+  status: "watched" | "partial" | "missed";
+};
+/** Per-chapter coverage so AI Spin and the watch map can name the exact part a student missed. */
+export function chapterStatus(
+  chapters: Chapter[],
+  intervals: Interval[],
+  duration: number,
+): ChapterStatus[] {
+  if (!duration || !chapters.length) return [];
+  const merged = mergeIntervals(intervals, duration);
+  return chapters.map((c, i) => {
+    const end = chapters[i + 1]?.start ?? duration;
+    const span = Math.max(0, end - c.start);
+    let covered = 0;
+    for (const [a, b] of merged) covered += Math.max(0, Math.min(b, end) - Math.max(a, c.start));
+    const watched = span > 0 ? Math.round((100 * covered) / span) : 0;
+    return {
+      ...c,
+      end,
+      watched,
+      status: (watched >= 85
+        ? "watched"
+        : watched >= 15
+          ? "partial"
+          : "missed") as ChapterStatus["status"],
+    };
+  });
+}
+export type WatchSummary = {
+  coverage: number;
+  furthest: number;
+  /** Where the student last stopped, when the recording is not effectively complete. */
+  dropOffAt: number | null;
+  /** Unwatched spans longer than 30 seconds. */
+  gaps: Interval[];
+  minutesWatched: number;
+};
+export function watchSummary(
+  p?: Pick<LessonProgress, "intervals" | "duration" | "position">,
+): WatchSummary {
+  if (!p || !p.duration)
+    return { coverage: 0, furthest: 0, dropOffAt: null, gaps: [], minutesWatched: 0 };
+  const merged = mergeIntervals(p.intervals, p.duration);
+  const watched = merged.reduce((n, [a, b]) => n + b - a, 0);
+  const pct = Math.round((100 * watched) / p.duration);
+  const furthest = merged.at(-1)?.[1] ?? 0;
+  const gaps: Interval[] = [];
+  let cursor = 0;
+  for (const [a, b] of merged) {
+    if (a - cursor >= 30) gaps.push([cursor, a]);
+    cursor = Math.max(cursor, b);
+  }
+  if (p.duration - cursor >= 30) gaps.push([cursor, p.duration]);
+  return {
+    coverage: pct,
+    furthest,
+    dropOffAt: pct >= 90 ? null : Math.min(p.duration, Math.max(p.position, 0)),
+    gaps,
+    minutesWatched: Math.round(watched / 60),
+  };
+}
+export function nextStep(p?: LessonProgress, kind: LessonKind = "lesson") {
+  if (kind === "session") {
+    const w = watchSummary(p);
+    if (!p || !p.duration) return "Press play on this replay when you have 20 focused minutes.";
+    if (w.coverage < 90)
+      return `You stopped at ${formatTime(w.dropOffAt ?? 0)}. Pick up there and finish the session.`;
+    return "You finished this session. Apply one thing from it in the implementation lab.";
+  }
   if (!p) return "Start the lesson and identify one real business problem.";
   if (p.quiz_score === null) return "Try the knowledge check to find what needs practice.";
   if (p.quiz_score < (p.quiz_total ?? 1))
@@ -156,5 +358,5 @@ export type LessonContent = {
   paragraphs: { heading: string; text: string }[];
   questions: { id: string; prompt: string; choices: string[] }[];
   workbook: { id: string; label: string; hint: string }[];
-  media: { url: string; version: string; duration: number; captions: string | null } | null;
+  media: LessonMedia | null;
 };

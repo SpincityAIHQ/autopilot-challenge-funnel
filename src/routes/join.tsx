@@ -93,14 +93,16 @@ function Join() {
               Save password
             </button>
           </form>
-          <p role="status">{message}</p>
+          <p role="status" className="academy-status">
+            {message}
+          </p>
         </section>
       </AcademyFrame>
     );
   return (
     <AcademyFrame>
       <section className="academy-auth academy-card">
-        <p className="academy-eyebrow">YOUR LEARNING JOURNEY STARTS HERE</p>
+        <p className="academy-eyebrow">Your learning journey starts here</p>
         <h1>
           {session.email
             ? "Join the free classroom"
@@ -188,7 +190,9 @@ function Join() {
           Learning activity is saved to provide your course progress. Optional marketing is
           separate. <a href="/privacy">Privacy policy</a>
         </p>
-        <p role="status">{message || session.error}</p>
+        <p role="status" className="academy-status">
+          {message || session.error}
+        </p>
       </section>
     </AcademyFrame>
   );
