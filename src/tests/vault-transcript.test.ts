@@ -47,6 +47,20 @@ describe("Timed transcript", () => {
     expect(retrieveCues(cues, { question: "the and of" })).toEqual([]);
     expect(keywords("What is the completion receipt?")).toEqual(["completion", "receipt"]);
   });
+  it("ships the two Google Meet transcripts converted from Drive as bundled WebVTT", () => {
+    for (const [id, minCues] of [
+      ["coordinate-the-business", 400],
+      ["own-the-platform", 1000],
+    ] as const) {
+      const cues = parseTranscript(readFileSync(`src/lib/transcripts/${id}.vtt`, "utf8"));
+      expect(cues.length).toBeGreaterThan(minCues);
+      expect(cues.every((c, i) => i === 0 || c.start >= cues[i - 1].start)).toBe(true);
+      expect(cues.some((c) => c.text.includes("<v"))).toBe(false);
+    }
+    const loader = readFileSync("src/lib/academy-transcript.server.ts", "utf8");
+    expect(loader).toContain('import.meta.glob<string>("./transcripts/*.vtt"');
+    expect(loader).toContain("api.vimeo.com/videos/");
+  });
   it("briefs AI Spin with transcript excerpts and timestamps", () => {
     const src = readFileSync("src/lib/academy.server.ts", "utf8");
     expect(src).toContain("transcript: cues");

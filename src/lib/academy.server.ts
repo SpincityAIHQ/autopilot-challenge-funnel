@@ -18,7 +18,7 @@ import {
 import { lessonContent, scoreAnswers } from "./academy-content.server";
 import { isStaffEmail } from "./academy-staff.server";
 import { configuredVimeo, connectedSlots, vimeoDuration } from "./academy-media.server";
-import { loadTranscript } from "./academy-transcript.server";
+import { loadTranscript, transcriptConfigured } from "./academy-transcript.server";
 import { retrieveCues } from "./transcript";
 import { consumeRateLimit } from "./rate-limit";
 import { readLimitedBody } from "./academy-http.server";
@@ -176,6 +176,7 @@ export async function handleAcademyGet(request: Request, path: string) {
     return {
       lessons: LESSONS,
       connected: connectedSlots(LESSONS),
+      transcripts: LESSONS.filter((l) => transcriptConfigured(l.id, l.envKey)).map((l) => l.id),
       bookingConfigured: bookingFor([]).configured,
     };
   if (

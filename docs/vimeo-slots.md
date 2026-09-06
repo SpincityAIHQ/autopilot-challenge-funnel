@@ -49,7 +49,9 @@ Coverage is client-reported viewing telemetry. It measures attention to the play
 
 ## Transcripts: every word and its time
 
-Each slot can carry a timed transcript so AI Spin can quote the recording and cite the timestamp. Sources, in order: `ACADEMY_TRANSCRIPT_<SLOT>` (an HTTPS `.vtt` or `.srt` link, for example Vimeo's caption export), `ACADEMY_TRANSCRIPT_PATH_<SLOT>` in the private `academy-media` bucket, or the convention `transcripts/<slot-id>.vtt` uploaded to that bucket with no key at all. WebVTT and SRT are accepted; voice tags are stripped; short caption fragments are merged into sentences; files are cached ten minutes.
+Each slot can carry a timed transcript so AI Spin can quote the recording and cite the timestamp. Sources, in order: `ACADEMY_TRANSCRIPT_<SLOT>` (an HTTPS `.vtt` or `.srt` link), the slot's Vimeo captions through the Vimeo API when `VIMEO_ACCESS_TOKEN` is set (Vimeo's auto-generated captions count, so uploading a replay to Vimeo is enough), `ACADEMY_TRANSCRIPT_PATH_<SLOT>` or the convention `transcripts/<slot-id>.vtt` in the private `academy-media` bucket, and finally a transcript bundled with the server build under `src/lib/transcripts/<slot-id>.vtt`. WebVTT and SRT are accepted; voice tags are stripped; short caption fragments are merged into sentences; files are cached ten minutes.
+
+Bundled today, converted from the Google Meet (Gemini) transcripts on Drive: `coordinate-the-business` (Day 1 VIP after hours, 1:56) and `own-the-platform` (Emerald intensive, 5:15). Their timestamps are relative to the Meet recording start, so they line up with the same MP4 uploaded to Vimeo. Day 1 Main, Day 2 Main and Day 2 VIP have no speech transcript on Drive, only room-chat logs; their transcripts arrive through Vimeo captions once those replays are uploaded and `VIMEO_ACCESS_TOKEN` is set.
 
 In the classroom the AI Notes block shows the approved notes, the chapter "key moments" with watched/missed status, and a searchable full transcript. Every line seeks the Vimeo player. In the AI Spin brief the server sends up to 40 excerpts chosen by the question's keywords, the 45 seconds around the drop-off point, and the opening of each missed chapter. The brief tells AI Spin to prefer the recording's own words and to cite the timestamp.
 
@@ -71,7 +73,7 @@ The next stage is one step up: GA → VIP → Emerald → Accelerator → nothin
 
 1. Paste the Vimeo link for each slot. Start with `ACADEMY_VIMEO_FREE_WEBINAR`.
 2. Add chapters for at least the free training and Summit days so AI Spin can name the missed part.
-3. Upload each recording's caption export as `transcripts/<slot-id>.vtt` to the `academy-media` bucket (or set `ACADEMY_TRANSCRIPT_<KEY>`) so AI Spin knows every word and its time.
+3. Set `VIMEO_ACCESS_TOKEN` (a Vimeo personal access token with the private and video_files scopes) and turn on auto-captions for each upload so AI Spin reads every recording's words; Day 1 VIP and the Emerald intensive are already bundled.
 4. Apply `20260906120000_learning_dropoff_nudges.sql` through the existing database connector, then set `ACADEMY_LEARNING_NUDGES_ENABLED=true` when the GHL learning workflow handles the new `learning_dropoff` event.
 5. Set `ACADEMY_BOOKING_URL` for the Accelerator calendar.
 6. Watch one recording in the preview as a signed-in student: confirm the watch map fills, the drop-off timestamp appears after pausing, and AI Spin names it when asked "What did I miss?".
