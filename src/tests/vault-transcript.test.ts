@@ -100,7 +100,7 @@ describe("The Vault", () => {
 });
 
 describe("Classroom layout", () => {
-  it("stacks AI Notes, Activity Book and the guide under the recording, Thoth public and AI Spin inside the Accelerator", () => {
+  it("stacks AI Notes, Activity Sheet and the guide under the recording, Thoth public and AI Spin inside the Accelerator", () => {
     const src = readFileSync("src/components/AcademyClassroom.tsx", "utf8");
     const notes = src.indexOf('id="ai-notes"');
     const book = src.indexOf('id="activity-book"');

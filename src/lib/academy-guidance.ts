@@ -60,7 +60,7 @@ export function learningGuidance(progress: LessonProgress[]): LearningGuidance |
             ...base,
             title: "Turn the idea into a business example",
             message:
-              "You have completed this knowledge check. Add a real workflow to your activity book and submit it for review.",
+              "You have completed this knowledge check. Add a real workflow to your activity sheet and submit it for review.",
           };
       }
       if (

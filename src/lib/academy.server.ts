@@ -477,7 +477,7 @@ export async function handleAcademyPost(request: Request, path: string) {
       payload = { ...d, duration: lesson.media.duration };
     }
     if (common.kind !== "playback" && meta.kind === "session")
-      throw new AcademyError("This session replay has no knowledge check or activity book.");
+      throw new AcademyError("This session replay has no knowledge check or activity sheet.");
     if (
       common.kind !== "playback" &&
       (input as { contentVersion?: string }).contentVersion !== lesson.version

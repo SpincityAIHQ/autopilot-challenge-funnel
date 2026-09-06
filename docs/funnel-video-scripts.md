@@ -420,7 +420,7 @@ Before we start, look under this video. Three buttons.
 
 AI Notes: every word of this session, timed, so you can search it and jump to any moment.
 
-Activity Book: where you turn the idea into a real job card for your business.
+Activity Sheet: where you turn the idea into a real job card for your business.
 
 Ask Thoth: your tutor. It knows where you stopped and what you saved. Ask it anything about this session.
 

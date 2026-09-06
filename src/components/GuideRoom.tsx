@@ -323,7 +323,7 @@ function GuideSession({
                     <p>{guide.tagline}</p>
                     <p className="academy-muted">
                       Thoth reads your watch maps, the timed transcript of every recording and your
-                      activity book. Ask what you missed, where Spin explains something, or what
+                      activity sheet. Ask what you missed, where Spin explains something, or what
                       your next step is for your ticket.
                     </p>
                     {context.ticket.accelerator ? (

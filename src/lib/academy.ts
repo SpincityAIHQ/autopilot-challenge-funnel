@@ -8,7 +8,7 @@ export type LessonMeta = {
   tier: AcademyTier;
   summary: string;
   skill: string;
-  /** `lesson` has notes, a knowledge check and an activity book. `session` is a tracked replay. */
+  /** `lesson` has notes, a knowledge check and an activity sheet. `session` is a tracked replay. */
   kind: LessonKind;
   /** Server environment key suffix for this slot's Vimeo URL and chapters. */
   envKey: string;
@@ -384,7 +384,7 @@ export function nextStep(p?: LessonProgress, kind: LessonKind = "lesson") {
   if (p.quiz_score < (p.quiz_total ?? 1))
     return "Review the feedback, then try the knowledge check again.";
   if (p.workbook_status === "draft")
-    return "Apply the lesson to your business in the activity book.";
+    return "Apply the lesson to your business in the activity sheet.";
   if (p.workbook_status === "submitted")
     return "Your activity is ready for instructor review. Practise the workflow while you wait.";
   if (p.workbook_status === "needs_revision")

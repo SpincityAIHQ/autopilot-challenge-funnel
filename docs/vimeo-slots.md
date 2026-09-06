@@ -19,7 +19,7 @@ Every slot also accepts a timed transcript (see below) at `ACADEMY_TRANSCRIPT_<K
 
 The public invitation video on `/` stays in `VITE_ACADEMY_VSL_URL`. It is a funnel video, not a tracked lesson.
 
-A **lesson** has notes, a knowledge check and an activity book. A **session** is a tracked replay only: no invented quiz or workbook. The day count lives in `ACCELERATOR_DAY_COUNT` in `src/lib/academy.ts`; change it once and the catalogue, the slots list, `.env.example` and the tests follow.
+A **lesson** has notes, a knowledge check and an activity sheet. A **session** is a tracked replay only: no invented quiz or workbook. The day count lives in `ACCELERATOR_DAY_COUNT` in `src/lib/academy.ts`; change it once and the catalogue, the slots list, `.env.example` and the tests follow.
 
 ## What a slot accepts
 

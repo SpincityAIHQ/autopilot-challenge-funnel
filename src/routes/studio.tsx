@@ -98,9 +98,9 @@ function StudioSession({ session }: { session: ReturnType<typeof useAcademySessi
                 </div>
               ))}
             </div>
-            <h2 className="academy-section-heading">Submitted activity books</h2>
+            <h2 className="academy-section-heading">Submitted activity sheets</h2>
             {data.submissions.length === 0 ? (
-              <div className="academy-card">No activity books are awaiting review.</div>
+              <div className="academy-card">No activity sheets are awaiting review.</div>
             ) : (
               data.submissions.map((s) => (
                 <article
