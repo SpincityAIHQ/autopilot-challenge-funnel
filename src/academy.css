@@ -2492,3 +2492,7 @@ button.academy-vault-item:hover {
 .academy-crumbs a:focus-visible {
   color: var(--ap-green, #5ef0b0);
 }
+.academy-workspace-focus .academy-crumbs {
+  max-width: 980px;
+  margin: 0 auto 14px;
+}
