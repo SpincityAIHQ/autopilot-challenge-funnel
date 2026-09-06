@@ -112,7 +112,7 @@ function Join() {
         </h1>
         <p>
           The moment your account exists, Thoth, your tutor, watches with you: what you watched,
-          where you stopped, what you saved. Your progress, activity book and feedback live in one
+          where you stopped, what you saved. Your progress, activity sheet and feedback live in one
           place.
         </p>
         {session.email ? (

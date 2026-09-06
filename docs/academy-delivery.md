@@ -5,7 +5,7 @@ Vimeo slots for every stage, watch telemetry, the ticket-aware AI Spin brief, th
 ## Current scope
 
 The new primary journey is `/` → `/join` → `/class` → `/summit` → `/learn` → `/accelerator`.
-`/lesson/:lessonId` contains teaching notes, a knowledge check and a saved activity book. `/studio` is protected by the server-assigned `app_metadata.academy_role` owner/instructor role. The public webinar sells the Summit. Accelerator is downstream.
+`/lesson/:lessonId` contains teaching notes, a knowledge check and a saved activity sheet. `/studio` is protected by the server-assigned `app_metadata.academy_role` owner/instructor role. The public webinar sells the Summit. Accelerator is downstream.
 
 This work extends the existing Lovable project and its connected repository. It does not replace the production domain or publish the new public experience. Existing legacy checkout/resource routes remain available.
 

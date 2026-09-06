@@ -132,7 +132,7 @@ function Home() {
           <p className="academy-eyebrow">Learn it. Apply it. Keep improving.</p>
           <h2>Under every video, three buttons.</h2>
           <p>
-            AI Notes with every timed word. An Activity Book for your real business. Ask Thoth, who
+            AI Notes with every timed word. An Activity Sheet for your real business. Ask Thoth, who
             knows where you stopped and what comes next for your ticket. Inside the Accelerator,
             Spin’s own AI takes over.
           </p>
@@ -147,7 +147,7 @@ function Home() {
             </p>
           </article>
           <article className="academy-card">
-            <span className="academy-number">02 / Activity Book</span>
+            <span className="academy-number">02 / Activity Sheet</span>
             <h3>Make it real</h3>
             <p>
               Turn the idea into a job card for your own business, check your decisions, and submit

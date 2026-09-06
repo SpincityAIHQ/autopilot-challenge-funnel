@@ -382,7 +382,7 @@ function ClassroomSession({
                       "AI Notes",
                       transcript ? "Every word, timed" : "Notes and key moments",
                     ],
-                    ["book", "02", "Activity Book", "Job card and knowledge check"],
+                    ["book", "02", "Activity Sheet", "Job card and knowledge check"],
                     ["spin", "03", `Ask ${guide.name}`, `${guide.name} knows where you stopped`],
                   ] as const
                 )
@@ -511,7 +511,7 @@ function ClassroomSession({
                     </p>
                   ) : null}
                 </section>
-                {/* ---------- ACTIVITY BOOK ---------- */}
+                {/* ---------- ACTIVITY SHEET ---------- */}
                 {!isSession ? (
                   <section
                     className="academy-card academy-block"
@@ -521,7 +521,7 @@ function ClassroomSession({
                     <div className="academy-block-head">
                       <span className="academy-block-num">02</span>
                       <div>
-                        <h2>Activity Book</h2>
+                        <h2>Activity Sheet</h2>
                         <p>Apply it to a real workflow, then check your decisions.</p>
                       </div>
                     </div>

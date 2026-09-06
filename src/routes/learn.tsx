@@ -77,7 +77,7 @@ function LearningSession({ session }: { session: ReturnType<typeof useAcademySes
         </div>
         {!session.loading && !session.email ? (
           <div className="academy-card" style={{ marginTop: 28 }}>
-            <p>Sign in to see your saved progress and continue your activity book.</p>
+            <p>Sign in to see your saved progress and continue your activity sheet.</p>
             <a href="/join" className="academy-button">
               Sign in or join free
             </a>
