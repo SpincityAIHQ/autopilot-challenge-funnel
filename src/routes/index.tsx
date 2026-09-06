@@ -26,32 +26,6 @@ function Home() {
             Find the work that keeps coming back to you. Leave with a clear plan for the first job
             your AI team should handle.
           </p>
-          <a
-            className="academy-button"
-            href="/join"
-            onClick={(e) => {
-              e.preventDefault();
-              const p = new URLSearchParams(window.location.search);
-              const safe = new URLSearchParams();
-              for (const key of [
-                "utm_source",
-                "utm_medium",
-                "utm_campaign",
-                "utm_content",
-                "utm_term",
-                "ref",
-              ]) {
-                const v = p.get(key);
-                if (v) safe.set(key, v.slice(0, 128));
-              }
-              window.location.assign(`/join${safe.size ? `?${safe}` : ""}`);
-            }}
-          >
-            Join the free webinar
-          </a>
-          <p className="academy-muted">
-            Start free. Learn at your pace. Build around a real business.
-          </p>
         </div>
         <div className="academy-hero-media">
           <FunnelVideoSlot
@@ -60,6 +34,34 @@ function Home() {
             envKey="VITE_ACADEMY_VSL_URL"
             autoplay={false}
           />
+          <div>
+            <a
+              className="academy-button"
+              href="/join"
+              onClick={(e) => {
+                e.preventDefault();
+                const p = new URLSearchParams(window.location.search);
+                const safe = new URLSearchParams();
+                for (const key of [
+                  "utm_source",
+                  "utm_medium",
+                  "utm_campaign",
+                  "utm_content",
+                  "utm_term",
+                  "ref",
+                ]) {
+                  const v = p.get(key);
+                  if (v) safe.set(key, v.slice(0, 128));
+                }
+                window.location.assign(`/join${safe.size ? `?${safe}` : ""}`);
+              }}
+            >
+              Join the free webinar
+            </a>
+            <p className="academy-muted">
+              Start free. Learn at your pace. Build around a real business.
+            </p>
+          </div>
           <div className="academy-flight-card">
             <p className="academy-eyebrow">YOUR FIRST FLIGHT PLAN</p>
             <h2>
