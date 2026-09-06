@@ -66,6 +66,10 @@ export function AcademyFrame({
             <a href="/summit" aria-current={current("/summit")}>
               Summit
             </a>
+            <a href="/sessions" aria-current={current("/sessions")}>
+              Sessions
+            </a>
+
             <a href="/vault" aria-current={current("/vault")} className="academy-nav-vault">
               <span aria-hidden="true">◆</span> The Vault
             </a>

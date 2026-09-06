@@ -58,9 +58,14 @@ function Summit() {
               purchase. Each code unlocks its matching Summit tier.
             </p>
           </div>
-          <a className="academy-button academy-button-secondary" href="/redeem">
-            Redeem my access code
-          </a>
+          <div className="academy-actions">
+            <a className="academy-button academy-button-secondary" href="/redeem">
+              Redeem my access code
+            </a>
+            <a className="academy-text-button" href="/sessions">
+              Browse the five sessions →
+            </a>
+          </div>
         </div>
         <div className="academy-callout">
           <div>

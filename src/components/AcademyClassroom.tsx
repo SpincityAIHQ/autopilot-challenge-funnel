@@ -9,16 +9,14 @@ import {
   chapterStatus,
   formatTime,
   guideFor,
-  lessonHref,
   nextStep,
-  tierAllows,
   watchSummary,
   type LessonContent,
   type LessonProgress,
   type Ticket,
 } from "@/lib/academy";
 import { keywords } from "@/lib/transcript";
-import { academyApi, useAcademySession, useCatalogue } from "@/lib/academy-client";
+import { academyApi, useAcademySession } from "@/lib/academy-client";
 
 export function AcademyClassroom({ lessonId }: { lessonId: string }) {
   const session = useAcademySession();
@@ -30,14 +28,6 @@ export function AcademyClassroom({ lessonId }: { lessonId: string }) {
     />
   );
 }
-const GROUPS: { label: string; match: (stage: string) => boolean }[] = [
-  { label: "Free training", match: (s) => s === "Free training" },
-  {
-    label: "Summit",
-    match: (s) => s.startsWith("Summit") || s.startsWith("VIP") || s.startsWith("Emerald"),
-  },
-  { label: "Accelerator", match: (s) => s.startsWith("Accelerator") },
-];
 type Seek = { at: number; nonce: number } | null;
 function ClassroomSession({
   lessonId,
@@ -47,7 +37,6 @@ function ClassroomSession({
   session: ReturnType<typeof useAcademySession>;
 }) {
   const meta = LESSONS.find((l) => l.id === lessonId);
-  const catalogue = useCatalogue();
   const [lesson, setLesson] = useState<LessonContent | null>(null);
   const [progress, setProgress] = useState<LessonProgress>();
   const [ticket, setTicket] = useState<Ticket | null>(null);
@@ -69,12 +58,6 @@ function ClassroomSession({
   const [seek, setSeek] = useState<Seek>(null);
   const [search, setSearch] = useState("");
   const [panel, setPanel] = useState<"notes" | "book" | "spin">("notes");
-  const grants = ticket
-    ? [
-        ...(ticket.summit === "free" ? [] : [ticket.summit]),
-        ...(ticket.accelerator ? ["accelerator"] : []),
-      ]
-    : [];
   async function load() {
     const result = await academyApi<{
       lesson: LessonContent;
@@ -211,58 +194,13 @@ function ClassroomSession({
   return (
     <AcademyFrame ticket={ticket}>
       <div className="academy-workspace academy-workspace-focus">
-        <aside className="academy-outline academy-outline-drawer">
-          <details>
-            <summary>All lessons · your flight plan</summary>
-          {GROUPS.map((g) => {
-            const items = LESSONS.filter((l) => g.match(l.stage));
-            return (
-              <div className="academy-outline-group" key={g.label}>
-                <span className="academy-label">{g.label}</span>
-                <nav aria-label={`${g.label} lessons`}>
-                  {items.map((l) => {
-                    const i = LESSONS.indexOf(l);
-                    const locked = ticket ? !tierAllows(grants, l.tier) : l.tier !== "free";
-                    const connected = catalogue ? catalogue.connected.includes(l.id) : true;
-                    return (
-                      <a
-                        key={l.id}
-                        href={
-                          locked
-                            ? l.tier === "accelerator"
-                              ? "/accelerator"
-                              : "/summit"
-                            : lessonHref(l.id)
-                        }
-                        aria-current={l.id === lessonId ? "page" : undefined}
-                        data-locked={locked}
-                        data-connected={connected}
-                      >
-                        <span>{String(i + 1).padStart(2, "0")}</span>
-                        <div>
-                          <small>{l.stage}</small>
-                          {l.title}
-                          {l.id === lessonId && progress?.duration ? (
-                            <span className="academy-outline-progress" aria-hidden="true">
-                              <i style={{ width: `${watch.coverage}%` }} />
-                            </span>
-                          ) : null}
-                        </div>
-                      </a>
-                    );
-                  })}
-                </nav>
-              </div>
-            );
-          })}
-          <a className="academy-text-button" href="/learn">
-            View my progress →
+        <nav className="academy-crumbs" aria-label="Breadcrumb">
+          <a href={meta?.tier === "free" ? "/" : "/sessions"}>
+            ← {meta?.tier === "free" ? "Home" : "All Summit sessions"}
           </a>
-          <a className="academy-text-button" href="/vault">
-            ◆ Open the Vault →
-          </a>
-          </details>
-        </aside>
+          <a href="/learn">My learning</a>
+        </nav>
+
         <section className="academy-class">
           <div className="academy-class-head">
             <div>
@@ -763,6 +701,33 @@ function ClassroomSession({
                   <p className="academy-eyebrow">Your next step</p>
                   <p>{nextStep(progress, meta?.kind)}</p>
                 </section>
+                {meta?.tier === "free" ? (
+                  <section className="academy-card academy-card-gold academy-callout">
+                    <div>
+                      <p className="academy-eyebrow">After the free training</p>
+                      <h2>Pick up a ticket to the Summit.</h2>
+                      <p>
+                        Five recorded sessions take the same classroom further: the business before
+                        the AI, hiring the AI team, coordinating it, measuring it and owning the
+                        platform.
+                      </p>
+                    </div>
+                    <a className="academy-button academy-button-secondary" href="/summit">
+                      Get a Summit ticket
+                    </a>
+                  </section>
+                ) : (
+                  <section className="academy-callout">
+                    <div>
+                      <p className="academy-eyebrow">Summit sessions</p>
+                      <h2>Choose your next session.</h2>
+                    </div>
+                    <a className="academy-text-button" href="/sessions">
+                      All Summit sessions →
+                    </a>
+                  </section>
+                )}
+
               </div>
               <p role="status" className="academy-status">
                 {status}
