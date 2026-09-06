@@ -13,7 +13,7 @@ import { assertSameOrigin, consumeRateLimit } from "@/lib/rate-limit";
  */
 
 const SESSION_COOKIE = "summit_rs";
-const SESSION_TTL_SECONDS = 60 * 60 * 24; // 24 hours
+const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days (owner stays signed in)
 
 function noStore(): Headers {
   return new Headers({
