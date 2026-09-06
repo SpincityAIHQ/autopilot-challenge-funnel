@@ -127,3 +127,14 @@ describe("Request bounds", () => {
     expect(rejected).toBe(true);
   });
 });
+
+describe("Tutor provider disclosure", () => {
+  it("names the vendor and exact model that is configured", async () => {
+    const { tutorProviderLabel } = await import("../lib/academy.server");
+    delete process.env.ACADEMY_TUTOR_MODEL;
+    expect(tutorProviderLabel()).toBe("Lovable AI (Google Gemini · google/gemini-3.7-flash)");
+    process.env.ACADEMY_TUTOR_MODEL = "openai/gpt-5.4-mini";
+    expect(tutorProviderLabel()).toBe("Lovable AI (OpenAI · openai/gpt-5.4-mini)");
+    delete process.env.ACADEMY_TUTOR_MODEL;
+  });
+});
