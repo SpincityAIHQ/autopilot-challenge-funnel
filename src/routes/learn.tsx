@@ -97,17 +97,20 @@ function LearningSession({ session }: { session: ReturnType<typeof useAcademySes
                     `Ask ${guideFor(data.ticket).name} to explain an idea or help you apply it to your business. Your watch maps and saved work guide the conversation.`}
                 </p>
                 <div className="academy-actions">
-                  <a
-                    className="academy-button"
-                    href={data.guidance?.href ?? guideFor(data.ticket).room}
-                  >
-                    {data.guidance ? "Open this lesson" : `Talk to ${guideFor(data.ticket).name}`}
-                  </a>
                   {data.guidance ? (
-                    <a className="academy-text-button" href={guideFor(data.ticket).room}>
-                      Talk to {guideFor(data.ticket).name}
+                    <a className="academy-button" href={data.guidance.href}>
+                      Open this lesson
                     </a>
                   ) : null}
+                  {data.ticket.accelerator ? (
+                    <a className="academy-text-button" href="/ai-spin">
+                      Talk to AI Spin
+                    </a>
+                  ) : (
+                    <p className="academy-muted">
+                      Thoth is on every page — tap “Ask Thoth” in the corner any time.
+                    </p>
+                  )}
                 </div>
               </div>
               {data.nextOffer ? (

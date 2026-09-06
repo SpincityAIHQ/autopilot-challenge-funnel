@@ -1,7 +1,8 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useRouterState } from "@tanstack/react-router";
-import { COMMUNITY_URL, GUIDES, guideFor, type Guide, type Ticket } from "@/lib/academy";
+import { COMMUNITY_URL, GUIDES, type Guide, type Ticket } from "@/lib/academy";
 import { useAcademySession } from "@/lib/academy-client";
+import { ThothBubble } from "./ThothBubble";
 /** Ticket badge: the student's current stage, named the way the guides name it. */
 export function TicketBadge({ ticket }: { ticket?: Ticket | null }) {
   if (!ticket) return null;
@@ -76,9 +77,11 @@ export function AcademyFrame({
                 <a href="/learn" aria-current={current("/learn")}>
                   My learning
                 </a>
-                <a href={guideFor(ticket).room} aria-current={current(guideFor(ticket).room)}>
-                  {guideFor(ticket).name}
-                </a>
+                {ticket?.accelerator ? (
+                  <a href="/ai-spin" aria-current={current("/ai-spin")}>
+                    AI Spin
+                  </a>
+                ) : null}
                 {ticket?.accelerator ? (
                   <a href="/book" aria-current={current("/book")}>
                     Book 1-on-1
@@ -97,6 +100,7 @@ export function AcademyFrame({
         </div>
       </header>
       <main id="academy-main">{children}</main>
+      <ThothBubble />
       <footer className="academy-footer">
         <div>
           <span>SpinCityHQ × NuAmenti</span>
