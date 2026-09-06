@@ -378,7 +378,7 @@ The Emerald link is in the VIP chat. After purchase, your private Day 3 room det
 
 # Education platform videos — September 6, 2026
 
-The Summit is now an on-demand education experience. These scripts sit above the earlier live-event videos. Plain language, seventh-grade ceiling, no income promises. The AI guide is **AI Spin**, Spin’s AI, wearing the face of **Thoth**. In copy, say "AI Spin, your Thoth tutor" the first time, then "Thoth" or "AI Spin".
+The Summit is now an on-demand education experience. These scripts sit above the earlier live-event videos. Plain language, seventh-grade ceiling, no income promises. Two guides: **Thoth**, the tutor on the public floors (free training, Summit, Vault), and **AI Spin**, Spin’s own AI with the live avatar, inside the Accelerator only. Public copy says "Thoth, your tutor". Accelerator copy says "AI Spin".
 
 ## 8. Platform VSL — home page, above the fold
 
@@ -396,7 +396,7 @@ If you are just getting to know AI business automation, start with the free trai
 
 Here is what makes this place different.
 
-The moment you create your account, AI Spin, your Thoth tutor, starts watching with you.
+The moment you create your account, Thoth, your tutor, starts watching with you.
 
 Thoth learns you. Where you are with learning. Where you are with earning. What you watched, what you skipped, and where you stopped.
 
@@ -422,7 +422,7 @@ AI Notes: every word of this session, timed, so you can search it and jump to an
 
 Activity Book: where you turn the idea into a real job card for your business.
 
-Ask AI Spin: your Thoth tutor. It knows where you stopped and what you saved. Ask it anything about this session.
+Ask Thoth: your tutor. It knows where you stopped and what you saved. Ask it anything about this session.
 
 When you finish, Thoth will tell you the one next step that fits your ticket. If that step is the Summit, it will show you exactly what it unlocks and why. No pressure. Just the truth about what is next.
 
@@ -430,10 +430,10 @@ Let’s begin.
 
 ## 10. How the ticket ladder is presented (for the webinar close and the Summit close)
 
-Thoth speaks the invitation in-app; these lines keep the video and the app saying the same thing.
+Thoth speaks the invitation on the public floors and AI Spin inside the Accelerator; these lines keep the video and the app saying the same thing.
 
 - **Free training → Summit.** "You have done the free work. The Summit is where Spin builds the whole system with you across two days, with the VIP rooms and the Emerald intensive on top. Your Thoth tutor carries your progress in with you."
 - **Summit → Emerald Vault Key.** "The Emerald key opens the Vault: the skills, prompts, plug-ins and playbooks Spin actually runs. If you are ready to build with the real tools, this is the door."
-- **Summit → Autopilot Accelerator.** "The Accelerator is the guided build. Every day’s room recorded and tracked, the live AI Spin avatar, the Vault, and 1-on-1 time with SpinCity. Take advantage of the best we have so you can be the best at this."
+- **Summit → Autopilot Accelerator.** "The Accelerator is the guided build. Every day’s room recorded and tracked, AI Spin himself in text and live avatar, the Vault, and 1-on-1 time with SpinCity. Take advantage of the best we have so you can be the best at this."
 
 Rule for every version: help first, invite once, name the price and the page, never manufacture urgency.

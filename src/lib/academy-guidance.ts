@@ -41,7 +41,7 @@ export function learningGuidance(progress: LessonProgress[]): LearningGuidance |
           return {
             ...base,
             title: "Let’s work through the idea again",
-            message: `Your latest check was ${p.quiz_score}/${p.quiz_total}. Ask AI Spin for a smaller example, then try the check again. This score is a practice signal.`,
+            message: `Your latest check was ${p.quiz_score}/${p.quiz_total}. Ask your guide for a smaller example, then try the check again. This score is a practice signal.`,
           };
         if (kind === "approved" && p.workbook_status === "approved")
           return {

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AcademyFrame, SpinAvatar } from "@/components/AcademyFrame";
+import { AcademyFrame, GuideAvatar } from "@/components/AcademyFrame";
+import { GUIDES } from "@/lib/academy";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { SUMMIT_TITLE, SUMMIT_DESCRIPTION, CANONICAL_HOME_URL } from "@/lib/site-meta";
 export const Route = createFileRoute("/")({
@@ -71,9 +72,9 @@ function Home() {
               <small>03 · Implement</small>
               <strong>Accelerator</strong>
             </a>
-            <a href="/ai-spin">
+            <a href="/thoth">
               <small>Always on</small>
-              <strong>AI Spin</strong>
+              <strong>Thoth</strong>
             </a>
           </div>
         </div>
@@ -114,9 +115,9 @@ function Home() {
           style={{ marginBottom: 40 }}
         >
           <div className="academy-spin-hero">
-            <SpinAvatar size={96} />
+            <GuideAvatar guide={GUIDES.thoth} size={96} />
             <div>
-              <p className="academy-eyebrow">Meet AI Spin · your Thoth tutor</p>
+              <p className="academy-eyebrow">Meet Thoth · your tutor</p>
               <h2>The moment you create your account, Thoth watches with you.</h2>
               <p>
                 Thoth learns you: where you are with learning, where you are with earning, what you
@@ -131,8 +132,9 @@ function Home() {
           <p className="academy-eyebrow">Learn it. Apply it. Keep improving.</p>
           <h2>Under every video, three buttons.</h2>
           <p>
-            AI Notes with every timed word. An Activity Book for your real business. Ask AI Spin,
-            who knows where you stopped and what comes next for your ticket.
+            AI Notes with every timed word. An Activity Book for your real business. Ask Thoth, who
+            knows where you stopped and what comes next for your ticket. Inside the Accelerator,
+            Spin’s own AI takes over.
           </p>
         </div>
         <div className="academy-three">
@@ -153,7 +155,7 @@ function Home() {
             </p>
           </article>
           <article className="academy-card">
-            <span className="academy-number">03 / Ask AI Spin</span>
+            <span className="academy-number">03 / Ask Thoth</span>
             <h3>Thoth guides you</h3>
             <p>
               Ask about the exact minute you are on. Thoth answers in Spin’s own words, holds you to

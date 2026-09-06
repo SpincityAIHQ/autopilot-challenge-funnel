@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AcademyFrame, TicketBadge } from "@/components/AcademyFrame";
-import { ACCELERATOR_OFFER, SUMMIT_OFFERS, type Offer, type Ticket } from "@/lib/academy";
+import { ACCELERATOR_OFFER, SUMMIT_OFFERS, guideFor, type Offer, type Ticket } from "@/lib/academy";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
 import { VAULT_CATEGORIES, vaultCatalogue, type VaultCategory, type VaultItem } from "@/lib/vault";
 export const Route = createFileRoute("/vault")({
@@ -201,9 +201,9 @@ function VaultSession({ session }: { session: ReturnType<typeof useAcademySessio
             <div className="academy-actions" style={{ marginTop: 20 }}>
               <a
                 className="academy-button academy-button-secondary academy-button-small"
-                href="/ai-spin"
+                href={guideFor(listing?.ticket).room}
               >
-                Ask AI Spin how to use this
+                Ask {guideFor(listing?.ticket).name} how to use this
               </a>
               <button type="button" className="academy-text-button" onClick={() => setOpen(null)}>
                 Close

@@ -100,7 +100,7 @@ describe("The Vault", () => {
 });
 
 describe("Classroom layout", () => {
-  it("stacks AI Notes, Activity Book and Ask AI Spin under the recording with Thoth as the guide", () => {
+  it("stacks AI Notes, Activity Book and the guide under the recording, Thoth public and AI Spin inside the Accelerator", () => {
     const src = readFileSync("src/components/AcademyClassroom.tsx", "utf8");
     const notes = src.indexOf('id="ai-notes"');
     const book = src.indexOf('id="activity-book"');
@@ -108,9 +108,17 @@ describe("Classroom layout", () => {
     expect(notes).toBeGreaterThan(src.indexOf('id="academy-player"'));
     expect(book).toBeGreaterThan(notes);
     expect(ask).toBeGreaterThan(book);
-    expect(src).toContain("SpinAvatar");
-    expect(readFileSync("src/components/AcademyFrame.tsx", "utf8")).toContain(
-      "/ai-spin-thoth.webp",
-    );
+    expect(src).toContain("GuideAvatar");
+    expect(src).toContain("guideFor(ticket)");
+    const { GUIDES, guideFor } = require("../lib/academy") as typeof import("../lib/academy");
+    expect(GUIDES.thoth.avatar).toBe("/thoth.webp");
+    expect(guideFor({ accelerator: false }).name).toBe("Thoth");
+    expect(guideFor({ accelerator: true }).name).toBe("AI Spin");
+    const server = readFileSync("src/lib/academy.server.ts", "utf8");
+    expect(server).toContain("THOTH_SYSTEM_PROMPT");
+    expect(server).toContain("SPIN_SYSTEM_PROMPT");
+    expect(server).toContain('d.guide === "spin" && !ticket.accelerator');
+    const tree = readFileSync("src/routeTree.gen.ts", "utf8");
+    expect(tree.includes("'/thoth'") || tree.includes('"/thoth"')).toBe(true);
   });
 });

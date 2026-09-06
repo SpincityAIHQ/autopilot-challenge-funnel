@@ -42,7 +42,7 @@ function Redemption({ session }: { session: ReturnType<typeof useAcademySession>
         <h1>Redeem your access code.</h1>
         <p>
           Use the code from your purchase email to unlock your Summit tier or Accelerator programme.
-          AI Spin will recognise your ticket the moment it activates.
+          Your guide will recognise your ticket the moment it activates.
         </p>
         {session.loading ? (
           <p>Loading your account…</p>

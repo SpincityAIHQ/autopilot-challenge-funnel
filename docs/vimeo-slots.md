@@ -59,6 +59,10 @@ In the classroom the AI Notes block shows the approved notes, the chapter "key m
 
 `/vault` is the section for the good stuff: skills, prompts, plug-ins, playbooks and scorecards. It opens for Emerald Vault Key holders and Accelerator students (`vaultAllows`). The catalogue (names, previews, categories) is public; item content is served only by `/api/academy/vault-item` after the key check and never enters the client bundle, keeping the existing paid-content isolation test intact. Categories are assigned per slug in `src/lib/vault.ts`; add a resource there when the library grows.
 
+## Two guides
+
+Thoth tutors the public floors: free training, Summit and the Vault, at `/thoth` and in every lesson for non-Accelerator tickets. AI Spin, Spin’s own AI representation with the HeyGen live avatar, lives inside the Accelerator at `/ai-spin`; the tutor endpoint refuses the AI Spin persona for any ticket without active Accelerator access. Both share the same brief (ticket, telemetry, transcript excerpts, saved work, next stage) and the same rules; they differ in voice and in what they hold the student to. Coaching emails name the guide that matches the ticket.
+
 ## Ticket identity
 
 A student's ticket is derived from their redeemed grants: Free Training, General Admission, Summit + VIP, Emerald Vault Key, and Autopilot Accelerator (which combines, for example, "Autopilot Accelerator + Emerald Vault Key"). The ticket badge appears in the classroom, My learning, AI Spin and the booking page. AI Spin greets by ticket and never by email.

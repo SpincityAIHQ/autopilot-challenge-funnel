@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { PlayCircle } from "lucide-react";
-import { AcademyFrame, SpinAvatar, TicketBadge } from "./AcademyFrame";
+import { AcademyFrame, GuideAvatar, TicketBadge } from "./AcademyFrame";
 import { TrackedLessonVideo } from "./TrackedLessonVideo";
 import { VimeoLessonPlayer } from "./VimeoLessonPlayer";
 import { WatchMap } from "./WatchMap";
@@ -8,6 +8,7 @@ import {
   LESSONS,
   chapterStatus,
   formatTime,
+  guideFor,
   lessonHref,
   nextStep,
   tierAllows,
@@ -156,6 +157,7 @@ function ClassroomSession({
         lessonId,
         question: q,
         aiConsent,
+        guide: guide.id,
       });
       setThread((t) => [...t, { role: "spin", text: r.answer }]);
     } catch (e) {
@@ -165,6 +167,7 @@ function ClassroomSession({
     }
   }
   const isSession = meta?.kind === "session";
+  const guide = guideFor(ticket);
   const watch = watchSummary(progress);
   const media = lesson?.media ?? null;
   const canSeek = Boolean(media && media.provider === "vimeo" && session.email);
@@ -380,7 +383,7 @@ function ClassroomSession({
                       transcript ? "Every word, timed" : "Notes and key moments",
                     ],
                     ["book", "02", "Activity Book", "Job card and knowledge check"],
-                    ["spin", "03", "Ask AI Spin", "Thoth knows where you stopped"],
+                    ["spin", "03", `Ask ${guide.name}`, `${guide.name} knows where you stopped`],
                   ] as const
                 )
                   .filter(([k]) => !(isSession && k === "book"))
@@ -398,7 +401,7 @@ function ClassroomSession({
                         <strong>{title}</strong>
                         <small>{sub}</small>
                       </span>
-                      {k === "spin" ? <SpinAvatar size={34} pulse={busy} /> : null}
+                      {k === "spin" ? <GuideAvatar guide={guide} size={34} pulse={busy} /> : null}
                     </button>
                   ))}
               </div>
@@ -644,13 +647,13 @@ function ClassroomSession({
                 >
                   <div className="academy-block-head">
                     <span className="academy-block-num">03</span>
-                    <SpinAvatar size={56} pulse={busy} />
+                    <GuideAvatar guide={guide} size={56} pulse={busy} />
                     <div>
-                      <h2>Ask AI Spin</h2>
+                      <h2>Ask {guide.name}</h2>
                       <p>
                         {tutorReady
-                          ? "Spin’s AI knows your ticket, where you stopped, every timed word of this recording and what you have saved."
-                          : "Your lesson guide is here. Sign in to talk to AI Spin when chat is connected."}
+                          ? `${guide.name} knows your ticket, where you stopped, every timed word of this recording and what you have saved.`
+                          : `Your lesson guide is here. Sign in to talk to ${guide.name} when chat is connected.`}
                       </p>
                     </div>
                   </div>
@@ -690,9 +693,9 @@ function ClassroomSession({
                               </div>
                             ) : (
                               <div className="academy-bubble" data-role="spin" key={i}>
-                                <SpinAvatar size={34} />
+                                <GuideAvatar guide={guide} size={34} />
                                 <div>
-                                  <small>AI Spin</small>
+                                  <small>{guide.name}</small>
                                   {m.text}
                                 </div>
                               </div>
@@ -700,9 +703,9 @@ function ClassroomSession({
                           )}
                           {busy ? (
                             <div className="academy-bubble" data-role="spin">
-                              <SpinAvatar size={34} pulse />
+                              <GuideAvatar guide={guide} size={34} pulse />
                               <div>
-                                <small>AI Spin</small>
+                                <small>{guide.name}</small>
                                 Thinking…
                               </div>
                             </div>
@@ -729,7 +732,7 @@ function ClassroomSession({
                           className="academy-button"
                           disabled={busy || !question.trim() || !aiConsent}
                         >
-                          Ask AI Spin
+                          Ask {guide.name}
                         </button>
                       </form>
                       <p className="academy-muted">
@@ -741,7 +744,11 @@ function ClassroomSession({
                     <div className="academy-tutor-reply">{nextStep(progress, meta?.kind)}</div>
                   )}
                   <div className="academy-tutor-links">
-                    <a href="/ai-spin">Open the full AI Spin room and live avatar</a>
+                    <a href={guide.room}>
+                      {guide.id === "spin"
+                        ? "Open the AI Spin room and live avatar"
+                        : "Open the Thoth room"}
+                    </a>
                     {ticket?.accelerator ? <a href="/book">Book a 1-on-1 with SpinCity</a> : null}
                     <a href="/learn">My learning progress</a>
                     <a href="mailto:Info@NuAmenti.com">Ask the team for help</a>

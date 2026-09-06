@@ -48,11 +48,12 @@ function Accelerator() {
             </a>
           </div>
           <div className="academy-card">
-            <p className="academy-eyebrow">AI Spin, face to face</p>
-            <h2>Meet Spin’s live AI avatar</h2>
+            <p className="academy-eyebrow">AI Spin · Inside the Accelerator only</p>
+            <h2>Meet Spin’s own AI, face to face</h2>
             <p>
-              Continue from text chat into spoken help from Spin’s AI avatar. It knows your ticket,
-              your saved work and where you stopped in each replay.
+              Thoth tutors the public floors. Inside the Accelerator, AI Spin takes over: Spin’s own
+              AI in text and live avatar. It knows your ticket, your job card and where you stopped
+              in each build room.
             </p>
             <p className="academy-muted">
               AI Spin is an AI representation of Spin. A live avatar session is not a personal call

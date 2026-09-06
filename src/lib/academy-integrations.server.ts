@@ -159,7 +159,7 @@ export async function processAcademyIntegrations(request: Request) {
               })
             : null;
           learningPayload = {
-            assistant: "AI Spin",
+            assistant: grants.includes("accelerator") ? "AI Spin" : "Thoth",
             lesson_id: lessonId,
             lesson_title: lesson?.title,
             lesson_stage: lesson?.stage,

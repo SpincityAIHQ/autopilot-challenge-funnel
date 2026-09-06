@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { GuideRoom } from "@/components/GuideRoom";
-export const Route = createFileRoute("/ai-spin")({
+export const Route = createFileRoute("/thoth")({
   head: () => ({
     meta: [
-      { title: "AI Spin · Accelerator | AI AutoPilot" },
+      { title: "Thoth · Your tutor | AI AutoPilot" },
       { name: "robots", content: "noindex,nofollow" },
     ],
   }),
-  component: () => <GuideRoom room="spin" />,
+  component: () => <GuideRoom room="thoth" />,
 });

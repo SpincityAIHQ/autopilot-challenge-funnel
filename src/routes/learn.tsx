@@ -7,6 +7,7 @@ import {
   lessonHref,
   nextStep,
   tierAllows,
+  guideFor,
   type LessonProgress,
   type Offer,
   type Ticket,
@@ -89,19 +90,22 @@ function LearningSession({ session }: { session: ReturnType<typeof useAcademySes
           <>
             <div className="academy-two">
               <div className="academy-card academy-card-featured academy-spin-summary">
-                <p className="academy-eyebrow">AI Spin · Your next step</p>
+                <p className="academy-eyebrow">{guideFor(data.ticket).name} · Your next step</p>
                 <h2>{data.guidance?.title ?? "Make the next lesson useful."}</h2>
                 <p>
                   {data.guidance?.message ??
-                    "Ask AI Spin to explain an idea or help you apply it to your business. Your watch maps and saved work guide the conversation."}
+                    `Ask ${guideFor(data.ticket).name} to explain an idea or help you apply it to your business. Your watch maps and saved work guide the conversation.`}
                 </p>
                 <div className="academy-actions">
-                  <a className="academy-button" href={data.guidance?.href ?? "/ai-spin"}>
-                    {data.guidance ? "Open this lesson" : "Talk to AI Spin"}
+                  <a
+                    className="academy-button"
+                    href={data.guidance?.href ?? guideFor(data.ticket).room}
+                  >
+                    {data.guidance ? "Open this lesson" : `Talk to ${guideFor(data.ticket).name}`}
                   </a>
                   {data.guidance ? (
-                    <a className="academy-text-button" href="/ai-spin">
-                      Talk to AI Spin
+                    <a className="academy-text-button" href={guideFor(data.ticket).room}>
+                      Talk to {guideFor(data.ticket).name}
                     </a>
                   ) : null}
                 </div>

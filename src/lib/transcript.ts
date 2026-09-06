@@ -1,7 +1,7 @@
 import type { TranscriptCue } from "./academy";
 import { formatTime } from "./academy";
 /**
- * Timed transcripts give AI Spin every word and its time. Accepts WebVTT
+ * Timed transcripts give the guides every word and its time. Accepts WebVTT
  * (Vimeo's caption export) or SRT. Cues are ordered, merged when a caption is
  * split mid-sentence across tiny cues, and bounded so a runaway file cannot
  * blow up a request.
@@ -61,7 +61,7 @@ export function keywords(text: string) {
   );
 }
 /**
- * Pick the cues AI Spin should read: the ones that match the question, the
+ * Pick the cues the guide should read: the ones that match the question, the
  * moments around where the student stopped, and the opening of each missed
  * chapter. Ordered by time so the brief reads like the recording.
  */

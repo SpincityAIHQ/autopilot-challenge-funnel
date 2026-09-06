@@ -86,7 +86,7 @@ export const ACCELERATOR_DAYS: LessonMeta[] = Array.from(
       title: `Build room · Day ${n}`,
       stage: `Accelerator · Day ${n}`,
       tier: "accelerator" as const,
-      summary: "Replay of the live implementation session. Use AI Spin to find the part you need.",
+      summary: "Replay of the live implementation session. Ask AI Spin to find the part you need.",
       skill: "Implement with the group",
       kind: "session" as const,
       envKey: envKeyFor(id),
@@ -138,6 +138,41 @@ export const ACCELERATOR_OFFER = {
 export const COMMUNITY_URL =
   "https://www.skool.com/the-ascended-masters/about?ref=ce11d00bd3994b97bfd25e10976d9f0b";
 
+/**
+ * Two guides. Thoth, keeper of every word and its time, tutors the public floors:
+ * free training, Summit and the Vault. AI Spin, Spin's own AI representation with
+ * the live avatar, lives inside the Accelerator.
+ */
+export type GuideId = "thoth" | "spin";
+export type Guide = {
+  id: GuideId;
+  name: string;
+  role: string;
+  avatar: string;
+  room: string;
+  tagline: string;
+};
+export const GUIDES: Record<GuideId, Guide> = {
+  thoth: {
+    id: "thoth",
+    name: "Thoth",
+    role: "Your tutor",
+    avatar: "/thoth.webp",
+    room: "/thoth",
+    tagline: "Knows every word and its time, and where you stopped.",
+  },
+  spin: {
+    id: "spin",
+    name: "AI Spin",
+    role: "Spin’s AI · Accelerator",
+    avatar: "/ai-spin-mark.svg",
+    room: "/ai-spin",
+    tagline: "Spin’s own AI, in text and live avatar, for Accelerator builders.",
+  },
+};
+export function guideFor(ticket?: { accelerator: boolean } | null): Guide {
+  return ticket?.accelerator ? GUIDES.spin : GUIDES.thoth;
+}
 /** The "ticket" a student holds: their Summit tier plus whether Accelerator is active. */
 export type Ticket = {
   summit: "free" | "ga" | "vip" | "vault";
@@ -277,7 +312,7 @@ export type ChapterStatus = Chapter & {
   watched: number;
   status: "watched" | "partial" | "missed";
 };
-/** Per-chapter coverage so AI Spin and the watch map can name the exact part a student missed. */
+/** Per-chapter coverage so the guide and the watch map can name the exact part a student missed. */
 export function chapterStatus(
   chapters: Chapter[],
   intervals: Interval[],
