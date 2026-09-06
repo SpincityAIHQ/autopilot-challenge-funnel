@@ -66,10 +66,6 @@ export function AcademyFrame({
             <a href="/summit" aria-current={current("/summit")}>
               Summit
             </a>
-            <a href="/sessions" aria-current={current("/sessions")}>
-              Sessions
-            </a>
-
             <a href="/vault" aria-current={current("/vault")} className="academy-nav-vault">
               <span aria-hidden="true">◆</span> The Vault
             </a>
@@ -77,30 +73,16 @@ export function AcademyFrame({
               Accelerator
             </a>
             {signedIn ? (
-              <>
-                <a href="/learn" aria-current={current("/learn")}>
-                  My learning
-                </a>
-                {ticket?.accelerator ? (
-                  <a href="/ai-spin" aria-current={current("/ai-spin")}>
-                    AI Spin
-                  </a>
-                ) : null}
-                {ticket?.accelerator ? (
-                  <a href="/book" aria-current={current("/book")}>
-                    Book 1-on-1
-                  </a>
-                ) : null}
-                <a href="/redeem" aria-current={current("/redeem")}>
-                  Redeem
-                </a>
-              </>
+              <a href="/learn" aria-current={current("/learn")}>
+                My account
+              </a>
             ) : (
               <a href="/join" className="academy-nav-cta">
                 Join free
               </a>
             )}
           </nav>
+
         </div>
       </header>
       <main id="academy-main">{children}</main>
