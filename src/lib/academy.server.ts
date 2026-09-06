@@ -116,7 +116,7 @@ export async function handleAcademyGet(request: Request, path: string) {
       progress.duration = 0;
       progress.position = 0;
     }
-    return { lesson, progress, tutorReady: tutorReady() };
+    return { lesson, progress, tutorReady: tutorReady(), tutorProvider: TUTOR_PROVIDER };
   }
   if (path === "dashboard") {
     const progress = check(
