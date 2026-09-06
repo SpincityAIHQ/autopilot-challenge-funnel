@@ -45,6 +45,7 @@ export async function academyUser(request: Request): Promise<User> {
   return data.user;
 }
 export function requireInstructor(user: User) {
+  if (isStaffEmail(user.email)) return;
   if (!["owner", "instructor"].includes(user.app_metadata?.academy_role))
     throw new AcademyError("Instructor access is required.", 403);
 }

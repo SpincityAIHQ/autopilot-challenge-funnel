@@ -1,6 +1,7 @@
 import { createHash, createHmac, randomUUID } from "node:crypto";
 import type { User } from "@supabase/supabase-js";
 import { academyDb, AcademyError } from "./academy.server";
+import { isStaffEmail, STAFF_TIERS } from "./academy-staff.server";
 
 export function accessCode(id: string, generation: string, secret: string) {
   if (secret.length < 32) throw new Error("ACCESS_SECRET_REQUIRED");
@@ -128,6 +129,8 @@ export async function requestAccessCode(user: User) {
   };
 }
 export async function redeemedGrants(user: User, forceRefresh = false) {
+  // Owner review access: server-only allowlist, verified user email, no purchase.
+  if (isStaffEmail(user.email)) return [...STAFF_TIERS];
   if (process.env.ACADEMY_PAID_ACCESS_ENABLED !== "true") return [];
   const db = academyDb(),
     now = new Date().toISOString();
