@@ -138,7 +138,7 @@ function ClassroomSession({
           ? "Knowledge check saved."
           : submit
             ? "Submitted for instructor review."
-            : "Activity book saved.",
+            : "Activity sheet saved.",
       );
     } catch (e) {
       setStatus((e as Error).message);
