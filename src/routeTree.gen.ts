@@ -19,6 +19,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
+import { Route as RedeemRouteImport } from './routes/redeem'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as NextStepsRouteImport } from './routes/next-steps'
 import { Route as NextKeynoteRouteImport } from './routes/next-keynote'
@@ -32,6 +33,7 @@ import { Route as CommunicationPreferencesRouteImport } from './routes/communica
 import { Route as ClassRouteImport } from './routes/class'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AuditRouteImport } from './routes/audit'
+import { Route as AiSpinRouteImport } from './routes/ai-spin'
 import { Route as AcceleratorRouteImport } from './routes/accelerator'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ReserveIndexRouteImport } from './routes/reserve/index'
@@ -120,6 +122,11 @@ const RefundPolicyRoute = RefundPolicyRouteImport.update({
   path: '/refund-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RedeemRoute = RedeemRouteImport.update({
+  id: '/redeem',
+  path: '/redeem',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
@@ -184,6 +191,11 @@ const CheckoutRoute = CheckoutRouteImport.update({
 const AuditRoute = AuditRouteImport.update({
   id: '/audit',
   path: '/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiSpinRoute = AiSpinRouteImport.update({
+  id: '/ai-spin',
+  path: '/ai-spin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AcceleratorRoute = AcceleratorRouteImport.update({
@@ -389,6 +401,7 @@ const ApiPublicAdminOwnerLoginRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/accelerator': typeof AcceleratorRoute
+  '/ai-spin': typeof AiSpinRoute
   '/audit': typeof AuditRoute
   '/checkout': typeof CheckoutRoute
   '/class': typeof ClassRoute
@@ -402,6 +415,7 @@ export interface FileRoutesByFullPath {
   '/next-keynote': typeof NextKeynoteRoute
   '/next-steps': typeof NextStepsRoute
   '/privacy': typeof PrivacyRoute
+  '/redeem': typeof RedeemRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
@@ -451,6 +465,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/accelerator': typeof AcceleratorRoute
+  '/ai-spin': typeof AiSpinRoute
   '/audit': typeof AuditRoute
   '/checkout': typeof CheckoutRoute
   '/class': typeof ClassRoute
@@ -464,6 +479,7 @@ export interface FileRoutesByTo {
   '/next-keynote': typeof NextKeynoteRoute
   '/next-steps': typeof NextStepsRoute
   '/privacy': typeof PrivacyRoute
+  '/redeem': typeof RedeemRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
@@ -514,6 +530,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/accelerator': typeof AcceleratorRoute
+  '/ai-spin': typeof AiSpinRoute
   '/audit': typeof AuditRoute
   '/checkout': typeof CheckoutRoute
   '/class': typeof ClassRoute
@@ -527,6 +544,7 @@ export interface FileRoutesById {
   '/next-keynote': typeof NextKeynoteRoute
   '/next-steps': typeof NextStepsRoute
   '/privacy': typeof PrivacyRoute
+  '/redeem': typeof RedeemRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
@@ -578,6 +596,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/accelerator'
+    | '/ai-spin'
     | '/audit'
     | '/checkout'
     | '/class'
@@ -591,6 +610,7 @@ export interface FileRouteTypes {
     | '/next-keynote'
     | '/next-steps'
     | '/privacy'
+    | '/redeem'
     | '/refund-policy'
     | '/resources'
     | '/robots.txt'
@@ -640,6 +660,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/accelerator'
+    | '/ai-spin'
     | '/audit'
     | '/checkout'
     | '/class'
@@ -653,6 +674,7 @@ export interface FileRouteTypes {
     | '/next-keynote'
     | '/next-steps'
     | '/privacy'
+    | '/redeem'
     | '/refund-policy'
     | '/resources'
     | '/robots.txt'
@@ -702,6 +724,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/accelerator'
+    | '/ai-spin'
     | '/audit'
     | '/checkout'
     | '/class'
@@ -715,6 +738,7 @@ export interface FileRouteTypes {
     | '/next-keynote'
     | '/next-steps'
     | '/privacy'
+    | '/redeem'
     | '/refund-policy'
     | '/resources'
     | '/robots.txt'
@@ -765,6 +789,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AcceleratorRoute: typeof AcceleratorRoute
+  AiSpinRoute: typeof AiSpinRoute
   AuditRoute: typeof AuditRoute
   CheckoutRoute: typeof CheckoutRoute
   ClassRoute: typeof ClassRoute
@@ -778,6 +803,7 @@ export interface RootRouteChildren {
   NextKeynoteRoute: typeof NextKeynoteRoute
   NextStepsRoute: typeof NextStepsRoute
   PrivacyRoute: typeof PrivacyRoute
+  RedeemRoute: typeof RedeemRoute
   RefundPolicyRoute: typeof RefundPolicyRoute
   ResourcesRoute: typeof ResourcesRouteWithChildren
   RobotsDottxtRoute: typeof RobotsDottxtRoute
@@ -896,6 +922,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RefundPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/redeem': {
+      id: '/redeem'
+      path: '/redeem'
+      fullPath: '/redeem'
+      preLoaderRoute: typeof RedeemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
@@ -985,6 +1018,13 @@ declare module '@tanstack/react-router' {
       path: '/audit'
       fullPath: '/audit'
       preLoaderRoute: typeof AuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-spin': {
+      id: '/ai-spin'
+      path: '/ai-spin'
+      fullPath: '/ai-spin'
+      preLoaderRoute: typeof AiSpinRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/accelerator': {
@@ -1264,6 +1304,7 @@ const ResourcesRouteWithChildren = ResourcesRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AcceleratorRoute: AcceleratorRoute,
+  AiSpinRoute: AiSpinRoute,
   AuditRoute: AuditRoute,
   CheckoutRoute: CheckoutRoute,
   ClassRoute: ClassRoute,
@@ -1277,6 +1318,7 @@ const rootRouteChildren: RootRouteChildren = {
   NextKeynoteRoute: NextKeynoteRoute,
   NextStepsRoute: NextStepsRoute,
   PrivacyRoute: PrivacyRoute,
+  RedeemRoute: RedeemRoute,
   RefundPolicyRoute: RefundPolicyRoute,
   ResourcesRoute: ResourcesRouteWithChildren,
   RobotsDottxtRoute: RobotsDottxtRoute,

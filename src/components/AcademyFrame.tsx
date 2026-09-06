@@ -17,6 +17,7 @@ export function AcademyFrame({ children }: { children: ReactNode }) {
           <a href="/class">Free classroom</a>
           <a href="/summit">Summit</a>
           <a href="/learn">My learning</a>
+          <a href="/redeem">Redeem code</a>
         </nav>
       </header>
       <main id="academy-main">{children}</main>

@@ -167,7 +167,17 @@ function RootComponent() {
   const isReserveRoute =
     pathname === "/reserve" ||
     pathname.startsWith("/reserve/") ||
-    ["/", "/class", "/join", "/learn", "/summit", "/accelerator", "/studio"].includes(pathname) ||
+    [
+      "/",
+      "/class",
+      "/join",
+      "/learn",
+      "/summit",
+      "/accelerator",
+      "/studio",
+      "/redeem",
+      "/ai-spin",
+    ].includes(pathname) ||
     pathname.startsWith("/lesson/");
 
   return (

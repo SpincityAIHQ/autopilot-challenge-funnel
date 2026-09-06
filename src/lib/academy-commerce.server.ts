@@ -78,7 +78,7 @@ export async function reconcileShopifyOrder(id: string) {
     if (!response.ok) throw new Error("SHOPIFY_UNAVAILABLE");
     const result = await response.json();
     const order = result.data?.order as Snapshot | undefined;
-    if (result.errors || !order || !order.email) throw new Error("ORDER_RECONCILIATION_REQUIRED");
+    if (result.errors || !order) throw new Error("ORDER_RECONCILIATION_REQUIRED");
     if (snapshot && snapshot.updatedAt !== order.updatedAt) throw new Error("ORDER_CHANGED_RETRY");
     snapshot = order;
     lines.push(...order.lineItems.nodes);
@@ -95,17 +95,28 @@ export async function reconcileShopifyOrder(id: string) {
     lines,
     Object.fromEntries((prior.data ?? []).map((x) => [x.line_id, x])),
   );
+  const email = snapshot.email?.trim().toLowerCase() ?? "";
+  if (!email)
+    grants.forEach((g) => {
+      g.active = false;
+    });
   const needsReview =
-    grants.some((g) => g.quantity > 1) || snapshot.displayFinancialStatus === "PARTIALLY_REFUNDED";
+    !email ||
+    grants.some((g) => g.quantity > 1) ||
+    snapshot.displayFinancialStatus === "PARTIALLY_REFUNDED";
   const result = await db.rpc("academy_reconcile_order", {
     p_order: id,
-    p_email: snapshot.email!.toLowerCase(),
+    p_email: email,
     p_updated: snapshot.updatedAt,
     p_status: snapshot.displayFinancialStatus,
     p_review: needsReview,
     p_lines: grants,
   });
   if (result.error) throw new Error("RECONCILIATION_NOT_SAVED");
+  if (result.data === true) {
+    const { ensureOrderCodes } = await import("./academy-access.server");
+    await ensureOrderCodes(id);
+  }
   return { ok: true, needsReview };
 }
 export async function handleShopifyWebhook(request: Request) {

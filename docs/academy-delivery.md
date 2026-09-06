@@ -1,5 +1,7 @@
 # AI AutoPilot learning platform — September 6, 2026
 
+The latest purchasing, AI Spin and avatar implementation is documented in [ai-spin-access.md](ai-spin-access.md). Code redemption now binds paid access to the student account. That document supersedes the original email-only grant design and earlier tutor naming below.
+
 ## Current scope
 
 The new primary journey is `/` → `/join` → `/class` → `/summit` → `/learn` → `/accelerator`.

@@ -1,6 +1,27 @@
 import { timingSafeEqual } from "node:crypto";
 import { academyDb } from "./academy.server";
 import { reconcileShopifyOrder } from "./academy-commerce.server";
+import { LESSONS, tierAllows } from "./academy";
+import { redeemedGrants } from "./academy-access.server";
+import type { User } from "@supabase/supabase-js";
+export function learningDeliveryEligible(
+  name: string,
+  p: {
+    workbook_status: string;
+    quiz_score: number | null;
+    quiz_total: number | null;
+    updated_at: string;
+  } | null,
+) {
+  if (!p) return false;
+  if (name === "learning_feedback") return p.workbook_status === "needs_revision";
+  if (name === "learning_approved") return p.workbook_status === "approved";
+  if (name === "learning_practice")
+    return p.quiz_score !== null && Boolean(p.quiz_total) && p.quiz_score / p.quiz_total! < 0.8;
+  if (name === "learning_stalled")
+    return p.workbook_status === "draft" && Date.now() - Date.parse(p.updated_at) >= 3 * 86400000;
+  return false;
+}
 function authorized(request: Request) {
   const expected = process.env.ACADEMY_SCHEDULER_SECRET;
   const value = request.headers.get("authorization")?.replace(/^Bearer /, "");
@@ -36,6 +57,12 @@ export async function processAcademyIntegrations(request: Request) {
       /* Durable receipt remains pending. Owner sees it in the integration queue. */
     }
   }
+  const { deliverAccessCodes } = await import("./academy-delivery.server");
+  const accessDelivery = await deliverAccessCodes();
+  if (process.env.ACADEMY_LEARNING_NUDGES_ENABLED === "true") {
+    const queued = await db.rpc("academy_queue_learning_nudges");
+    if (queued.error) throw new Error("LEARNING_QUEUE_UNAVAILABLE");
+  }
   const endpoint = process.env.ACADEMY_GHL_WEBHOOK_URL;
   let allowed = false;
   try {
@@ -49,7 +76,7 @@ export async function processAcademyIntegrations(request: Request) {
   }
   if (process.env.ACADEMY_GHL_ENABLED !== "true" || !allowed)
     return Response.json(
-      { orders, delivered, ghl: "not_enabled" },
+      { orders, delivered, accessDelivery, ghl: "not_enabled" },
       { headers: { "Cache-Control": "no-store" } },
     );
   const claimed = await db.rpc("academy_claim_outbox", { p_limit: 10 });
@@ -79,7 +106,39 @@ export async function processAcademyIntegrations(request: Request) {
             .maybeSingle(),
         ]);
         if (purchases.error || progress.error) throw new Error("ELIGIBILITY_UNAVAILABLE");
-        if (
+        let learningPayload: Record<string, unknown> = {};
+        let learningAllowed = true;
+        if (row.name.startsWith("learning_")) {
+          const lessonId = String(row.payload?.lessonId ?? "");
+          const p = await db
+            .from("academy_progress")
+            .select("workbook_status,quiz_score,quiz_total,updated_at,content_version")
+            .eq("user_id", row.user_id)
+            .eq("lesson_id", lessonId)
+            .maybeSingle();
+          if (p.error) throw p.error;
+          const lesson = LESSONS.find((l) => l.id === lessonId);
+          const grants = await redeemedGrants({
+            id: row.user_id,
+            email: profile.data.email,
+          } as User);
+          learningAllowed =
+            process.env.ACADEMY_LEARNING_NUDGES_ENABLED === "true" &&
+            Boolean(lesson && tierAllows(grants, lesson.tier)) &&
+            p.data?.content_version === row.payload?.contentVersion &&
+            learningDeliveryEligible(row.name, p.data);
+          learningPayload = {
+            assistant: "AI Spin",
+            lesson_id: lessonId,
+            lesson_title: lesson?.title,
+            quiz_score: p.data?.quiz_score,
+            quiz_total: p.data?.quiz_total,
+            workbook_status: p.data?.workbook_status,
+            lesson_url: `https://aiautopilotsummit.com${lessonId === "free-webinar" ? "/class" : `/lesson/${encodeURIComponent(lessonId)}`}`,
+          };
+        }
+        if (!learningAllowed) status = "cancelled";
+        else if (
           row.name === "webinar_not_started" &&
           ((progress.data?.intervals ?? []).length > 0 || (purchases.data ?? []).length > 0)
         )
@@ -98,6 +157,7 @@ export async function processAcademyIntegrations(request: Request) {
               consent_version: "academy-marketing-2026-09-06",
               occurred_at: row.created_at,
               source: "ai-autopilot-academy",
+              ...learningPayload,
             }),
             signal: AbortSignal.timeout(8000),
           });
@@ -117,7 +177,7 @@ export async function processAcademyIntegrations(request: Request) {
     if (status === "unknown") unknown++;
   }
   return Response.json(
-    { orders, delivered, unknown },
+    { orders, delivered, unknown, accessDelivery },
     { headers: { "Cache-Control": "no-store" } },
   );
 }

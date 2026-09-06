@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { LESSONS, coverage, nextStep, tierAllows, type LessonProgress } from "@/lib/academy";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
 import { supabase } from "@/integrations/supabase/client";
+import type { LearningGuidance } from "@/lib/academy-guidance";
 export const Route = createFileRoute("/learn")({
   head: () => ({
     meta: [
@@ -19,7 +20,11 @@ function Learn() {
   return <LearningSession key={session.email ?? "anonymous"} session={session} />;
 }
 function LearningSession({ session }: { session: ReturnType<typeof useAcademySession> }) {
-  const [data, setData] = useState<{ progress: LessonProgress[]; grants: string[] } | null>(null);
+  const [data, setData] = useState<{
+    progress: LessonProgress[];
+    grants: string[];
+    guidance?: LearningGuidance | null;
+  } | null>(null);
   const [error, setError] = useState("");
   useEffect(() => {
     if (session.email)
@@ -51,6 +56,20 @@ function LearningSession({ session }: { session: ReturnType<typeof useAcademySes
         </p>
         {data ? (
           <>
+            <div className="academy-card academy-spin-summary">
+              <p className="academy-eyebrow">AI SPIN · YOUR NEXT STEP</p>
+              <h2>{data.guidance?.title ?? "Make the next lesson useful."}</h2>
+              <p>
+                {data.guidance?.message ??
+                  "Ask AI Spin to explain an idea or help you apply it to your business. Your saved work guides the conversation."}
+              </p>
+              <a className="academy-button" href="/ai-spin">
+                Talk to AI Spin
+              </a>
+              <a className="academy-text-button" href="/redeem">
+                Redeem a purchase code
+              </a>
+            </div>
             <div className="academy-progress-strip">
               <span>
                 Lessons started <strong>{data.progress.length}</strong>

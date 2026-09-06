@@ -147,7 +147,7 @@ function Join() {
               checked={consent}
               onChange={(e) => setConsent(e.target.checked)}
             />
-            Email me optional Summit updates and offers. I can opt out anytime.
+            Email me optional learning reminders, Summit updates and offers. I can opt out anytime.
           </label>
         ) : null}
         {session.email ? (

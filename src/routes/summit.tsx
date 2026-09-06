@@ -52,12 +52,12 @@ function Summit() {
           <div>
             <h2>Already purchased?</h2>
             <p>
-              Use the same verified email as your Shopify order. If access is missing, contact the
-              team with your order number.
+              Sign in with the email used at Shopify, then redeem the access code sent for your
+              purchase. Each code unlocks its matching Summit tier.
             </p>
           </div>
-          <a className="academy-button academy-button-secondary" href="/join">
-            Sign in to my learning
+          <a className="academy-button academy-button-secondary" href="/redeem">
+            Redeem my access code
           </a>
         </div>
         <div className="academy-callout">

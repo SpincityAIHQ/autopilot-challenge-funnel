@@ -359,12 +359,12 @@ function ClassroomSession({
         <aside className="academy-tutor academy-card">
           <div className="academy-panel-heading">
             <MessageCircle />
-            <h2>{tutorReady ? "AI learning tutor" : "Your lesson guide"}</h2>
+            <h2>AI Spin</h2>
           </div>
           <p>
             {tutorReady
-              ? "Ask about this lesson. Your tutor uses your saved progress and the approved teaching notes."
-              : "Use the lesson notes, feedback and next step while the AI tutor is being connected."}
+              ? "Spin’s AI learning assistant. Ask about this lesson, your saved work or your next step."
+              : "Your lesson guide is available below. Sign in to use AI Spin when chat is connected."}
           </p>
           {tutorReady ? (
             <>
@@ -394,7 +394,7 @@ function ClassroomSession({
                 disabled={busy || !question.trim() || !aiConsent}
                 onClick={ask}
               >
-                Ask the tutor
+                Ask AI Spin
               </button>
               <p className="academy-muted">
                 AI feedback is advisory. An instructor reviews applied work.
@@ -409,6 +409,7 @@ function ClassroomSession({
           )}
           <div className="academy-tutor-links">
             <a href="/learn">My learning progress</a>
+            <a href="/ai-spin">AI Spin chat and live avatar</a>
             <a href="/summit">Compare Summit access</a>
             <a href="mailto:Info@NuAmenti.com">Ask the team for help</a>
           </div>
