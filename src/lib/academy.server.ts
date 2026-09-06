@@ -738,6 +738,27 @@ export async function handleAcademyPost(request: Request, path: string) {
                 reviewerFeedback: progress?.reviewer_feedback,
               },
               journey,
+              // The whole curriculum, so the tutor can answer about any lesson,
+              // not only the one currently open. Locked lessons carry titles and
+              // chapter names only; their teaching notes stay behind the ticket.
+              courseLibrary: LESSONS.map((l) => {
+                const unlocked = tierAllows(grants, l.tier);
+                const c = lessonContent(l.id);
+                return {
+                  id: l.id,
+                  title: l.title,
+                  stage: l.stage,
+                  kind: l.kind,
+                  tier: l.tier,
+                  unlocked,
+                  link: lessonHref(l.id),
+                  chapters: (c?.media?.chapters ?? []).map((ch) => ch.title),
+                  notes: unlocked ? (c?.paragraphs ?? []).slice(0, 6) : undefined,
+                  lockedNote: unlocked
+                    ? undefined
+                    : "Locked for this ticket: describe what it covers and invite, never teach its detail.",
+                };
+              }),
               nextStage: offer
                 ? {
                     name: offer.name,
