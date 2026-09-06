@@ -8,6 +8,8 @@ interface FunnelVideoSlotProps {
   envKey: string;
   className?: string;
   autoplay?: boolean;
+  /** Keep a branded poster visible publicly while the video URL is not configured. */
+  alwaysVisible?: boolean;
 }
 
 /**
@@ -23,6 +25,7 @@ export function FunnelVideoSlot({
   envKey,
   className,
   autoplay = true,
+  alwaysVisible = false,
 }: FunnelVideoSlotProps) {
   const qaReview = useQaReviewMode();
   const safeUrl = normalizeVideoEmbedUrl(url ?? null);
@@ -47,7 +50,20 @@ export function FunnelVideoSlot({
     );
   }
 
-  if (!qaReview) return null;
+  if (!qaReview) {
+    if (!alwaysVisible) return null;
+    return (
+      <section className={`w-full ${className ?? ""}`} aria-label={label}>
+        <div className="academy-vsl-poster">
+          <span className="academy-eyebrow">{label}</span>
+          <p>The welcome video is being uploaded.</p>
+          <a className="academy-text-button" href="/class">
+            Start the free training now →
+          </a>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className={`w-full ${className ?? ""}`} aria-label={label}>
