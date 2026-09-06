@@ -41,7 +41,7 @@ function Accelerator() {
               <small>USD</small>
             </p>
             <a className="academy-button" href={ACCELERATOR_OFFER.url}>
-              Review programme on Shopify
+              Review the programme
             </a>
             <a className="academy-text-button" href="mailto:Info@NuAmenti.com">
               Ask about joining the current cohort
@@ -65,7 +65,7 @@ function Accelerator() {
             <hr className="academy-rule" style={{ margin: "22px 0" }} />
             <p className="academy-eyebrow">Already enrolled?</p>
             <p>
-              After Shopify payment, redeem your Accelerator access code in your student account.
+              After payment, redeem your Accelerator access code in your student account.
             </p>
             <div className="academy-actions">
               <a

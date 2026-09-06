@@ -281,7 +281,7 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
       expect(openingTag).not.toContain('target="_blank"');
     }
     for (const src of [vip, vault]) {
-      expect(src.includes("Continue to secure Shopify checkout.")).toBe(true);
+      expect(src.includes("Continue to secure checkout.")).toBe(true);
       expect(src.includes("Secure checkout opens in a new tab.")).toBe(false);
     }
   });

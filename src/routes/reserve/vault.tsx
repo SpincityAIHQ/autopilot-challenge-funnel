@@ -98,7 +98,7 @@ function ReserveVaultPage() {
                 Get the Emerald Vault Key · $298
               </a>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Continue to secure Shopify checkout.
+                Continue to secure checkout.
               </p>
 
               <div className="my-6 flex items-center gap-4">
@@ -117,7 +117,7 @@ function ReserveVaultPage() {
                 Get VIP Access · $99
               </a>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Continue to secure Shopify checkout.
+                Continue to secure checkout.
               </p>
               <div className="mt-8 reserve-hairline" />
               <div className="mt-7 grid gap-7 sm:grid-cols-2">
