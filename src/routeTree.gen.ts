@@ -18,6 +18,7 @@ import { Route as SummitRouteImport } from './routes/summit'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as StrategyIntensiveRouteImport } from './routes/strategy-intensive'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SessionsRouteImport } from './routes/sessions'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
@@ -118,6 +119,11 @@ const StrategyIntensiveRoute = StrategyIntensiveRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SessionsRoute = SessionsRouteImport.update({
+  id: '/sessions',
+  path: '/sessions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
@@ -438,6 +444,7 @@ export interface FileRoutesByFullPath {
   '/refund-policy': typeof RefundPolicyRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
+  '/sessions': typeof SessionsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/strategy-intensive': typeof StrategyIntensiveRoute
   '/studio': typeof StudioRoute
@@ -505,6 +512,7 @@ export interface FileRoutesByTo {
   '/refund-policy': typeof RefundPolicyRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
+  '/sessions': typeof SessionsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/strategy-intensive': typeof StrategyIntensiveRoute
   '/studio': typeof StudioRoute
@@ -573,6 +581,7 @@ export interface FileRoutesById {
   '/refund-policy': typeof RefundPolicyRoute
   '/resources': typeof ResourcesRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
+  '/sessions': typeof SessionsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/strategy-intensive': typeof StrategyIntensiveRoute
   '/studio': typeof StudioRoute
@@ -642,6 +651,7 @@ export interface FileRouteTypes {
     | '/refund-policy'
     | '/resources'
     | '/robots.txt'
+    | '/sessions'
     | '/sitemap.xml'
     | '/strategy-intensive'
     | '/studio'
@@ -709,6 +719,7 @@ export interface FileRouteTypes {
     | '/refund-policy'
     | '/resources'
     | '/robots.txt'
+    | '/sessions'
     | '/sitemap.xml'
     | '/strategy-intensive'
     | '/studio'
@@ -776,6 +787,7 @@ export interface FileRouteTypes {
     | '/refund-policy'
     | '/resources'
     | '/robots.txt'
+    | '/sessions'
     | '/sitemap.xml'
     | '/strategy-intensive'
     | '/studio'
@@ -844,6 +856,7 @@ export interface RootRouteChildren {
   RefundPolicyRoute: typeof RefundPolicyRoute
   ResourcesRoute: typeof ResourcesRouteWithChildren
   RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SessionsRoute: typeof SessionsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StrategyIntensiveRoute: typeof StrategyIntensiveRoute
   StudioRoute: typeof StudioRoute
@@ -952,6 +965,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sessions': {
+      id: '/sessions'
+      path: '/sessions'
+      fullPath: '/sessions'
+      preLoaderRoute: typeof SessionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/robots.txt': {
@@ -1383,6 +1403,7 @@ const rootRouteChildren: RootRouteChildren = {
   RefundPolicyRoute: RefundPolicyRoute,
   ResourcesRoute: ResourcesRouteWithChildren,
   RobotsDottxtRoute: RobotsDottxtRoute,
+  SessionsRoute: SessionsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StrategyIntensiveRoute: StrategyIntensiveRoute,
   StudioRoute: StudioRoute,
