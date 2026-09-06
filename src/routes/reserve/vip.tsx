@@ -115,7 +115,7 @@ function ReserveVipPage() {
                 Get General Admission · $22
               </a>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Continue to secure Shopify checkout.
+                Continue to secure checkout.
               </p>
               <div className="mt-8 reserve-hairline" />
               <div className="mt-7 grid gap-7 sm:grid-cols-2">

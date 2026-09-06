@@ -53,7 +53,7 @@ function Terms() {
 
         <h2 className="mt-6 font-heading text-base text-foreground">Payments and provider roles</h2>
         <p>
-          Payments are processed by Shopify on the SpincityHQ checkout. Their terms and privacy
+          Payments are processed by our secure checkout provider on the SpincityHQ checkout. Their terms and privacy
           policy also apply to the payment step. Our fulfillment matches verified payments to your
           registration, grants entitlements, and delivers access through a single-use magic link.
         </p>

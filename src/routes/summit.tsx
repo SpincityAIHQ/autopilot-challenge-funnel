@@ -43,9 +43,9 @@ function Summit() {
                   }).catch(() => {});
                 }}
               >
-                Buy on Shopify
+                Get instant access
               </a>
-              <p className="academy-muted">Current terms shown on Shopify.</p>
+              <p className="academy-muted">Current terms shown at checkout.</p>
             </article>
           ))}
         </div>
@@ -54,7 +54,7 @@ function Summit() {
             <p className="academy-eyebrow">Already purchased?</p>
             <h2>Activate your ticket.</h2>
             <p>
-              Sign in with the email used at Shopify, then redeem the access code sent for your
+              Sign in with the email you used at checkout, then redeem the access code sent for your
               purchase. Each code unlocks its matching Summit tier.
             </p>
           </div>

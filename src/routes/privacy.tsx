@@ -38,8 +38,8 @@ function Privacy() {
 
         <h2 className="mt-6 font-heading text-base text-foreground">Who processes what</h2>
         <p>
-          Payment card details and order data are collected and processed by Shopify on the
-          SpincityHQ checkout — never by this website. On verified payment, Shopify provides the
+          Payment card details and order data are collected and processed by our secure checkout provider on the
+          SpincityHQ checkout — never by this website. On verified payment, the checkout provider gives us the
           order fields we need to create your Summit registration (name, email, optional phone,
           product, amount, currency, and order ID).
         </p>
@@ -49,7 +49,7 @@ function Privacy() {
           <Link to="/communication-preferences" className="ml-1 underline hover:text-foreground">
             communication preferences page
           </Link>
-          , not inside Shopify. Marketing consent is never a condition of purchase. Transactional
+          , not inside the checkout provider. Marketing consent is never a condition of purchase. Transactional
           access messages about your Summit ticket are separate from marketing consent and continue
           as long as your ticket is active.
         </p>

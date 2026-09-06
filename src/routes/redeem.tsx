@@ -49,7 +49,7 @@ function Redemption({ session }: { session: ReturnType<typeof useAcademySession>
         ) : !session.email ? (
           <>
             <p>
-              First sign in with the same email you used at Shopify. Your code stays private; do not
+              First sign in with the same email you used at checkout. Your code stays private; do not
               put it in a website link.
             </p>
             <a className="academy-button" href="/join">
