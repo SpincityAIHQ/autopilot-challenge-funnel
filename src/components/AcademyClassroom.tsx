@@ -690,10 +690,10 @@ function ClassroomSession({
                   )}
                   <div className="academy-tutor-links">
                     {guide.id === "spin" ? (
-                      <a href={guide.room}>Open the AI Spin room and live avatar</a>
+                      <a href="/accelerator">Open AI Spin and the live avatar</a>
                     ) : null}
-                    {ticket?.accelerator ? <a href="/book">Book a 1-on-1 with SpinCity</a> : null}
-                    <a href="/learn">My learning progress</a>
+                    <a href="/learn">My account</a>
+                    <a href="/redeem">Have a code? Redeem or upgrade here</a>
                     <a href="mailto:Info@NuAmenti.com">Ask the team for help</a>
                   </div>
                 </section>
@@ -712,9 +712,14 @@ function ClassroomSession({
                         platform.
                       </p>
                     </div>
-                    <a className="academy-button academy-button-secondary" href="/summit">
-                      Get a Summit ticket
-                    </a>
+                    <div className="academy-actions">
+                      <a className="academy-button academy-button-secondary" href="/summit">
+                        Get a Summit ticket
+                      </a>
+                      <a className="academy-text-button" href="/redeem">
+                        Redeem a code →
+                      </a>
+                    </div>
                   </section>
                 ) : (
                   <section className="academy-callout">
@@ -722,11 +727,17 @@ function ClassroomSession({
                       <p className="academy-eyebrow">Summit sessions</p>
                       <h2>Choose your next session.</h2>
                     </div>
-                    <a className="academy-text-button" href="/sessions">
-                      All Summit sessions →
-                    </a>
+                    <div className="academy-actions">
+                      <a className="academy-text-button" href="/summit">
+                        All Summit sessions →
+                      </a>
+                      <a className="academy-text-button" href="/redeem">
+                        Upgrade with a code →
+                      </a>
+                    </div>
                   </section>
                 )}
+
 
               </div>
               <p role="status" className="academy-status">
