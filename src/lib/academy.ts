@@ -122,7 +122,7 @@ export const SUMMIT_OFFERS = [
     name: "Emerald Vault Key",
     price: 298,
     label: "The complete Summit",
-    includes: "VIP + Day 3 Emerald intensive and Sally session",
+    includes: "VIP + Day 3 Emerald intensive + the Vault: skills, prompts, plug-ins and templates",
     url: "https://spincityhq.com/products/ai-autopilot-summit-vip-emerald-vault-key",
   },
 ] as const;
@@ -207,6 +207,10 @@ export function coverage(ranges: Interval[], duration: number): number {
         (100 * mergeIntervals(ranges, duration).reduce((n, [a, b]) => n + b - a, 0)) / duration,
       )
     : 0;
+}
+/** The Vault opens for Emerald Vault Key holders and Accelerator students. */
+export function vaultAllows(grants: string[]) {
+  return grants.includes("vault") || grants.includes("accelerator");
 }
 export function tierAllows(grants: string[], tier: AcademyTier) {
   if (tier === "free") return true;
@@ -359,4 +363,7 @@ export type LessonContent = {
   questions: { id: string; prompt: string; choices: string[] }[];
   workbook: { id: string; label: string; hint: string }[];
   media: LessonMedia | null;
+  /** Timed transcript cues when a transcript is connected. Every word, with its time. */
+  transcript?: TranscriptCue[] | null;
 };
+export type TranscriptCue = { start: number; end: number; text: string };
