@@ -14,6 +14,109 @@ export type Database = {
   }
   public: {
     Tables: {
+      academy_access_codes: {
+        Row: {
+          access_hours: number
+          access_until: string | null
+          code_hash: string
+          email: string
+          expires_at: string
+          generation: string
+          id: string
+          issued_at: string
+          line_id: string
+          order_id: string
+          redeemed_at: string | null
+          redeemed_by: string | null
+          terms_version: string
+          tier: string
+        }
+        Insert: {
+          access_hours: number
+          access_until?: string | null
+          code_hash: string
+          email: string
+          expires_at?: string
+          generation: string
+          id: string
+          issued_at?: string
+          line_id: string
+          order_id: string
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+          terms_version: string
+          tier: string
+        }
+        Update: {
+          access_hours?: number
+          access_until?: string | null
+          code_hash?: string
+          email?: string
+          expires_at?: string
+          generation?: string
+          id?: string
+          issued_at?: string
+          line_id?: string
+          order_id?: string
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+          terms_version?: string
+          tier?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_access_codes_order_id_line_id_fkey"
+            columns: ["order_id", "line_id"]
+            isOneToOne: true
+            referencedRelation: "academy_grants"
+            referencedColumns: ["order_id", "line_id"]
+          },
+        ]
+      }
+      academy_access_deliveries: {
+        Row: {
+          attempts: number
+          code_id: string
+          completed_at: string | null
+          created_at: string
+          due_at: string
+          generation: string
+          id: string
+          locked_at: string | null
+          status: string
+        }
+        Insert: {
+          attempts?: number
+          code_id: string
+          completed_at?: string | null
+          created_at?: string
+          due_at?: string
+          generation: string
+          id?: string
+          locked_at?: string | null
+          status?: string
+        }
+        Update: {
+          attempts?: number
+          code_id?: string
+          completed_at?: string | null
+          created_at?: string
+          due_at?: string
+          generation?: string
+          id?: string
+          locked_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_access_deliveries_code_id_fkey"
+            columns: ["code_id"]
+            isOneToOne: false
+            referencedRelation: "academy_access_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       academy_attempts: {
         Row: {
           answers: Json
@@ -43,6 +146,39 @@ export type Database = {
           lesson_id?: string
           score?: number
           total?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      academy_avatar_sessions: {
+        Row: {
+          created_at: string
+          ended_at: string | null
+          expires_at: string
+          id: string
+          max_seconds: number
+          provider_session_id: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          ended_at?: string | null
+          expires_at: string
+          id: string
+          max_seconds: number
+          provider_session_id?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          ended_at?: string | null
+          expires_at?: string
+          id?: string
+          max_seconds?: number
+          provider_session_id?: string | null
+          status?: string
           user_id?: string
         }
         Relationships: []
@@ -1269,6 +1405,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      academy_claim_access_deliveries: {
+        Args: { p_limit: number }
+        Returns: {
+          attempts: number
+          code_id: string
+          completed_at: string | null
+          created_at: string
+          due_at: string
+          generation: string
+          id: string
+          locked_at: string | null
+          status: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "academy_access_deliveries"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       academy_claim_outbox: {
         Args: { p_limit: number }
         Returns: {
@@ -1291,6 +1447,19 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      academy_issue_access_code: {
+        Args: {
+          p_generation: string
+          p_hash: string
+          p_hours: number
+          p_id: string
+          p_line: string
+          p_order: string
+          p_terms: string
+        }
+        Returns: string
+      }
+      academy_queue_learning_nudges: { Args: never; Returns: number }
       academy_reconcile_order: {
         Args: {
           p_email: string
@@ -1312,6 +1481,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      academy_redeem_access_code: {
+        Args: { p_email: string; p_hash: string; p_user: string }
+        Returns: Json
+      }
       academy_register: {
         Args: {
           p_attribution: Json
@@ -1321,6 +1494,16 @@ export type Database = {
           p_user: string
         }
         Returns: undefined
+      }
+      academy_reserve_avatar: {
+        Args: {
+          p_daily_seconds: number
+          p_global_seconds: number
+          p_id: string
+          p_seconds: number
+          p_user: string
+        }
+        Returns: boolean
       }
       academy_review_workbook: {
         Args: {
