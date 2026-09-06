@@ -701,6 +701,33 @@ function ClassroomSession({
                   <p className="academy-eyebrow">Your next step</p>
                   <p>{nextStep(progress, meta?.kind)}</p>
                 </section>
+                {meta?.tier === "free" ? (
+                  <section className="academy-card academy-card-gold academy-callout">
+                    <div>
+                      <p className="academy-eyebrow">After the free training</p>
+                      <h2>Pick up a ticket to the Summit.</h2>
+                      <p>
+                        Five recorded sessions take the same classroom further: the business before
+                        the AI, hiring the AI team, coordinating it, measuring it and owning the
+                        platform.
+                      </p>
+                    </div>
+                    <a className="academy-button academy-button-secondary" href="/summit">
+                      Get a Summit ticket
+                    </a>
+                  </section>
+                ) : (
+                  <section className="academy-callout">
+                    <div>
+                      <p className="academy-eyebrow">Summit sessions</p>
+                      <h2>Choose your next session.</h2>
+                    </div>
+                    <a className="academy-text-button" href="/sessions">
+                      All Summit sessions →
+                    </a>
+                  </section>
+                )}
+
               </div>
               <p role="status" className="academy-status">
                 {status}
