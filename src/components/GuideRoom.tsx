@@ -224,8 +224,8 @@ function GuideSession({
                     checked={consent}
                     onChange={(e) => setConsent(e.target.checked)}
                   />
-                  Use my question, current lesson, viewing and saved lesson work to provide feedback
-                  through {context.tutorProvider}.
+                  Use my question, current lesson, viewing and saved lesson work to provide
+                  feedback through our AI tutor service.
                 </label>
                 <div className="academy-chips">
                   {prompts.map((p) => (
