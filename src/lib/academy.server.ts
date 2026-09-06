@@ -59,17 +59,28 @@ function check<T extends { error: unknown }>(r: T): T {
 }
 // Managed Lovable AI Gateway. Key stays server-side; model is a documented supported id.
 const TUTOR_MODEL = "google/gemini-3.7-flash";
-export const TUTOR_PROVIDER = "Lovable AI (Google Gemini)";
 function tutorModel() {
   return process.env.ACADEMY_TUTOR_MODEL || TUTOR_MODEL;
 }
+const VENDOR_LABELS: Record<string, string> = {
+  google: "Google Gemini",
+  openai: "OpenAI",
+};
+// Disclosure must stay truthful if the configurable model changes.
+export function tutorProviderLabel() {
+  const model = tutorModel();
+  const vendor = model.split("/")[0] ?? "";
+  const label = VENDOR_LABELS[vendor] ?? vendor ?? "the configured provider";
+  return `Lovable AI (${label} · ${model})`;
+}
 function tutorReady() {
   return Boolean(
-    process.env.ACADEMY_TUTOR_ENABLED === "true" &&
+    process.env.ACADEMY_TUTOR_ENABLED !== "false" &&
     process.env.LOVABLE_API_KEY &&
     process.env.RATE_LIMIT_HMAC_SECRET,
   );
 }
+
 
 function safeAttribution(raw: Record<string, unknown>) {
   const out: Record<string, string> = {};
@@ -116,7 +127,7 @@ export async function handleAcademyGet(request: Request, path: string) {
       progress.duration = 0;
       progress.position = 0;
     }
-    return { lesson, progress, tutorReady: tutorReady(), tutorProvider: TUTOR_PROVIDER };
+    return { lesson, progress, tutorReady: tutorReady(), tutorProvider: tutorProviderLabel() };
   }
   if (path === "dashboard") {
     const progress = check(
