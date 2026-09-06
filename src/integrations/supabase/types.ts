@@ -14,6 +14,389 @@ export type Database = {
   }
   public: {
     Tables: {
+      academy_attempts: {
+        Row: {
+          answers: Json
+          content_version: string
+          created_at: string
+          id: string
+          lesson_id: string
+          score: number
+          total: number
+          user_id: string
+        }
+        Insert: {
+          answers: Json
+          content_version: string
+          created_at?: string
+          id: string
+          lesson_id: string
+          score: number
+          total: number
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          content_version?: string
+          created_at?: string
+          id?: string
+          lesson_id?: string
+          score?: number
+          total?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      academy_commerce_receipts: {
+        Row: {
+          event_id: string
+          order_id: string
+          processed_at: string | null
+          received_at: string
+          status: string
+          topic: string
+        }
+        Insert: {
+          event_id: string
+          order_id: string
+          processed_at?: string | null
+          received_at?: string
+          status?: string
+          topic: string
+        }
+        Update: {
+          event_id?: string
+          order_id?: string
+          processed_at?: string | null
+          received_at?: string
+          status?: string
+          topic?: string
+        }
+        Relationships: []
+      }
+      academy_events: {
+        Row: {
+          created_at: string
+          id: string
+          lesson_id: string | null
+          name: string
+          payload: Json
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lesson_id?: string | null
+          name: string
+          payload?: Json
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lesson_id?: string | null
+          name?: string
+          payload?: Json
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      academy_grants: {
+        Row: {
+          active: boolean
+          email: string
+          line_id: string
+          order_id: string
+          quantity: number
+          tier: string
+          updated_at: string
+          variant_id: string
+        }
+        Insert: {
+          active?: boolean
+          email: string
+          line_id: string
+          order_id: string
+          quantity: number
+          tier: string
+          updated_at?: string
+          variant_id: string
+        }
+        Update: {
+          active?: boolean
+          email?: string
+          line_id?: string
+          order_id?: string
+          quantity?: number
+          tier?: string
+          updated_at?: string
+          variant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academy_grants_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "academy_orders"
+            referencedColumns: ["order_id"]
+          },
+        ]
+      }
+      academy_orders: {
+        Row: {
+          email: string
+          financial_status: string
+          needs_review: boolean
+          order_id: string
+          shopify_updated_at: string
+          updated_at: string
+        }
+        Insert: {
+          email: string
+          financial_status: string
+          needs_review?: boolean
+          order_id: string
+          shopify_updated_at: string
+          updated_at?: string
+        }
+        Update: {
+          email?: string
+          financial_status?: string
+          needs_review?: boolean
+          order_id?: string
+          shopify_updated_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      academy_outbox: {
+        Row: {
+          attempts: number
+          completed_at: string | null
+          created_at: string
+          dedup_key: string
+          due_at: string
+          id: string
+          locked_at: string | null
+          name: string
+          payload: Json
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          attempts?: number
+          completed_at?: string | null
+          created_at?: string
+          dedup_key: string
+          due_at?: string
+          id?: string
+          locked_at?: string | null
+          name: string
+          payload?: Json
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          attempts?: number
+          completed_at?: string | null
+          created_at?: string
+          dedup_key?: string
+          due_at?: string
+          id?: string
+          locked_at?: string | null
+          name?: string
+          payload?: Json
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      academy_profiles: {
+        Row: {
+          attribution: Json
+          consent_at: string
+          consent_version: string
+          created_at: string
+          email: string
+          marketing_consent: boolean
+          timezone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attribution?: Json
+          consent_at?: string
+          consent_version: string
+          created_at?: string
+          email: string
+          marketing_consent?: boolean
+          timezone?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attribution?: Json
+          consent_at?: string
+          consent_version?: string
+          created_at?: string
+          email?: string
+          marketing_consent?: boolean
+          timezone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      academy_progress: {
+        Row: {
+          content_version: string
+          duration: number
+          intervals: Json
+          lesson_id: string
+          media_version: string
+          position: number
+          quiz_score: number | null
+          quiz_total: number | null
+          reviewer_feedback: string | null
+          updated_at: string
+          user_id: string
+          workbook: Json
+          workbook_status: string
+        }
+        Insert: {
+          content_version?: string
+          duration?: number
+          intervals?: Json
+          lesson_id: string
+          media_version?: string
+          position?: number
+          quiz_score?: number | null
+          quiz_total?: number | null
+          reviewer_feedback?: string | null
+          updated_at?: string
+          user_id: string
+          workbook?: Json
+          workbook_status?: string
+        }
+        Update: {
+          content_version?: string
+          duration?: number
+          intervals?: Json
+          lesson_id?: string
+          media_version?: string
+          position?: number
+          quiz_score?: number | null
+          quiz_total?: number | null
+          reviewer_feedback?: string | null
+          updated_at?: string
+          user_id?: string
+          workbook?: Json
+          workbook_status?: string
+        }
+        Relationships: []
+      }
+      academy_reviews: {
+        Row: {
+          created_at: string
+          feedback: string
+          id: string
+          lesson_id: string
+          reviewer_id: string
+          status: string
+          user_id: string
+          workbook_snapshot: Json
+        }
+        Insert: {
+          created_at?: string
+          feedback: string
+          id?: string
+          lesson_id: string
+          reviewer_id: string
+          status: string
+          user_id: string
+          workbook_snapshot: Json
+        }
+        Update: {
+          created_at?: string
+          feedback?: string
+          id?: string
+          lesson_id?: string
+          reviewer_id?: string
+          status?: string
+          user_id?: string
+          workbook_snapshot?: Json
+        }
+        Relationships: []
+      }
+      academy_tutor_messages: {
+        Row: {
+          answer: string
+          consent_version: string
+          created_at: string
+          id: string
+          lesson_id: string
+          model: string
+          question: string
+          user_id: string
+        }
+        Insert: {
+          answer: string
+          consent_version: string
+          created_at?: string
+          id?: string
+          lesson_id: string
+          model: string
+          question: string
+          user_id: string
+        }
+        Update: {
+          answer?: string
+          consent_version?: string
+          created_at?: string
+          id?: string
+          lesson_id?: string
+          model?: string
+          question?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      academy_tutor_usage: {
+        Row: {
+          day: string
+          requests: number
+        }
+        Insert: {
+          day: string
+          requests?: number
+        }
+        Update: {
+          day?: string
+          requests?: number
+        }
+        Relationships: []
+      }
+      academy_write_usage: {
+        Row: {
+          bucket: string
+          hour: string
+          requests: number
+          user_id: string
+        }
+        Insert: {
+          bucket: string
+          hour: string
+          requests?: number
+          user_id: string
+        }
+        Update: {
+          bucket?: string
+          hour?: string
+          requests?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       access_tokens: {
         Row: {
           buyer_email: string
@@ -886,6 +1269,77 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      academy_claim_outbox: {
+        Args: { p_limit: number }
+        Returns: {
+          attempts: number
+          completed_at: string | null
+          created_at: string
+          dedup_key: string
+          due_at: string
+          id: string
+          locked_at: string | null
+          name: string
+          payload: Json
+          status: string
+          user_id: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "academy_outbox"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      academy_reconcile_order: {
+        Args: {
+          p_email: string
+          p_lines: Json
+          p_order: string
+          p_review: boolean
+          p_status: string
+          p_updated: string
+        }
+        Returns: boolean
+      }
+      academy_record_progress: {
+        Args: {
+          p_event: string
+          p_kind: string
+          p_lesson: string
+          p_payload: Json
+          p_user: string
+        }
+        Returns: undefined
+      }
+      academy_register: {
+        Args: {
+          p_attribution: Json
+          p_consent: boolean
+          p_email: string
+          p_timezone: string
+          p_user: string
+        }
+        Returns: undefined
+      }
+      academy_review_workbook: {
+        Args: {
+          p_feedback: string
+          p_lesson: string
+          p_reviewer: string
+          p_status: string
+          p_user: string
+        }
+        Returns: undefined
+      }
+      academy_tutor_budget: {
+        Args: { p_global_limit: number; p_user: string }
+        Returns: boolean
+      }
+      academy_write_budget: {
+        Args: { p_bucket: string; p_limit: number; p_user: string }
+        Returns: boolean
+      }
       claim_lowest_founder_seat: {
         Args: { _registration_id: string }
         Returns: number
