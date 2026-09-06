@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as VaultWelcomeRouteImport } from './routes/vault-welcome'
+import { Route as VaultRouteImport } from './routes/vault'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SummitRouteImport } from './routes/summit'
 import { Route as StudioRouteImport } from './routes/studio'
@@ -81,6 +82,11 @@ const WelcomeRoute = WelcomeRouteImport.update({
 const VaultWelcomeRoute = VaultWelcomeRouteImport.update({
   id: '/vault-welcome',
   path: '/vault-welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VaultRoute = VaultRouteImport.update({
+  id: '/vault',
+  path: '/vault',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -431,6 +437,7 @@ export interface FileRoutesByFullPath {
   '/studio': typeof StudioRoute
   '/summit': typeof SummitRoute
   '/terms': typeof TermsRoute
+  '/vault': typeof VaultRoute
   '/vault-welcome': typeof VaultWelcomeRoute
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -496,6 +503,7 @@ export interface FileRoutesByTo {
   '/studio': typeof StudioRoute
   '/summit': typeof SummitRoute
   '/terms': typeof TermsRoute
+  '/vault': typeof VaultRoute
   '/vault-welcome': typeof VaultWelcomeRoute
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -562,6 +570,7 @@ export interface FileRoutesById {
   '/studio': typeof StudioRoute
   '/summit': typeof SummitRoute
   '/terms': typeof TermsRoute
+  '/vault': typeof VaultRoute
   '/vault-welcome': typeof VaultWelcomeRoute
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -629,6 +638,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/summit'
     | '/terms'
+    | '/vault'
     | '/vault-welcome'
     | '/welcome'
     | '/admin/audit'
@@ -694,6 +704,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/summit'
     | '/terms'
+    | '/vault'
     | '/vault-welcome'
     | '/welcome'
     | '/admin/audit'
@@ -759,6 +770,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/summit'
     | '/terms'
+    | '/vault'
     | '/vault-welcome'
     | '/welcome'
     | '/admin/audit'
@@ -825,6 +837,7 @@ export interface RootRouteChildren {
   StudioRoute: typeof StudioRoute
   SummitRoute: typeof SummitRoute
   TermsRoute: typeof TermsRoute
+  VaultRoute: typeof VaultRoute
   VaultWelcomeRoute: typeof VaultWelcomeRoute
   WelcomeRoute: typeof WelcomeRoute
   AdminAuditRoute: typeof AdminAuditRoute
@@ -877,6 +890,13 @@ declare module '@tanstack/react-router' {
       path: '/vault-welcome'
       fullPath: '/vault-welcome'
       preLoaderRoute: typeof VaultWelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vault': {
+      id: '/vault'
+      path: '/vault'
+      fullPath: '/vault'
+      preLoaderRoute: typeof VaultRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -1348,6 +1368,7 @@ const rootRouteChildren: RootRouteChildren = {
   StudioRoute: StudioRoute,
   SummitRoute: SummitRoute,
   TermsRoute: TermsRoute,
+  VaultRoute: VaultRoute,
   VaultWelcomeRoute: VaultWelcomeRoute,
   WelcomeRoute: WelcomeRoute,
   AdminAuditRoute: AdminAuditRoute,

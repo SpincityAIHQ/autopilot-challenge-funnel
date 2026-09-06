@@ -184,6 +184,7 @@ function RootComponent() {
       "/redeem",
       "/ai-spin",
       "/book",
+      "/vault",
     ].includes(pathname) ||
     pathname.startsWith("/lesson/");
 

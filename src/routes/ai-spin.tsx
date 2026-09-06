@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { AcademyFrame, TicketBadge } from "@/components/AcademyFrame";
+import { AcademyFrame, SpinAvatar, TicketBadge } from "@/components/AcademyFrame";
 import { LiveSpinAvatar } from "@/components/LiveSpinAvatar";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
 import { formatTime, type LessonMeta, type Offer, type Ticket } from "@/lib/academy";
@@ -101,9 +101,12 @@ function SpinSession({ session }: { session: ReturnType<typeof useAcademySession
     <AcademyFrame ticket={context?.ticket}>
       <section className="academy-section">
         <div className="academy-class-head">
-          <div>
-            <p className="academy-eyebrow">Your AI learning guide · Always on</p>
-            <h1>Build with AI Spin.</h1>
+          <div className="academy-spin-hero">
+            <SpinAvatar size={96} pulse={busy} />
+            <div>
+              <p className="academy-eyebrow">Your AI learning guide · Always on</p>
+              <h1>Build with AI Spin.</h1>
+            </div>
           </div>
           <TicketBadge ticket={context?.ticket} />
         </div>
@@ -149,7 +152,7 @@ function SpinSession({ session }: { session: ReturnType<typeof useAcademySession
             <div className="academy-spin-grid">
               <section className="academy-card">
                 <div className="academy-panel-heading">
-                  <span className="academy-pulse" aria-hidden="true" />
+                  <SpinAvatar size={40} pulse={busy} />
                   <h2>Chat with AI Spin</h2>
                 </div>
                 <label>
@@ -201,17 +204,29 @@ function SpinSession({ session }: { session: ReturnType<typeof useAcademySession
                 </div>
                 {thread.length ? (
                   <div className="academy-thread" role="log" aria-live="polite">
-                    {thread.map((m, i) => (
-                      <div className="academy-bubble" data-role={m.role} key={i}>
-                        <small>{m.role === "user" ? "You" : "AI Spin"}</small>
-                        {m.text}
-                      </div>
-                    ))}
+                    {thread.map((m, i) =>
+                      m.role === "user" ? (
+                        <div className="academy-bubble" data-role="user" key={i}>
+                          <small>You</small>
+                          {m.text}
+                        </div>
+                      ) : (
+                        <div className="academy-bubble" data-role="spin" key={i}>
+                          <SpinAvatar size={34} />
+                          <div>
+                            <small>AI Spin</small>
+                            {m.text}
+                          </div>
+                        </div>
+                      ),
+                    )}
                     {busy ? (
                       <div className="academy-bubble" data-role="spin">
-                        <small>AI Spin</small>
-                        <span className="academy-pulse" />
-                        Thinking…
+                        <SpinAvatar size={34} pulse />
+                        <div>
+                          <small>AI Spin</small>
+                          Thinking…
+                        </div>
                       </div>
                     ) : null}
                   </div>

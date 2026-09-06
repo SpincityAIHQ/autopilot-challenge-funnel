@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { BookOpen, MessageCircle, PlayCircle } from "lucide-react";
-import { AcademyFrame, TicketBadge } from "./AcademyFrame";
+import { useEffect, useMemo, useState } from "react";
+import { PlayCircle } from "lucide-react";
+import { AcademyFrame, SpinAvatar, TicketBadge } from "./AcademyFrame";
 import { TrackedLessonVideo } from "./TrackedLessonVideo";
 import { VimeoLessonPlayer } from "./VimeoLessonPlayer";
 import { WatchMap } from "./WatchMap";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   LESSONS,
+  chapterStatus,
   formatTime,
   lessonHref,
   nextStep,
@@ -16,6 +16,7 @@ import {
   type LessonProgress,
   type Ticket,
 } from "@/lib/academy";
+import { keywords } from "@/lib/transcript";
 import { academyApi, useAcademySession, useCatalogue } from "@/lib/academy-client";
 
 export function AcademyClassroom({ lessonId }: { lessonId: string }) {
@@ -36,6 +37,7 @@ const GROUPS: { label: string; match: (stage: string) => boolean }[] = [
   },
   { label: "Accelerator", match: (s) => s.startsWith("Accelerator") },
 ];
+type Seek = { at: number; nonce: number } | null;
 function ClassroomSession({
   lessonId,
   session,
@@ -63,7 +65,8 @@ function ClassroomSession({
   const [aiConsent, setAiConsent] = useState(false);
   const [tutorReady, setTutorReady] = useState(false);
   const [tutorProvider, setTutorProvider] = useState("");
-  const [seek, setSeek] = useState<{ at: number; nonce: number } | null>(null);
+  const [seek, setSeek] = useState<Seek>(null);
+  const [search, setSearch] = useState("");
   const grants = ticket
     ? [
         ...(ticket.summit === "free" ? [] : [ticket.summit]),
@@ -163,16 +166,49 @@ function ClassroomSession({
   const isSession = meta?.kind === "session";
   const watch = watchSummary(progress);
   const media = lesson?.media ?? null;
+  const canSeek = Boolean(media && media.provider === "vimeo" && session.email);
+  const jump = (at: number) => {
+    setSeek({ at, nonce: Date.now() });
+    document
+      .getElementById("academy-player")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  const moments = useMemo(
+    () =>
+      chapterStatus(
+        media?.chapters ?? [],
+        progress?.intervals ?? [],
+        progress?.duration || media?.duration || 0,
+      ),
+    [media?.chapters, progress?.intervals, progress?.duration, media?.duration],
+  );
+  const transcript = lesson?.transcript ?? null;
+  const hits = useMemo(() => {
+    const terms = keywords(search);
+    if (!terms.length || !transcript) return new Set<number>();
+    return new Set(
+      transcript
+        .filter((c) => {
+          const w = c.text.toLowerCase();
+          return terms.some((t) => w.includes(t));
+        })
+        .map((c) => c.start),
+    );
+  }, [search, transcript]);
   const prompts = [
     watch.dropOffAt !== null && watch.coverage > 0
       ? `I stopped at ${formatTime(watch.dropOffAt)}. What did I miss?`
       : "What is the one thing I should take from this lesson?",
-    "Help me apply this to my business.",
+    transcript
+      ? "Where in the video does Spin explain the job card?"
+      : "Help me apply this to my business.",
     "What is my next step?",
   ];
+  let blockNumber = 0;
+  const num = () => String(++blockNumber).padStart(2, "0");
   return (
     <AcademyFrame ticket={ticket}>
-      <div className="academy-workspace">
+      <div className="academy-workspace academy-workspace-two">
         <aside className="academy-outline">
           <p className="academy-eyebrow">Your flight plan</p>
           {GROUPS.map((g) => {
@@ -219,6 +255,9 @@ function ClassroomSession({
           <a className="academy-text-button" href="/learn">
             View my progress →
           </a>
+          <a className="academy-text-button" href="/vault">
+            ◆ Open the Vault →
+          </a>
         </aside>
         <section className="academy-class">
           <div className="academy-class-head">
@@ -242,54 +281,52 @@ function ClassroomSession({
             </p>
           ) : (
             <>
-              {media && session.email ? (
-                media.provider === "vimeo" ? (
-                  <VimeoLessonPlayer
-                    key={`${lessonId}:${media.version}`}
-                    lessonId={lessonId}
-                    media={media}
-                    resume={progress?.position}
-                    seekTo={seek}
-                    onSaved={() => void load()}
-                    onError={setStatus}
-                  />
+              <div id="academy-player" className="academy-player-frame">
+                {media && session.email ? (
+                  media.provider === "vimeo" ? (
+                    <VimeoLessonPlayer
+                      key={`${lessonId}:${media.version}`}
+                      lessonId={lessonId}
+                      media={media}
+                      resume={progress?.position}
+                      seekTo={seek}
+                      onSaved={() => void load()}
+                      onError={setStatus}
+                    />
+                  ) : (
+                    <TrackedLessonVideo
+                      key={`${lessonId}:${media.version}`}
+                      lessonId={lessonId}
+                      media={media}
+                      resume={progress?.position}
+                      onSaved={() => void load()}
+                      onError={setStatus}
+                    />
+                  )
                 ) : (
-                  <TrackedLessonVideo
-                    key={`${lessonId}:${media.version}`}
-                    lessonId={lessonId}
-                    media={media}
-                    resume={progress?.position}
-                    onSaved={() => void load()}
-                    onError={setStatus}
-                  />
-                )
-              ) : (
-                <div className="academy-media-empty">
-                  <PlayCircle size={40} />
-                  <div>
-                    <h2>{media ? "Sign in to watch" : "Recording not connected yet"}</h2>
-                    <p>
-                      {media
-                        ? "Keep your place, your watch map and your learning progress in your free account."
-                        : isSession
-                          ? "This build-room replay will appear here when the recording is connected."
-                          : "You can start with the lesson notes and activity below."}
-                    </p>
-                    {!session.email ? <a href="/join">Join the free classroom →</a> : null}
+                  <div className="academy-media-empty">
+                    <PlayCircle size={40} />
+                    <div>
+                      <h2>{media ? "Sign in to watch" : "Recording not connected yet"}</h2>
+                      <p>
+                        {media
+                          ? "Keep your place, your watch map and your learning progress in your free account."
+                          : isSession
+                            ? "This build-room replay will appear here when the recording is connected."
+                            : "You can start with the AI notes and activity below."}
+                      </p>
+                      {!session.email ? <a href="/join">Join the free classroom →</a> : null}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
               {media && session.email ? (
                 <WatchMap
                   intervals={progress?.intervals ?? []}
                   duration={progress?.duration || media.duration}
                   position={progress?.position ?? 0}
                   chapters={media.chapters}
-                  onSeek={
-                    media.provider === "vimeo"
-                      ? (at) => setSeek({ at, nonce: Date.now() })
-                      : undefined
-                  }
+                  compact
                 />
               ) : null}
               <div className="academy-progress-strip">
@@ -327,38 +364,131 @@ function ClassroomSession({
                       </strong>
                     </span>
                   </>
-                ) : null}
+                ) : (
+                  <span>
+                    Transcript{" "}
+                    <strong>{transcript ? `${transcript.length} cues` : "Not yet"}</strong>
+                  </span>
+                )}
               </div>
-              {isSession ? (
-                <section className="academy-next">
-                  <p className="academy-eyebrow">Your next step</p>
-                  <p>{nextStep(progress, "session")}</p>
+              <div className="academy-stack">
+                {/* ---------- AI NOTES ---------- */}
+                <section className="academy-card academy-block" id="ai-notes">
+                  <div className="academy-block-head">
+                    <span className="academy-block-num">{num()}</span>
+                    <div>
+                      <h2>AI Notes</h2>
+                      <p>
+                        {transcript
+                          ? "Every word and its time. Tap a moment to jump the recording there."
+                          : "The approved notes for this recording. Timed moments appear once the transcript is connected."}
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    className={
+                      lesson.paragraphs.length && moments.length ? "academy-block-body-two" : ""
+                    }
+                  >
+                    {lesson.paragraphs.length ? (
+                      <div className="academy-notes">
+                        {lesson.paragraphs.map((p) => (
+                          <article key={p.heading}>
+                            <h2>{p.heading}</h2>
+                            <p>{p.text}</p>
+                          </article>
+                        ))}
+                      </div>
+                    ) : null}
+                    {moments.length ? (
+                      <div>
+                        <p className="academy-subhead">Key moments</p>
+                        <ol className="academy-moments">
+                          {moments.map((m) => (
+                            <li key={m.start} data-status={m.status}>
+                              <button
+                                type="button"
+                                disabled={!canSeek}
+                                onClick={() => jump(m.start)}
+                              >
+                                <time>{formatTime(m.start)}</time>
+                                <span>
+                                  {m.title}
+                                  {progress?.duration ? (
+                                    <span className="academy-chapter-status">
+                                      {" "}
+                                      ·{" "}
+                                      {m.status === "watched"
+                                        ? "watched"
+                                        : m.status === "partial"
+                                          ? `${m.watched}%`
+                                          : "missed"}
+                                    </span>
+                                  ) : null}
+                                </span>
+                              </button>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    ) : null}
+                  </div>
+                  {transcript ? (
+                    <details className="academy-transcript">
+                      <summary>
+                        Full transcript <span>{transcript.length} timed cues</span>
+                      </summary>
+                      <div className="academy-transcript-search">
+                        <input
+                          type="search"
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          placeholder="Search every word of this recording…"
+                          aria-label="Search the transcript"
+                        />
+                      </div>
+                      <div className="academy-transcript-list">
+                        {transcript
+                          .filter((c) => !hits.size || hits.has(c.start))
+                          .slice(0, 800)
+                          .map((c) => (
+                            <button
+                              key={c.start}
+                              type="button"
+                              data-hit={hits.has(c.start)}
+                              disabled={!canSeek}
+                              onClick={() => jump(c.start)}
+                            >
+                              <time>{formatTime(c.start)}</time>
+                              <span>{c.text}</span>
+                            </button>
+                          ))}
+                      </div>
+                    </details>
+                  ) : null}
+                  {!lesson.paragraphs.length && !moments.length && !transcript ? (
+                    <p className="academy-muted">
+                      Notes, key moments and the transcript appear here as the recording is
+                      connected.
+                    </p>
+                  ) : null}
                 </section>
-              ) : (
-                <>
-                  <Tabs defaultValue="lesson">
-                    <TabsList className="academy-tabs">
-                      <TabsTrigger value="lesson">Lesson</TabsTrigger>
-                      <TabsTrigger value="activity">Activity book</TabsTrigger>
-                      <TabsTrigger value="check">Knowledge check</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="lesson" className="academy-notes">
-                      {lesson.paragraphs.map((p) => (
-                        <article key={p.heading}>
-                          <h2>{p.heading}</h2>
-                          <p>{p.text}</p>
-                        </article>
-                      ))}
-                    </TabsContent>
-                    <TabsContent value="activity">
-                      <div className="academy-card">
-                        <div className="academy-panel-heading">
-                          <BookOpen />
-                          <h2>Your automation job card</h2>
-                        </div>
-                        <p>
-                          Use a real workflow. Save a draft, then submit it when another person
-                          could follow your instructions.
+                {/* ---------- ACTIVITY BOOK ---------- */}
+                {!isSession ? (
+                  <section className="academy-card academy-block" id="activity-book">
+                    <div className="academy-block-head">
+                      <span className="academy-block-num">{num()}</span>
+                      <div>
+                        <h2>Activity Book</h2>
+                        <p>Apply it to a real workflow, then check your decisions.</p>
+                      </div>
+                    </div>
+                    <div className="academy-block-body-two">
+                      <div>
+                        <p className="academy-subhead">Your automation job card</p>
+                        <p className="academy-muted" style={{ marginTop: 0 }}>
+                          Save a draft, then submit it when another person could follow your
+                          instructions.
                         </p>
                         {lesson.workbook.map((f) => (
                           <label key={f.id}>
@@ -412,12 +542,10 @@ function ClassroomSession({
                           </p>
                         ) : null}
                       </div>
-                    </TabsContent>
-                    <TabsContent value="check">
-                      <div className="academy-card">
-                        <h2>Check your decisions</h2>
-                        <p>
-                          Choose a response to each scenario. Feedback will point you to the idea to
+                      <div>
+                        <p className="academy-subhead">Knowledge check</p>
+                        <p className="academy-muted" style={{ marginTop: 0 }}>
+                          Choose a response to each scenario. Feedback points you to the idea to
                           practise.
                         </p>
                         {lesson.questions.map((q, i) => (
@@ -466,112 +594,127 @@ function ClassroomSession({
                           </div>
                         ) : null}
                       </div>
-                    </TabsContent>
-                  </Tabs>
-                  <section className="academy-next">
-                    <p className="academy-eyebrow">Your next step</p>
-                    <p>{nextStep(progress)}</p>
+                    </div>
                   </section>
-                </>
-              )}
+                ) : null}
+                {/* ---------- ASK AI SPIN ---------- */}
+                <section className="academy-card academy-block academy-holo" id="ask-ai-spin">
+                  <div className="academy-block-head">
+                    <span className="academy-block-num">{num()}</span>
+                    <SpinAvatar size={56} pulse={busy} />
+                    <div>
+                      <h2>Ask AI Spin</h2>
+                      <p>
+                        {tutorReady
+                          ? "Spin’s AI knows your ticket, where you stopped, every timed word of this recording and what you have saved."
+                          : "Your lesson guide is here. Sign in to talk to AI Spin when chat is connected."}
+                      </p>
+                    </div>
+                  </div>
+                  {tutorReady ? (
+                    <>
+                      <label className="academy-check">
+                        <input
+                          type="checkbox"
+                          checked={aiConsent}
+                          onChange={(e) => setAiConsent(e.target.checked)}
+                        />
+                        Use my question, current lesson, viewing and saved learning progress to give
+                        AI feedback.
+                        {tutorProvider
+                          ? ` Your question and that lesson work are sent to ${tutorProvider} to generate the answer.`
+                          : ""}
+                      </label>
+                      <div className="academy-chips">
+                        {prompts.map((p) => (
+                          <button
+                            key={p}
+                            type="button"
+                            disabled={busy || !aiConsent}
+                            onClick={() => ask(p)}
+                          >
+                            {p}
+                          </button>
+                        ))}
+                      </div>
+                      {thread.length ? (
+                        <div className="academy-thread" role="log" aria-live="polite">
+                          {thread.map((m, i) =>
+                            m.role === "user" ? (
+                              <div className="academy-bubble" data-role="user" key={i}>
+                                <small>You</small>
+                                {m.text}
+                              </div>
+                            ) : (
+                              <div className="academy-bubble" data-role="spin" key={i}>
+                                <SpinAvatar size={34} />
+                                <div>
+                                  <small>AI Spin</small>
+                                  {m.text}
+                                </div>
+                              </div>
+                            ),
+                          )}
+                          {busy ? (
+                            <div className="academy-bubble" data-role="spin">
+                              <SpinAvatar size={34} pulse />
+                              <div>
+                                <small>AI Spin</small>
+                                Thinking…
+                              </div>
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : null}
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          void ask(question);
+                        }}
+                      >
+                        <label>
+                          Your question
+                          <textarea
+                            rows={3}
+                            maxLength={1500}
+                            value={question}
+                            onChange={(e) => setQuestion(e.target.value)}
+                            placeholder="Where does Spin explain the exception route?"
+                          />
+                        </label>
+                        <button
+                          className="academy-button"
+                          disabled={busy || !question.trim() || !aiConsent}
+                        >
+                          Ask AI Spin
+                        </button>
+                      </form>
+                      <p className="academy-muted">
+                        AI feedback is advisory. An instructor reviews applied work.
+                        {tutorProvider ? ` Answers are generated by ${tutorProvider}.` : ""}
+                      </p>
+                    </>
+                  ) : (
+                    <div className="academy-tutor-reply">{nextStep(progress, meta?.kind)}</div>
+                  )}
+                  <div className="academy-tutor-links">
+                    <a href="/ai-spin">Open the full AI Spin room and live avatar</a>
+                    {ticket?.accelerator ? <a href="/book">Book a 1-on-1 with SpinCity</a> : null}
+                    <a href="/learn">My learning progress</a>
+                    <a href="mailto:Info@NuAmenti.com">Ask the team for help</a>
+                  </div>
+                </section>
+                <section className="academy-next">
+                  <p className="academy-eyebrow">Your next step</p>
+                  <p>{nextStep(progress, meta?.kind)}</p>
+                </section>
+              </div>
               <p role="status" className="academy-status">
                 {status}
               </p>
             </>
           )}
         </section>
-        <aside className="academy-tutor academy-card">
-          <div className="academy-panel-heading">
-            <MessageCircle />
-            <h2>AI Spin</h2>
-          </div>
-          <p>
-            {tutorReady
-              ? "Spin’s AI, here for this lesson. It knows your ticket, where you stopped and what you have saved."
-              : "Your lesson guide is below. Sign in to talk to AI Spin when chat is connected."}
-          </p>
-          {tutorReady ? (
-            <>
-              <label className="academy-check">
-                <input
-                  type="checkbox"
-                  checked={aiConsent}
-                  onChange={(e) => setAiConsent(e.target.checked)}
-                />
-                Use my question, current lesson, viewing and saved learning progress to give AI
-                feedback.
-                {tutorProvider
-                  ? ` Your question and that lesson work are sent to ${tutorProvider} to generate the answer.`
-                  : ""}
-              </label>
-              <div className="academy-chips">
-                {prompts.map((p) => (
-                  <button
-                    key={p}
-                    type="button"
-                    disabled={busy || !aiConsent}
-                    onClick={() => ask(p)}
-                  >
-                    {p}
-                  </button>
-                ))}
-              </div>
-              {thread.length ? (
-                <div className="academy-thread" role="log" aria-live="polite">
-                  {thread.map((m, i) => (
-                    <div className="academy-bubble" data-role={m.role} key={i}>
-                      <small>{m.role === "user" ? "You" : "AI Spin"}</small>
-                      {m.text}
-                    </div>
-                  ))}
-                  {busy ? (
-                    <div className="academy-bubble" data-role="spin">
-                      <small>AI Spin</small>
-                      <span className="academy-pulse" />
-                      Thinking…
-                    </div>
-                  ) : null}
-                </div>
-              ) : null}
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  void ask(question);
-                }}
-              >
-                <label>
-                  Your question
-                  <textarea
-                    rows={3}
-                    maxLength={1500}
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
-                    placeholder="Help me define the exception route…"
-                  />
-                </label>
-                <button
-                  className="academy-button academy-button-small"
-                  disabled={busy || !question.trim() || !aiConsent}
-                >
-                  Ask AI Spin
-                </button>
-              </form>
-              <p className="academy-muted">
-                AI feedback is advisory. An instructor reviews applied work.
-                {tutorProvider ? ` Answers are generated by ${tutorProvider}.` : ""}
-              </p>
-            </>
-          ) : (
-            <div className="academy-tutor-reply">{nextStep(progress, meta?.kind)}</div>
-          )}
-          <div className="academy-tutor-links">
-            <a href="/learn">My learning progress</a>
-            <a href="/ai-spin">AI Spin chat and live avatar</a>
-            {ticket?.accelerator ? <a href="/book">Book a 1-on-1 with SpinCity</a> : null}
-            <a href="/summit">Compare Summit access</a>
-            <a href="mailto:Info@NuAmenti.com">Ask the team for help</a>
-          </div>
-        </aside>
       </div>
     </AcademyFrame>
   );

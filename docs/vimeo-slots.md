@@ -4,6 +4,8 @@ This is the framework for the AI AutoPilot education experience. Every teaching 
 
 ## Slot map
 
+Every slot also accepts a timed transcript (see below) at `ACADEMY_TRANSCRIPT_<KEY>` or `transcripts/<slot-id>.vtt` in the media bucket.
+
 | Stage                   | Slot id                                     | Vimeo env key                              | Chapters env key                              | Kind    |
 | ----------------------- | ------------------------------------------- | ------------------------------------------ | --------------------------------------------- | ------- |
 | Free training           | `free-webinar`                              | `ACADEMY_VIMEO_FREE_WEBINAR`               | `ACADEMY_CHAPTERS_FREE_WEBINAR`               | lesson  |
@@ -45,6 +47,16 @@ Coverage is client-reported viewing telemetry. It measures attention to the play
 - **Live avatar.** The Accelerator avatar only speaks the tutor's answer, so it inherits the same brief and the same ticket awareness.
 - **Coaching emails.** The GHL learning queue gains `learning_dropoff`: coverage between 5 and 90 percent with no progress write for 24 hours. Payloads now carry `watched_percent`, `stopped_at`, `resume_seconds` and `lesson_stage`. Session replays receive only the drop-off reminder; they never get an activity-book nudge they cannot act on. Requires the migration `20260906120000_learning_dropoff_nudges.sql` and `ACADEMY_LEARNING_NUDGES_ENABLED=true`.
 
+## Transcripts: every word and its time
+
+Each slot can carry a timed transcript so AI Spin can quote the recording and cite the timestamp. Sources, in order: `ACADEMY_TRANSCRIPT_<SLOT>` (an HTTPS `.vtt` or `.srt` link, for example Vimeo's caption export), `ACADEMY_TRANSCRIPT_PATH_<SLOT>` in the private `academy-media` bucket, or the convention `transcripts/<slot-id>.vtt` uploaded to that bucket with no key at all. WebVTT and SRT are accepted; voice tags are stripped; short caption fragments are merged into sentences; files are cached ten minutes.
+
+In the classroom the AI Notes block shows the approved notes, the chapter "key moments" with watched/missed status, and a searchable full transcript. Every line seeks the Vimeo player. In the AI Spin brief the server sends up to 40 excerpts chosen by the question's keywords, the 45 seconds around the drop-off point, and the opening of each missed chapter. The brief tells AI Spin to prefer the recording's own words and to cite the timestamp.
+
+## The Vault
+
+`/vault` is the section for the good stuff: skills, prompts, plug-ins, playbooks and scorecards. It opens for Emerald Vault Key holders and Accelerator students (`vaultAllows`). The catalogue (names, previews, categories) is public; item content is served only by `/api/academy/vault-item` after the key check and never enters the client bundle, keeping the existing paid-content isolation test intact. Categories are assigned per slug in `src/lib/vault.ts`; add a resource there when the library grows.
+
 ## Ticket identity
 
 A student's ticket is derived from their redeemed grants: Free Training, General Admission, Summit + VIP, Emerald Vault Key, and Autopilot Accelerator (which combines, for example, "Autopilot Accelerator + Emerald Vault Key"). The ticket badge appears in the classroom, My learning, AI Spin and the booking page. AI Spin greets by ticket and never by email.
@@ -59,10 +71,11 @@ The next stage is one step up: GA → VIP → Emerald → Accelerator → nothin
 
 1. Paste the Vimeo link for each slot. Start with `ACADEMY_VIMEO_FREE_WEBINAR`.
 2. Add chapters for at least the free training and Summit days so AI Spin can name the missed part.
-3. Apply `20260906120000_learning_dropoff_nudges.sql` through the existing database connector, then set `ACADEMY_LEARNING_NUDGES_ENABLED=true` when the GHL learning workflow handles the new `learning_dropoff` event.
-4. Set `ACADEMY_BOOKING_URL` for the Accelerator calendar.
-5. Watch one recording in the preview as a signed-in student: confirm the watch map fills, the drop-off timestamp appears after pausing, and AI Spin names it when asked "What did I miss?".
-6. Keep the existing gates: `ACADEMY_PAID_ACCESS_ENABLED`, access codes, Shopify and GHL stay off until their own QA passes.
+3. Upload each recording's caption export as `transcripts/<slot-id>.vtt` to the `academy-media` bucket (or set `ACADEMY_TRANSCRIPT_<KEY>`) so AI Spin knows every word and its time.
+4. Apply `20260906120000_learning_dropoff_nudges.sql` through the existing database connector, then set `ACADEMY_LEARNING_NUDGES_ENABLED=true` when the GHL learning workflow handles the new `learning_dropoff` event.
+5. Set `ACADEMY_BOOKING_URL` for the Accelerator calendar.
+6. Watch one recording in the preview as a signed-in student: confirm the watch map fills, the drop-off timestamp appears after pausing, and AI Spin names it when asked "What did I miss?".
+7. Keep the existing gates: `ACADEMY_PAID_ACCESS_ENABLED`, access codes, Shopify and GHL stay off until their own QA passes.
 
 ## Not done here
 

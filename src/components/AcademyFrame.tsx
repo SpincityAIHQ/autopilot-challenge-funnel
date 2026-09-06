@@ -11,6 +11,17 @@ export function TicketBadge({ ticket }: { ticket?: Ticket | null }) {
     </span>
   );
 }
+/** AI Spin's face: Thoth, keeper of words and measure, rendered as the guide. */
+export function SpinAvatar({ size = 44, pulse = false }: { size?: number; pulse?: boolean }) {
+  return (
+    <span
+      className={`academy-spin-avatar ${pulse ? "academy-spin-avatar-live" : ""}`}
+      style={{ width: size, height: size }}
+    >
+      <img src="/ai-spin-thoth.webp" alt="AI Spin" width={size} height={size} />
+    </span>
+  );
+}
 export function AcademyFrame({
   children,
   ticket,
@@ -44,6 +55,9 @@ export function AcademyFrame({
             </a>
             <a href="/summit" aria-current={current("/summit")}>
               Summit
+            </a>
+            <a href="/vault" aria-current={current("/vault")} className="academy-nav-vault">
+              <span aria-hidden="true">◆</span> The Vault
             </a>
             <a href="/accelerator" aria-current={current("/accelerator")}>
               Accelerator
