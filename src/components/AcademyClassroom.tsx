@@ -195,7 +195,7 @@ function ClassroomSession({
     <AcademyFrame ticket={ticket}>
       <div className="academy-workspace academy-workspace-focus">
         <nav className="academy-crumbs" aria-label="Breadcrumb">
-          <a href={meta?.tier === "free" ? "/" : "/sessions"}>
+          <a href={meta?.tier === "free" ? "/" : "/summit"}>
             ← {meta?.tier === "free" ? "Home" : "All Summit sessions"}
           </a>
           <a href="/learn">My learning</a>
