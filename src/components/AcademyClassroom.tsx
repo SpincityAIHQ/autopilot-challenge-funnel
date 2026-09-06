@@ -9,16 +9,14 @@ import {
   chapterStatus,
   formatTime,
   guideFor,
-  lessonHref,
   nextStep,
-  tierAllows,
   watchSummary,
   type LessonContent,
   type LessonProgress,
   type Ticket,
 } from "@/lib/academy";
 import { keywords } from "@/lib/transcript";
-import { academyApi, useAcademySession, useCatalogue } from "@/lib/academy-client";
+import { academyApi, useAcademySession } from "@/lib/academy-client";
 
 export function AcademyClassroom({ lessonId }: { lessonId: string }) {
   const session = useAcademySession();
@@ -30,14 +28,6 @@ export function AcademyClassroom({ lessonId }: { lessonId: string }) {
     />
   );
 }
-const GROUPS: { label: string; match: (stage: string) => boolean }[] = [
-  { label: "Free training", match: (s) => s === "Free training" },
-  {
-    label: "Summit",
-    match: (s) => s.startsWith("Summit") || s.startsWith("VIP") || s.startsWith("Emerald"),
-  },
-  { label: "Accelerator", match: (s) => s.startsWith("Accelerator") },
-];
 type Seek = { at: number; nonce: number } | null;
 function ClassroomSession({
   lessonId,
@@ -47,7 +37,6 @@ function ClassroomSession({
   session: ReturnType<typeof useAcademySession>;
 }) {
   const meta = LESSONS.find((l) => l.id === lessonId);
-  const catalogue = useCatalogue();
   const [lesson, setLesson] = useState<LessonContent | null>(null);
   const [progress, setProgress] = useState<LessonProgress>();
   const [ticket, setTicket] = useState<Ticket | null>(null);
@@ -69,12 +58,6 @@ function ClassroomSession({
   const [seek, setSeek] = useState<Seek>(null);
   const [search, setSearch] = useState("");
   const [panel, setPanel] = useState<"notes" | "book" | "spin">("notes");
-  const grants = ticket
-    ? [
-        ...(ticket.summit === "free" ? [] : [ticket.summit]),
-        ...(ticket.accelerator ? ["accelerator"] : []),
-      ]
-    : [];
   async function load() {
     const result = await academyApi<{
       lesson: LessonContent;
