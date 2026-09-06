@@ -47,38 +47,29 @@ function Accelerator() {
               Ask about joining the current cohort
             </a>
           </div>
-          <div className="academy-card">
-            <p className="academy-eyebrow">AI Spin · Inside the Accelerator only</p>
+          <div className="academy-card academy-card-gold">
+            <p className="academy-eyebrow">AI Spin · Accelerator only</p>
             <h2>Meet Spin’s own AI, face to face</h2>
             <p>
               Thoth tutors the public floors. Inside the Accelerator, AI Spin takes over: Spin’s own
-              AI in text and live avatar. It knows your ticket, your job card and where you stopped
-              in each build room.
+              AI in text and a live avatar. It knows your ticket, your job card and where you
+              stopped in each build room. Booking a 1-on-1 with SpinCity sits right under the live
+              avatar.
             </p>
             <p className="academy-muted">
               AI Spin is an AI representation of Spin. A live avatar session is not a personal call
               with Spin. Session limits are shown before starting.
             </p>
-            <a className="academy-text-button" href="/ai-spin">
-              Open AI Spin →
-            </a>
-            <hr className="academy-rule" style={{ margin: "22px 0" }} />
-            <p className="academy-eyebrow">Already enrolled?</p>
-            <p>
-              After payment, redeem your Accelerator access code in your student account.
-            </p>
             <div className="academy-actions">
-              <a
-                className="academy-button academy-button-secondary academy-button-small"
-                href="/redeem"
-              >
-                Redeem an Accelerator code
+              <a className="academy-button academy-button-secondary" href="/ai-spin">
+                Open AI Spin
               </a>
-              <a className="academy-text-button" href="/book">
-                Book a 1-on-1 →
+              <a className="academy-text-button" href="/redeem">
+                Redeem an Accelerator code →
               </a>
             </div>
           </div>
+
         </div>
         <div className="academy-section-heading" style={{ marginTop: 48 }}>
           <p className="academy-eyebrow">Build rooms</p>
