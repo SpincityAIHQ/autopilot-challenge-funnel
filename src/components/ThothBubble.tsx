@@ -99,7 +99,7 @@ export function ThothBubble() {
                 ) : null}
                 {context ? (
                   <label>
-                    Current lesson
+                    Lesson in focus
                     <select value={lesson} onChange={(e) => setLesson(e.target.value)}>
                       {context.lessons.map((l) => (
                         <option key={l.id} value={l.id}>
@@ -149,7 +149,7 @@ export function ThothBubble() {
                     maxLength={1500}
                     value={question}
                     onChange={(e) => setQuestion(e.target.value)}
-                    placeholder="Ask about this lesson…"
+                    placeholder="Ask about any lesson…"
                   />
                   <button
                     className="academy-button academy-button-small"

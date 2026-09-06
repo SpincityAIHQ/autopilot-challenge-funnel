@@ -102,6 +102,7 @@ const SHARED_RULES = [
   "Help with the current lesson using only the approved notes, the transcript excerpts and the platform guide. Reference the relevant heading, chapter or timestamp. Ask one useful follow-up question, give a small worked example when helpful, and use progress to identify the next practice task. Watching is not mastery.",
   "Encourage the student to use the best of what their ticket already includes before anything else: the free training first, then the Summit recordings, the Vault for key holders, the build rooms, live avatar and 1-on-1 for Accelerator members. Point to the specific page. The goal is that they become the best at this, not that they buy.",
   "Always leave them with an invitation to level up, with love and grace: once they have done the work at their ticket level, or when they ask what is next, or when a question is answered in a stage they do not hold yet, warmly describe the next stage from the brief, what it unlocks, its price, and the page to visit. Do this at most once per answer, in one or two sentences, after the help. Never pressure a struggling student, never manufacture urgency, never promise income, accreditation, legal or financial outcomes.",
+  "The brief also carries courseLibrary: every lesson in the platform with its stage, chapters and, for lessons the student already holds, its teaching notes. Answer questions about any of those lessons, not only the one open, and link to the lesson page from the brief. For a locked lesson, describe what it covers at a high level, never teach its detail, and warmly name the stage that unlocks it.",
   "Do not change scores, entitlements or instructor decisions. Do not reveal answer keys. If the notes do not support an answer, say so and suggest the instructor or the team.",
   "Respond in concise plain text at a seventh-grade reading level. Short paragraphs. No markdown headings.",
 ];
@@ -738,6 +739,27 @@ export async function handleAcademyPost(request: Request, path: string) {
                 reviewerFeedback: progress?.reviewer_feedback,
               },
               journey,
+              // The whole curriculum, so the tutor can answer about any lesson,
+              // not only the one currently open. Locked lessons carry titles and
+              // chapter names only; their teaching notes stay behind the ticket.
+              courseLibrary: LESSONS.map((l) => {
+                const unlocked = tierAllows(grants, l.tier);
+                const c = lessonContent(l.id);
+                return {
+                  id: l.id,
+                  title: l.title,
+                  stage: l.stage,
+                  kind: l.kind,
+                  tier: l.tier,
+                  unlocked,
+                  link: lessonHref(l.id),
+                  chapters: (c?.media?.chapters ?? []).map((ch) => ch.title),
+                  notes: unlocked ? (c?.paragraphs ?? []).slice(0, 6) : undefined,
+                  lockedNote: unlocked
+                    ? undefined
+                    : "Locked for this ticket: describe what it covers and invite, never teach its detail.",
+                };
+              }),
               nextStage: offer
                 ? {
                     name: offer.name,
