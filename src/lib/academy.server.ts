@@ -15,6 +15,7 @@ import {
   type LessonProgress,
 } from "./academy";
 import { lessonContent, scoreAnswers } from "./academy-content.server";
+import { isStaffEmail } from "./academy-staff.server";
 import { configuredVimeo, connectedSlots, vimeoDuration } from "./academy-media.server";
 import { consumeRateLimit } from "./rate-limit";
 import { readLimitedBody } from "./academy-http.server";
