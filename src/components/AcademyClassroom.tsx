@@ -532,6 +532,11 @@ function ClassroomSession({
                           Save a draft, then submit it when another person could follow your
                           instructions.
                         </p>
+                        <p className="academy-muted" style={{ marginTop: 0 }}>
+                          These answers are yours to keep. Copy them out and paste them into your
+                          own AI — as custom instructions, a knowledge file, or a project brief —
+                          so it learns how your business actually runs.
+                        </p>
                         {lesson.workbook.map((f) => (
                           <label key={f.id}>
                             {f.label}
