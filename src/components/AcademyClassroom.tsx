@@ -67,6 +67,7 @@ function ClassroomSession({
   const [tutorProvider, setTutorProvider] = useState("");
   const [seek, setSeek] = useState<Seek>(null);
   const [search, setSearch] = useState("");
+  const [panel, setPanel] = useState<"notes" | "book" | "spin">("notes");
   const grants = ticket
     ? [
         ...(ticket.summit === "free" ? [] : [ticket.summit]),
@@ -204,8 +205,6 @@ function ClassroomSession({
       : "Help me apply this to my business.",
     "What is my next step?",
   ];
-  let blockNumber = 0;
-  const num = () => String(++blockNumber).padStart(2, "0");
   return (
     <AcademyFrame ticket={ticket}>
       <div className="academy-workspace academy-workspace-two">
@@ -371,11 +370,47 @@ function ClassroomSession({
                   </span>
                 )}
               </div>
+              <div className="academy-switch" role="tablist" aria-label="Lesson sections">
+                {(
+                  [
+                    [
+                      "notes",
+                      "01",
+                      "AI Notes",
+                      transcript ? "Every word, timed" : "Notes and key moments",
+                    ],
+                    ["book", "02", "Activity Book", "Job card and knowledge check"],
+                    ["spin", "03", "Ask AI Spin", "Thoth knows where you stopped"],
+                  ] as const
+                )
+                  .filter(([k]) => !(isSession && k === "book"))
+                  .map(([k, n, title, sub]) => (
+                    <button
+                      key={k}
+                      type="button"
+                      role="tab"
+                      aria-selected={panel === k}
+                      data-panel={k}
+                      onClick={() => setPanel(k)}
+                    >
+                      <span className="academy-switch-num">{n}</span>
+                      <span className="academy-switch-text">
+                        <strong>{title}</strong>
+                        <small>{sub}</small>
+                      </span>
+                      {k === "spin" ? <SpinAvatar size={34} pulse={busy} /> : null}
+                    </button>
+                  ))}
+              </div>
               <div className="academy-stack">
                 {/* ---------- AI NOTES ---------- */}
-                <section className="academy-card academy-block" id="ai-notes">
+                <section
+                  className="academy-card academy-block"
+                  id="ai-notes"
+                  hidden={panel !== "notes"}
+                >
                   <div className="academy-block-head">
-                    <span className="academy-block-num">{num()}</span>
+                    <span className="academy-block-num">01</span>
                     <div>
                       <h2>AI Notes</h2>
                       <p>
@@ -475,9 +510,13 @@ function ClassroomSession({
                 </section>
                 {/* ---------- ACTIVITY BOOK ---------- */}
                 {!isSession ? (
-                  <section className="academy-card academy-block" id="activity-book">
+                  <section
+                    className="academy-card academy-block"
+                    id="activity-book"
+                    hidden={panel !== "book"}
+                  >
                     <div className="academy-block-head">
-                      <span className="academy-block-num">{num()}</span>
+                      <span className="academy-block-num">02</span>
                       <div>
                         <h2>Activity Book</h2>
                         <p>Apply it to a real workflow, then check your decisions.</p>
@@ -598,9 +637,13 @@ function ClassroomSession({
                   </section>
                 ) : null}
                 {/* ---------- ASK AI SPIN ---------- */}
-                <section className="academy-card academy-block academy-holo" id="ask-ai-spin">
+                <section
+                  className="academy-card academy-block academy-holo"
+                  id="ask-ai-spin"
+                  hidden={panel !== "spin"}
+                >
                   <div className="academy-block-head">
-                    <span className="academy-block-num">{num()}</span>
+                    <span className="academy-block-num">03</span>
                     <SpinAvatar size={56} pulse={busy} />
                     <div>
                       <h2>Ask AI Spin</h2>
