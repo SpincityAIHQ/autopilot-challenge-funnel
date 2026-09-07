@@ -62,10 +62,12 @@ export function FunnelVideoSlot({
       <section className={`w-full ${className ?? ""}`} aria-label={label}>
         <div className="academy-vsl-poster">
           <span className="academy-eyebrow">{label}</span>
-          <p>The welcome video is being uploaded.</p>
-          <a className="academy-text-button" href="/class">
-            Start the free training now →
-          </a>
+          <p>{placeholderNote}</p>
+          {placeholderCta ? (
+            <a className="academy-text-button" href={placeholderCta.href}>
+              {placeholderCta.label}
+            </a>
+          ) : null}
         </div>
       </section>
     );
