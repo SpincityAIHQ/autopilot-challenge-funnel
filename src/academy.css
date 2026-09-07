@@ -2548,3 +2548,46 @@ button.academy-vault-item:hover {
     margin: 18px 0 22px;
   }
 }
+
+/* Landing waiting-list capture. */
+.academy-waitlist {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
+}
+.academy-waitlist h2 {
+  margin: 0;
+}
+.academy-waitlist p {
+  margin: 0;
+}
+.academy-waitlist label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: color-mix(in oklab, var(--foreground) 78%, transparent);
+}
+.academy-waitlist input[type="text"],
+.academy-waitlist input[type="email"] {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 16px;
+  border-radius: 12px;
+  color: var(--foreground);
+  background: color-mix(in oklab, var(--background) 70%, transparent);
+  border: 1px solid color-mix(in oklab, var(--foreground) 18%, transparent);
+}
+.academy-waitlist input:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.academy-waitlist .academy-check {
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 10px;
+}
+.academy-waitlist .academy-check input {
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+}
