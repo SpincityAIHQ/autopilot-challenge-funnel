@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AcademyFrame } from "@/components/AcademyFrame";
 import { ACCELERATOR_DAYS, ACCELERATOR_OFFER } from "@/lib/academy";
 import { useCatalogue } from "@/lib/academy-client";
+import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 export const Route = createFileRoute("/accelerator")({
   head: () => ({ meta: [{ title: "Autopilot Accelerator | AI AutoPilot" }] }),
   component: Accelerator,

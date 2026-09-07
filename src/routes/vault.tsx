@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { AcademyFrame, TicketBadge } from "@/components/AcademyFrame";
 import { ACCELERATOR_OFFER, SUMMIT_OFFERS, guideFor, type Offer, type Ticket } from "@/lib/academy";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
+import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { VAULT_CATEGORIES, vaultCatalogue, type VaultCategory, type VaultItem } from "@/lib/vault";
 export const Route = createFileRoute("/vault")({
   head: () => ({
@@ -92,6 +93,16 @@ function VaultSession({ session }: { session: ReturnType<typeof useAcademySessio
             ) : null}
             {listing ? <TicketBadge ticket={listing.ticket} /> : null}
           </div>
+          <FunnelVideoSlot
+            url={import.meta.env.VITE_ACADEMY_VSL_VAULT || null}
+            label="Your Vault opener"
+            envKey="VITE_ACADEMY_VSL_VAULT"
+            className="academy-page-vsl"
+            autoplay={false}
+            alwaysVisible
+            placeholderNote="Spin's Vault opener is being uploaded."
+            placeholderCta={null}
+          />
           <p role="status" className="academy-status">
             {error || session.error || (session.loading ? "Checking your key…" : "")}
           </p>

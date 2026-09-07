@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AcademyFrame } from "@/components/AcademyFrame";
+import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import {
   ACCELERATOR_OFFER,
   LESSONS,
