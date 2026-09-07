@@ -23,6 +23,7 @@ export function ThothBubble() {
   const [question, setQuestion] = useState("");
   const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const [thread, setThread] = useState<{ role: "user" | "spin"; text: string }[]>([]);
   const lock = useRef(false);
   const mounted = useRef(true);
@@ -41,15 +42,28 @@ export function ThothBubble() {
         if (!mounted.current) return;
         setContext(c);
         if (c.guidance?.lessonId) setLesson(c.guidance.lessonId);
+        if (c.lessons.length && !c.lessons.some((l) => l.id === (c.guidance?.lessonId ?? lesson)))
+          setLesson(c.lessons[0].id);
       })
-      .catch(() => undefined);
+      .catch((e) => {
+        if (mounted.current) setNotice((e as Error).message);
+      });
   }, [open, session.email, context]);
 
   async function ask(text: string) {
     const q = text.trim();
-    if (lock.current || !consent || !q || !context?.tutorReady) return;
+    if (lock.current || !q) return;
+    if (!consent) {
+      setNotice("Tick the box above so I may use your question and lesson work to answer.");
+      return;
+    }
+    if (context && !context.tutorReady) {
+      setNotice("Chat is being connected. Please try again shortly.");
+      return;
+    }
     lock.current = true;
     setBusy(true);
+    setNotice(null);
     setQuestion("");
     setThread((t) => [...t, { role: "user", text: q }]);
     try {
@@ -61,12 +75,16 @@ export function ThothBubble() {
       });
       if (mounted.current) setThread((t) => [...t, { role: "spin", text: r.answer }]);
     } catch (e) {
-      if (mounted.current) setThread((t) => [...t, { role: "spin", text: (e as Error).message }]);
+      if (mounted.current) {
+        setNotice((e as Error).message);
+        setThread((t) => [...t, { role: "spin", text: (e as Error).message }]);
+      }
     } finally {
       lock.current = false;
       if (mounted.current) setBusy(false);
     }
   }
+
 
   return (
     <div className="academy-helper">
@@ -113,11 +131,19 @@ export function ThothBubble() {
                   <input
                     type="checkbox"
                     checked={consent}
-                    onChange={(e) => setConsent(e.target.checked)}
+                    onChange={(e) => {
+                      setConsent(e.target.checked);
+                      if (e.target.checked) setNotice(null);
+                    }}
                   />
-                  Use my question, current lesson, viewing and saved lesson work to give me
-                  feedback.
+                  Tick once so {guide.name} may use your question, current lesson, viewing and
+                  saved lesson work to answer.
                 </label>
+                {notice ? (
+                  <p className="academy-helper-notice" role="alert">
+                    {notice}
+                  </p>
+                ) : null}
                 {thread.length ? (
                   <div className="academy-thread" role="log" aria-live="polite">
                     {thread.map((m, i) => (
@@ -129,7 +155,7 @@ export function ThothBubble() {
                     {busy ? (
                       <div className="academy-bubble" data-role="spin">
                         <small>{guide.name}</small>
-                        Thinking…
+                        Thinking… this can take a few seconds.
                       </div>
                     ) : null}
                   </div>
@@ -153,7 +179,7 @@ export function ThothBubble() {
                   />
                   <button
                     className="academy-button academy-button-small"
-                    disabled={busy || !consent || !question.trim() || !context?.tutorReady}
+                    disabled={busy || !question.trim()}
                   >
                     {busy ? "Thinking…" : `Ask ${guide.name}`}
                   </button>
@@ -161,6 +187,7 @@ export function ThothBubble() {
                 {context && !context.tutorReady ? (
                   <p className="academy-muted">Chat is being connected.</p>
                 ) : null}
+
               </>
             )}
           </div>
