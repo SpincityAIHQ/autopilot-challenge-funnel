@@ -10,6 +10,10 @@ interface FunnelVideoSlotProps {
   autoplay?: boolean;
   /** Keep a branded poster visible publicly while the video URL is not configured. */
   alwaysVisible?: boolean;
+  /** Poster copy shown while the opener video is not connected yet. */
+  placeholderNote?: string;
+  /** Optional poster link. Pass null to hide it. */
+  placeholderCta?: { label: string; href: string } | null;
 }
 
 /**
