@@ -53,11 +53,14 @@ function Join() {
     try {
       await academyApi("register", {
         marketingConsent: consent,
+        phone: phone.trim() || undefined,
+        smsConsent: smsConsent && Boolean(phone.trim()),
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         attribution: consent
           ? Object.fromEntries(new URLSearchParams(window.location.search).entries())
           : {},
       });
+
       window.location.assign("/class");
     } catch (e) {
       setMessage((e as Error).message);
