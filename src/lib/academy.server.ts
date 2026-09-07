@@ -399,6 +399,8 @@ export async function handleAcademyPost(request: Request, path: string) {
     const d = z
       .object({
         marketingConsent: z.boolean(),
+        smsConsent: z.boolean().default(false),
+        phone: z.string().trim().max(32).optional(),
         timezone: z.string().max(80),
         attribution: z.record(z.unknown()).default({}),
       })
@@ -408,6 +410,8 @@ export async function handleAcademyPost(request: Request, path: string) {
     } catch {
       throw new AcademyError("Choose a valid timezone.");
     }
+    const phone = d.phone && /^[+0-9 ().-]{7,32}$/.test(d.phone) ? d.phone : null;
+    if (d.phone && !phone) throw new AcademyError("Enter a valid mobile number, or leave it blank.");
     check(
       await db.rpc("academy_register", {
         p_user: user.id,
@@ -415,10 +419,14 @@ export async function handleAcademyPost(request: Request, path: string) {
         p_timezone: d.timezone,
         p_consent: d.marketingConsent,
         p_attribution: d.marketingConsent ? safeAttribution(d.attribution) : {},
+        p_phone: phone,
+        // Text consent is its own decision: it needs a number and its own tick.
+        p_sms: d.smsConsent && Boolean(phone),
       }),
     );
     return { ok: true };
   }
+
   if (path === "preferences") {
     const d = z.object({ marketingConsent: z.literal(false) }).parse(input);
     check(

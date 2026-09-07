@@ -103,9 +103,10 @@ export async function processAcademyIntegrations(request: Request) {
     try {
       const profile = await db
         .from("academy_profiles")
-        .select("email,timezone,marketing_consent")
+        .select("email,timezone,marketing_consent,phone,sms_consent")
         .eq("user_id", row.user_id)
         .maybeSingle();
+
       if (profile.error) throw profile.error;
       if (!profile.data?.marketing_consent) status = "cancelled";
       else {
@@ -187,9 +188,13 @@ export async function processAcademyIntegrations(request: Request) {
               event_name: row.name,
               user_id: row.user_id,
               email: profile.data.email,
+              phone: profile.data.sms_consent ? profile.data.phone : null,
+              // The workflow must only text a contact when this is true.
+              sms_consent: Boolean(profile.data.sms_consent),
               timezone: profile.data.timezone,
               marketing_consent: true,
               consent_version: "academy-marketing-2026-09-06",
+
               occurred_at: row.created_at,
               source: "ai-autopilot-academy",
               ...learningPayload,

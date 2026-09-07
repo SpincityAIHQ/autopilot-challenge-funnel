@@ -13,6 +13,9 @@ function Join() {
   const [password, setPassword] = useState("");
   const [login, setLogin] = useState(false);
   const [consent, setConsent] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [smsConsent, setSmsConsent] = useState(false);
+
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [recovery, setRecovery] = useState(false);
@@ -50,11 +53,14 @@ function Join() {
     try {
       await academyApi("register", {
         marketingConsent: consent,
+        phone: phone.trim() || undefined,
+        smsConsent: smsConsent && Boolean(phone.trim()),
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         attribution: consent
           ? Object.fromEntries(new URLSearchParams(window.location.search).entries())
           : {},
       });
+
       window.location.assign("/class");
     } catch (e) {
       setMessage((e as Error).message);
@@ -147,15 +153,38 @@ function Join() {
           </form>
         )}
         {!login || session.email ? (
-          <label className="academy-check">
-            <input
-              type="checkbox"
-              checked={consent}
-              onChange={(e) => setConsent(e.target.checked)}
-            />
-            Email me optional learning reminders, Summit updates and offers. I can opt out anytime.
-          </label>
+          <>
+            <label className="academy-check">
+              <input
+                type="checkbox"
+                checked={consent}
+                onChange={(e) => setConsent(e.target.checked)}
+              />
+              Email me optional learning reminders, Summit updates and offers. I can opt out anytime.
+            </label>
+            <label>
+              Mobile number (optional)
+              <input
+                type="tel"
+                autoComplete="tel"
+                inputMode="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </label>
+            <label className="academy-check">
+              <input
+                type="checkbox"
+                checked={smsConsent}
+                onChange={(e) => setSmsConsent(e.target.checked)}
+              />
+              Text me optional reminders and updates at this number. Message and data rates may
+              apply; reply STOP to stop or HELP for help. This is separate from email and never
+              required to buy.
+            </label>
+          </>
         ) : null}
+
         {session.email ? (
           <button type="button" className="academy-button" onClick={register} disabled={busy}>
             Enter the free classroom

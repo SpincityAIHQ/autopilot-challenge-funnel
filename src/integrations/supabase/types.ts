@@ -355,6 +355,9 @@ export type Database = {
           created_at: string
           email: string
           marketing_consent: boolean
+          phone: string | null
+          sms_consent: boolean
+          sms_consent_at: string | null
           timezone: string
           updated_at: string
           user_id: string
@@ -366,6 +369,9 @@ export type Database = {
           created_at?: string
           email: string
           marketing_consent?: boolean
+          phone?: string | null
+          sms_consent?: boolean
+          sms_consent_at?: string | null
           timezone?: string
           updated_at?: string
           user_id: string
@@ -377,6 +383,9 @@ export type Database = {
           created_at?: string
           email?: string
           marketing_consent?: boolean
+          phone?: string | null
+          sms_consent?: boolean
+          sms_consent_at?: string | null
           timezone?: string
           updated_at?: string
           user_id?: string
@@ -1485,16 +1494,29 @@ export type Database = {
         Args: { p_email: string; p_hash: string; p_user: string }
         Returns: Json
       }
-      academy_register: {
-        Args: {
-          p_attribution: Json
-          p_consent: boolean
-          p_email: string
-          p_timezone: string
-          p_user: string
-        }
-        Returns: undefined
-      }
+      academy_register:
+        | {
+            Args: {
+              p_attribution: Json
+              p_consent: boolean
+              p_email: string
+              p_timezone: string
+              p_user: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              p_attribution: Json
+              p_consent: boolean
+              p_email: string
+              p_phone?: string
+              p_sms?: boolean
+              p_timezone: string
+              p_user: string
+            }
+            Returns: undefined
+          }
       academy_reserve_avatar: {
         Args: {
           p_daily_seconds: number
