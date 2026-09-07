@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { AcademyFrame, TicketBadge } from "@/components/AcademyFrame";
+import { AcademyFrame } from "@/components/AcademyFrame";
 import {
   ACCELERATOR_OFFER,
   LESSONS,
