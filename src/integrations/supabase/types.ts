@@ -1409,6 +1409,42 @@ export type Database = {
           },
         ]
       }
+      training_waitlist: {
+        Row: {
+          attribution: Json
+          created_at: string
+          email: string
+          email_marketing_consent: boolean
+          email_marketing_consent_at: string | null
+          full_name: string | null
+          id: string
+          notified_at: string | null
+          source: string | null
+        }
+        Insert: {
+          attribution?: Json
+          created_at?: string
+          email: string
+          email_marketing_consent?: boolean
+          email_marketing_consent_at?: string | null
+          full_name?: string | null
+          id?: string
+          notified_at?: string | null
+          source?: string | null
+        }
+        Update: {
+          attribution?: Json
+          created_at?: string
+          email?: string
+          email_marketing_consent?: boolean
+          email_marketing_consent_at?: string | null
+          full_name?: string | null
+          id?: string
+          notified_at?: string | null
+          source?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
