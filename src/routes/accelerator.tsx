@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AcademyFrame } from "@/components/AcademyFrame";
 import { ACCELERATOR_DAYS, ACCELERATOR_OFFER } from "@/lib/academy";
 import { useCatalogue } from "@/lib/academy-client";
+import { WEEK_ONE } from "@/lib/accelerator-week-one";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 export const Route = createFileRoute("/accelerator")({
   head: () => ({ meta: [{ title: "Autopilot Accelerator | AI AutoPilot" }] }),
@@ -81,6 +82,43 @@ function Accelerator() {
             </div>
           </div>
 
+        </div>
+        <div className="academy-section-heading" style={{ marginTop: 48 }}>
+          <p className="academy-eyebrow">Week one · build along</p>
+          <h2>Day 1 through Day 7.</h2>
+          <p>
+            Seven days, seven rooms. Day 1 opens the launch, then each day adds the next piece of
+            your operating system. Open a day to watch it and work through the steps.
+          </p>
+        </div>
+        <div className="academy-week-one">
+          {WEEK_ONE.map((d) => {
+            const connected = catalogue ? catalogue.connected.includes(d.lessonId) : false;
+            return (
+              <article className="academy-card academy-week-day" key={d.lessonId}>
+                <span className="academy-number">Day {String(d.day).padStart(2, "0")}</span>
+                <h3>{d.title}</h3>
+                <p className="academy-muted">
+                  {connected ? "Video connected." : "Video slot open — recording coming."}
+                </p>
+                {d.tasks.length ? (
+                  <ul>
+                    {d.tasks.map((t) => (
+                      <li key={t}>{t}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="academy-muted">Spin is posting this day's build steps.</p>
+                )}
+                <a
+                  className={`academy-button ${connected ? "" : "academy-button-secondary"}`}
+                  href={connected ? `/lesson/${d.lessonId}` : "/redeem"}
+                >
+                  {connected ? "Open the build room" : "Redeem Accelerator access"}
+                </a>
+              </article>
+            );
+          })}
         </div>
         <div className="academy-section-heading" style={{ marginTop: 48 }}>
           <p className="academy-eyebrow">Build rooms</p>
