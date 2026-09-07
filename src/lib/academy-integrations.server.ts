@@ -103,9 +103,10 @@ export async function processAcademyIntegrations(request: Request) {
     try {
       const profile = await db
         .from("academy_profiles")
-        .select("email,timezone,marketing_consent")
+        .select("email,timezone,marketing_consent,phone,sms_consent")
         .eq("user_id", row.user_id)
         .maybeSingle();
+
       if (profile.error) throw profile.error;
       if (!profile.data?.marketing_consent) status = "cancelled";
       else {
