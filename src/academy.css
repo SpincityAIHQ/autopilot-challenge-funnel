@@ -2593,3 +2593,8 @@ button.academy-vault-item:hover {
 }
 
 .academy-page-vsl{margin:20px 0 28px;max-width:820px}
+
+.academy-week-one{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.academy-week-day h3{margin:6px 0 8px;font-size:1.15rem}
+.academy-week-day ul{margin:8px 0 12px;padding-left:18px;display:grid;gap:6px}
+@media (max-width:560px){.academy-week-one{grid-template-columns:1fr}}
