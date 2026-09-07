@@ -30,6 +30,8 @@ export function FunnelVideoSlot({
   className,
   autoplay = true,
   alwaysVisible = false,
+  placeholderNote = "The welcome video is being uploaded.",
+  placeholderCta = { label: "Start the free training now →", href: "/class" },
 }: FunnelVideoSlotProps) {
   const qaReview = useQaReviewMode();
   const safeUrl = normalizeVideoEmbedUrl(url ?? null);
