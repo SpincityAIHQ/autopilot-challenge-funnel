@@ -616,6 +616,12 @@ function ClassroomSession({
                           ? " Your question and that lesson work are sent to our AI tutor service to generate the answer."
                           : ""}
                       </label>
+                      {!aiConsent ? (
+                        <p className="academy-helper-notice">
+                          Tick the box above once to switch on {guide.name}’s answers.
+                        </p>
+                      ) : null}
+
                       <div className="academy-chips">
                         {prompts.map((p) => (
                           <button

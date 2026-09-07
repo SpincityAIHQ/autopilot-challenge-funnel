@@ -2496,3 +2496,22 @@ button.academy-vault-item:hover {
   max-width: 980px;
   margin: 0 auto 14px;
 }
+
+/* Ask Thoth: never fail silently — say why the answer did not come. */
+.academy-helper-notice {
+  margin: 0.35rem 0 0;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  border-radius: 0.6rem;
+  background: rgba(212, 175, 55, 0.08);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+/* Viewing telemetry receipt under the player. */
+.academy-watch-note {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+}
+.academy-watch-note[data-tone="warn"] {
+  color: #ffb4a2;
+}
