@@ -131,11 +131,19 @@ export function ThothBubble() {
                   <input
                     type="checkbox"
                     checked={consent}
-                    onChange={(e) => setConsent(e.target.checked)}
+                    onChange={(e) => {
+                      setConsent(e.target.checked);
+                      if (e.target.checked) setNotice(null);
+                    }}
                   />
-                  Use my question, current lesson, viewing and saved lesson work to give me
-                  feedback.
+                  Tick once so {guide.name} may use your question, current lesson, viewing and
+                  saved lesson work to answer.
                 </label>
+                {notice ? (
+                  <p className="academy-helper-notice" role="alert">
+                    {notice}
+                  </p>
+                ) : null}
                 {thread.length ? (
                   <div className="academy-thread" role="log" aria-live="polite">
                     {thread.map((m, i) => (
@@ -147,7 +155,7 @@ export function ThothBubble() {
                     {busy ? (
                       <div className="academy-bubble" data-role="spin">
                         <small>{guide.name}</small>
-                        Thinking…
+                        Thinking… this can take a few seconds.
                       </div>
                     ) : null}
                   </div>
@@ -171,7 +179,7 @@ export function ThothBubble() {
                   />
                   <button
                     className="academy-button academy-button-small"
-                    disabled={busy || !consent || !question.trim() || !context?.tutorReady}
+                    disabled={busy || !question.trim()}
                   >
                     {busy ? "Thinking…" : `Ask ${guide.name}`}
                   </button>
@@ -179,6 +187,7 @@ export function ThothBubble() {
                 {context && !context.tutorReady ? (
                   <p className="academy-muted">Chat is being connected.</p>
                 ) : null}
+
               </>
             )}
           </div>
