@@ -57,6 +57,7 @@ import { Route as ApplyMentorshipRouteImport } from './routes/apply.mentorship'
 import { Route as AdminOwnerLoginRouteImport } from './routes/admin.owner-login'
 import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
+import { Route as ApiPublicTrainingWaitlistRouteImport } from './routes/api/public/training-waitlist'
 import { Route as ApiPublicSummitAuditRouteImport } from './routes/api/public/summit-audit'
 import { Route as ApiPublicReserveUpgradeRouteImport } from './routes/api/public/reserve-upgrade'
 import { Route as ApiPublicReserveRouteImport } from './routes/api/public/reserve'
@@ -319,6 +320,12 @@ const AdminAuditRoute = AdminAuditRouteImport.update({
   path: '/admin/audit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicTrainingWaitlistRoute =
+  ApiPublicTrainingWaitlistRouteImport.update({
+    id: '/api/public/training-waitlist',
+    path: '/api/public/training-waitlist',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicSummitAuditRoute = ApiPublicSummitAuditRouteImport.update({
   id: '/api/public/summit-audit',
   path: '/api/public/summit-audit',
@@ -479,6 +486,7 @@ export interface FileRoutesByFullPath {
   '/api/public/reserve': typeof ApiPublicReserveRoute
   '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
+  '/api/public/training-waitlist': typeof ApiPublicTrainingWaitlistRoute
   '/api/public/admin/owner-login': typeof ApiPublicAdminOwnerLoginRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
@@ -547,6 +555,7 @@ export interface FileRoutesByTo {
   '/api/public/reserve': typeof ApiPublicReserveRoute
   '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
+  '/api/public/training-waitlist': typeof ApiPublicTrainingWaitlistRoute
   '/api/public/admin/owner-login': typeof ApiPublicAdminOwnerLoginRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
@@ -616,6 +625,7 @@ export interface FileRoutesById {
   '/api/public/reserve': typeof ApiPublicReserveRoute
   '/api/public/reserve-upgrade': typeof ApiPublicReserveUpgradeRoute
   '/api/public/summit-audit': typeof ApiPublicSummitAuditRoute
+  '/api/public/training-waitlist': typeof ApiPublicTrainingWaitlistRoute
   '/api/public/admin/owner-login': typeof ApiPublicAdminOwnerLoginRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
@@ -686,6 +696,7 @@ export interface FileRouteTypes {
     | '/api/public/reserve'
     | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
+    | '/api/public/training-waitlist'
     | '/api/public/admin/owner-login'
     | '/api/public/admin/summit-audit'
     | '/api/public/admin/summit-leads'
@@ -754,6 +765,7 @@ export interface FileRouteTypes {
     | '/api/public/reserve'
     | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
+    | '/api/public/training-waitlist'
     | '/api/public/admin/owner-login'
     | '/api/public/admin/summit-audit'
     | '/api/public/admin/summit-leads'
@@ -822,6 +834,7 @@ export interface FileRouteTypes {
     | '/api/public/reserve'
     | '/api/public/reserve-upgrade'
     | '/api/public/summit-audit'
+    | '/api/public/training-waitlist'
     | '/api/public/admin/owner-login'
     | '/api/public/admin/summit-audit'
     | '/api/public/admin/summit-leads'
@@ -890,6 +903,7 @@ export interface RootRouteChildren {
   ApiPublicReserveRoute: typeof ApiPublicReserveRoute
   ApiPublicReserveUpgradeRoute: typeof ApiPublicReserveUpgradeRoute
   ApiPublicSummitAuditRoute: typeof ApiPublicSummitAuditRoute
+  ApiPublicTrainingWaitlistRoute: typeof ApiPublicTrainingWaitlistRoute
   ApiPublicAdminOwnerLoginRoute: typeof ApiPublicAdminOwnerLoginRoute
   ApiPublicAdminSummitAuditRoute: typeof ApiPublicAdminSummitAuditRoute
   ApiPublicAdminSummitLeadsRoute: typeof ApiPublicAdminSummitLeadsRoute
@@ -1240,6 +1254,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/training-waitlist': {
+      id: '/api/public/training-waitlist'
+      path: '/api/public/training-waitlist'
+      fullPath: '/api/public/training-waitlist'
+      preLoaderRoute: typeof ApiPublicTrainingWaitlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/summit-audit': {
       id: '/api/public/summit-audit'
       path: '/api/public/summit-audit'
@@ -1438,6 +1459,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicReserveRoute: ApiPublicReserveRoute,
   ApiPublicReserveUpgradeRoute: ApiPublicReserveUpgradeRoute,
   ApiPublicSummitAuditRoute: ApiPublicSummitAuditRoute,
+  ApiPublicTrainingWaitlistRoute: ApiPublicTrainingWaitlistRoute,
   ApiPublicAdminOwnerLoginRoute: ApiPublicAdminOwnerLoginRoute,
   ApiPublicAdminSummitAuditRoute: ApiPublicAdminSummitAuditRoute,
   ApiPublicAdminSummitLeadsRoute: ApiPublicAdminSummitLeadsRoute,
