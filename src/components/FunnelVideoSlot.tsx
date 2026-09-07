@@ -10,6 +10,10 @@ interface FunnelVideoSlotProps {
   autoplay?: boolean;
   /** Keep a branded poster visible publicly while the video URL is not configured. */
   alwaysVisible?: boolean;
+  /** Poster copy shown while the opener video is not connected yet. */
+  placeholderNote?: string;
+  /** Optional poster link. Pass null to hide it. */
+  placeholderCta?: { label: string; href: string } | null;
 }
 
 /**
@@ -26,6 +30,8 @@ export function FunnelVideoSlot({
   className,
   autoplay = true,
   alwaysVisible = false,
+  placeholderNote = "The welcome video is being uploaded.",
+  placeholderCta = { label: "Start the free training now →", href: "/class" },
 }: FunnelVideoSlotProps) {
   const qaReview = useQaReviewMode();
   const safeUrl = normalizeVideoEmbedUrl(url ?? null);
@@ -56,10 +62,12 @@ export function FunnelVideoSlot({
       <section className={`w-full ${className ?? ""}`} aria-label={label}>
         <div className="academy-vsl-poster">
           <span className="academy-eyebrow">{label}</span>
-          <p>The welcome video is being uploaded.</p>
-          <a className="academy-text-button" href="/class">
-            Start the free training now →
-          </a>
+          <p>{placeholderNote}</p>
+          {placeholderCta ? (
+            <a className="academy-text-button" href={placeholderCta.href}>
+              {placeholderCta.label}
+            </a>
+          ) : null}
         </div>
       </section>
     );
