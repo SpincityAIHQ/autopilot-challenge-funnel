@@ -13,6 +13,9 @@ function Join() {
   const [password, setPassword] = useState("");
   const [login, setLogin] = useState(false);
   const [consent, setConsent] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [smsConsent, setSmsConsent] = useState(false);
+
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [recovery, setRecovery] = useState(false);
