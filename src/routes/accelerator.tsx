@@ -19,6 +19,16 @@ function Accelerator() {
           activities and ongoing learning support. Every build room is recorded and tracked, so AI
           Spin can bring you back to the exact moment you need.
         </p>
+        <FunnelVideoSlot
+          url={import.meta.env.VITE_ACADEMY_VSL_ACCELERATOR || null}
+          label="Your Accelerator opener"
+          envKey="VITE_ACADEMY_VSL_ACCELERATOR"
+          className="academy-page-vsl"
+          autoplay={false}
+          alwaysVisible
+          placeholderNote="Spin's Accelerator opener is being uploaded."
+          placeholderCta={null}
+        />
         <div className="academy-two" style={{ marginTop: 28 }}>
           <div className="academy-card academy-card-featured">
             <p className="academy-eyebrow">What you get</p>
