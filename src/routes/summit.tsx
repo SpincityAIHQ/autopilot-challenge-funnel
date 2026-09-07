@@ -63,46 +63,14 @@ function Summit() {
   return (
     <AcademyFrame ticket={ticket}>
       <section className="academy-section">
-        <div className="academy-class-head">
-          <div className="academy-section-heading" style={{ marginBottom: 0 }}>
-            <p className="academy-eyebrow">Summit · recorded August 29–31, 2026</p>
-            <h1>Three days of building your AI team — on demand.</h1>
-            <p className="academy-lead">
-              This is where the free training turns into a working system. Five recorded sessions
-              walk you from “what should AI actually do in my business” to a coordinated team of
-              agents doing it. Watch at your own pace, as many times as you want.
-            </p>
-            <ul className="academy-hero-list">
-              <li>
-                <strong>The classroom, not just a video.</strong> Every session opens with searchable
-                AI notes on every timed word, an activity sheet built for your own business, and
-                Thoth answering questions about the exact minute you are on.
-              </li>
-              <li>
-                <strong>Your place is saved.</strong> Your watch map, your answers and your progress
-                follow you from session to session and into your account.
-              </li>
-              <li>
-                <strong>Start small, upgrade any time.</strong> General Admission opens the two main
-                days for $22. VIP adds the after-hours rooms. The Emerald Vault Key adds Day 3 plus
-                the skills, prompts, plug-ins and templates.
-              </li>
-            </ul>
-            <div className="academy-hero-actions">
-              <a className="academy-button" href="#tickets">
-                See the tickets
-              </a>
-              <a className="academy-text-button" href="/class">
-                Not sure yet? Start with the free training →
-              </a>
-            </div>
-          </div>
-          <TicketBadge ticket={ticket} />
+        <div className="academy-section-heading">
+          <p className="academy-eyebrow">Summit · recorded August 29–31, 2026</p>
+          <h1>Welcome to the Summit.</h1>
+          <p className="academy-lead">
+            Three days, recorded and waiting for you. Pick a session and step into the classroom.
+          </p>
         </div>
-        <div className="academy-section-heading" style={{ marginTop: 40, marginBottom: 20 }}>
-          <p className="academy-eyebrow">The five sessions</p>
-          <h2>Pick a session.</h2>
-        </div>
+
 
         <div className="academy-learning-grid">
           {lessons.map((l, i) => {
