@@ -12,11 +12,15 @@ function stamp(value: string): number | null {
   const h = m[1] ? Number(m[1]) : 0;
   return h * 3600 + Number(m[2]) * 60 + Number(m[3]) + Number(m[4].padEnd(3, "0")) / 1000;
 }
-export function parseTranscript(raw: string, maxCues = 4000): TranscriptCue[] {
+export const MAX_TRANSCRIPT_CHARACTERS = 2_000_000;
+export function parseTranscript(raw: string, maxCues = 20_000): TranscriptCue[] {
+  if (raw.length > MAX_TRANSCRIPT_CHARACTERS) {
+    throw new RangeError("Transcript exceeds the supported text size.");
+  }
   const lines = raw.replace(/\r/g, "").split("\n");
   const cues: TranscriptCue[] = [];
   let i = 0;
-  while (i < lines.length && cues.length < maxCues) {
+  while (i < lines.length) {
     const line = lines[i].trim();
     const arrow = line.match(/^(\S+)\s+-->\s+(\S+)/);
     if (!arrow) {
@@ -46,7 +50,11 @@ export function parseTranscript(raw: string, maxCues = 4000): TranscriptCue[] {
     if (last && start - last.end < 0.75 && last.end - last.start < 3 && last.text.length < 160) {
       last.end = end;
       last.text = `${last.text} ${joined}`;
-    } else cues.push({ start, end, text: joined.slice(0, 600) });
+    } else {
+      // Reject an oversized source instead of returning a plausible but incomplete transcript.
+      if (cues.length >= maxCues) throw new RangeError("Transcript exceeds the supported cue count.");
+      cues.push({ start, end, text: joined });
+    }
   }
   return cues;
 }

@@ -1,5 +1,5 @@
 import type { TranscriptCue } from "./academy";
-import { parseTranscript } from "./transcript";
+import { MAX_TRANSCRIPT_CHARACTERS, parseTranscript } from "./transcript";
 import { configuredVimeo } from "./academy-media.server";
 /**
  * Transcript source per slot, in order:
@@ -12,7 +12,9 @@ import { configuredVimeo } from "./academy-media.server";
  */
 const cache = new Map<string, { cues: TranscriptCue[] | null; at: number }>();
 const TTL = 600000;
-const MAX = 2_000_000;
+function completeText(text: string): string | null {
+  return text.length <= MAX_TRANSCRIPT_CHARACTERS ? text : null;
+}
 type Storage = {
   storage: {
     from: (bucket: string) => {
@@ -37,7 +39,7 @@ export function transcriptConfigured(id: string, envKey: string) {
 async function fetchText(url: URL): Promise<string | null> {
   if (url.protocol !== "https:" || url.username || url.password) return null;
   const r = await fetch(url, { signal: AbortSignal.timeout(10000) });
-  return r.ok ? (await r.text()).slice(0, MAX) : null;
+  return r.ok ? completeText(await r.text()) : null;
 }
 /** Vimeo text tracks: prefer an active English captions track, then any active track. */
 async function vimeoCaptions(envKey: string): Promise<string | null> {
@@ -87,7 +89,7 @@ export async function loadTranscript(
         .from(process.env.ACADEMY_MEDIA_BUCKET || "academy-media")
         .download(path)
         .catch(() => ({ data: null, error: true }));
-      if (!file.error && file.data) text = (await file.data.text()).slice(0, MAX);
+      if (!file.error && file.data) text = completeText(await file.data.text());
     }
     if (!text) {
       const loader = bundled[`./transcripts/${id}.vtt`];
@@ -96,7 +98,13 @@ export async function loadTranscript(
   } catch {
     text = null;
   }
-  let cues = text ? parseTranscript(text) : null;
+  let cues: TranscriptCue[] | null = null;
+  try {
+    cues = text ? parseTranscript(text) : null;
+  } catch {
+    // An unsupported transcript must not be served as a truncated full transcript.
+    cues = null;
+  }
   if (cues && !cues.length) cues = null;
   cache.set(id, { cues, at: Date.now() });
   return cues;
