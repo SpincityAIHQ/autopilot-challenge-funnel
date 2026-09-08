@@ -102,7 +102,7 @@ export async function processAcademyIntegrations(request: Request) {
       if (profile.error) throw profile.error;
       if (!profile.data?.marketing_consent) status = "cancelled";
       else {
-        const [purchases, progress] = await Promise.all([
+        const [purchases, progress, importedPurchase] = await Promise.all([
           db
             .from("academy_grants")
             .select("tier")
@@ -114,8 +114,14 @@ export async function processAcademyIntegrations(request: Request) {
             .eq("user_id", row.user_id)
             .eq("lesson_id", "free-webinar")
             .maybeSingle(),
+          // The legacy purchase roster is independent of Shopify grants. This
+          // service-only lookup uses verified Auth identity and does not claim tickets.
+          row.name === "webinar_not_started"
+            ? db.rpc("academy_has_imported_ticket", { p_user: row.user_id })
+            : Promise.resolve({ data: false, error: null }),
         ]);
-        if (purchases.error || progress.error) throw new Error("ELIGIBILITY_UNAVAILABLE");
+        if (purchases.error || progress.error || importedPurchase.error)
+          throw new Error("ELIGIBILITY_UNAVAILABLE");
         let learningPayload: Record<string, unknown> = {};
         let learningAllowed = true;
         if (row.name.startsWith("learning_")) {
@@ -168,7 +174,9 @@ export async function processAcademyIntegrations(request: Request) {
         if (!learningAllowed) status = "cancelled";
         else if (
           row.name === "webinar_not_started" &&
-          ((progress.data?.intervals ?? []).length > 0 || (purchases.data ?? []).length > 0)
+          ((progress.data?.intervals ?? []).length > 0 ||
+            (purchases.data ?? []).length > 0 ||
+            importedPurchase.data === true)
         )
           status = "cancelled";
         else {
@@ -213,4 +221,3 @@ export async function processAcademyIntegrations(request: Request) {
     { headers: { "Cache-Control": "no-store" } },
   );
 }
-
