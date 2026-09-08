@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { OfferGate } from "@/components/OfferGate";
 import { ProductThankYou } from "@/components/ProductThankYou";
@@ -21,6 +21,9 @@ export const Route = createFileRoute("/offer/implementation-vault")({
     ],
     links: [{ rel: "canonical", href: "/offer/implementation-vault" }],
   }),
+  beforeLoad: () => {
+    throw redirect({ to: "/vault" });
+  },
   component: VaultRoute,
 });
 

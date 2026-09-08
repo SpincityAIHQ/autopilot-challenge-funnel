@@ -10,6 +10,7 @@ export const Route = createFileRoute("/accelerator")({
 });
 function Accelerator() {
   const catalogue = useCatalogue();
+  const checkoutEnabled = catalogue?.checkoutEnabled === true;
   return (
     <AcademyFrame>
       <section className="academy-section academy-accelerator">
@@ -27,6 +28,7 @@ function Accelerator() {
           className="academy-page-vsl"
           autoplay={false}
           alwaysVisible
+          introId="accelerator"
           placeholderNote="Spin's Accelerator opener is being uploaded."
           placeholderCta={null}
         />
@@ -52,9 +54,15 @@ function Accelerator() {
               ${ACCELERATOR_OFFER.price.toLocaleString()}
               <small>USD</small>
             </p>
-            <a className="academy-button" href={ACCELERATOR_OFFER.url}>
-              Review the programme
-            </a>
+            {checkoutEnabled ? (
+              <a className="academy-button" href={ACCELERATOR_OFFER.url}>
+                Review enrollment and checkout
+              </a>
+            ) : (
+              <span className="academy-button academy-button-disabled" aria-disabled="true">
+                Enrollment checkout temporarily paused
+              </span>
+            )}
             <a className="academy-text-button" href="mailto:Info@NuAmenti.com">
               Ask about joining the current cohort
             </a>
@@ -81,7 +89,6 @@ function Accelerator() {
               </a>
             </div>
           </div>
-
         </div>
         <div className="academy-section-heading" style={{ marginTop: 48 }}>
           <p className="academy-eyebrow">Week one · build along</p>

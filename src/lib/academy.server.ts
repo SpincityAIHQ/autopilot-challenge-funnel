@@ -1,4 +1,5 @@
 import { createClient, type User } from "@supabase/supabase-js";
+import type { Database, Json } from "@/integrations/supabase/types";
 import { z } from "zod";
 import {
   ACCELERATOR_OFFER,
@@ -39,7 +40,9 @@ export function academyDb() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key)
     throw new AcademyError("Student services are being connected. Please try again later.", 503);
-  return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  return createClient<Database>(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 }
 export async function academyUser(request: Request): Promise<User> {
   const bearer = request.headers.get("authorization");
@@ -136,6 +139,38 @@ function safeAttribution(raw: Record<string, unknown>) {
     if (typeof raw[key] === "string") out[key] = (raw[key] as string).slice(0, 128);
   return out;
 }
+type ProgressRow = Database["public"]["Tables"]["academy_progress"]["Row"];
+function progressIntervals(value: Json): import("./academy").Interval[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter(
+    (part): part is [number, number] =>
+      Array.isArray(part) &&
+      part.length === 2 &&
+      typeof part[0] === "number" &&
+      Number.isFinite(part[0]) &&
+      typeof part[1] === "number" &&
+      Number.isFinite(part[1]) &&
+      part[0] >= 0 &&
+      part[1] >= part[0],
+  );
+}
+function progressWorkbook(value: Json): Record<string, string> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return Object.fromEntries(
+    Object.entries(value).filter(
+      (entry): entry is [string, string] => typeof entry[1] === "string",
+    ),
+  );
+}
+function normalizeProgress(
+  row: ProgressRow,
+): Omit<ProgressRow, "intervals" | "workbook"> & LessonProgress {
+  return {
+    ...row,
+    intervals: progressIntervals(row.intervals),
+    workbook: progressWorkbook(row.workbook),
+  };
+}
 /**
  * Confirms a Vimeo slot's duration (oEmbed, then configured value) so viewing
  * telemetry is validated against a server-known length wherever possible.
@@ -190,13 +225,16 @@ function bookingFor(grants: string[]) {
 }
 export async function handleAcademyGet(request: Request, path: string) {
   const url = new URL(request.url);
-  if (path === "catalogue")
+  if (path === "catalogue") {
+    const { academyCommerceReadiness } = await import("./academy-commerce.server");
     return {
       lessons: LESSONS,
       connected: connectedSlots(LESSONS),
       transcripts: LESSONS.filter((l) => transcriptConfigured(l.id, l.envKey)).map((l) => l.id),
       bookingConfigured: bookingFor([]).configured,
+      checkoutEnabled: academyCommerceReadiness().ready,
     };
+  }
   if (
     path === "lesson" &&
     url.searchParams.get("lessonId") === "free-webinar" &&
@@ -209,7 +247,7 @@ export async function handleAcademyGet(request: Request, path: string) {
   if (path === "lesson") {
     const id = url.searchParams.get("lessonId") ?? "";
     await authorizeLesson(user, id);
-    const progress = check(
+    const progressRow = check(
       await db
         .from("academy_progress")
         .select("*")
@@ -217,6 +255,7 @@ export async function handleAcademyGet(request: Request, path: string) {
         .eq("lesson_id", id)
         .maybeSingle(),
     ).data;
+    const progress = progressRow ? normalizeProgress(progressRow) : null;
     const lesson = lessonContent(id)!;
     await resolveMedia(lesson, db);
     const meta = LESSONS.find((l) => l.id === id)!;
@@ -239,7 +278,7 @@ export async function handleAcademyGet(request: Request, path: string) {
   if (path === "dashboard") {
     const progress = check(
       await db.from("academy_progress").select("*").eq("user_id", user.id),
-    ).data;
+    ).data?.map(normalizeProgress);
     const grants = await grantsFor(user);
     const visible = (progress ?? []).filter((p) => {
       const l = LESSONS.find((l) => l.id === p.lesson_id);
@@ -261,7 +300,9 @@ export async function handleAcademyGet(request: Request, path: string) {
   if (path === "ai-spin") {
     const grants = await grantsFor(user);
     const p =
-      check(await db.from("academy_progress").select("*").eq("user_id", user.id)).data ?? [];
+      check(await db.from("academy_progress").select("*").eq("user_id", user.id)).data?.map(
+        normalizeProgress,
+      ) ?? [];
     const lessons = LESSONS.filter((l) => tierAllows(grants, l.tier));
     const visible = p.filter((p) => lessons.some((l) => l.id === p.lesson_id));
     const { avatarSettings } = await import("./academy-avatar.server");
@@ -303,7 +344,19 @@ export async function handleAcademyGet(request: Request, path: string) {
   }
   if (path === "studio") {
     requireInstructor(user);
-    const [submissions, registrations, learners, checkouts, pending] = await Promise.all([
+    const [
+      submissions,
+      registrations,
+      learners,
+      checkouts,
+      pending,
+      commercePending,
+      ordersNeedingReview,
+      accessQueued,
+      accessAttention,
+      accessIssues,
+      integrationUnknown,
+    ] = await Promise.all([
       db
         .from("academy_progress")
         .select("user_id,lesson_id,workbook,updated_at,workbook_status")
@@ -323,20 +376,68 @@ export async function handleAcademyGet(request: Request, path: string) {
         .from("academy_outbox")
         .select("id", { count: "exact", head: true })
         .in("status", ["pending", "retry", "processing"]),
+      db
+        .from("academy_commerce_receipts")
+        .select("event_id", { count: "exact", head: true })
+        .in("status", ["pending", "retry", "processing", "failed"]),
+      db
+        .from("academy_orders")
+        .select("order_id", { count: "exact", head: true })
+        .eq("needs_review", true),
+      db
+        .from("academy_access_deliveries")
+        .select("id", { count: "exact", head: true })
+        .in("status", ["pending", "retry", "processing"]),
+      db
+        .from("academy_access_deliveries")
+        .select("id", { count: "exact", head: true })
+        .in("status", ["unknown", "failed"]),
+      db
+        .from("academy_access_deliveries")
+        .select("id,code_id,status,attempts,created_at,completed_at,send_attempted_at")
+        .in("status", ["unknown", "failed"])
+        .order("created_at", { ascending: true })
+        .limit(50),
+      db
+        .from("academy_outbox")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "unknown"),
     ]);
-    [submissions, registrations, learners, checkouts, pending].forEach(check);
+    [
+      submissions,
+      registrations,
+      learners,
+      checkouts,
+      pending,
+      commercePending,
+      ordersNeedingReview,
+      accessQueued,
+      accessAttention,
+      accessIssues,
+      integrationUnknown,
+    ].forEach(check);
+    const { academyCommerceReadiness } = await import("./academy-commerce.server");
+    const commerce = academyCommerceReadiness();
     return {
-      submissions: submissions.data,
+      submissions: (submissions.data ?? []).map((submission) => ({
+        ...submission,
+        workbook: progressWorkbook(submission.workbook),
+      })),
+      accessDeliveries: accessIssues.data,
       metrics: {
         registrations: registrations.count ?? 0,
         learners: learners.count ?? 0,
         checkouts: checkouts.count ?? 0,
         pendingIntegrations: pending.count ?? 0,
+        commerceReceiptsPending: commercePending.count ?? 0,
+        ordersNeedingReview: ordersNeedingReview.count ?? 0,
+        accessDeliveryQueued: accessQueued.count ?? 0,
+        accessDeliveryAttention: accessAttention.count ?? 0,
+        integrationUnknown: integrationUnknown.count ?? 0,
       },
       integrations: {
-        shopify: Boolean(
-          process.env.ACADEMY_SHOPIFY_WEBHOOK_SECRET && process.env.SHOPIFY_ADMIN_ACCESS_TOKEN,
-        ),
+        shopify: commerce.ready,
+        shopifyBlockers: commerce.reasons,
         ghl: Boolean(
           process.env.ACADEMY_GHL_ENABLED === "true" && process.env.ACADEMY_GHL_WEBHOOK_URL,
         ),
@@ -366,7 +467,17 @@ export async function handleAcademyPost(request: Request, path: string) {
       p_user: user.id,
       p_bucket: path,
       p_limit:
-        path === "tutor" ? 15 : ["redeem", "request-code", "avatar-start"].includes(path) ? 5 : 240,
+        path === "tutor"
+          ? 15
+          : [
+                "redeem",
+                "request-code",
+                "avatar-start",
+                "access-requeue",
+                "access-requeue-unknown",
+              ].includes(path)
+            ? 5
+            : 240,
     }),
   );
   if (quota.data !== true) throw new AcademyError("Please wait before trying again.", 429);
@@ -375,6 +486,25 @@ export async function handleAcademyPost(request: Request, path: string) {
     input = JSON.parse(raw);
   } catch {
     throw new AcademyError("Invalid request.");
+  }
+  if (path === "access-requeue") {
+    requireInstructor(user);
+    const d = z.object({ deliveryId: z.string().uuid() }).parse(input);
+    const { requeueFailedAccessDelivery } = await import("./academy-access-recovery.server");
+    return requeueFailedAccessDelivery(d.deliveryId, user.id);
+  }
+  if (path === "access-requeue-unknown") {
+    requireInstructor(user);
+    const d = z
+      .object({
+        deliveryId: z.string().uuid(),
+        providerEvidence: z.string().trim().min(12).max(500),
+        confirmedNoDelivery: z.literal(true),
+      })
+      .parse(input);
+    const { requeueReconciledUnknownAccessDelivery } =
+      await import("./academy-access-recovery.server");
+    return requeueReconciledUnknownAccessDelivery(d.deliveryId, user.id, d.providerEvidence);
   }
   if (path === "redeem") {
     const d = z.object({ code: z.string().trim().min(10).max(80) }).parse(input);
@@ -411,7 +541,8 @@ export async function handleAcademyPost(request: Request, path: string) {
       throw new AcademyError("Choose a valid timezone.");
     }
     const phone = d.phone && /^[+0-9 ().-]{7,32}$/.test(d.phone) ? d.phone : null;
-    if (d.phone && !phone) throw new AcademyError("Enter a valid mobile number, or leave it blank.");
+    if (d.phone && !phone)
+      throw new AcademyError("Enter a valid mobile number, or leave it blank.");
     check(
       await db.rpc("academy_register", {
         p_user: user.id,
@@ -455,7 +586,7 @@ export async function handleAcademyPost(request: Request, path: string) {
       .parse(input);
     const meta = await authorizeLesson(user, common.lessonId);
     const lesson = lessonContent(common.lessonId)!;
-    let payload: Record<string, unknown> = {};
+    let payload: Json = {};
     let result: unknown = { ok: true };
     if (common.kind === "playback") {
       const d = z
@@ -625,14 +756,15 @@ export async function handleAcademyPost(request: Request, path: string) {
         .eq("user_id", user.id)
         .eq("lesson_id", d.lessonId)
         .maybeSingle()
-        .then((r) => check(r).data as LessonProgress | null),
+        .then((r) => {
+          const row = check(r).data;
+          return row ? normalizeProgress(row) : null;
+        }),
       db
         .from("academy_progress")
-        .select(
-          "lesson_id,intervals,duration,position,quiz_score,quiz_total,workbook_status,updated_at",
-        )
+        .select("*")
         .eq("user_id", user.id)
-        .then((r) => (check(r).data ?? []) as LessonProgress[]),
+        .then((r) => (check(r).data ?? []).map(normalizeProgress)),
       grantsFor(user),
     ]);
     const lesson = lessonContent(d.lessonId)!;

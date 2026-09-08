@@ -83,6 +83,7 @@ export type Database = {
           generation: string
           id: string
           locked_at: string | null
+          send_attempted_at: string | null
           status: string
         }
         Insert: {
@@ -94,6 +95,7 @@ export type Database = {
           generation: string
           id?: string
           locked_at?: string | null
+          send_attempted_at?: string | null
           status?: string
         }
         Update: {
@@ -105,6 +107,7 @@ export type Database = {
           generation?: string
           id?: string
           locked_at?: string | null
+          send_attempted_at?: string | null
           status?: string
         }
         Relationships: [
@@ -185,7 +188,11 @@ export type Database = {
       }
       academy_commerce_receipts: {
         Row: {
+          attempts: number
+          due_at: string
           event_id: string
+          last_error: string | null
+          locked_at: string | null
           order_id: string
           processed_at: string | null
           received_at: string
@@ -193,7 +200,11 @@ export type Database = {
           topic: string
         }
         Insert: {
+          attempts?: number
+          due_at?: string
           event_id: string
+          last_error?: string | null
+          locked_at?: string | null
           order_id: string
           processed_at?: string | null
           received_at?: string
@@ -201,7 +212,11 @@ export type Database = {
           topic: string
         }
         Update: {
+          attempts?: number
+          due_at?: string
           event_id?: string
+          last_error?: string | null
+          locked_at?: string | null
           order_id?: string
           processed_at?: string | null
           received_at?: string
@@ -1450,6 +1465,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      academy_claim_commerce_receipts: {
+        Args: { p_limit: number }
+        Returns: {
+          attempts: number
+          due_at: string
+          event_id: string
+          last_error: string | null
+          locked_at: string | null
+          order_id: string
+          processed_at: string | null
+          received_at: string
+          status: string
+          topic: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "academy_commerce_receipts"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       academy_claim_access_deliveries: {
         Args: { p_limit: number }
         Returns: {
@@ -1461,6 +1497,7 @@ export type Database = {
           generation: string
           id: string
           locked_at: string | null
+          send_attempted_at: string | null
           status: string
         }[]
         SetofOptions: {
@@ -1528,6 +1565,14 @@ export type Database = {
       }
       academy_redeem_access_code: {
         Args: { p_email: string; p_hash: string; p_user: string }
+        Returns: Json
+      }
+      academy_requeue_failed_access_delivery: {
+        Args: { p_delivery: string; p_reviewer: string }
+        Returns: Json
+      }
+      academy_requeue_reconciled_unknown_access_delivery: {
+        Args: { p_delivery: string; p_evidence: string; p_reviewer: string }
         Returns: Json
       }
       academy_register:
@@ -1710,12 +1755,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never) = never,
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1739,11 +1784,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never) = never,
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1764,11 +1809,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never) = never,
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1789,11 +1834,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never) = never,
+    : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1806,11 +1851,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never) = never,
+    : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }

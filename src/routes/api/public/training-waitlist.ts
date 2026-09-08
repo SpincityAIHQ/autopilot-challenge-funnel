@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { createHash } from "node:crypto";
 import { z } from "zod";
 import { assertSameOrigin, consumeRateLimit } from "@/lib/rate-limit";
 
@@ -48,8 +49,9 @@ export const Route = createFileRoute("/api/public/training-waitlist")({
         const { email, full_name, email_marketing_consent, source, attribution } = check.data;
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const normalizedEmail = email.toLowerCase();
         const { error } = await supabaseAdmin.from("training_waitlist").insert({
-          email,
+          email: normalizedEmail,
           full_name,
           email_marketing_consent: Boolean(email_marketing_consent),
           email_marketing_consent_at: email_marketing_consent ? new Date().toISOString() : null,
@@ -60,7 +62,30 @@ export const Route = createFileRoute("/api/public/training-waitlist")({
         if (error && !`${error.code}`.startsWith("23")) {
           return new Response("Server error", { status: 500, headers: NO_STORE });
         }
-        return new Response(JSON.stringify({ ok: true }), { status: 200, headers: NO_STORE });
+        const eventId = createHash("sha256")
+          .update(`academy-training-waitlist:${normalizedEmail}`)
+          .digest("hex");
+        const queued = await supabaseAdmin.from("academy_outbox").upsert(
+          {
+            dedup_key: `training-waitlist:${eventId}`,
+            user_id: null,
+            name: "training_waitlist_joined",
+            payload: {
+              email: normalizedEmail,
+              fullName: full_name,
+              marketingConsent: Boolean(email_marketing_consent),
+              attribution: attribution ?? {},
+            },
+          },
+          { onConflict: "dedup_key", ignoreDuplicates: true },
+        );
+        if (queued.error) {
+          return new Response("Server error", { status: 500, headers: NO_STORE });
+        }
+        return new Response(JSON.stringify({ ok: true, delivery: "queued" }), {
+          status: 202,
+          headers: NO_STORE,
+        });
       },
     },
   },

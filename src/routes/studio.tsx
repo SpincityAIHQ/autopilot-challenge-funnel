@@ -9,15 +9,35 @@ type Submission = {
   updated_at: string;
   workbook_status: string;
 };
+type AccessDeliveryIssue = {
+  id: string;
+  code_id: string;
+  status: "failed" | "unknown";
+  attempts: number;
+  created_at: string;
+  completed_at: string | null;
+  send_attempted_at: string | null;
+};
 type StudioData = {
   submissions: Submission[];
+  accessDeliveries: AccessDeliveryIssue[];
   metrics: {
     registrations: number;
     learners: number;
     checkouts: number;
     pendingIntegrations: number;
+    commerceReceiptsPending: number;
+    ordersNeedingReview: number;
+    accessDeliveryQueued: number;
+    accessDeliveryAttention: number;
+    integrationUnknown: number;
   };
-  integrations: { shopify: boolean; ghl: boolean; tutor: boolean };
+  integrations: {
+    shopify: boolean;
+    shopifyBlockers: string[];
+    ghl: boolean;
+    tutor: boolean;
+  };
 };
 export const Route = createFileRoute("/studio")({
   head: () => ({
@@ -36,6 +56,8 @@ function StudioSession({ session }: { session: ReturnType<typeof useAcademySessi
   const [data, setData] = useState<StudioData | null>(null);
   const [error, setError] = useState("");
   const [feedback, setFeedback] = useState<Record<string, string>>({});
+  const [accessEvidence, setAccessEvidence] = useState<Record<string, string>>({});
+  const [accessConfirmed, setAccessConfirmed] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState(false);
   const load = () =>
     academyApi<StudioData>("studio")
@@ -53,6 +75,34 @@ function StudioSession({ session }: { session: ReturnType<typeof useAcademySessi
         lessonId: s.lesson_id,
         status,
         feedback: feedback[`${s.user_id}:${s.lesson_id}`] ?? "",
+      });
+      await load();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function requeueAccess(delivery: AccessDeliveryIssue) {
+    setBusy(true);
+    setError("");
+    try {
+      await academyApi("access-requeue", { deliveryId: delivery.id });
+      await load();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function requeueUnknownAccess(delivery: AccessDeliveryIssue) {
+    setBusy(true);
+    setError("");
+    try {
+      await academyApi("access-requeue-unknown", {
+        deliveryId: delivery.id,
+        providerEvidence: accessEvidence[delivery.id]?.trim() ?? "",
+        confirmedNoDelivery: true,
       });
       await load();
     } catch (e) {
@@ -79,6 +129,11 @@ function StudioSession({ session }: { session: ReturnType<typeof useAcademySessi
                         learners: "Students with activity",
                         checkouts: "Checkout clicks",
                         pendingIntegrations: "Queued integrations",
+                        commerceReceiptsPending: "Shopify receipts requiring attention",
+                        ordersNeedingReview: "Orders needing review",
+                        accessDeliveryQueued: "Access emails queued",
+                        accessDeliveryAttention: "Access deliveries needing review",
+                        integrationUnknown: "GHL deliveries needing review",
                       } as Record<string, string>
                     )[k]
                   }
@@ -90,11 +145,130 @@ function StudioSession({ session }: { session: ReturnType<typeof useAcademySessi
               All-time platform counts. Checkout clicks are not purchases. Ad spend and ROAS are not
               connected here.
             </p>
+            {data.accessDeliveries.length ? (
+              <section className="academy-card">
+                <p className="academy-eyebrow">ACCESS DELIVERY EXCEPTIONS</p>
+                <h2>Reconcile uncertain sends. Requeue only proven-unsent failures.</h2>
+                <p className="academy-muted">
+                  An unknown delivery may already have reached GHL. Match its event ID in GHL before
+                  taking any support action; this screen will not resend it.
+                </p>
+                <div className="academy-table-wrap">
+                  <table className="academy-table">
+                    <thead>
+                      <tr>
+                        <th>Event / delivery ID</th>
+                        <th>Status</th>
+                        <th>Attempts</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.accessDeliveries.map((delivery) => {
+                        const recoverable =
+                          delivery.status === "failed" && !delivery.send_attempted_at;
+                        return (
+                          <tr key={delivery.id}>
+                            <td>
+                              <code>{delivery.id}</code>
+                            </td>
+                            <td>{delivery.status}</td>
+                            <td>{delivery.attempts}</td>
+                            <td>
+                              {recoverable ? (
+                                <button
+                                  type="button"
+                                  className="academy-button academy-button-secondary"
+                                  disabled={busy}
+                                  onClick={() => void requeueAccess(delivery)}
+                                >
+                                  Requeue proven-unsent email
+                                </button>
+                              ) : delivery.status === "unknown" ? (
+                                <div className="academy-recovery-controls">
+                                  <label htmlFor={`evidence-${delivery.id}`}>
+                                    GHL execution/search reference (no URLs, tokens, or access
+                                    codes)
+                                  </label>
+                                  <input
+                                    id={`evidence-${delivery.id}`}
+                                    type="text"
+                                    maxLength={500}
+                                    value={accessEvidence[delivery.id] ?? ""}
+                                    onChange={(event) =>
+                                      setAccessEvidence((current) => ({
+                                        ...current,
+                                        [delivery.id]: event.target.value,
+                                      }))
+                                    }
+                                  />
+                                  <label className="academy-check">
+                                    <input
+                                      type="checkbox"
+                                      checked={accessConfirmed[delivery.id] === true}
+                                      onChange={(event) =>
+                                        setAccessConfirmed((current) => ({
+                                          ...current,
+                                          [delivery.id]: event.target.checked,
+                                        }))
+                                      }
+                                    />
+                                    I confirmed in GHL that no workflow action or message exists.
+                                  </label>
+                                  <button
+                                    type="button"
+                                    className="academy-button academy-button-secondary"
+                                    disabled={
+                                      busy ||
+                                      accessConfirmed[delivery.id] !== true ||
+                                      (accessEvidence[delivery.id]?.trim().length ?? 0) < 12
+                                    }
+                                    onClick={() => void requeueUnknownAccess(delivery)}
+                                  >
+                                    Requeue reconciled unknown
+                                  </button>
+                                </div>
+                              ) : (
+                                <span>Reconcile in GHL — do not resend</span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            ) : null}
             <div className="academy-three">
-              {Object.entries(data.integrations).map(([k, v]) => (
-                <div className="academy-card" key={k}>
-                  <h2>{k.toUpperCase()}</h2>
-                  <p>{v ? "Configured · delivery tests still required" : "Not configured"}</p>
+              {(
+                [
+                  {
+                    key: "shopify",
+                    ready: data.integrations.shopify,
+                    detail: data.integrations.shopifyBlockers.length
+                      ? `Blocked: ${data.integrations.shopifyBlockers.join(", ")}`
+                      : "Configured · paid-order tests still required",
+                  },
+                  {
+                    key: "ghl",
+                    ready: data.integrations.ghl,
+                    detail: data.integrations.ghl
+                      ? "Configured · delivery and suppression tests still required"
+                      : "Not configured",
+                  },
+                  {
+                    key: "tutor",
+                    ready: data.integrations.tutor,
+                    detail: data.integrations.tutor
+                      ? "Configured · answer-quality tests still required"
+                      : "Not configured",
+                  },
+                ] as const
+              ).map(({ key, ready, detail }) => (
+                <div className="academy-card" key={key} data-ready={ready}>
+                  <h2>{key.toUpperCase()}</h2>
+                  <p>{detail}</p>
                 </div>
               ))}
             </div>

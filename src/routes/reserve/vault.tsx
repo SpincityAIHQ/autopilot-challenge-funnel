@@ -8,6 +8,7 @@ import { getCommasConfig } from "@/lib/challenge-config";
 import { isValidReservationToken } from "@/lib/reservation-token";
 import { getReservationByToken } from "@/lib/reservation.functions";
 import { resolveReserveCheckoutUrl } from "@/lib/reserve-checkout";
+import { useCatalogue } from "@/lib/academy-client";
 
 const searchSchema = z.object({ t: z.string().optional() });
 
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/reserve/vault")({
   }),
   beforeLoad: async () => {
     await applyReserveNoStoreHeaders();
+    throw redirect({ to: "/summit" });
   },
   loaderDeps: ({ search }) => ({ t: search.t }),
   loader: async ({ deps }) => {
@@ -38,8 +40,9 @@ export const Route = createFileRoute("/reserve/vault")({
 function ReserveVaultPage() {
   const { first_name, token } = Route.useLoaderData();
   const cfg = getCommasConfig();
-  const gaVipUrl = resolveReserveCheckoutUrl("ga_vip");
-  const gaVipVaultUrl = resolveReserveCheckoutUrl("ga_vip_vault");
+  const checkoutEnabled = useCatalogue()?.checkoutEnabled === true;
+  const gaVipUrl = checkoutEnabled ? resolveReserveCheckoutUrl("ga_vip") : null;
+  const gaVipVaultUrl = checkoutEnabled ? resolveReserveCheckoutUrl("ga_vip_vault") : null;
 
   function recordVaultReservation() {
     void fetch("/api/public/reserve-upgrade", {
@@ -89,16 +92,27 @@ function ReserveVaultPage() {
               <p className="mt-2 reserve-note-15" style={{ opacity: 0.78 }}>
                 AI AutoPilot Summit + VIP + Emerald Vault Key + private Day 3
               </p>
-              <a
-                href={gaVipVaultUrl!}
-                target="_top"
-                onClick={recordVaultReservation}
-                className="reserve-cta-primary mt-5 block w-full rounded-xl py-4 text-center reserve-body-lg"
-              >
-                Get the Emerald Vault Key · $298
-              </a>
+              {gaVipVaultUrl ? (
+                <a
+                  href={gaVipVaultUrl}
+                  target="_top"
+                  onClick={recordVaultReservation}
+                  className="reserve-cta-primary mt-5 block w-full rounded-xl py-4 text-center reserve-body-lg"
+                >
+                  Get the Emerald Vault Key · $298
+                </a>
+              ) : (
+                <span
+                  className="reserve-cta-primary mt-5 block w-full rounded-xl py-4 text-center reserve-body-lg opacity-60"
+                  aria-disabled="true"
+                >
+                  Emerald checkout temporarily paused
+                </span>
+              )}
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Continue to secure checkout.
+                {gaVipVaultUrl
+                  ? "Continue to secure checkout."
+                  : "No Emerald payment link is active on this page."}
               </p>
 
               <div className="my-6 flex items-center gap-4">
@@ -109,15 +123,26 @@ function ReserveVaultPage() {
                 <div className="reserve-hairline flex-1" />
               </div>
 
-              <a
-                href={gaVipUrl!}
-                target="_top"
-                className="block w-full rounded-xl py-4 text-center reserve-body-lg reserve-gold-btn"
-              >
-                Get VIP Access · $99
-              </a>
+              {gaVipUrl ? (
+                <a
+                  href={gaVipUrl}
+                  target="_top"
+                  className="block w-full rounded-xl py-4 text-center reserve-body-lg reserve-gold-btn"
+                >
+                  Get VIP Access · $99
+                </a>
+              ) : (
+                <span
+                  className="block w-full rounded-xl py-4 text-center reserve-body-lg reserve-gold-btn opacity-60"
+                  aria-disabled="true"
+                >
+                  VIP checkout temporarily paused
+                </span>
+              )}
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Continue to secure checkout.
+                {gaVipUrl
+                  ? "Continue to secure checkout."
+                  : "No VIP payment link is active on this page."}
               </p>
               <div className="mt-8 reserve-hairline" />
               <div className="mt-7 grid gap-7 sm:grid-cols-2">

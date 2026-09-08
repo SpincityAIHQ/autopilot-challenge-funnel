@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { OfferGate } from "@/components/OfferGate";
 import { ProductThankYou } from "@/components/ProductThankYou";
@@ -22,6 +22,9 @@ export const Route = createFileRoute("/strategy-intensive")({
     ],
     links: [{ rel: "canonical", href: "/strategy-intensive" }],
   }),
+  beforeLoad: () => {
+    throw redirect({ to: "/accelerator" });
+  },
   component: StrategyIntensiveRoute,
 });
 

@@ -3,13 +3,14 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { generateReservationToken, isValidReservationToken } from "@/lib/reservation-token";
 import {
-  CANONICAL_RESERVE_CHECKOUT_URL,
   RESERVE_ENV_KEY,
   resolveReserveCheckoutUrl,
   validateReserveCheckoutUrl,
   type ReserveBundle,
 } from "@/lib/reserve-checkout";
 import { computeReserveTransition, isAtOrAbove } from "@/lib/reserve-tier-transition";
+
+const RESERVE_CHECKOUT_SOURCE = readFileSync("src/lib/reserve-checkout.ts", "utf8");
 
 describe("reservation tokens", () => {
   it("generates exactly 32 lowercase hex characters", () => {
@@ -99,10 +100,12 @@ describe("reserve checkout URL — pure validator", () => {
     expect(RESERVE_ENV_KEY.ga_vip).toBe("VITE_SHOPIFY_URL_GA_VIP");
     expect(RESERVE_ENV_KEY.ga_vip_vault).toBe("VITE_SHOPIFY_URL_GA_VIP_VAULT");
   });
-  it("live resolver always falls back to the canonical public Shopify links", () => {
+  it("live resolver fails closed while the explicit legacy checkout gate is off", () => {
     for (const b of ["ga", "ga_vip", "ga_vip_vault"] as ReserveBundle[]) {
-      expect(resolveReserveCheckoutUrl(b)).toBe(CANONICAL_RESERVE_CHECKOUT_URL[b]);
+      expect(resolveReserveCheckoutUrl(b)).toBeNull();
     }
+    expect(RESERVE_CHECKOUT_SOURCE).toContain('env[LEGACY_CHECKOUT_GATE] !== "true"');
+    expect(RESERVE_CHECKOUT_SOURCE).not.toContain("CANONICAL_RESERVE_CHECKOUT_URL");
   });
 });
 
@@ -148,13 +151,13 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
   const readReserveIndex = () => read("src/routes/reserve/index.tsx");
   const readLanding = () => read("src/routes/index.tsx");
   const readLandingForm = () => read("src/components/reserve/LandingReservationForm.tsx");
+  const readTrainingWaitlist = () => read("src/components/TrainingWaitlistForm.tsx");
   const readReserveVip = () => read("src/routes/reserve/vip.tsx");
   const readReserveVault = () => read("src/routes/reserve/vault.tsx");
   const readUpgradeApi = () => read("src/routes/api/public/reserve-upgrade.ts");
   const readReserveApi = () => read("src/routes/api/public/reserve.ts");
   const readFrame = () => read("src/components/reserve/ReserveFrame.tsx");
   const readEnvExample = () => read(".env.example");
-  const readProductionEnv = () => read(".env.production");
 
   it("/reserve landing has NO prices", () => {
     const src = readReserveIndex();
@@ -167,18 +170,20 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(src.includes("Nothing is charged. You choose your ticket on the next page.")).toBe(true);
     expect(src.includes("Reserve My Seat")).toBe(true);
   });
-  it("the live landing page captures the lead and advances directly to the GA decision", () => {
+  it("the education landing queues the waiting list and opens free training when ready", () => {
     const landing = readLanding();
-    const form = readLandingForm();
-    expect(landing.includes("LandingReservationForm")).toBe(true);
-    expect(landing.includes('to="/reserve"')).toBe(false);
-    expect(form.includes('id="reserve-seat"')).toBe(true);
-    expect(form.includes('fetch("/api/public/reserve"')).toBe(true);
-    expect(form.includes("Take My General Admission Seat")).toBe(true);
-    expect(form.includes("first_name")).toBe(true);
-    expect(form.includes('name="email"')).toBe(true);
-    expect(form.includes('name="phone"')).toBe(true);
-    expect(readReserveApi().includes("/reserve/vip?t=${token}")).toBe(true);
+    const form = readTrainingWaitlist();
+    const api = read("src/routes/api/public/training-waitlist.ts");
+    expect(landing.includes("TrainingWaitlistForm")).toBe(true);
+    expect(landing.includes('connected.includes("free-webinar")')).toBe(true);
+    expect(landing.includes('session.email ? "/class" : "/join"')).toBe(true);
+    expect(form.includes('fetch("/api/public/training-waitlist"')).toBe(true);
+    expect(form.includes("full_name")).toBe(true);
+    expect(form.includes('type="email"')).toBe(true);
+    expect(form.includes('autoComplete="email"')).toBe(true);
+    expect(form.includes("email_marketing_consent")).toBe(true);
+    expect(api.includes('name: "training_waitlist_joined"')).toBe(true);
+    expect(api.includes('.from("academy_outbox").upsert')).toBe(true);
   });
   it("keeps the reservation process private behind one accessible disclosure button", () => {
     const form = readLandingForm();
@@ -248,29 +253,32 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     const vip = readReserveVip();
     const vault = readReserveVault();
     expect(vip.includes('resolveReserveCheckoutUrl("ga")')).toBe(true);
-    expect(vip.includes("href={gaUrl!}")).toBe(true);
+    expect(vip.includes("href={gaUrl}")).toBe(true);
     expect(vault.includes('resolveReserveCheckoutUrl("ga_vip")')).toBe(true);
     expect(vault.includes('resolveReserveCheckoutUrl("ga_vip_vault")')).toBe(true);
-    expect(vault.includes("href={gaVipUrl!}")).toBe(true);
-    expect(vault.includes("href={gaVipVaultUrl!}")).toBe(true);
+    expect(vault.includes("href={gaVipUrl}")).toBe(true);
+    expect(vault.includes("href={gaVipVaultUrl}")).toBe(true);
     expect(readUpgradeApi().includes("resolveReserveCheckoutUrlFromProcessEnv")).toBe(false);
   });
-  it("never disables or intercepts a public purchase CTA", () => {
-    for (const src of [readReserveVip(), readReserveVault()]) {
-      expect(src.includes("pointer-events-none opacity-50")).toBe(false);
-      expect(src.includes('href={gaUrl ?? "#"}')).toBe(false);
-      expect(src.includes('href={gaVipUrl ?? "#"}')).toBe(false);
-      expect(src.includes("disabled={busy")).toBe(false);
-    }
-    expect(readReserveVault().includes("disabled={busy || !gaVipVaultUrl}")).toBe(false);
+  it("renders non-clickable paused states whenever legacy checkout URLs are unavailable", () => {
+    const vip = readReserveVip();
+    const vault = readReserveVault();
+    expect(vip).toContain("gaUrl ? (");
+    expect(vip).toContain("Checkout temporarily paused");
+    expect(vip).toContain("General Admission checkout paused");
+    expect(vault).toContain("gaVipUrl ? (");
+    expect(vault).toContain("gaVipVaultUrl ? (");
+    expect(vault).toContain("VIP checkout temporarily paused");
+    expect(vault).toContain("Emerald checkout temporarily paused");
+    for (const src of [vip, vault]) expect(src).toContain('aria-disabled="true"');
   });
   it("navigates every Shopify payment handoff at the top level outside embedded previews", () => {
     const vip = readReserveVip();
     const vault = readReserveVault();
     const paymentAnchors = [
-      [vip, "href={gaUrl!}"],
-      [vault, "href={gaVipUrl!}"],
-      [vault, "href={gaVipVaultUrl!}"],
+      [vip, "href={gaUrl}"],
+      [vault, "href={gaVipUrl}"],
+      [vault, "href={gaVipVaultUrl}"],
     ] as const;
     for (const [src, href] of paymentAnchors) {
       const openingTag = [...src.matchAll(/<a\b[^>]*>/g)]
@@ -312,24 +320,21 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(readUpgradeApi().includes("/reserve/vault?t=${token}")).toBe(true);
     expect(readUpgradeApi().includes("/reserve/vip?t=${token}")).toBe(true);
   });
-  it(".env.example declares the three Shopify checkout variables", () => {
+  it(".env.example declares the off-by-default gate and three Shopify checkout variables", () => {
     const env = readEnvExample();
+    expect(env.includes("VITE_ACADEMY_LEGACY_CHECKOUT_ENABLED=false")).toBe(true);
     expect(env.includes("VITE_SHOPIFY_URL_GA=")).toBe(true);
     expect(env.includes("VITE_SHOPIFY_URL_GA_VIP=")).toBe(true);
     expect(env.includes("VITE_SHOPIFY_URL_GA_VIP_VAULT=")).toBe(true);
   });
-  it("production maps all three buttons to permanent Shopify cart permalinks", () => {
-    const env = readProductionEnv();
-    expect(env).toContain("VITE_SHOPIFY_ALLOWED_CHECKOUT_HOSTS=spincityhq.com");
-    expect(env).toContain(
-      "VITE_SHOPIFY_URL_GA=https://spincityhq.com/cart/50980696129783:1?checkout&skip_shop_pay=true",
-    );
-    expect(env).toContain(
-      "VITE_SHOPIFY_URL_GA_VIP=https://spincityhq.com/cart/50980697571575:1?checkout&skip_shop_pay=true",
-    );
-    expect(env).toContain(
-      "VITE_SHOPIFY_URL_GA_VIP_VAULT=https://spincityhq.com/cart/50980698194167:1?checkout&skip_shop_pay=true",
-    );
+  it("keeps runtime checkout config out of tracked environment files and gates launch readiness", () => {
+    const ignore = read(".gitignore");
+    const readiness = read("src/lib/academy-commerce.server.ts");
+    expect(ignore).toContain(".env.*");
+    expect(ignore).toContain("!.env.example");
+    expect(readiness).toContain("academyCommerceReadiness");
+    expect(readiness).toContain("access_terms_missing");
+    expect(readiness).toContain("webhook_secret_missing");
   });
 
   it("did NOT modify tiers.ts price ladder or webhook bundle contract", () => {
@@ -348,7 +353,7 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
       expect(src.includes("applyReserveNoStoreHeaders()")).toBe(true);
       // beforeLoad must be async AND await the helper.
       expect(
-        /beforeLoad:\s*async\s*\([^)]*\)\s*=>\s*\{\s*await\s+applyReserveNoStoreHeaders\(\)\s*;?\s*\}/.test(
+        /beforeLoad:\s*async\s*\([^)]*\)\s*=>\s*\{\s*await\s+applyReserveNoStoreHeaders\(\)/.test(
           src,
         ),
       ).toBe(true);

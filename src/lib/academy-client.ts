@@ -57,6 +57,7 @@ export type Catalogue = {
   lessons: import("./academy").LessonMeta[];
   connected: string[];
   bookingConfigured: boolean;
+  checkoutEnabled: boolean;
 };
 /** Public slot map: which recordings are connected. Booleans only, never URLs. */
 export function useCatalogue() {

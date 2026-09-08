@@ -2,68 +2,61 @@ import { describe, expect, it } from "bun:test";
 import { readFileSync } from "node:fs";
 
 const LANDING = readFileSync("src/routes/index.tsx", "utf8");
-const FORM = readFileSync("src/components/reserve/LandingReservationForm.tsx", "utf8");
-const ROOT_METADATA = [
-  readFileSync("src/routes/__root.tsx", "utf8"),
-  readFileSync("src/lib/site-meta.ts", "utf8"),
-].join("\n");
-const GENERAL_ADMISSION_CALENDAR = readFileSync("src/lib/ics.ts", "utf8");
+const FORM = readFileSync("src/components/TrainingWaitlistForm.tsx", "utf8");
+const WAITLIST_API = readFileSync("src/routes/api/public/training-waitlist.ts", "utf8");
+const INTEGRATIONS = readFileSync("src/lib/academy-integrations.server.ts", "utf8");
 
-describe("landing reservation disclosure", () => {
-  it("is closed by default and controlled by the landing route", () => {
-    expect(LANDING).toContain("const [reservationOpen, setReservationOpen] = useState(false);");
-    expect(LANDING).toContain("open={reservationOpen}");
-    expect(LANDING).toContain("onOpenChange={onReservationOpenChange}");
-    expect(FORM).toContain(
-      "LandingReservationForm({ open, onOpenChange }: LandingReservationFormProps)",
-    );
-    expect(FORM).toContain("<Collapsible open={open} onOpenChange={onOpenChange}");
-    expect(FORM).not.toContain("const [isOpen, setIsOpen]");
+describe("free-training landing entry", () => {
+  it("opens the connected lesson directly and otherwise presents the waiting list", () => {
+    expect(LANDING).toContain("useCatalogue");
+    expect(LANDING).toContain('connected.includes("free-webinar")');
+    expect(LANDING).toContain('session.email ? "/class" : "/join"');
+    expect(LANDING).toContain("trainingReady ? (");
+    expect(LANDING).toContain("<TrainingWaitlistForm />");
+    expect(LANDING).toContain("Start the free training");
   });
 
-  it("opens and scrolls to the same trigger from the final CTA in one click", () => {
-    expect(LANDING).toContain("<FinalCta onReserve={() => setReservationOpen(true)} />");
-    expect(LANDING).toContain('href="#reserve-seat"');
-    expect(LANDING).toContain("onClick={onReserve}");
-    expect(FORM).toContain('id="reserve-seat"');
-    expect(FORM).toContain("<CollapsibleTrigger asChild>");
+  it("keeps the name, email, and optional marketing choice accessible", () => {
+    expect(FORM).toContain("<form");
+    expect(FORM).toContain("onSubmit={submit}");
+    expect(FORM).toContain('type="text"');
+    expect(FORM).toContain('autoComplete="name"');
+    expect(FORM).toContain('type="email"');
+    expect(FORM).toContain('autoComplete="email"');
+    expect(FORM.match(/\brequired\b/g)?.length).toBe(2);
+    expect(FORM).toContain('type="checkbox"');
+    expect(FORM).toContain("const [consent, setConsent] = useState(false)");
+    expect(FORM).toContain("optional learning updates, Summit news and offers");
+    expect(FORM).toContain('role="status"');
+    expect(FORM).toContain("disabled={busy}");
   });
 
-  it("keeps the disclosure and validation relationships accessible", () => {
-    expect(FORM).toContain('type="button"');
-    expect(FORM).toContain('role="region"');
-    expect(FORM).toContain('aria-labelledby="reserve-seat"');
-    expect(FORM).toContain("aria-busy={submitting}");
-    for (const [field, errorId] of [
-      ["first_name", "landing-first-name-error"],
-      ["email", "landing-email-error"],
-      ["phone", "landing-phone-error"],
-    ] as const) {
-      expect(FORM).toContain(`aria-describedby={errors.${field} ? "${errorId}" : undefined}`);
-      expect(FORM).toContain(`id="${errorId}"`);
-    }
-    expect(FORM.indexOf("<CollapsibleTrigger")).toBeLessThan(FORM.indexOf("<CollapsibleContent"));
-    expect(FORM.indexOf("<CollapsibleContent")).toBeLessThan(FORM.indexOf("<form"));
+  it("distinguishes the requested access notice from optional ongoing marketing", () => {
+    expect(FORM).toContain("Joining requests one training-access notice.");
+    expect(FORM).toContain("email_marketing_consent: consent");
+    expect(WAITLIST_API).toContain("email_marketing_consent: z.boolean().optional()");
+    expect(WAITLIST_API).toContain("Boolean(email_marketing_consent)");
+  });
+});
+
+describe("free-training waiting-list delivery", () => {
+  it("protects the public endpoint and durably queues a deduplicated event", () => {
+    expect(WAITLIST_API).toContain("assertSameOrigin(request)");
+    expect(WAITLIST_API).toContain("consumeRateLimit(request");
+    expect(WAITLIST_API).toContain("raw.length > 8 * 1024");
+    expect(WAITLIST_API).toContain('name: "training_waitlist_joined"');
+    expect(WAITLIST_API).toContain("dedup_key: `training-waitlist:${eventId}`");
+    expect(WAITLIST_API).toContain('.from("academy_outbox").upsert');
+    expect(WAITLIST_API).toContain('delivery: "queued"');
+    expect(WAITLIST_API).toContain("status: 202");
   });
 
-  it("does not expose the retired three-step explainer", () => {
-    for (const copy of [
-      "1. Hold your GA seat",
-      "2. Watch the GA ticket video",
-      "3. Choose your ticket and check out",
-      "On the next page, Spin explains",
-    ]) {
-      expect(FORM).not.toContain(copy);
-    }
-  });
-
-  it("does not promise the VIP AI Business GPS product to General Admission", () => {
-    for (const generalAdmissionSurface of [LANDING, ROOT_METADATA, GENERAL_ADMISSION_CALENDAR]) {
-      expect(generalAdmissionSurface).not.toContain("AI Business GPS");
-    }
-    expect(LANDING).toContain("AI Readiness Blueprint");
-    expect(ROOT_METADATA).toContain("AI readiness blueprint");
-    expect(GENERAL_ADMISSION_CALENDAR).toContain("AI readiness blueprint");
-    expect(LANDING).toContain("Income is not guaranteed.");
+  it("routes the access request to GHL without implying phone or SMS consent", () => {
+    expect(INTEGRATIONS).toContain('row.name === "training_waitlist_joined"');
+    expect(INTEGRATIONS).toContain('purpose: "training_access_request"');
+    expect(INTEGRATIONS).toContain('"X-Academy-Event-Id": row.id');
+    expect(INTEGRATIONS).toContain("phone: null");
+    expect(INTEGRATIONS).toContain("sms_consent: false");
+    expect(INTEGRATIONS).toContain("marketing_consent: payload?.marketingConsent === true");
   });
 });

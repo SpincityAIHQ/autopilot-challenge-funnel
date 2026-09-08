@@ -35,8 +35,10 @@ const REDIRECT_ONLY_ROUTES = [
 ];
 
 describe("canonical routes in generated route tree", () => {
-  it("does not restore the removed stray /vault redirect", () => {
-    expect(routeTree.includes("'/vault'") || routeTree.includes('"/vault"')).toBe(false);
+  it("serves the Academy's Summit, Vault, and Accelerator destinations", () => {
+    for (const path of ["/summit", "/vault", "/accelerator"]) {
+      expect(routeTree.includes(`'${path}'`) || routeTree.includes(`"${path}"`)).toBe(true);
+    }
   });
 
   for (const path of CANONICAL_ROUTES) {

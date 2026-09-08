@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { OfferGate } from "@/components/OfferGate";
 import { TestimonialSection } from "@/components/TestimonialSection";
@@ -22,6 +22,9 @@ export const Route = createFileRoute("/offer/vip-upgrade")({
     ],
     links: [{ rel: "canonical", href: "/offer/vip-upgrade" }],
   }),
+  beforeLoad: () => {
+    throw redirect({ to: "/summit" });
+  },
   component: VipUpgradeRoute,
 });
 

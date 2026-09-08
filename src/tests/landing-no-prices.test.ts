@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { readFileSync } from "node:fs";
 
 const source = readFileSync("src/routes/index.tsx", "utf8");
-const form = readFileSync("src/components/reserve/LandingReservationForm.tsx", "utf8");
+const form = readFileSync("src/components/TrainingWaitlistForm.tsx", "utf8");
 const landingSource = `${source}\n${form}`;
 
 describe("landing page — no prices, no later-offer links", () => {
@@ -51,25 +51,23 @@ describe("landing page — no prices, no later-offer links", () => {
     }
   });
 
-  it("captures the lead on-page before any checkout", () => {
-    expect(source.includes("<LandingReservationForm")).toBe(true);
-    expect(form.includes("Take My General Admission Seat")).toBe(true);
-    expect(form.includes('fetch("/api/public/reserve"')).toBe(true);
+  it("captures a waiting-list lead on-page before any paid checkout", () => {
+    expect(source.includes("<TrainingWaitlistForm")).toBe(true);
+    expect(form.includes("Join the waiting list")).toBe(true);
+    expect(form.includes('fetch("/api/public/training-waitlist"')).toBe(true);
     expect(source.includes('to="/checkout"')).toBe(false);
     expect(source.includes('to="/reserve"')).toBe(false);
     expect(source.match(/Get GA/)).toBeNull();
     expect(source.match(/Go VIP/)).toBeNull();
   });
 
-  it("keeps the lead fields collapsed until the reservation button is opened", () => {
-    expect(form).toContain("Collapsible");
-    expect(form).toContain("CollapsibleTrigger");
-    expect(form).toContain("CollapsibleContent");
-    expect(form).toContain('id="reserve-seat"');
-    expect(form).toContain("Take My General Admission Seat");
-    expect(form).not.toContain("1. Hold your GA seat");
-    expect(form).not.toContain("2. Watch the GA ticket video");
-    expect(form).not.toContain("3. Choose your ticket and check out");
+  it("transitions to the free classroom only when the webinar is connected", () => {
+    expect(source).toContain("const trainingReady =");
+    expect(source).toContain('connected.includes("free-webinar")');
+    expect(source).toContain('session.email ? "/class" : "/join"');
+    expect(source).toContain("trainingReady ? (");
+    expect(form).not.toContain("checkout");
+    expect(form).not.toContain("tier");
   });
 
   it("has no public tier selector or tier query parameter", () => {

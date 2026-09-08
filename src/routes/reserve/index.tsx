@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { applyReserveNoStoreHeaders } from "@/lib/reserve-headers";
 import { ReserveFrame } from "@/components/reserve/ReserveFrame";
@@ -19,6 +19,7 @@ export const Route = createFileRoute("/reserve/")({
   }),
   beforeLoad: async () => {
     await applyReserveNoStoreHeaders();
+    throw redirect({ to: "/" });
   },
   component: ReservePage,
 });

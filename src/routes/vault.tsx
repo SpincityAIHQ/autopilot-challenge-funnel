@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AcademyFrame, TicketBadge } from "@/components/AcademyFrame";
 import { ACCELERATOR_OFFER, SUMMIT_OFFERS, guideFor, type Offer, type Ticket } from "@/lib/academy";
-import { academyApi, useAcademySession } from "@/lib/academy-client";
+import { academyApi, useAcademySession, useCatalogue } from "@/lib/academy-client";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { VAULT_CATEGORIES, vaultCatalogue, type VaultCategory, type VaultItem } from "@/lib/vault";
 export const Route = createFileRoute("/vault")({
@@ -35,6 +35,8 @@ function Vault() {
   return <VaultSession key={session.email ?? "anonymous"} session={session} />;
 }
 function VaultSession({ session }: { session: ReturnType<typeof useAcademySession> }) {
+  const catalogue = useCatalogue();
+  const checkoutEnabled = catalogue?.checkoutEnabled === true;
   const [listing, setListing] = useState<Listing | null>(null);
   const [category, setCategory] = useState<VaultCategory | "all">("all");
   const [open, setOpen] = useState<Reader | null>(null);
@@ -83,9 +85,15 @@ function VaultSession({ session }: { session: ReturnType<typeof useAcademySessio
             ) : null}
             {listing && !unlocked ? (
               <>
-                <a className="academy-button" href={vaultKey.url}>
-                  Get the Emerald Vault Key · ${vaultKey.price}
-                </a>
+                {checkoutEnabled ? (
+                  <a className="academy-button" href={vaultKey.url}>
+                    Get the Emerald Vault Key · ${vaultKey.price}
+                  </a>
+                ) : (
+                  <span className="academy-button academy-button-disabled" aria-disabled="true">
+                    New purchases temporarily paused
+                  </span>
+                )}
                 <a className="academy-text-button" href="/redeem">
                   Already bought? Redeem your key →
                 </a>
@@ -100,6 +108,7 @@ function VaultSession({ session }: { session: ReturnType<typeof useAcademySessio
             className="academy-page-vsl"
             autoplay={false}
             alwaysVisible
+            introId="vault"
             placeholderNote="Spin's Vault opener is being uploaded."
             placeholderCta={null}
           />

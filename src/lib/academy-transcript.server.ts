@@ -20,12 +20,17 @@ type Storage = {
     };
   };
 };
-const bundled = import.meta.glob<string>("./transcripts/*.vtt", {
-  query: "?raw",
-  import: "default",
-});
+const bundled =
+  typeof import.meta.glob === "function"
+    ? import.meta.glob<string>("./transcripts/*.vtt", {
+        query: "?raw",
+        import: "default",
+      })
+    : {};
+const bundledIds = ["coordinate-the-business", "own-the-platform"];
 export function bundledTranscriptIds() {
-  return Object.keys(bundled).map((k) => k.replace(/^.*\//, "").replace(/\.vtt$/, ""));
+  const discovered = Object.keys(bundled).map((k) => k.replace(/^.*\//, "").replace(/\.vtt$/, ""));
+  return discovered.length ? discovered : bundledIds;
 }
 export function transcriptConfigured(id: string, envKey: string) {
   return Boolean(

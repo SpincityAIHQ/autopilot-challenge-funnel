@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { AuditCallout } from "@/components/AuditCallout";
 import { OfferGate } from "@/components/OfferGate";
 import { getCommasConfig } from "@/lib/challenge-config";
@@ -16,6 +16,9 @@ export const Route = createFileRoute("/vault-welcome")({
     ],
     links: [{ rel: "canonical", href: "/vault-welcome" }],
   }),
+  beforeLoad: () => {
+    throw redirect({ to: "/vault" });
+  },
   component: VaultWelcome,
 });
 

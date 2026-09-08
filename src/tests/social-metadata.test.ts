@@ -73,12 +73,12 @@ describe("brand-owned share metadata", () => {
     expect(socialCard.readUInt32BE(20)).toBe(630);
   });
 
-  it("keeps Event schema on the public landing page only", () => {
+  it("does not publish expired live-event schema from the on-demand landing page", () => {
     expect(ROOT).not.toContain("application/ld+json");
-    expect(LANDING).toContain("application/ld+json");
-    expect(LANDING).toContain("VirtualLocation");
-    expect(LANDING).toContain("2026-08-29T11:00:00-04:00");
-    expect(LANDING).toContain("2026-08-30T16:00:00-04:00");
+    expect(LANDING).not.toContain("application/ld+json");
+    expect(LANDING).not.toContain("VirtualLocation");
+    expect(LANDING).not.toContain("2026-08-29T11:00:00-04:00");
+    expect(LANDING).not.toContain("2026-08-30T16:00:00-04:00");
     expect(AUDIT).toContain('name: "robots", content: "noindex,nofollow"');
   });
 });

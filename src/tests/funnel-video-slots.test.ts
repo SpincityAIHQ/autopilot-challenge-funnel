@@ -4,7 +4,10 @@ import { readFileSync } from "node:fs";
 const COMPONENT = readFileSync("src/components/FunnelVideoSlot.tsx", "utf8");
 const VIDEO_SLOT = readFileSync("src/components/VideoSlot.tsx", "utf8");
 const LANDING = readFileSync("src/routes/index.tsx", "utf8");
-const LANDING_FORM = readFileSync("src/components/reserve/LandingReservationForm.tsx", "utf8");
+const LANDING_FORM = readFileSync("src/components/TrainingWaitlistForm.tsx", "utf8");
+const ACADEMY_SUMMIT = readFileSync("src/routes/summit.tsx", "utf8");
+const ACADEMY_VAULT = readFileSync("src/routes/vault.tsx", "utf8");
+const ACCELERATOR = readFileSync("src/routes/accelerator.tsx", "utf8");
 const CHECKOUT = readFileSync("src/routes/checkout.tsx", "utf8");
 const CONFIRMED = readFileSync("src/routes/confirmed.tsx", "utf8");
 const VIP = readFileSync("src/routes/offer/vip-upgrade.tsx", "utf8");
@@ -34,9 +37,11 @@ describe("mobile funnel video slots", () => {
     expect(COMPONENT).toContain("Responsive 16:9");
   });
 
-  it("renders empty placeholders only in private owner review", () => {
+  it("renders empty slots only for owner review unless a public branded poster is requested", () => {
     expect(COMPONENT).toContain("useQaReviewMode");
-    expect(COMPONENT).toContain("if (!qaReview) return null");
+    expect(COMPONENT).toContain("if (!alwaysVisible) return null");
+    expect(COMPONENT).toContain("academy-vsl-poster");
+    expect(LANDING).toContain("alwaysVisible");
   });
 
   it("keeps Vimeo inside the funnel while preserving player controls", () => {
@@ -56,7 +61,7 @@ describe("mobile funnel video slots", () => {
 
   it("keeps the VSL before the lead form or decision action on all three sales pages", () => {
     expect(LANDING.indexOf("<FunnelVideoSlot")).toBeLessThan(
-      LANDING.indexOf("<LandingReservationForm"),
+      LANDING.indexOf("<TrainingWaitlistForm"),
     );
     expect(RESERVE_VIP.indexOf("<FunnelVideoSlot")).toBeLessThan(
       RESERVE_VIP.indexOf("Upgrade My Reservation"),
@@ -66,14 +71,28 @@ describe("mobile funnel video slots", () => {
     );
   });
 
-  it("maps one recorded VSL to each sales page and one to confirmation", () => {
-    expect(LANDING).toContain("VITE_SUMMIT_VIDEO_HERO");
-    expect(LANDING).toContain("LandingReservationForm");
-    expect(LANDING_FORM).toContain('fetch("/api/public/reserve"');
+  it("maps the Academy welcome VSL and free-training entry without disturbing legacy offer videos", () => {
+    expect(LANDING).toContain("VITE_ACADEMY_VSL_URL");
+    expect(LANDING).toContain("TrainingWaitlistForm");
+    expect(LANDING).toContain('connected.includes("free-webinar")');
+    expect(LANDING_FORM).toContain('fetch("/api/public/training-waitlist"');
     expect(RESERVE).not.toContain("FunnelVideoSlot");
     expect(RESERVE_VIP).toContain("VITE_SUMMIT_VIDEO_CHECKOUT");
     expect(RESERVE_VAULT).toContain("VITE_SUMMIT_VIDEO_THANK_YOU_VIP");
     expect(CONFIRMED).toContain("VITE_SUMMIT_VIDEO_THANK_YOU");
+  });
+
+  it("lets visitors hide and restore each page intro, while a changed upload becomes visible", () => {
+    expect(ACADEMY_SUMMIT).toContain('introId="summit"');
+    expect(ACADEMY_VAULT).toContain('introId="vault"');
+    expect(ACCELERATOR).toContain('introId="accelerator"');
+    expect(COMPONENT).toContain("introVideoFingerprint");
+    expect(COMPONENT).toContain("introPreferenceKey");
+    expect(COMPONENT).toContain("window.localStorage.setItem");
+    expect(COMPONENT).toContain("window.localStorage.removeItem");
+    expect(COMPONENT).toContain("Don't show this intro again");
+    expect(COMPONENT).toContain("Show intro video");
+    expect(COMPONENT).toContain("aria-pressed={hidden}");
   });
 
   it("gives confirmation and the audit two independent video slots", () => {
