@@ -10,7 +10,7 @@ SELECT cron.schedule(
     url := 'https://ai-autopilot-summit.lovable.app/api/academy/process-integrations',
     headers := jsonb_build_object(
       'Content-Type', 'application/json',
-      'Authorization', 'Bearer c396ffadbb848dd54ef7c1a6a0d234955101c0ca4af6d536'
+      'Authorization', 'Bearer ' || (SELECT decrypted_secret FROM vault.decrypted_secrets WHERE name = 'academy_scheduler_bearer')
     ),
     body := '{}'::jsonb,
     timeout_milliseconds := 20000

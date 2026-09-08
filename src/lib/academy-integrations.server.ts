@@ -1,4 +1,4 @@
-import { timingSafeEqual } from "node:crypto";
+import { schedulerAuthorized } from "./academy-scheduler.server";
 import { academyDb } from "./academy.server";
 import { reconcileShopifyOrder } from "./academy-commerce.server";
 import { LESSONS, formatTime, tierAllows, watchSummary, type Interval } from "./academy";
@@ -39,16 +39,8 @@ export function learningDeliveryEligible(name: string, p: DeliveryProgress | nul
     return p.workbook_status === "draft" && Date.now() - Date.parse(p.updated_at) >= 3 * 86400000;
   return false;
 }
-function authorized(request: Request) {
-  const expected = process.env.ACADEMY_SCHEDULER_SECRET;
-  const value = request.headers.get("authorization")?.replace(/^Bearer /, "");
-  if (!expected || expected.length < 32 || !value) return false;
-  const a = Buffer.from(expected),
-    b = Buffer.from(value);
-  return a.length === b.length && timingSafeEqual(a, b);
-}
 export async function processAcademyIntegrations(request: Request) {
-  if (!authorized(request)) return new Response("Unauthorized", { status: 401 });
+  if (!(await schedulerAuthorized(request, () => academyDb()))) return new Response("Unauthorized", { status: 401 });
   const db = academyDb();
   let orders = 0,
     delivered = 0,
@@ -221,3 +213,4 @@ export async function processAcademyIntegrations(request: Request) {
     { headers: { "Cache-Control": "no-store" } },
   );
 }
+
