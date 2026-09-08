@@ -424,7 +424,8 @@ export async function handleAcademyPost(request: Request, path: string) {
         p_sms: d.smsConsent && Boolean(phone),
       }),
     );
-    return { ok: true };
+    const grants = await grantsFor(user);
+    return { ok: true, ticket: ticketFor(grants), nextPath: grants.length ? "/learn" : "/class" };
   }
 
   if (path === "preferences") {
@@ -835,3 +836,4 @@ export async function handleAcademyPost(request: Request, path: string) {
   }
   throw new AcademyError("Not found", 404);
 }
+

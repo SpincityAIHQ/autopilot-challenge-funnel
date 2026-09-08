@@ -4,7 +4,7 @@ import { AcademyFrame } from "@/components/AcademyFrame";
 import { supabase } from "@/integrations/supabase/client";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
 export const Route = createFileRoute("/join")({
-  head: () => ({ meta: [{ title: "Join the free webinar | AI AutoPilot" }] }),
+  head: () => ({ meta: [{ title: "Access your training | AI AutoPilot" }] }),
   component: Join,
 });
 function Join() {
@@ -51,7 +51,7 @@ function Join() {
   async function register() {
     setBusy(true);
     try {
-      await academyApi("register", {
+      const result = await academyApi<{ nextPath: string }>("register", {
         marketingConsent: consent,
         phone: phone.trim() || undefined,
         smsConsent: smsConsent && Boolean(phone.trim()),
@@ -61,7 +61,7 @@ function Join() {
           : {},
       });
 
-      window.location.assign("/class");
+      window.location.assign(result.nextPath === "/learn" ? "/learn" : "/class");
     } catch (e) {
       setMessage((e as Error).message);
     } finally {
@@ -111,7 +111,7 @@ function Join() {
         <p className="academy-eyebrow">Your learning journey starts here</p>
         <h1>
           {session.email
-            ? "Join the free classroom"
+            ? "Enter your classroom"
             : login
               ? "Welcome back"
               : "Create your free account"}
@@ -120,6 +120,10 @@ function Join() {
           The moment your account exists, Thoth, your tutor, watches with you: what you watched,
           where you stopped, what you saved. Your progress, activity sheet and feedback live in one
           place.
+        </p>
+        <p>
+          Returning Summit attendee? Use the email address on your invitation. After you confirm
+          it, your purchased access opens automatically.
         </p>
         {session.email ? (
           <p>Signed in as {session.email}</p>
@@ -187,7 +191,7 @@ function Join() {
 
         {session.email ? (
           <button type="button" className="academy-button" onClick={register} disabled={busy}>
-            Enter the free classroom
+            Enter my classroom
           </button>
         ) : (
           <button type="button" className="academy-text-button" onClick={() => setLogin(!login)}>

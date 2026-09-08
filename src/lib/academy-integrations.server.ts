@@ -1,4 +1,4 @@
-import { timingSafeEqual } from "node:crypto";
+import { schedulerAuthorized } from "./academy-scheduler.server";
 import { academyDb } from "./academy.server";
 import { reconcileShopifyOrder } from "./academy-commerce.server";
 import { LESSONS, formatTime, tierAllows, watchSummary, type Interval } from "./academy";
@@ -39,16 +39,8 @@ export function learningDeliveryEligible(name: string, p: DeliveryProgress | nul
     return p.workbook_status === "draft" && Date.now() - Date.parse(p.updated_at) >= 3 * 86400000;
   return false;
 }
-function authorized(request: Request) {
-  const expected = process.env.ACADEMY_SCHEDULER_SECRET;
-  const value = request.headers.get("authorization")?.replace(/^Bearer /, "");
-  if (!expected || expected.length < 32 || !value) return false;
-  const a = Buffer.from(expected),
-    b = Buffer.from(value);
-  return a.length === b.length && timingSafeEqual(a, b);
-}
 export async function processAcademyIntegrations(request: Request) {
-  if (!authorized(request)) return new Response("Unauthorized", { status: 401 });
+  if (!(await schedulerAuthorized(request, () => academyDb()))) return new Response("Unauthorized", { status: 401 });
   const db = academyDb();
   let orders = 0,
     delivered = 0,
@@ -110,7 +102,7 @@ export async function processAcademyIntegrations(request: Request) {
       if (profile.error) throw profile.error;
       if (!profile.data?.marketing_consent) status = "cancelled";
       else {
-        const [purchases, progress] = await Promise.all([
+        const [purchases, progress, importedPurchase] = await Promise.all([
           db
             .from("academy_grants")
             .select("tier")
@@ -122,8 +114,14 @@ export async function processAcademyIntegrations(request: Request) {
             .eq("user_id", row.user_id)
             .eq("lesson_id", "free-webinar")
             .maybeSingle(),
+          // The legacy purchase roster is independent of Shopify grants. This
+          // service-only lookup uses verified Auth identity and does not claim tickets.
+          row.name === "webinar_not_started"
+            ? db.rpc("academy_has_imported_ticket", { p_user: row.user_id })
+            : Promise.resolve({ data: false, error: null }),
         ]);
-        if (purchases.error || progress.error) throw new Error("ELIGIBILITY_UNAVAILABLE");
+        if (purchases.error || progress.error || importedPurchase.error)
+          throw new Error("ELIGIBILITY_UNAVAILABLE");
         let learningPayload: Record<string, unknown> = {};
         let learningAllowed = true;
         if (row.name.startsWith("learning_")) {
@@ -176,7 +174,9 @@ export async function processAcademyIntegrations(request: Request) {
         if (!learningAllowed) status = "cancelled";
         else if (
           row.name === "webinar_not_started" &&
-          ((progress.data?.intervals ?? []).length > 0 || (purchases.data ?? []).length > 0)
+          ((progress.data?.intervals ?? []).length > 0 ||
+            (purchases.data ?? []).length > 0 ||
+            importedPurchase.data === true)
         )
           status = "cancelled";
         else {

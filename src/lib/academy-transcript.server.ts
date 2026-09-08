@@ -20,10 +20,17 @@ type Storage = {
     };
   };
 };
-const bundled = import.meta.glob<string>("./transcripts/*.vtt", {
-  query: "?raw",
-  import: "default",
-});
+// Vite transforms this literal glob call into server-bundled loaders. Raw
+// Node/Bun test imports have no glob runtime; keep those imports usable.
+let bundled: Record<string, () => Promise<string>> = {};
+try {
+  bundled = import.meta.glob<string>("./transcripts/*.vtt", {
+    query: "?raw",
+    import: "default",
+  });
+} catch {
+  bundled = {};
+}
 export function bundledTranscriptIds() {
   return Object.keys(bundled).map((k) => k.replace(/^.*\//, "").replace(/\.vtt$/, ""));
 }
@@ -101,3 +108,4 @@ export async function loadTranscript(
   cache.set(id, { cues, at: Date.now() });
   return cues;
 }
+

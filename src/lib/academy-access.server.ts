@@ -2,6 +2,7 @@ import { createHash, createHmac, randomUUID } from "node:crypto";
 import type { User } from "@supabase/supabase-js";
 import { academyDb, AcademyError } from "./academy.server";
 import { isStaffEmail, STAFF_TIERS } from "./academy-staff.server";
+import { importedTicketGrants } from "./academy-imported-tickets.server";
 
 export function accessCode(id: string, generation: string, secret: string) {
   if (secret.length < 32) throw new Error("ACCESS_SECRET_REQUIRED");
@@ -131,7 +132,8 @@ export async function requestAccessCode(user: User) {
 export async function redeemedGrants(user: User, forceRefresh = false) {
   // Owner review access: server-only allowlist, verified user email, no purchase.
   if (isStaffEmail(user.email)) return [...STAFF_TIERS];
-  if (process.env.ACADEMY_PAID_ACCESS_ENABLED !== "true") return [];
+  const imported = await importedTicketGrants(user.id);
+  if (process.env.ACADEMY_PAID_ACCESS_ENABLED !== "true") return imported;
   const db = academyDb(),
     now = new Date().toISOString();
   const codes = await db
@@ -140,7 +142,7 @@ export async function redeemedGrants(user: User, forceRefresh = false) {
     .eq("redeemed_by", user.id)
     .gt("access_until", now);
   if (codes.error) throw new AcademyError("Course access could not be verified.", 503);
-  if (!codes.data?.length) return [];
+  if (!codes.data?.length) return imported;
   const ids = [...new Set(codes.data.map((c) => c.order_id))];
   const orders = await db
     .from("academy_orders")
@@ -160,7 +162,7 @@ export async function redeemedGrants(user: User, forceRefresh = false) {
   ]);
   if (grants.error || states.error)
     throw new AcademyError("Course access could not be verified.", 503);
-  return codes.data
+  const redeemed = codes.data
     .filter(
       (c) =>
         states.data?.some((o) => o.order_id === c.order_id && !o.needs_review) &&
@@ -174,4 +176,6 @@ export async function redeemedGrants(user: User, forceRefresh = false) {
         ),
     )
     .map((c) => c.tier);
+  return [...new Set([...imported, ...redeemed])];
 }
+
