@@ -1,5 +1,22 @@
 import { academyDb } from "./academy.server";
 import { accessCode, codeHash, accessCodeReady } from "./academy-access.server";
+export function accessDeliveryResponseStatus(
+  response: Pick<Response, "ok" | "status">,
+  attempts: number,
+) {
+  if (response.ok) return "accepted";
+  if ((response.status === 429 || response.status >= 500) && attempts < 5) return "retry";
+  return "unknown";
+}
+export function accessDeliveryFailureStatus(
+  attempted: boolean,
+  previouslyAttempted: boolean,
+  attempts: number,
+) {
+  if (attempted) return "unknown";
+  if (attempts < 5) return "retry";
+  return previouslyAttempted ? "unknown" : "failed";
+}
 export async function deliverAccessCodes() {
   const secret = process.env.ACADEMY_ACCESS_CODE_SECRET;
   const endpoint = process.env.ACADEMY_GHL_ACCESS_WEBHOOK_URL;
@@ -20,11 +37,13 @@ export async function deliverAccessCodes() {
   )
     return { accessEmail: "not_enabled", accepted: 0, unknown: 0 };
   const db = academyDb(),
-    claimed = await db.rpc("academy_claim_access_deliveries", { p_limit: 10 });
+    claimed = await db.rpc("academy_claim_access_deliveries", { p_limit: 1 });
   if (claimed.error) throw new Error("ACCESS_QUEUE_UNAVAILABLE");
   let accepted = 0,
     unknown = 0;
   for (const row of claimed.data ?? []) {
+    const lease = row.locked_at;
+    if (!lease) throw new Error("ACCESS_QUEUE_LEASE_MISSING");
     let status = "unknown";
     let attempted = false;
     try {
@@ -81,7 +100,7 @@ export async function deliverAccessCodes() {
           const r = await fetch(endpoint!, {
             method: "POST",
             headers: { "Content-Type": "application/json", "X-Academy-Event-Id": row.id },
-            signal: AbortSignal.timeout(8000),
+            signal: AbortSignal.timeout(5000),
             body: JSON.stringify({
               event_id: row.id,
               event_name: "purchase_access_code",
@@ -96,22 +115,27 @@ export async function deliverAccessCodes() {
               redeem_url: "https://aiautopilotsummit.com/redeem",
             }),
           });
-          status = r.ok ? "accepted" : "unknown";
+          status = accessDeliveryResponseStatus(r, row.attempts);
         }
       }
     } catch {
-      status = attempted ? "unknown" : row.attempts >= 5 ? "failed" : "pending";
+      status = accessDeliveryFailureStatus(attempted, Boolean(row.send_attempted_at), row.attempts);
     }
+    const retrying = status === "pending" || status === "retry";
+    const sendAttemptedAt = row.send_attempted_at ?? (attempted ? new Date().toISOString() : null);
     const saved = await db
       .from("academy_access_deliveries")
       .update({
         status,
-        completed_at: status === "pending" ? null : new Date().toISOString(),
+        send_attempted_at: sendAttemptedAt,
+        completed_at: retrying ? null : new Date().toISOString(),
         due_at: new Date(Date.now() + Math.min(2 ** row.attempts, 60) * 60000).toISOString(),
       })
       .eq("id", row.id)
-      .eq("status", "processing");
-    if (saved.error) throw new Error("ACCESS_RECEIPT_NOT_SAVED");
+      .eq("status", "processing")
+      .eq("locked_at", lease)
+      .select("id");
+    if (saved.error || saved.data.length !== 1) throw new Error("ACCESS_RECEIPT_NOT_SAVED");
     if (status === "accepted") accepted++;
     if (status === "unknown") unknown++;
   }

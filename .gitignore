@@ -33,3 +33,10 @@ dist-ssr
 
 # Supabase CLI local state
 supabase/.temp/
+
+# Runtime configuration belongs in the deployment secret store, never Git.
+.env
+.env.*
+!.env.example
+# This file is intentionally limited to browser-public VITE_ values.
+!.env.production

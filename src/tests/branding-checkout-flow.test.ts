@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 
 const ROOT = readFileSync("src/routes/__root.tsx", "utf8");
 const LANDING = readFileSync("src/routes/index.tsx", "utf8");
-const LANDING_FORM = readFileSync("src/components/reserve/LandingReservationForm.tsx", "utf8");
+const LANDING_FORM = readFileSync("src/components/TrainingWaitlistForm.tsx", "utf8");
 const CHECKOUT = readFileSync("src/routes/checkout.tsx", "utf8");
 const CONFIRMED = readFileSync("src/routes/confirmed.tsx", "utf8");
 const VIP = readFileSync("src/routes/offer/vip-upgrade.tsx", "utf8");
@@ -27,29 +27,30 @@ describe("SpinCityHQ and NuAmenti Summit branding", () => {
     expect(CUSTOMER_COPY.toLowerCase()).not.toContain("podcast");
   });
 
-  it("keeps the autonomous-business promise in plain language", () => {
-    expect(LANDING).toContain("BUILD THE BUSINESS");
-    expect(LANDING).toContain("OWN THE SOFTWARE");
-    expect(LANDING).toContain("HIRE THE AI TEAM");
-    expect(LANDING).toContain("PUT REPEATABLE WORK ON AUTOPILOT");
-    expect(LANDING).toContain("AI Readiness Blueprint");
+  it("keeps the accountable AI-team lesson in plain language", () => {
+    expect(LANDING).toContain("Your expertise.");
+    expect(LANDING).toContain("Your business.");
+    expect(LANDING).toContain("Your AI team.");
+    expect(LANDING).toContain("Diagnose the bottleneck");
+    expect(LANDING).toContain("Give the agent a bounded job");
+    expect(LANDING).toContain("Prove the result");
+    expect(LANDING).toContain("VITE_ACADEMY_VSL_URL");
     expect(LANDING).not.toContain("AI Business GPS");
-    expect(LANDING).toContain("Internal Business App Plan");
-    expect(LANDING).toContain("Do the Math");
   });
 });
 
 describe("video-first conversion order", () => {
-  it("puts the landing VSL directly after the headline and the reservation form directly after the VSL", () => {
-    const headline = LANDING.indexOf("PUT REPEATABLE WORK ON AUTOPILOT");
+  it("puts the landing VSL after the headline and the free-training entry directly after the VSL", () => {
+    const headline = LANDING.indexOf("Your expertise.");
     const video = LANDING.indexOf("<FunnelVideoSlot", headline);
-    const form = LANDING.indexOf("<LandingReservationForm", video);
-    const supportingCopy = LANDING.indexOf("This is a live, two-day business build", form);
+    const form = LANDING.indexOf("<TrainingWaitlistForm", video);
+    const supportingCopy = LANDING.indexOf("Meet Thoth", form);
 
     expect(headline).toBeGreaterThan(-1);
     expect(video).toBeGreaterThan(headline);
     expect(form).toBeGreaterThan(video);
-    expect(LANDING_FORM).toContain("Take My General Admission Seat");
+    expect(LANDING_FORM).toContain("Join the waiting list");
+    expect(LANDING_FORM).toContain("/api/public/training-waitlist");
     expect(supportingCopy).toBeGreaterThan(form);
   });
 

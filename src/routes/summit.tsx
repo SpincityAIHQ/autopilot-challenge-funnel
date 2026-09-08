@@ -24,7 +24,8 @@ export const Route = createFileRoute("/summit")({
       { property: "og:title", content: "Summit sessions | AI AutoPilot" },
       {
         property: "og:description",
-        content: "Five recorded Summit sessions, each with notes, an activity sheet and your tutor.",
+        content:
+          "Five recorded Summit sessions, each with notes, an activity sheet and your tutor.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -45,6 +46,7 @@ const SUMMIT_IDS = [
 function Summit() {
   const session = useAcademySession();
   const catalogue = useCatalogue();
+  const checkoutEnabled = catalogue?.checkoutEnabled === true;
   const [grants, setGrants] = useState<string[]>([]);
   const [ticket, setTicket] = useState<Ticket | null>(null);
   useEffect(() => {
@@ -79,6 +81,7 @@ function Summit() {
           className="academy-page-vsl"
           autoplay={false}
           alwaysVisible
+          introId="summit"
           placeholderNote="Spin's Summit opener is being uploaded."
           placeholderCta={null}
         />
@@ -135,23 +138,35 @@ function Summit() {
                 <small>USD</small>
               </p>
               <p>{o.includes}</p>
-              <a
-                className="academy-button"
-                href={o.url}
-                onClick={() => {
-                  void academyApi("event", {
-                    name: "checkout_clicked",
-                    offer: o.tier,
-                    eventId: crypto.randomUUID(),
-                  }).catch(() => {});
-                }}
-              >
-                Get instant access
-              </a>
+              {checkoutEnabled ? (
+                <a
+                  className="academy-button"
+                  href={o.url}
+                  onClick={() => {
+                    void academyApi("event", {
+                      name: "checkout_clicked",
+                      offer: o.tier,
+                      eventId: crypto.randomUUID(),
+                    }).catch(() => {});
+                  }}
+                >
+                  Continue to secure checkout
+                </a>
+              ) : (
+                <span className="academy-button academy-button-disabled" aria-disabled="true">
+                  Checkout temporarily paused
+                </span>
+              )}
               <p className="academy-muted">Current terms shown at checkout.</p>
             </article>
           ))}
         </div>
+        {!checkoutEnabled ? (
+          <p className="academy-status" role="status">
+            New purchases are paused while payment-to-access delivery is verified. Existing buyers
+            can still sign in and redeem their access.
+          </p>
+        ) : null}
         <div className="academy-callout academy-card academy-card-gold">
           <div>
             <p className="academy-eyebrow">Already purchased?</p>

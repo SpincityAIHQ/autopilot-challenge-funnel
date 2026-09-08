@@ -1,4 +1,5 @@
 import { parseVimeoUrl, vimeoOembedUrl, type VimeoRef } from "./vimeo";
+import { slotMedia } from "./academy-content.server";
 /**
  * Server-side confirmation of a Vimeo slot's duration through the public
  * oEmbed endpoint. Cached for an hour per video so lesson loads stay fast.
@@ -30,13 +31,5 @@ export function configuredVimeo(envKey: string): VimeoRef | null {
 }
 /** Which catalogue slots have a recording connected. Booleans only; never URLs. */
 export function connectedSlots(ids: { id: string; envKey: string }[]) {
-  return ids
-    .filter(
-      (l) =>
-        configuredVimeo(l.envKey) ||
-        (l.id === "free-webinar"
-          ? process.env[`ACADEMY_MEDIA_${l.envKey}`]
-          : process.env[`ACADEMY_MEDIA_PATH_${l.envKey}`]),
-    )
-    .map((l) => l.id);
+  return ids.filter((lesson) => slotMedia(lesson.id) !== null).map((lesson) => lesson.id);
 }

@@ -4,7 +4,7 @@ export const SUMMIT_TITLE = "AI AutoPilot | Free Webinar, Summit & Learning";
 export const SUMMIT_DESCRIPTION =
   "Learn to build an accountable AI team around your business. Start with the free webinar, apply the lessons and explore the AI AutoPilot Summit recordings.";
 export const SOCIAL_IMAGE_ALT =
-  "SpinCityHQ and NuAmenti present the AI AutoPilot 2-Day Summit, live online August 29–30, 2026.";
+  "SpinCityHQ and NuAmenti present the AI AutoPilot learning platform and free business-automation training.";
 
 type ImportMetaWithEnv = ImportMeta & {
   env?: Record<string, string | undefined>;

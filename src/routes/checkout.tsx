@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { z } from "zod";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
@@ -27,6 +27,9 @@ export const Route = createFileRoute("/checkout")({
     ],
     links: [{ rel: "canonical", href: "/checkout" }],
   }),
+  beforeLoad: () => {
+    throw redirect({ to: "/summit" });
+  },
   component: Checkout,
 });
 

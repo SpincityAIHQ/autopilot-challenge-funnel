@@ -1,7 +1,7 @@
 {
-  "name": "AI AutoPilot 2-Day Summit",
+  "name": "AI AutoPilot Learning Platform",
   "short_name": "AI AutoPilot",
-  "description": "SpinCityHQ and NuAmenti present the AI AutoPilot 2-Day Summit.",
+  "description": "Learn to build accountable AI systems around your business, beginning with free training.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0B0C0E",

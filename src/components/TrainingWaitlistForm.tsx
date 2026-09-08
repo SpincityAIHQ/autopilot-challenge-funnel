@@ -48,8 +48,8 @@ export function TrainingWaitlistForm() {
         <p className="academy-eyebrow">You're on the list</p>
         <h2>Thank you, family.</h2>
         <p>
-          We'll email {email} the moment the free training opens. Watch your inbox — and check
-          Promotions and Spam so you don't miss it.
+          Your request is saved for {email}. We will send the training-access notice when the
+          classroom opens. Check Promotions and Spam so you do not miss it.
         </p>
       </div>
     );
@@ -82,13 +82,17 @@ export function TrainingWaitlistForm() {
       </label>
       <label className="academy-check">
         <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
-        <span>Yes, email me updates about the training and what comes after it. Optional.</span>
+        <span>
+          Also email me optional learning updates, Summit news and offers. I can unsubscribe any
+          time.
+        </span>
       </label>
       <button className="academy-button" disabled={busy}>
         {busy ? "Adding you…" : "Join the waiting list"}
       </button>
       <p className="academy-muted">
-        We'll only use this to send you the training. Unsubscribe any time.
+        Joining requests one training-access notice. The optional box also permits ongoing updates
+        and offers.
       </p>
       <p role="status" className="academy-status">
         {message}
