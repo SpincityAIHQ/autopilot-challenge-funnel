@@ -52,11 +52,16 @@ function Accelerator() {
               ${ACCELERATOR_OFFER.price.toLocaleString()}
               <small>USD</small>
             </p>
-            <a className="academy-button" href={ACCELERATOR_OFFER.url}>
-              Review the programme
+            <a
+              className="academy-button"
+              href={ACCELERATOR_OFFER.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Purchase your Accelerator seat
             </a>
-            <a className="academy-text-button" href="mailto:Info@NuAmenti.com">
-              Ask about joining the current cohort
+            <a className="academy-text-button" href="/redeem">
+              Already purchased? Redeem your code →
             </a>
           </div>
           <div className="academy-card academy-card-gold">
@@ -110,12 +115,15 @@ function Accelerator() {
                 ) : (
                   <p className="academy-muted">Spin is posting this day's build steps.</p>
                 )}
-                <a
-                  className={`academy-button ${connected ? "" : "academy-button-secondary"}`}
-                  href={connected ? `/lesson/${d.lessonId}` : "/redeem"}
-                >
-                  {connected ? "Open the build room" : "Redeem Accelerator access"}
-                </a>
+                {connected ? (
+                  <a className="academy-button" href={`/lesson/${d.lessonId}`}>
+                    Open the build room
+                  </a>
+                ) : (
+                  <span className="academy-button academy-button-secondary" aria-disabled="true">
+                    Recording coming
+                  </span>
+                )}
               </article>
             );
           })}
