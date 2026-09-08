@@ -52,11 +52,16 @@ function Accelerator() {
               ${ACCELERATOR_OFFER.price.toLocaleString()}
               <small>USD</small>
             </p>
-            <a className="academy-button" href={ACCELERATOR_OFFER.url}>
-              Review the programme
+            <a
+              className="academy-button"
+              href={ACCELERATOR_OFFER.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Purchase your Accelerator seat
             </a>
-            <a className="academy-text-button" href="mailto:Info@NuAmenti.com">
-              Ask about joining the current cohort
+            <a className="academy-text-button" href="/redeem">
+              Already purchased? Redeem your code →
             </a>
           </div>
           <div className="academy-card academy-card-gold">
