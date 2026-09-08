@@ -36,7 +36,7 @@ BEGIN
     job_id := v_job_id,
     command := $command$
       SELECT net.http_post(
-        url := 'https://ai-autopilot-summit.lovable.app/api/academy/process-integrations',
+        url := 'https://aiautopilotsummit.com/api/academy/process-integrations',
         headers := jsonb_build_object(
           'Content-Type', 'application/json',
           'Authorization', 'Bearer ' || (
