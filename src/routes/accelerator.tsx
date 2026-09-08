@@ -115,12 +115,15 @@ function Accelerator() {
                 ) : (
                   <p className="academy-muted">Spin is posting this day's build steps.</p>
                 )}
-                <a
-                  className={`academy-button ${connected ? "" : "academy-button-secondary"}`}
-                  href={connected ? `/lesson/${d.lessonId}` : "/redeem"}
-                >
-                  {connected ? "Open the build room" : "Redeem Accelerator access"}
-                </a>
+                {connected ? (
+                  <a className="academy-button" href={`/lesson/${d.lessonId}`}>
+                    Open the build room
+                  </a>
+                ) : (
+                  <span className="academy-button academy-button-secondary" aria-disabled="true">
+                    Recording coming
+                  </span>
+                )}
               </article>
             );
           })}
