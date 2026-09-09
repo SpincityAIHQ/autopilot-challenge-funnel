@@ -149,7 +149,12 @@ export function composeWelcomeMessage(
         : freeVideoReady
           ? "Your free training is ready. Start with one business bottleneck you want to solve."
           : "Your account is ready. You can explore the introductory lesson notes and activity sheet; the free training recording is not available yet.",
-      `${assistant} is your AI learning guide inside the platform. Start one lesson, save one useful idea, and ask for help with the part you want to apply.`,
+      `Welcome to the SPINXP.ai learning experience behind AI AutoPilot. ${assistant} is your AI guide inside the platform. Your saved viewing progress, knowledge checks and activity responses give your guide context for the lesson you are working on.`,
+      "Before you begin, choose one repeated task or business bottleneck you want to improve. Keep that real example beside you as you work through the training.",
+      freeVideoReady || paid
+        ? "Watch a short section while signed in, then ask your guide about anything unclear. Use the knowledge check to test your understanding and the activity sheet to apply one idea. Save your work and use your dashboard to continue later."
+        : "While the free recording is being prepared, read the introductory notes, ask your guide about anything unclear, and use the activity sheet to map your business example. Save your work so you can build on it when the recording is available.",
+      "Learning reminders and promotional emails are optional; turn them off from My account at https://aiautopilotsummit.com/learn. Text messages require separate permission; reply STOP to opt out. Keep passwords, customer details and confidential business information out of chats and activity responses.",
     ],
     paid ? "Open your lessons" : "Open your learning space",
     `https://aiautopilotsummit.com${paid ? "/learn" : "/class"}`,
