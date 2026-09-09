@@ -329,6 +329,57 @@ export type Database = {
         }
         Relationships: []
       }
+      academy_learning_activity: {
+        Row: {
+          last_active_at: string
+          user_id: string
+        }
+        Insert: {
+          last_active_at?: string
+          user_id: string
+        }
+        Update: {
+          last_active_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      academy_learning_milestones: {
+        Row: {
+          active: boolean
+          id: string
+          kind: string
+          label: string
+          lesson_id: string
+          media_version: string
+          source_reference: string
+          window_end_seconds: number
+          window_start_seconds: number
+        }
+        Insert: {
+          active?: boolean
+          id: string
+          kind: string
+          label: string
+          lesson_id: string
+          media_version: string
+          source_reference: string
+          window_end_seconds: number
+          window_start_seconds: number
+        }
+        Update: {
+          active?: boolean
+          id?: string
+          kind?: string
+          label?: string
+          lesson_id?: string
+          media_version?: string
+          source_reference?: string
+          window_end_seconds?: number
+          window_start_seconds?: number
+        }
+        Relationships: []
+      }
       academy_orders: {
         Row: {
           email: string
@@ -406,6 +457,7 @@ export type Database = {
           created_at: string
           email: string
           marketing_consent: boolean
+          onboarding_complete: boolean
           phone: string | null
           sms_consent: boolean
           sms_consent_at: string | null
@@ -420,6 +472,7 @@ export type Database = {
           created_at?: string
           email: string
           marketing_consent?: boolean
+          onboarding_complete?: boolean
           phone?: string | null
           sms_consent?: boolean
           sms_consent_at?: string | null
@@ -434,6 +487,7 @@ export type Database = {
           created_at?: string
           email?: string
           marketing_consent?: boolean
+          onboarding_complete?: boolean
           phone?: string | null
           sms_consent?: boolean
           sms_consent_at?: string | null
@@ -542,6 +596,39 @@ export type Database = {
           name?: string
           rotated_at?: string
           token_sha256?: string
+        }
+        Relationships: []
+      }
+      academy_transcripts: {
+        Row: {
+          active: boolean
+          cue_count: number
+          imported_at: string
+          lesson_id: string
+          media_version: string
+          source_name: string
+          source_sha256: string
+          source_vtt: string
+        }
+        Insert: {
+          active?: boolean
+          cue_count: number
+          imported_at?: string
+          lesson_id: string
+          media_version: string
+          source_name: string
+          source_sha256: string
+          source_vtt: string
+        }
+        Update: {
+          active?: boolean
+          cue_count?: number
+          imported_at?: string
+          lesson_id?: string
+          media_version?: string
+          source_name?: string
+          source_sha256?: string
+          source_vtt?: string
         }
         Relationships: []
       }
@@ -1586,6 +1673,22 @@ export type Database = {
         }
         Returns: string
       }
+      academy_prepare_customer: {
+        Args: { p_email: string; p_user: string }
+        Returns: boolean
+      }
+      academy_queue_access_activation: {
+        Args: { p_hash: string; p_user: string }
+        Returns: undefined
+      }
+      academy_queue_contact_update: {
+        Args: { p_user: string }
+        Returns: undefined
+      }
+      academy_queue_customer_return: {
+        Args: { p_user: string }
+        Returns: boolean
+      }
       academy_queue_learning_nudges: { Args: never; Returns: number }
       academy_reconcile_order: {
         Args: {
@@ -1628,8 +1731,8 @@ export type Database = {
               p_attribution: Json
               p_consent: boolean
               p_email: string
-              p_phone?: string
-              p_sms?: boolean
+              p_phone: string
+              p_sms: boolean
               p_timezone: string
               p_user: string
             }
@@ -1658,6 +1761,10 @@ export type Database = {
       academy_scheduler_authorized: {
         Args: { p_token_sha256: string }
         Returns: boolean
+      }
+      academy_touch_learning_activity: {
+        Args: { p_user: string }
+        Returns: undefined
       }
       academy_tutor_budget: {
         Args: { p_global_limit: number; p_user: string }
