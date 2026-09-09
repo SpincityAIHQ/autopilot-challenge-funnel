@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { AcademyFrame, TicketBadge } from "@/components/AcademyFrame";
+import { AcademyFrame } from "@/components/AcademyFrame";
 import { ACCELERATOR_OFFER, SUMMIT_OFFERS, guideFor, type Offer, type Ticket } from "@/lib/academy";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
@@ -91,7 +91,6 @@ function VaultSession({ session }: { session: ReturnType<typeof useAcademySessio
                 </a>
               </>
             ) : null}
-            {listing ? <TicketBadge ticket={listing.ticket} /> : null}
           </div>
           <FunnelVideoSlot
             url={import.meta.env.VITE_ACADEMY_VSL_VAULT || null}
