@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AcademyFrame } from "@/components/AcademyFrame";
 import { academyJoinHref } from "@/lib/academy-navigation";
-import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import {
   ACCELERATOR_OFFER,
   LESSONS,
@@ -72,17 +71,6 @@ function Summit() {
             Three days, recorded and waiting for you. Pick a session and step into the classroom.
           </p>
         </div>
-
-        <FunnelVideoSlot
-          url={import.meta.env.VITE_ACADEMY_VSL_SUMMIT || null}
-          label="Your Summit opener"
-          envKey="VITE_ACADEMY_VSL_SUMMIT"
-          className="academy-page-vsl"
-          autoplay={false}
-          alwaysVisible
-          placeholderNote="Spin's Summit opener is being uploaded."
-          placeholderCta={null}
-        />
 
         <div className="academy-learning-grid">
           {lessons.map((l, i) => {
