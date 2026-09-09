@@ -278,6 +278,57 @@ export type Database = {
           },
         ]
       }
+      academy_imported_tickets: {
+        Row: {
+          active: boolean
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          email: string
+          expires_at: string | null
+          id: string
+          source_batch: string
+          source_key: string
+          source_kind: string
+          source_reference: string | null
+          terms_note: string
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string | null
+          id?: string
+          source_batch: string
+          source_key: string
+          source_kind?: string
+          source_reference?: string | null
+          terms_note: string
+          tier: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string | null
+          id?: string
+          source_batch?: string
+          source_key?: string
+          source_kind?: string
+          source_reference?: string | null
+          terms_note?: string
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       academy_orders: {
         Row: {
           email: string
@@ -470,6 +521,27 @@ export type Database = {
           status?: string
           user_id?: string
           workbook_snapshot?: Json
+        }
+        Relationships: []
+      }
+      academy_scheduler_credentials: {
+        Row: {
+          enabled: boolean
+          name: string
+          rotated_at: string
+          token_sha256: string
+        }
+        Insert: {
+          enabled?: boolean
+          name: string
+          rotated_at?: string
+          token_sha256: string
+        }
+        Update: {
+          enabled?: boolean
+          name?: string
+          rotated_at?: string
+          token_sha256?: string
         }
         Relationships: []
       }
@@ -1470,6 +1542,12 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      academy_claim_imported_tickets: {
+        Args: { p_user: string }
+        Returns: {
+          tier: string
+        }[]
+      }
       academy_claim_outbox: {
         Args: { p_limit: number }
         Returns: {
@@ -1491,6 +1569,10 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      academy_has_imported_ticket: {
+        Args: { p_user: string }
+        Returns: boolean
       }
       academy_issue_access_code: {
         Args: {
@@ -1572,6 +1654,10 @@ export type Database = {
           p_user: string
         }
         Returns: undefined
+      }
+      academy_scheduler_authorized: {
+        Args: { p_token_sha256: string }
+        Returns: boolean
       }
       academy_tutor_budget: {
         Args: { p_global_limit: number; p_user: string }
