@@ -2598,3 +2598,18 @@ button.academy-vault-item:hover {
 .academy-week-day h3{margin:6px 0 8px;font-size:1.15rem}
 .academy-week-day ul{margin:8px 0 12px;padding-left:18px;display:grid;gap:6px}
 @media (max-width:560px){.academy-week-one{grid-template-columns:1fr}}
+
+/* Landing hero: video first, headline underneath */
+.academy-hero.academy-hero-stacked {
+  grid-template-columns: 1fr;
+  gap: 32px;
+  max-width: 900px;
+  padding-top: 40px;
+  align-items: start;
+}
+.academy-hero-stacked h1 {
+  margin-top: 14px;
+}
+.academy-hero-stacked .academy-flight-card {
+  margin-top: 28px;
+}
