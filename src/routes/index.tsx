@@ -25,15 +25,19 @@ function Home() {
             <em>Your AI team.</em>
           </h1>
         </div>
-        <div className="academy-hero-media">
+        <div className="academy-hero-media" id="how-it-works" style={{ scrollMarginTop: 100 }}>
+          <p className="academy-eyebrow">How this technology works · by SPINXP.ai</p>
+          <h2>Your AI AutoPilot Summit experience.</h2>
           <FunnelVideoSlot
             url={import.meta.env.VITE_ACADEMY_VSL_URL || null}
-            label="An invitation from Spin"
+            label="How SPINXP.ai supports your AI AutoPilot learning experience"
             envKey="VITE_ACADEMY_VSL_URL"
             autoplay={false}
-            alwaysVisible
-            placeholderCta={null}
           />
+          <p>
+            One orientation for the whole platform: start the free training, learn how to use
+            your classroom, then explore the Summit, Vault and Accelerator at your own pace.
+          </p>
         </div>
         <div>
           <p className="academy-lead">
@@ -72,14 +76,31 @@ function Home() {
             <GuideAvatar guide={GUIDES.thoth} size={96} />
             <div>
               <p className="academy-eyebrow">Meet Thoth · your tutor</p>
-              <h2>The moment you create your account, Thoth watches with you.</h2>
+              <h2>Watch, apply and take your next step.</h2>
               <p>
-                Thoth learns you: where you are with learning, where you are with earning, what you
-                watched, what you skipped and where you stopped. Then it tweaks your path to fit,
-                down to the minute of the video you are asking about. Its job is to make sure you
-                succeed here.
+                Bring one business bottleneck into the classroom. While you are signed in, your
+                saved viewing progress, knowledge checks and activity responses give your AI
+                guide context. Ask Thoth about the lesson, try an example in your own business,
+                and use your dashboard to continue where you left off.
               </p>
             </div>
+          </div>
+        </div>
+        <div className="academy-card" style={{ marginTop: 24 }}>
+          <p className="academy-eyebrow">Your progress, your choices</p>
+          <h2>Useful support starts with what you choose to share.</h2>
+          <p>
+            Learning reminders and promotional emails are optional. Turn them off in My account.
+            Text messages require separate permission; reply STOP to opt out. Account and purchase
+            confirmations are separate from optional follow-up.
+          </p>
+          <p>
+            Keep passwords, customer details and confidential business information out of chats
+            and activity responses. AI guidance can make mistakes; check advice before you apply it.
+          </p>
+          <div className="academy-actions">
+            <a className="academy-text-button" href="/learn">My account and email preferences →</a>
+            <a className="academy-text-button" href="/privacy">Read the privacy notice →</a>
           </div>
         </div>
         <div className="academy-callout academy-card academy-card-gold" style={{ marginTop: 40 }}>
@@ -87,7 +108,8 @@ function Home() {
             <p className="academy-eyebrow">Already with us?</p>
             <h2>Summit and Accelerator students, sign in.</h2>
             <p>
-              Sign in with the email you used at checkout and your access opens at your level.
+              Use your checkout email to find your purchased lessons and access instructions in
+              your dashboard.
             </p>
           </div>
           <a className="academy-button academy-button-secondary" href={academyJoinHref("/learn", true)}>
@@ -98,4 +120,3 @@ function Home() {
     </AcademyFrame>
   );
 }
-

@@ -88,6 +88,7 @@ export function AcademyFrame({
           <span className="academy-label">AI AutoPilot · Education experience</span>
         </div>
         <nav aria-label="Footer">
+          <a href="/#how-it-works">How SPINXP.ai works</a>
           <a href={COMMUNITY_URL}>Free community</a>
           <a href="/privacy">Privacy</a>
           <a href="/terms">Terms</a>
