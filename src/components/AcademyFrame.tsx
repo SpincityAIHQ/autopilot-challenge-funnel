@@ -3,15 +3,6 @@ import { useRouterState } from "@tanstack/react-router";
 import { COMMUNITY_URL, GUIDES, type Guide, type Ticket } from "@/lib/academy";
 import { useAcademySession } from "@/lib/academy-client";
 import { ThothBubble } from "./ThothBubble";
-/** Ticket badge: the student's current stage, named the way the guides name it. */
-export function TicketBadge({ ticket }: { ticket?: Ticket | null }) {
-  if (!ticket) return null;
-  return (
-    <span className="academy-ticket" data-tier={ticket.accelerator ? "accelerator" : ticket.summit}>
-      Ticket · {ticket.label}
-    </span>
-  );
-}
 /** The guide's face: Thoth on the public floors, AI Spin inside the Accelerator. */
 export function GuideAvatar({
   guide = GUIDES.thoth,
