@@ -20,13 +20,22 @@ import {
 import { lessonContent, scoreAnswers } from "./academy-content.server";
 import { isStaffEmail } from "./academy-staff.server";
 import { configuredVimeo, connectedSlots, vimeoDuration } from "./academy-media.server";
-import { loadTranscript, availableTranscriptIds, type TranscriptStore } from "./academy-transcript.server";
+import {
+  loadTranscript,
+  availableTranscriptIds,
+  type TranscriptStore,
+} from "./academy-transcript.server";
 import { retrieveCues } from "./transcript";
 import { consumeRateLimit } from "./rate-limit";
 import { readLimitedBody } from "./academy-http.server";
 import { learningGuidance, learningStats } from "./academy-guidance";
 import { recordLearningActivity } from "./academy-learning-activity.server";
-import { currentMediaProgress, tutorConversation, missedQuizTopics, type TutorConversationRow } from "./academy-tutor-context";
+import {
+  currentMediaProgress,
+  tutorConversation,
+  missedQuizTopics,
+  type TutorConversationRow,
+} from "./academy-tutor-context";
 
 export class AcademyError extends Error {
   constructor(
@@ -48,7 +57,8 @@ function transcriptStore(db: ReturnType<typeof academyDb>): TranscriptStore {
   return {
     storage: db.storage,
     readPrivateTranscript: async (id) => {
-      const { data, error } = await db.from("academy_transcripts")
+      const { data, error } = await db
+        .from("academy_transcripts")
         .select("source_vtt,source_sha256,media_version,active")
         .eq("lesson_id", id)
         .maybeSingle();
@@ -212,7 +222,10 @@ export async function handleAcademyGet(request: Request, path: string) {
     return {
       lessons: LESSONS,
       connected,
-      transcripts: await availableTranscriptIds(LESSONS.filter((l) => connected.includes(l.id)), transcriptStore(academyDb())),
+      transcripts: await availableTranscriptIds(
+        LESSONS.filter((l) => connected.includes(l.id)),
+        transcriptStore(academyDb()),
+      ),
       bookingConfigured: bookingFor([]).configured,
     };
   }
@@ -231,8 +244,13 @@ export async function handleAcademyGet(request: Request, path: string) {
     check(await db.rpc("academy_queue_customer_return", { p_user: user.id }));
   }
   if (path === "onboarding") {
-    const profile = check(await db.from("academy_profiles").select("onboarding_complete")
-      .eq("user_id", user.id).maybeSingle()).data;
+    const profile = check(
+      await db
+        .from("academy_profiles")
+        .select("onboarding_complete")
+        .eq("user_id", user.id)
+        .maybeSingle(),
+    ).data;
     return { registered: profile?.onboarding_complete === true };
   }
   if (path === "lesson") {
@@ -250,7 +268,9 @@ export async function handleAcademyGet(request: Request, path: string) {
     const lesson = lessonContent(id)!;
     await resolveMedia(lesson, db);
     const meta = LESSONS.find((l) => l.id === id)!;
-    lesson.transcript = lesson.media ? await loadTranscript(id, meta.envKey, transcriptStore(db)) : null;
+    lesson.transcript = lesson.media
+      ? await loadTranscript(id, meta.envKey, transcriptStore(db))
+      : null;
     if (progress && progress.media_version !== lesson.media?.version) {
       progress.intervals = [];
       progress.duration = 0;
@@ -272,10 +292,12 @@ export async function handleAcademyGet(request: Request, path: string) {
       await db.from("academy_progress").select("*").eq("user_id", user.id),
     ).data;
     const grants = await grantsFor(user);
-    const visible = (progress ?? []).filter((p) => {
-      const l = LESSONS.find((l) => l.id === p.lesson_id);
-      return l && tierAllows(grants, l.tier);
-    }).map((p) => currentMediaProgress(p, lessonContent(p.lesson_id)?.media?.version));
+    const visible = (progress ?? [])
+      .filter((p) => {
+        const l = LESSONS.find((l) => l.id === p.lesson_id);
+        return l && tierAllows(grants, l.tier);
+      })
+      .map((p) => currentMediaProgress(p, lessonContent(p.lesson_id)?.media?.version));
     const ticket = ticketFor(grants);
     return {
       progress: visible,
@@ -294,7 +316,8 @@ export async function handleAcademyGet(request: Request, path: string) {
     const p =
       check(await db.from("academy_progress").select("*").eq("user_id", user.id)).data ?? [];
     const lessons = LESSONS.filter((l) => tierAllows(grants, l.tier));
-    const visible = p.filter((p) => lessons.some((l) => l.id === p.lesson_id))
+    const visible = p
+      .filter((p) => lessons.some((l) => l.id === p.lesson_id))
       .map((p) => currentMediaProgress(p, lessonContent(p.lesson_id)?.media?.version));
     const { avatarSettings } = await import("./academy-avatar.server");
     const { ready, sessionSeconds, dailySeconds } = avatarSettings();
@@ -357,7 +380,57 @@ export async function handleAcademyGet(request: Request, path: string) {
         .in("status", ["pending", "retry", "processing"]),
     ]);
     [submissions, registrations, learners, checkouts, pending].forEach(check);
+    const [imported, claimed, orders, activeGrants, unknown, lastRun, waitlist] = await Promise.all(
+      [
+        db
+          .from("academy_imported_tickets")
+          .select("id", { count: "exact", head: true })
+          .eq("active", true),
+        db
+          .from("academy_imported_tickets")
+          .select("id", { count: "exact", head: true })
+          .eq("active", true)
+          .not("claimed_by", "is", null),
+        db.from("academy_orders").select("order_id", { count: "exact", head: true }),
+        db
+          .from("academy_grants")
+          .select("line_id", { count: "exact", head: true })
+          .eq("active", true),
+        db
+          .from("academy_outbox")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "unknown"),
+        db
+          .from("academy_outbox")
+          .select("completed_at")
+          .not("completed_at", "is", null)
+          .order("completed_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        db.from("training_waitlist").select("id", { count: "exact", head: true }),
+      ],
+    );
+    const { launchReadiness, readinessSummary } = await import("./launch-readiness");
+    const { transcriptConfigured } = await import("./academy-transcript.server");
+    const readiness = launchReadiness({
+      env: process.env,
+      connected: connectedSlots(LESSONS),
+      transcripts: LESSONS.filter((l) => transcriptConfigured(l.id, l.envKey)).map((l) => l.id),
+      counts: {
+        importedTickets: imported.count ?? 0,
+        importedClaimed: claimed.count ?? 0,
+        orders: orders.count ?? 0,
+        activeGrants: activeGrants.count ?? 0,
+        pendingOutbox: pending.count ?? 0,
+        unknownOutbox: unknown.count ?? 0,
+        profiles: registrations.count ?? 0,
+        waitlist: waitlist.count ?? 0,
+      },
+      lastOutboxRunAt: lastRun.data?.completed_at ?? null,
+    });
     return {
+      readiness,
+      readinessSummary: readinessSummary(readiness),
       submissions: submissions.data,
       metrics: {
         registrations: registrations.count ?? 0,
@@ -443,7 +516,8 @@ export async function handleAcademyPost(request: Request, path: string) {
       throw new AcademyError("Choose a valid timezone.");
     }
     const phone = d.phone && /^[+0-9 ().-]{7,32}$/.test(d.phone) ? d.phone : null;
-    if (d.phone && !phone) throw new AcademyError("Enter a valid mobile number, or leave it blank.");
+    if (d.phone && !phone)
+      throw new AcademyError("Enter a valid mobile number, or leave it blank.");
     check(
       await db.rpc("academy_register", {
         p_user: user.id,
@@ -690,9 +764,10 @@ export async function handleAcademyPost(request: Request, path: string) {
         .then((r) => check(r).data),
     ]);
     const lesson = lessonContent(d.lessonId)!;
-    const quizPractice = latestQuiz?.content_version === lesson.version && Array.isArray(latestQuiz.answers)
-      ? missedQuizTopics(lesson.questions, scoreAnswers(d.lessonId, latestQuiz.answers).feedback)
-      : [];
+    const quizPractice =
+      latestQuiz?.content_version === lesson.version && Array.isArray(latestQuiz.answers)
+        ? missedQuizTopics(lesson.questions, scoreAnswers(d.lessonId, latestQuiz.answers).feedback)
+        : [];
     const progress = savedProgress
       ? currentMediaProgress(savedProgress, lesson.media?.version)
       : null;
@@ -709,7 +784,9 @@ export async function handleAcademyPost(request: Request, path: string) {
     const vaultAllowsUser = vaultAllows(grants);
     const chapters = lesson.media?.chapters ?? [];
     const watch = progress ? watchSummary(progress) : null;
-    const cues = lesson.media ? await loadTranscript(d.lessonId, meta.envKey, transcriptStore(db)) : null;
+    const cues = lesson.media
+      ? await loadTranscript(d.lessonId, meta.envKey, transcriptStore(db))
+      : null;
     const missed = progress
       ? chapterStatus(chapters, progress.intervals, progress.duration).filter(
           (c) => c.status !== "watched",
@@ -899,4 +976,3 @@ export async function handleAcademyPost(request: Request, path: string) {
   }
   throw new AcademyError("Not found", 404);
 }
-

@@ -116,6 +116,11 @@ export async function reconcileShopifyOrder(id: string) {
   if (result.data === true) {
     const { ensureOrderCodes } = await import("./academy-access.server");
     await ensureOrderCodes(id);
+    // Email-matched tickets: the purchaser's confirmed account claims the ticket on sign-in.
+    const { syncEmailTickets, queuePurchaseConfirmations } =
+      await import("./academy-email-tickets.server");
+    await syncEmailTickets(id);
+    await queuePurchaseConfirmations(id);
   }
   return { ok: true, needsReview };
 }
