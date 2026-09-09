@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { PlayCircle } from "lucide-react";
-import { AcademyFrame, GuideAvatar, TicketBadge } from "./AcademyFrame";
+import { AcademyFrame, GuideAvatar } from "./AcademyFrame";
 import { TrackedLessonVideo } from "./TrackedLessonVideo";
 import { VimeoLessonPlayer } from "./VimeoLessonPlayer";
 import { WatchMap } from "./WatchMap";
@@ -207,7 +207,6 @@ function ClassroomSession({
               <p className="academy-eyebrow">{meta?.stage ?? "Lesson"}</p>
               <h1>{meta?.title ?? "Lesson unavailable"}</h1>
             </div>
-            <TicketBadge ticket={ticket} />
           </div>
           <p className="academy-lead">{meta?.summary}</p>
           {error ? (

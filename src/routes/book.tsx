@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { AcademyFrame, TicketBadge } from "@/components/AcademyFrame";
+import { AcademyFrame } from "@/components/AcademyFrame";
 import type { Ticket } from "@/lib/academy";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
 export const Route = createFileRoute("/book")({
@@ -38,7 +38,6 @@ function BookSession({ session }: { session: ReturnType<typeof useAcademySession
             <p className="academy-eyebrow">Accelerator · Included with your ticket</p>
             <h1>Book a 1-on-1 with SpinCity.</h1>
           </div>
-          <TicketBadge ticket={data?.ticket} />
         </div>
         <p className="academy-lead">
           Bring one real workflow and one real question. AI Spin handles the lessons; this time is
