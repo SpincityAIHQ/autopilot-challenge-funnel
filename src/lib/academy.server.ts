@@ -225,10 +225,15 @@ export async function handleAcademyGet(request: Request, path: string) {
   }
   const user = await academyUser(request);
   const db = academyDb();
+  if (["onboarding", "dashboard", "lesson"].includes(path)) {
+    // Identity comes only from the verified auth session, never request input.
+    check(await db.rpc("academy_prepare_customer", { p_user: user.id, p_email: user.email! }));
+    check(await db.rpc("academy_queue_customer_return", { p_user: user.id }));
+  }
   if (path === "onboarding") {
-    const profile = check(await db.from("academy_profiles").select("user_id")
+    const profile = check(await db.from("academy_profiles").select("onboarding_complete")
       .eq("user_id", user.id).maybeSingle()).data;
-    return { registered: Boolean(profile) };
+    return { registered: profile?.onboarding_complete === true };
   }
   if (path === "lesson") {
     const id = url.searchParams.get("lessonId") ?? "";
@@ -472,8 +477,10 @@ export async function handleAcademyPost(request: Request, path: string) {
         .from("academy_outbox")
         .update({ status: "cancelled", completed_at: new Date().toISOString() })
         .eq("user_id", user.id)
+        .or("name.eq.webinar_not_started,name.like.learning_%")
         .in("status", ["pending", "retry"]),
     );
+    check(await db.rpc("academy_queue_contact_update", { p_user: user.id }));
     return { ok: true };
   }
   if (path === "progress") {
@@ -892,5 +899,4 @@ export async function handleAcademyPost(request: Request, path: string) {
   }
   throw new AcademyError("Not found", 404);
 }
-
 

@@ -3,6 +3,7 @@ import { useRouterState } from "@tanstack/react-router";
 import { COMMUNITY_URL, GUIDES, type Guide, type Ticket } from "@/lib/academy";
 import { useAcademySession } from "@/lib/academy-client";
 import { ThothBubble } from "./ThothBubble";
+import { academyJoinHref } from "@/lib/academy-navigation";
 /** The guide's face: Thoth on the public floors, AI Spin inside the Accelerator. */
 export function GuideAvatar({
   guide = GUIDES.thoth,
@@ -70,7 +71,7 @@ export function AcademyFrame({
                 </a>
               </>
             ) : (
-              <a href="/join" className="academy-nav-cta">
+              <a href={academyJoinHref(pathname, true)} className="academy-nav-cta">
                 Sign in
               </a>
             )}
@@ -97,3 +98,4 @@ export function AcademyFrame({
     </div>
   );
 }
+

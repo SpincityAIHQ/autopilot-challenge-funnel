@@ -29,8 +29,10 @@ function clean(value: string, limit: number) {
 function html(value: string) {
   return value.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 }
-function message(subject: string, paragraphs: string[], action: string, url: string, sms: string): AcademyMessage {
-  const footer = "Turn off optional emails from your learning dashboard: https://aiautopilotsummit.com/learn";
+function message(subject: string, paragraphs: string[], action: string, url: string, sms: string, transactional = false): AcademyMessage {
+  const footer = transactional
+    ? "This email confirms your AI AutoPilot account or access. Optional learning and promotional emails follow your separate preferences."
+    : "Turn off optional emails from your learning dashboard: https://aiautopilotsummit.com/learn";
   return {
     message_version: "academy-followup-2026-09-09.1",
     message_subject: clean(subject, 180),
@@ -105,12 +107,13 @@ export function composeWelcomeMessage(paid: boolean, assistant: "Thoth" | "AI Sp
   return message(
     paid ? "Your AI AutoPilot learning space is ready" : "Your AI AutoPilot learning account is ready",
     [
-      paid ? "Your purchased access is matched to this account. Open your dashboard to see the lessons included in your ticket." : freeVideoReady ? "Your free training is ready. Start with one business bottleneck you want to solve." : "Your account is ready. You can explore the introductory lesson notes and activity sheet; the free training recording is not available yet.",
+      paid ? "Your lesson access is matched to this account. Open your dashboard to see the lessons included in your ticket." : freeVideoReady ? "Your free training is ready. Start with one business bottleneck you want to solve." : "Your account is ready. You can explore the introductory lesson notes and activity sheet; the free training recording is not available yet.",
       `${assistant} is your AI learning guide inside the platform. Start one lesson, save one useful idea, and ask for help with the part you want to apply.`,
     ],
     paid ? "Open your lessons" : "Open your learning space",
     `https://aiautopilotsummit.com${paid ? "/learn" : "/class"}`,
     `${assistant}: Your AI AutoPilot account is ready. Open your learning space and take the first small step.`,
+    true,
   );
 }
 
@@ -121,5 +124,30 @@ export function composeWebinarReminder() {
     "Start your free training",
     "https://aiautopilotsummit.com/class",
     "Thoth: Your free AI AutoPilot training is waiting. Bring one repeated business task and start with 10 minutes.",
+  );
+}
+
+
+export function composeAccessActivatedMessage(tier: string, accessUntil: string) {
+  const names: Record<string, string> = { ga: "General Admission", vip: "VIP", vault: "Emerald / Vault", accelerator: "Accelerator" };
+  const label = names[tier] ?? "Course";
+  return message(
+    `Your ${label} access is activated`,
+    [`Your access code has been redeemed and your ${label} lessons are unlocked for this account.`,
+      `Your current access ends at ${new Date(accessUntil).toISOString()}. Your dashboard shows your available lessons and saved progress.`],
+    "Open your lessons", "https://aiautopilotsummit.com/learn",
+    `AI AutoPilot: Your ${label} access is activated. Your lessons are ready.`, true,
+  );
+}
+
+export function composeAccessCodeMessage(tier: string, code: string, expiresAt: string) {
+  const names: Record<string, string> = { ga: "General Admission", vip: "VIP", vault: "Emerald / Vault", accelerator: "Accelerator" };
+  const label = names[tier] ?? "Course";
+  return message(
+    `Your ${label} purchase: activate your access`,
+    [`Your ${label} purchase is verified. Sign in or create your account using this purchase email, then enter your access code.`,
+      `Your access code: ${code}`, `Redeem this code before ${new Date(expiresAt).toISOString()}. Your course access period starts when you redeem it.`],
+    "Activate your access", "https://aiautopilotsummit.com/redeem",
+    `AI AutoPilot: Your ${label} purchase is verified. Access code: ${code}. Sign in with your purchase email to activate.`, true,
   );
 }

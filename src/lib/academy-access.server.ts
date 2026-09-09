@@ -104,6 +104,8 @@ export async function redeemAccess(user: User, value: string) {
   if (r.error) throw new AcademyError("Access could not be saved. Try the same code again.", 503);
   if (!r.data)
     throw new AcademyError("This code is unavailable. Check your order email or contact the team.");
+  const confirmation = await db.rpc("academy_queue_access_activation", { p_user: user.id, p_hash: hash });
+  if (confirmation.error) throw new AcademyError("Your access is activated, but confirmation is still pending. Open your dashboard or retry the same code to request the confirmation.", 503);
   return r.data as { tier: string; accessUntil: string };
 }
 export async function requestAccessCode(user: User) {
@@ -178,4 +180,5 @@ export async function redeemedGrants(user: User, forceRefresh = false) {
     .map((c) => c.tier);
   return [...new Set([...imported, ...redeemed])];
 }
+
 

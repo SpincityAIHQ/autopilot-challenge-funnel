@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AcademyFrame } from "@/components/AcademyFrame";
+import { academyJoinHref } from "@/lib/academy-navigation";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import {
   ACCELERATOR_OFFER,
@@ -105,7 +106,7 @@ function Summit() {
                 </p>
                 <a
                   className={`academy-button ${unlocked ? "" : "academy-button-secondary"}`}
-                  href={unlocked ? lessonHref(l.id) : session.email ? "#tickets" : "/join"}
+                  href={unlocked ? lessonHref(l.id) : session.email ? "#tickets" : academyJoinHref("/summit", true)}
                 >
                   {unlocked ? "Open the classroom" : session.email ? "Get access" : "Sign in"}
                 </a>
@@ -179,3 +180,4 @@ function Summit() {
     </AcademyFrame>
   );
 }
+

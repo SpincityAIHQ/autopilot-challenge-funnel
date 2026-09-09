@@ -17,6 +17,7 @@ import {
 } from "@/lib/academy";
 import { keywords } from "@/lib/transcript";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
+import { academyJoinHref } from "@/lib/academy-navigation";
 
 export function AcademyClassroom({ lessonId }: { lessonId: string }) {
   const session = useAcademySession();
@@ -217,7 +218,7 @@ function ClassroomSession({
           {error ? (
             <div className="academy-card" role="status">
               <p>{error}</p>
-              <a className="academy-button" href={session.email ? "/summit" : "/join"}>
+              <a className="academy-button" href={session.email ? "/summit" : academyJoinHref(lessonId === "free-webinar" ? "/class" : "/summit")}>
                 {session.email ? "Explore access" : "Sign in or join free"}
               </a>
             </div>
@@ -261,7 +262,7 @@ function ClassroomSession({
                             ? "This build-room replay will appear here when the recording is connected."
                             : "You can start with the AI notes and activity below."}
                       </p>
-                      {!session.email ? <a href="/join">Join the free classroom →</a> : null}
+                      {!session.email ? <a href={academyJoinHref("/class")}>Join the free classroom →</a> : null}
                     </div>
                   </div>
                 )}
@@ -778,3 +779,4 @@ function ClassroomSession({
     </AcademyFrame>
   );
 }
+

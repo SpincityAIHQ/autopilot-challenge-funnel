@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AcademyFrame, GuideAvatar } from "@/components/AcademyFrame";
 import { GUIDES } from "@/lib/academy";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
-import { TrainingWaitlistForm } from "@/components/TrainingWaitlistForm";
+import { academyJoinHref } from "@/lib/academy-navigation";
 import { SUMMIT_TITLE, SUMMIT_DESCRIPTION, CANONICAL_HOME_URL } from "@/lib/site-meta";
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -37,11 +37,18 @@ function Home() {
         </div>
         <div>
           <p className="academy-lead">
-            An advanced learning environment built by Spin so his students get the best AI business
-            information in the most cutting-edge way. The free training opens soon. Leave your name
-            and email and you'll be first through the door.
+            Start with one business bottleneck and design the first job your AI team should handle.
+            Your free classroom brings the training, AI notes, an activity sheet and Thoth, your
+            tutor, into one place. Create your account and take your first step.
           </p>
-          <TrainingWaitlistForm />
+          <div className="academy-hero-actions">
+            <a className="academy-button" href={academyJoinHref("/class")}>
+              Start my free training
+            </a>
+          </div>
+          <p className="academy-muted">
+            Free account · Save your progress · Explore the Summit when you are ready
+          </p>
           <div className="academy-card academy-flight-card">
             <p className="academy-eyebrow">What you'll get in the free training</p>
             <ol>
@@ -83,7 +90,7 @@ function Home() {
               Sign in with the email you used at checkout and your access opens at your level.
             </p>
           </div>
-          <a className="academy-button academy-button-secondary" href="/join">
+          <a className="academy-button academy-button-secondary" href={academyJoinHref("/learn", true)}>
             Sign in
           </a>
         </div>

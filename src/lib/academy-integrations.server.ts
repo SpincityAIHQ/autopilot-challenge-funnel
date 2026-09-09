@@ -5,7 +5,8 @@ import { LESSONS, formatTime, tierAllows, watchSummary, type Interval } from "./
 import { redeemedGrants } from "./academy-access.server";
 import type { User } from "@supabase/supabase-js";
 import { learningDeliveryEligible, learningResumeSeconds, type DeliveryProgress } from "./academy-learning-delivery";
-import { composeLearningMessage, composeWelcomeMessage, composeWebinarReminder, type AcademyMessage } from "./academy-messages";
+import { composeLearningMessage, composeWelcomeMessage, composeWebinarReminder, composeAccessActivatedMessage, composeAccessCodeMessage, type AcademyMessage } from "./academy-messages";
+import { academyMessagePolicy } from "./academy-message-policy";
 import { learningMessageWindow } from "./academy-message-window";
 import { draftAcademyMessage, type MessageDraftBrief } from "./academy-message-draft.server";
 import { lessonContent, scoreAnswers, slotMedia } from "./academy-content.server";
@@ -65,6 +66,8 @@ export async function processAcademyIntegrations(request: Request) {
     let status = "unknown";
     let deferUntil: string | null = null;
     let holdReason: string | null = null;
+    let attempted = false;
+    const policy = academyMessagePolicy(row.name);
     try {
       const profile = await db
         .from("academy_profiles")
@@ -73,20 +76,25 @@ export async function processAcademyIntegrations(request: Request) {
         .maybeSingle();
       if (profile.error) throw profile.error;
       const localWindow = learningMessageWindow(profile.data?.timezone);
-      if (!profile.data?.marketing_consent) status = "cancelled";
-      else if (!localWindow.allowed) {
+      if (!profile.data?.email || (policy.marketingRequired && !profile.data.marketing_consent) || (policy.sms && (!profile.data.sms_consent || !profile.data.phone))) status = "cancelled";
+      else if (policy.daytimeRequired && !localWindow.allowed) {
         status = "pending"; deferUntil = localWindow.deferUntil; holdReason = localWindow.reason;
       } else {
         const [purchases, progress, importedPurchase] = await Promise.all([
           db.from("academy_grants").select("tier").eq("email", profile.data.email).eq("active", true),
           db.from("academy_progress").select("intervals").eq("user_id", row.user_id).eq("lesson_id", "free-webinar").maybeSingle(),
-          row.name === "webinar_not_started"
+          !row.name.startsWith("learning_")
             ? db.rpc("academy_has_imported_ticket", { p_user: row.user_id })
             : Promise.resolve({ data: false, error: null }),
         ]);
         if (purchases.error || progress.error || importedPurchase.error)
           throw new Error("ELIGIBILITY_UNAVAILABLE");
-        let learningPayload: Record<string, unknown> = {};
+        const hasVerifiedPurchase = (purchases.data ?? []).length > 0 || importedPurchase.data === true;
+        let learningPayload: Record<string, unknown> = {
+          purpose: policy.purpose,
+          customer_lifecycle: hasVerifiedPurchase ? "returning_customer" : row.name === "customer_returned" ? "returning_learner" : "new_learner",
+          purchase_verified: hasVerifiedPurchase,
+        };
         let composed: AcademyMessage | null = null;
         let eligible = true;
         let draftBrief: MessageDraftBrief | null = null;
@@ -187,9 +195,47 @@ export async function processAcademyIntegrations(request: Request) {
               if (Number.isFinite(recentAt)) deferUntil = new Date(recentAt + 86400000).toISOString();
             }
           }
-        } else if (row.name === "webinar_registered") {
+        } else if (["webinar_registered", "webinar_registered_sms", "customer_returned", "customer_preferences_updated"].includes(row.name)) {
           const grants = await redeemedGrants({ id: row.user_id, email: profile.data.email } as User);
           composed = composeWelcomeMessage(grants.length > 0, grants.includes("accelerator") ? "AI Spin" : "Thoth", Boolean(slotMedia("free-webinar")));
+          learningPayload = { ...learningPayload, access_tiers: grants, suppress_sales: true, intent: policy.crmOnly ? "customer_sync" : "account_confirmation" };
+        } else if (["access_activated", "access_activated_sms", "purchase_access_sms"].includes(row.name)) {
+          const code = await db.from("academy_access_codes")
+            .select("id,generation,order_id,line_id,email,tier,redeemed_by,access_until,redeemed_at,expires_at,code_hash")
+            .eq("id", String(row.payload?.codeId ?? "")).maybeSingle();
+          if (code.error) throw code.error;
+          const c = code.data;
+          eligible = Boolean(c && c.email === profile.data.email && c.generation === row.payload?.generation);
+          if (eligible && c) {
+            await reconcileShopifyOrder(c.order_id);
+            const [grant, order, freshCode] = await Promise.all([
+              db.from("academy_grants").select("active,email,tier").eq("order_id", c.order_id).eq("line_id", c.line_id).maybeSingle(),
+              db.from("academy_orders").select("needs_review,financial_status").eq("order_id", c.order_id).maybeSingle(),
+              db.from("academy_access_codes").select("generation,code_hash,email,redeemed_by,redeemed_at,access_until,expires_at").eq("id", c.id).maybeSingle(),
+            ]);
+            if (grant.error || order.error || freshCode.error) throw new Error("PURCHASE_CHECK_UNAVAILABLE");
+            eligible = Boolean(freshCode.data && freshCode.data.generation === c.generation && freshCode.data.code_hash === c.code_hash && freshCode.data.email === c.email && grant.data?.active && grant.data.email === c.email && grant.data.tier === c.tier && order.data && !order.data.needs_review);
+            if (eligible && row.name === "purchase_access_sms") {
+              eligible = !freshCode.data?.redeemed_at && Date.parse(freshCode.data?.expires_at ?? "") > Date.now();
+              if (eligible) {
+                const { accessCode, codeHash } = await import("./academy-access.server");
+                const value = accessCode(c.id, c.generation, process.env.ACADEMY_ACCESS_CODE_SECRET ?? "");
+                eligible = codeHash(value) === c.code_hash;
+                if (eligible) composed = composeAccessCodeMessage(c.tier, value, c.expires_at);
+              }
+            } else if (eligible) {
+              eligible = freshCode.data?.redeemed_by === row.user_id && Date.parse(freshCode.data?.access_until ?? "") > Date.now();
+              if (eligible) composed = composeAccessActivatedMessage(c.tier, freshCode.data!.access_until);
+            }
+            learningPayload = { ...learningPayload, purchase_verified: eligible, intent: row.name === "purchase_access_sms" ? "purchase_access_code" : "access_confirmation", suppress_sales: true, order_id: c.order_id, line_id: c.line_id, tier: c.tier, financial_status: order.data?.financial_status };
+          }
+        } else if (row.name === "purchase_updated") {
+          const order = await db.from("academy_orders").select("email,financial_status,needs_review,shopify_updated_at").eq("order_id", String(row.payload?.orderId ?? "")).maybeSingle();
+          if (order.error) throw order.error;
+          eligible = Boolean(order.data && order.data.email === profile.data.email);
+          composed = eligible ? composeWelcomeMessage(false, "Thoth", Boolean(slotMedia("free-webinar"))) : null;
+          learningPayload = { ...learningPayload, intent: "purchase_sync", suppress_sales: true, purchase_verified: order.data?.financial_status === "PAID" && !order.data.needs_review, order_id: row.payload?.orderId, financial_status: order.data?.financial_status, needs_review: order.data?.needs_review, order_updated_at: order.data?.shopify_updated_at };
+
         } else if (row.name === "webinar_not_started") {
           eligible = Boolean(slotMedia("free-webinar")) &&
             (progress.data?.intervals ?? []).length === 0 &&
@@ -214,7 +260,7 @@ export async function processAcademyIntegrations(request: Request) {
             .select("email,marketing_consent,sms_consent,phone,timezone")
             .eq("user_id", row.user_id).maybeSingle();
           if (freshProfile.error) throw freshProfile.error;
-          let freshEligible = Boolean(freshProfile.data?.marketing_consent && freshProfile.data.email === profile.data.email);
+          let freshEligible = Boolean(freshProfile.data && freshProfile.data.email === profile.data.email && (!policy.marketingRequired || freshProfile.data.marketing_consent) && (!policy.sms || (freshProfile.data.sms_consent && freshProfile.data.phone)));
           if (evidenceSnapshot && freshEligible) {
             const [freshProgress, freshActivity, freshPresence, freshGrants] = await Promise.all([
               db.from("academy_progress").select("updated_at,media_version,content_version")
@@ -236,27 +282,30 @@ export async function processAcademyIntegrations(request: Request) {
           const freshWindow = learningMessageWindow(freshProfile.data?.timezone);
           if (!freshEligible || !freshProfile.data) {
             status = "cancelled";
-          } else if (!freshWindow.allowed) {
+          } else if (policy.daytimeRequired && !freshWindow.allowed) {
             status = "pending"; deferUntil = freshWindow.deferUntil; holdReason = freshWindow.reason;
           } else {
           // Preserve exactly what was prepared, including fallback provenance, before
           // submitting it. Unknown outcomes retain the same draft for reconciliation.
           const audit = await db.from("academy_outbox").update({
-            payload: { ...row.payload, delivery: { ...learningPayload, ...messageDraft, prepared_at: new Date().toISOString(), channel: "email", sms_permitted: Boolean(freshProfile.data.sms_consent) } },
+            payload: { ...row.payload, delivery: { ...learningPayload, ...messageDraft, prepared_at: new Date().toISOString(), channel: policy.crmOnly ? "none" : policy.sms ? "sms" : "email", sms_permitted: Boolean(freshProfile.data.sms_consent) } },
           }).eq("id", row.id).eq("status", "processing").select("id").maybeSingle();
           if (audit.error || !audit.data) throw new Error("MESSAGE_AUDIT_NOT_SAVED");
+          attempted = true;
           const response = await fetch(endpoint!, {
             method: "POST",
             headers: { "Content-Type": "application/json", "X-Academy-Event-Id": row.id, "Idempotency-Key": row.id },
             body: JSON.stringify({
               event_id: row.id, event_name: row.name, user_id: row.user_id,
               email: freshProfile.data.email,
-              channel: "email", send_email: true, send_sms: false, send_voice: false, voice_call_allowed: false,
+              channel: policy.crmOnly ? "none" : policy.sms ? "sms" : "email",
+              send_email: !policy.crmOnly && !policy.sms, send_sms: policy.sms, send_voice: false, voice_call_allowed: false,
+              purpose: policy.purpose,
               phone: freshProfile.data.sms_consent ? freshProfile.data.phone : null,
               sms_consent: Boolean(freshProfile.data.sms_consent), timezone: freshProfile.data.timezone,
-              marketing_consent: true, consent_version: "academy-marketing-2026-09-06",
+              marketing_consent: Boolean(freshProfile.data.marketing_consent), consent_version: "academy-marketing-2026-09-06",
               occurred_at: row.created_at, source: "ai-autopilot-academy",
-              ...learningPayload, ...messageDraft,
+              ...learningPayload, ...(policy.crmOnly ? {} : messageDraft),
             }),
             signal: AbortSignal.timeout(8000),
           });
@@ -267,13 +316,19 @@ export async function processAcademyIntegrations(request: Request) {
         }
       }
     } catch {
-      /* Delivery may have happened: reconcile unknown outcomes instead of blindly retrying. */
+      // Only an attempted outbound request has an ambiguous delivery outcome.
+      // Recover transient database/preparation failures without inventing acceptance.
+      if (!attempted && row.attempts < 3) {
+        status = "pending";
+        deferUntil = new Date(Date.now() + 5 * 60000).toISOString();
+        holdReason = "preparation_unavailable";
+      }
     }
     const saved = await db.from("academy_outbox").update({
       status, completed_at: status === "pending" ? null : new Date().toISOString(),
       ...(status === "pending" && deferUntil ? {
         ...(holdReason ? { payload: { ...row.payload, policy_hold: { reason: holdReason, checked_at: new Date().toISOString(), due_at: deferUntil } } } : {}),
-        due_at: deferUntil, locked_at: null, attempts: Math.max(0, row.attempts - 1),
+        due_at: deferUntil, locked_at: null, attempts: holdReason === "preparation_unavailable" ? row.attempts : Math.max(0, row.attempts - 1),
       } : {}),
     }).eq("id", row.id).eq("status", "processing");
     if (saved.error) throw new Error("QUEUE_RECEIPT_NOT_SAVED");
@@ -285,3 +340,4 @@ export async function processAcademyIntegrations(request: Request) {
     { headers: { "Cache-Control": "no-store" } },
   );
 }
+

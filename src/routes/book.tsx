@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AcademyFrame } from "@/components/AcademyFrame";
+import { academyJoinHref } from "@/lib/academy-navigation";
 import type { Ticket } from "@/lib/academy";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
 export const Route = createFileRoute("/book")({
@@ -49,7 +50,7 @@ function BookSession({ session }: { session: ReturnType<typeof useAcademySession
         {!session.loading && !session.email ? (
           <div className="academy-card">
             <p>Sign in with your student account to book.</p>
-            <a className="academy-button" href="/join">
+            <a className="academy-button" href={academyJoinHref("/book", true)}>
               Sign in
             </a>
           </div>
@@ -139,3 +140,4 @@ function BookSession({ session }: { session: ReturnType<typeof useAcademySession
     </AcademyFrame>
   );
 }
+

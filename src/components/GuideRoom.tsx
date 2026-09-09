@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { AcademyFrame, GuideAvatar } from "./AcademyFrame";
 import { LiveSpinAvatar } from "./LiveSpinAvatar";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
+import { academyJoinHref } from "@/lib/academy-navigation";
 import {
   GUIDES,
   formatTime,
@@ -134,7 +135,7 @@ function GuideSession({
             : "Thoth uses your ticket, saved watch maps, available recording transcripts and lesson work. Ask a question, find the part you missed, and choose your next step. Instructors review applied skills."}
         </p>
         {!session.email && !session.loading ? (
-          <a className="academy-button" href="/join">
+          <a className="academy-button" href={academyJoinHref(guide.room, true)}>
             Sign in to chat with {guide.name}
           </a>
         ) : null}
@@ -365,4 +366,5 @@ function GuideSession({
     </AcademyFrame>
   );
 }
+
 

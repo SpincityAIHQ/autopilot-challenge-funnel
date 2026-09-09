@@ -4,15 +4,18 @@ import { AcademyFrame } from "@/components/AcademyFrame";
 import { supabase } from "@/integrations/supabase/client";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
 import { onboardingStep, type OnboardingProfile } from "@/lib/academy-onboarding";
+import { academyJoinDestination, academyJoinHref, academyJoinSearch } from "@/lib/academy-navigation";
 export const Route = createFileRoute("/join")({
+  validateSearch: academyJoinSearch,
   head: () => ({ meta: [{ title: "Access your training | AI AutoPilot" }] }),
   component: Join,
 });
 function Join() {
+  const search = Route.useSearch();
   const session = useAcademySession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [login, setLogin] = useState(false);
+  const [login, setLogin] = useState(search.mode === "signin");
   const [consent, setConsent] = useState(false);
   const [phone, setPhone] = useState("");
   const [smsConsent, setSmsConsent] = useState(false);
@@ -23,6 +26,7 @@ function Join() {
   const [profile, setProfile] = useState<OnboardingProfile | null>(null);
   const [onboardingAttempt, setOnboardingAttempt] = useState(0);
   const step = onboardingStep({ ...session, recovery, profile });
+  useEffect(() => setLogin(search.mode === "signin"), [search.mode]);
   useEffect(() => {
     if (new URLSearchParams(window.location.hash.slice(1)).get("type") === "recovery")
       setRecovery(true);
@@ -52,8 +56,8 @@ function Join() {
     };
   }, [session.loading, session.email, recovery, onboardingAttempt]);
   useEffect(() => {
-    if (step === "ready") window.location.assign("/learn");
-  }, [step]);
+    if (step === "ready") window.location.assign(academyJoinDestination(search.next));
+  }, [step, search.next]);
   async function submit(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -64,7 +68,9 @@ function Join() {
         : await supabase.auth.signUp({
             email,
             password,
-            options: { emailRedirectTo: `${window.location.origin}/join` },
+            options: {
+              emailRedirectTo: `${window.location.origin}${academyJoinHref(search.next ?? "", true)}`,
+            },
           });
       if (result.error) throw result.error;
       if (!result.data.session)
@@ -94,7 +100,7 @@ function Join() {
           : {},
       });
 
-      window.location.assign(result.nextPath === "/learn" ? "/learn" : "/class");
+      window.location.assign(academyJoinDestination(search.next, result.nextPath));
     } catch (e) {
       setMessage((e as Error).message);
     } finally {
@@ -114,7 +120,7 @@ function Join() {
               setBusy(false);
               if (result.error)
                 setMessage("The password could not be updated. Please request a new reset email.");
-              else window.location.assign("/join");
+              else window.location.assign(academyJoinHref(search.next ?? "/learn", true));
             }}
           >
             <label>
@@ -263,7 +269,7 @@ function Join() {
               setBusy(true);
               try {
                 await supabase.auth.resetPasswordForEmail(email, {
-                  redirectTo: `${window.location.origin}/join`,
+                  redirectTo: `${window.location.origin}${academyJoinHref(search.next ?? "/learn", true)}`,
                 });
                 setMessage("If an account matches, a password reset email will arrive shortly.");
               } catch {
