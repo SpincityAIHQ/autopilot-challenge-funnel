@@ -14,7 +14,16 @@ export const Route = createFileRoute("/")({
 function Home() {
   return (
     <AcademyFrame>
-      <section className="academy-hero">
+      <section className="academy-hero academy-hero-stacked">
+        <div className="academy-hero-media">
+          <FunnelVideoSlot
+            url={import.meta.env.VITE_ACADEMY_VSL_URL || null}
+            label="An invitation from Spin"
+            envKey="VITE_ACADEMY_VSL_URL"
+            autoplay={false}
+            alwaysVisible
+          />
+        </div>
         <div>
           <p className="academy-eyebrow">The AI AutoPilot education experience · by SpinCity</p>
           <h1>
@@ -29,6 +38,7 @@ function Home() {
             information in the most cutting-edge way. The free training opens soon. Leave your name
             and email and you'll be first through the door.
           </p>
+          <TrainingWaitlistForm />
           <div className="academy-card academy-flight-card">
             <p className="academy-eyebrow">What you'll get in the free training</p>
             <ol>
@@ -44,17 +54,8 @@ function Home() {
             </ol>
           </div>
         </div>
-        <div className="academy-hero-media">
-          <FunnelVideoSlot
-            url={import.meta.env.VITE_ACADEMY_VSL_URL || null}
-            label="An invitation from Spin"
-            envKey="VITE_ACADEMY_VSL_URL"
-            autoplay={false}
-            alwaysVisible
-          />
-          <TrainingWaitlistForm />
-        </div>
       </section>
+
       <section className="academy-section">
         <div className="academy-card academy-card-featured academy-holo">
           <div className="academy-spin-hero">
