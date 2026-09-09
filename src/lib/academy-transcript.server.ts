@@ -1,8 +1,10 @@
 import type { TranscriptCue } from "./academy";
-import { parseTranscript } from "./transcript";
+import { MAX_TRANSCRIPT_CHARACTERS, parseTranscript } from "./transcript";
+import { createHash } from "node:crypto";
 import { configuredVimeo } from "./academy-media.server";
 /**
  * Transcript source per slot, in order:
+ * 0. A private academy_transcripts row, tied to this recording version.
  * 1. ACADEMY_TRANSCRIPT_<KEY>: an HTTPS .vtt/.srt link.
  * 2. Vimeo captions through the Vimeo API when VIMEO_ACCESS_TOKEN is set and the
  *    slot is a Vimeo video (auto-generated or uploaded captions both count).
@@ -12,8 +14,17 @@ import { configuredVimeo } from "./academy-media.server";
  */
 const cache = new Map<string, { cues: TranscriptCue[] | null; at: number }>();
 const TTL = 600000;
-const MAX = 2_000_000;
-type Storage = {
+function completeText(text: string): string | null {
+  return text.length <= MAX_TRANSCRIPT_CHARACTERS ? text : null;
+}
+type PrivateTranscriptRow = {
+  source_vtt: string;
+  source_sha256: string;
+  media_version: string;
+  active: boolean;
+};
+export type TranscriptStore = {
+  readPrivateTranscript?: (id: string) => PromiseLike<{ data: unknown; error: unknown }>;
   storage: {
     from: (bucket: string) => {
       download: (path: string) => Promise<{ data: Blob | null; error: unknown }>;
@@ -44,7 +55,7 @@ export function transcriptConfigured(id: string, envKey: string) {
 async function fetchText(url: URL): Promise<string | null> {
   if (url.protocol !== "https:" || url.username || url.password) return null;
   const r = await fetch(url, { signal: AbortSignal.timeout(10000) });
-  return r.ok ? (await r.text()).slice(0, MAX) : null;
+  return r.ok ? completeText(await r.text()) : null;
 }
 /** Vimeo text tracks: prefer an active English captions track, then any active track. */
 async function vimeoCaptions(envKey: string): Promise<string | null> {
@@ -76,15 +87,51 @@ async function vimeoCaptions(envKey: string): Promise<string | null> {
     return null;
   }
 }
+function recordingVersion(envKey: string) {
+  const vimeo = configuredVimeo(envKey);
+  return process.env[`ACADEMY_MEDIA_VERSION_${envKey}`] || (vimeo ? `vimeo:${vimeo.id}` : "1");
+}
+/** A private row is authoritative: inactive, mismatched or damaged text is never served. */
+async function privateTranscript(id: string, version: string, db: TranscriptStore) {
+  if (!db.readPrivateTranscript) return { found: false, text: null };
+  const result = await db.readPrivateTranscript(id);
+  if (result.error || !result.data) return { found: false, text: null };
+  const row = result.data as PrivateTranscriptRow;
+  if (!row.active || row.media_version !== version || typeof row.source_vtt !== "string")
+    return { found: true, text: null };
+  const valid = completeText(row.source_vtt) !== null &&
+    createHash("sha256").update(row.source_vtt).digest("hex") === row.source_sha256;
+  return { found: true, text: valid ? row.source_vtt : null };
+}
+/** Only IDs with a successfully loaded, non-empty transcript are advertised. */
+export async function availableTranscriptIds(
+  lessons: { id: string; envKey: string }[],
+  db: TranscriptStore,
+) {
+  const results = await Promise.all(lessons.map(async (lesson) => (
+    await loadTranscript(lesson.id, lesson.envKey, db)
+  )?.length ? lesson.id : null));
+  return results.filter((id): id is string => id !== null);
+}
 export async function loadTranscript(
   id: string,
   envKey: string,
-  db: Storage,
+  db: TranscriptStore,
 ): Promise<TranscriptCue[] | null> {
-  const hit = cache.get(id);
+  const version = recordingVersion(envKey);
+  const key = `${id}:${version}`;
+  const hit = cache.get(key);
   if (hit && Date.now() - hit.at < TTL) return hit.cues;
   let text: string | null = null;
   try {
+    const privateSource = await privateTranscript(id, version, db);
+    if (privateSource.found) {
+      let cues: TranscriptCue[] | null = null;
+      try { cues = privateSource.text ? parseTranscript(privateSource.text) : null; } catch { /* Reject unsupported source. */ }
+      if (!cues?.length) cues = null;
+      cache.set(key, { cues, at: Date.now() });
+      return cues;
+    }
     const url = process.env[`ACADEMY_TRANSCRIPT_${envKey}`];
     if (url) text = await fetchText(new URL(url));
     if (!text) text = await vimeoCaptions(envKey);
@@ -94,18 +141,20 @@ export async function loadTranscript(
         .from(process.env.ACADEMY_MEDIA_BUCKET || "academy-media")
         .download(path)
         .catch(() => ({ data: null, error: true }));
-      if (!file.error && file.data) text = (await file.data.text()).slice(0, MAX);
+      if (!file.error && file.data) text = completeText(await file.data.text());
     }
     if (!text) {
       const loader = bundled[`./transcripts/${id}.vtt`];
-      if (loader) text = await loader();
+      if (loader) text = completeText(await loader());
     }
   } catch {
     text = null;
   }
-  let cues = text ? parseTranscript(text) : null;
+  let cues: TranscriptCue[] | null = null;
+  try { cues = text ? parseTranscript(text) : null; } catch { /* Reject unsupported source. */ }
   if (cues && !cues.length) cues = null;
-  cache.set(id, { cues, at: Date.now() });
+  cache.set(key, { cues, at: Date.now() });
   return cues;
 }
+
 

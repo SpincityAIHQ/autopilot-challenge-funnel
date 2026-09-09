@@ -131,7 +131,7 @@ function GuideSession({
         <p className="academy-lead">
           {room === "spin"
             ? "Spin’s own AI, in text and live avatar. It knows your ticket, your build-room watch maps and your job card. Bring the work; leave with the next move."
-            : "Thoth knows your ticket, your watch maps, every timed word of every recording and your saved work. Ask a question, find the part you missed, and choose your next step. Instructors review applied skills."}
+            : "Thoth uses your ticket, saved watch maps, available recording transcripts and lesson work. Ask a question, find the part you missed, and choose your next step. Instructors review applied skills."}
         </p>
         {!session.email && !session.loading ? (
           <a className="academy-button" href="/join">
@@ -365,3 +365,4 @@ function GuideSession({
     </AcademyFrame>
   );
 }
+
