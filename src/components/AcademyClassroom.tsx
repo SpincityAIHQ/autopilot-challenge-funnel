@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { PlayCircle } from "lucide-react";
-import { AcademyFrame, GuideAvatar } from "./AcademyFrame";
+import { AcademyFrame, GuideAvatar, TicketBadge } from "./AcademyFrame";
 import { TrackedLessonVideo } from "./TrackedLessonVideo";
 import { VimeoLessonPlayer } from "./VimeoLessonPlayer";
 import { WatchMap } from "./WatchMap";
@@ -57,6 +57,7 @@ function ClassroomSession({
   const [tutorProvider, setTutorProvider] = useState("");
   const [seek, setSeek] = useState<Seek>(null);
   const [search, setSearch] = useState("");
+  const [transcriptVisible, setTranscriptVisible] = useState(800);
   const [panel, setPanel] = useState<"notes" | "book" | "spin">("notes");
   async function load() {
     const result = await academyApi<{
@@ -182,6 +183,10 @@ function ClassroomSession({
         .map((c) => c.start),
     );
   }, [search, transcript]);
+  const transcriptMatches = useMemo(() => {
+    const searching = keywords(search).length > 0;
+    return (transcript ?? []).filter((c) => !searching || hits.has(c.start));
+  }, [search, transcript, hits]);
   const prompts = [
     watch.dropOffAt !== null && watch.coverage > 0
       ? `I stopped at ${formatTime(watch.dropOffAt)}. What did I miss?`
@@ -207,6 +212,7 @@ function ClassroomSession({
               <p className="academy-eyebrow">{meta?.stage ?? "Lesson"}</p>
               <h1>{meta?.title ?? "Lesson unavailable"}</h1>
             </div>
+            <TicketBadge ticket={ticket} />
           </div>
           <p className="academy-lead">{meta?.summary}</p>
           {error ? (
@@ -419,15 +425,17 @@ function ClassroomSession({
                         <input
                           type="search"
                           value={search}
-                          onChange={(e) => setSearch(e.target.value)}
+                          onChange={(e) => {
+                            setSearch(e.target.value);
+                            setTranscriptVisible(800);
+                          }}
                           placeholder="Search every word of this recording…"
                           aria-label="Search the transcript"
                         />
                       </div>
                       <div className="academy-transcript-list">
-                        {transcript
-                          .filter((c) => !hits.size || hits.has(c.start))
-                          .slice(0, 800)
+                        {transcriptMatches
+                          .slice(0, transcriptVisible)
                           .map((c) => (
                             <button
                               key={c.start}
@@ -441,6 +449,22 @@ function ClassroomSession({
                             </button>
                           ))}
                       </div>
+                      {transcriptMatches.length === 0 ? (
+                        <p className="academy-muted">No matching transcript passages.</p>
+                      ) : (
+                        <p className="academy-muted" aria-live="polite">
+                          Showing {Math.min(transcriptVisible, transcriptMatches.length)} of{" "}
+                          {transcriptMatches.length} passages
+                        </p>
+                      )}
+                      {transcriptVisible < transcriptMatches.length ? (
+                        <button
+                          type="button"
+                          onClick={() => setTranscriptVisible((count) => count + 800)}
+                        >
+                          Show more transcript
+                        </button>
+                      ) : null}
                     </details>
                   ) : null}
                   {!lesson.paragraphs.length && !moments.length && !transcript ? (

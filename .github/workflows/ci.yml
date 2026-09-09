@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 6505dbcc978279a32c47ef6b6bab59e5109871f6
+          ref: 502c913e1f46dd9fed146848aeb94bad27647c95
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.2

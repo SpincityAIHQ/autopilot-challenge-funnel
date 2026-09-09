@@ -32,6 +32,7 @@ function Home() {
             envKey="VITE_ACADEMY_VSL_URL"
             autoplay={false}
             alwaysVisible
+            placeholderCta={null}
           />
         </div>
         <div>

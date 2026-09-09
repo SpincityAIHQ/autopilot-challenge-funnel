@@ -3,6 +3,7 @@ import { useState, useEffect, type FormEvent } from "react";
 import { AcademyFrame } from "@/components/AcademyFrame";
 import { supabase } from "@/integrations/supabase/client";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
+import { onboardingStep, type OnboardingProfile } from "@/lib/academy-onboarding";
 export const Route = createFileRoute("/join")({
   head: () => ({ meta: [{ title: "Access your training | AI AutoPilot" }] }),
   component: Join,
@@ -19,12 +20,40 @@ function Join() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [recovery, setRecovery] = useState(false);
+  const [profile, setProfile] = useState<OnboardingProfile | null>(null);
+  const [onboardingAttempt, setOnboardingAttempt] = useState(0);
+  const step = onboardingStep({ ...session, recovery, profile });
   useEffect(() => {
+    if (new URLSearchParams(window.location.hash.slice(1)).get("type") === "recovery")
+      setRecovery(true);
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") setRecovery(true);
     });
     return () => data.subscription.unsubscribe();
   }, []);
+  useEffect(() => {
+    if (session.loading || !session.email || recovery) return;
+    const profileEmail = session.email;
+    let active = true;
+    setProfile(null);
+    setConsent(false);
+    setSmsConsent(false);
+    setPhone("");
+    setMessage("");
+    academyApi<{ registered: boolean }>("onboarding")
+      .then((result) => {
+        if (active) setProfile({ email: profileEmail, registered: result.registered });
+      })
+      .catch((error) => {
+        if (active) setMessage((error as Error).message);
+      });
+    return () => {
+      active = false;
+    };
+  }, [session.loading, session.email, recovery, onboardingAttempt]);
+  useEffect(() => {
+    if (step === "ready") window.location.assign("/learn");
+  }, [step]);
   async function submit(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -39,9 +68,11 @@ function Join() {
           });
       if (result.error) throw result.error;
       if (!result.data.session)
-        setMessage("Check your email to confirm your account, then sign in here.");
-      else if (login) window.location.assign("/learn");
-      else await register();
+        setMessage(
+          "Check your email to confirm your account. Then choose your reminders and enter your classroom.",
+        );
+      // The verified session runs the profile check above. Existing preferences
+      // are never rewritten by a sign-in or an email-confirmation redirect.
     } catch {
       setMessage("We could not complete sign-in. Check your details or try again shortly.");
     } finally {
@@ -49,7 +80,9 @@ function Join() {
     }
   }
   async function register() {
+    if (step !== "preferences") return;
     setBusy(true);
+    setMessage("");
     try {
       const result = await academyApi<{ nextPath: string }>("register", {
         marketingConsent: consent,
@@ -68,7 +101,7 @@ function Join() {
       setBusy(false);
     }
   }
-  if (recovery)
+  if (step === "recovery")
     return (
       <AcademyFrame>
         <section className="academy-auth academy-card">
@@ -81,7 +114,7 @@ function Join() {
               setBusy(false);
               if (result.error)
                 setMessage("The password could not be updated. Please request a new reset email.");
-              else window.location.assign("/learn");
+              else window.location.assign("/join");
             }}
           >
             <label>
@@ -111,15 +144,16 @@ function Join() {
         <p className="academy-eyebrow">Your learning journey starts here</p>
         <h1>
           {session.email
-            ? "Enter your classroom"
+            ? step === "preferences"
+              ? "Choose your learning reminders"
+              : "Opening your classroom"
             : login
               ? "Welcome back"
               : "Create your free account"}
         </h1>
         <p>
-          The moment your account exists, Thoth, your tutor, watches with you: what you watched,
-          where you stopped, what you saved. Your progress, activity sheet and feedback live in one
-          place.
+          Your classroom keeps your viewing progress, activity sheets and feedback in one place.
+          Thoth, your AI tutor, uses your saved activity to help you choose your next step.
         </p>
         <p>
           Returning Summit attendee? Use the email address on your invitation. After you confirm
@@ -127,7 +161,7 @@ function Join() {
         </p>
         {session.email ? (
           <p>Signed in as {session.email}</p>
-        ) : (
+        ) : step === "signed-out" ? (
           <form onSubmit={submit}>
             <label>
               Email
@@ -155,9 +189,15 @@ function Join() {
               {busy ? "Working…" : login ? "Sign in" : "Create account"}
             </button>
           </form>
+        ) : (
+          <p role="status">Checking your sign-in…</p>
         )}
-        {!login || session.email ? (
+        {step === "preferences" ? (
           <>
+            <p>
+              These reminders are optional. Choose what helps you stay on track, then enter your
+              classroom.
+            </p>
             <label className="academy-check">
               <input
                 type="checkbox"
@@ -189,15 +229,28 @@ function Join() {
           </>
         ) : null}
 
-        {session.email ? (
+        {step === "preferences" ? (
           <button type="button" className="academy-button" onClick={register} disabled={busy}>
-            Enter my classroom
+            {busy ? "Saving…" : "Enter my classroom"}
           </button>
-        ) : (
-          <button type="button" className="academy-text-button" onClick={() => setLogin(!login)}>
+        ) : step === "signed-out" ? (
+          <button
+            type="button"
+            className="academy-text-button"
+            onClick={() => setLogin(!login)}
+            disabled={busy}
+          >
             {login ? "Create a free account" : "Already have an account? Sign in"}
           </button>
-        )}
+        ) : session.email && message ? (
+          <button
+            type="button"
+            className="academy-button"
+            onClick={() => setOnboardingAttempt((attempt) => attempt + 1)}
+          >
+            Try opening my classroom again
+          </button>
+        ) : null}
         {login && !session.email ? (
           <button
             type="button"

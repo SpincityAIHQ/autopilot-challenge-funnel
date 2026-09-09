@@ -15,8 +15,11 @@ type Context = {
  * compact chat panel instead of sending the student to a separate room.
  */
 export function ThothBubble() {
-  const guide = GUIDES.thoth;
   const session = useAcademySession();
+  return <ThothSession key={session.email ?? "anonymous"} session={session} />;
+}
+function ThothSession({ session }: { session: ReturnType<typeof useAcademySession> }) {
+  const guide = GUIDES.thoth;
   const [open, setOpen] = useState(false);
   const [context, setContext] = useState<Context | null>(null);
   const [lesson, setLesson] = useState("free-webinar");
@@ -205,3 +208,4 @@ export function ThothBubble() {
     </div>
   );
 }
+
