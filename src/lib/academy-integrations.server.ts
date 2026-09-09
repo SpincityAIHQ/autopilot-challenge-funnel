@@ -60,7 +60,7 @@ export async function processAcademyIntegrations(request: Request) {
       { orders, accepted, accessDelivery, ghl: "not_enabled" },
       { headers: { "Cache-Control": "no-store" } },
     );
-  const claimed = await db.rpc("academy_claim_outbox", { p_limit: process.env.ACADEMY_THOTH_MESSAGES_ENABLED === "true" ? 1 : 10 });
+  const claimed = await db.rpc("academy_claim_outbox", { p_limit: 10 });
   if (claimed.error) throw new Error("QUEUE_UNAVAILABLE");
   for (const row of claimed.data ?? []) {
     let status = "unknown";

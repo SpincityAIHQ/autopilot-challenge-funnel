@@ -30,7 +30,11 @@ BEGIN
  FROM public.academy_profiles WHERE user_id=p_user ON CONFLICT(dedup_key) DO NOTHING;
 END $$;
 
-CREATE OR REPLACE FUNCTION public.academy_register(p_user uuid,p_email text,p_timezone text,p_consent boolean,p_attribution jsonb,p_phone text DEFAULT NULL,p_sms boolean DEFAULT false)
+-- The five-argument wrapper is the only default path. A seven-argument overload
+-- with defaults makes legacy SQL/PostgREST calls ambiguous (42725). Recreate this
+-- exact signature inside the transaction, without CASCADE and without defaults.
+DROP FUNCTION IF EXISTS public.academy_register(uuid,text,text,boolean,jsonb,text,boolean);
+CREATE FUNCTION public.academy_register(p_user uuid,p_email text,p_timezone text,p_consent boolean,p_attribution jsonb,p_phone text,p_sms boolean)
 RETURNS void LANGUAGE plpgsql SECURITY INVOKER SET search_path='' AS $$
 DECLARE v_sms boolean; was_complete boolean;
 BEGIN
