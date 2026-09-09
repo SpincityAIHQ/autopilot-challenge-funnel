@@ -27,9 +27,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: 502c913e1f46dd9fed146848aeb94bad27647c95
+          ref: fd693fddd7ccf79965e0cd556c1d2288928e58a6
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.2
       - run: bun install --frozen-lockfile
       - run: bun test src/tests/
+

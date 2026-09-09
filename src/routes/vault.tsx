@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AcademyFrame } from "@/components/AcademyFrame";
+import { academyJoinHref } from "@/lib/academy-navigation";
 import { ACCELERATOR_OFFER, SUMMIT_OFFERS, guideFor, type Offer, type Ticket } from "@/lib/academy";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
@@ -77,7 +78,7 @@ function VaultSession({ session }: { session: ReturnType<typeof useAcademySessio
           </p>
           <div className="academy-hero-actions">
             {!session.loading && !session.email ? (
-              <a className="academy-button" href="/join">
+              <a className="academy-button" href={academyJoinHref("/vault", true)}>
                 Sign in to open the Vault
               </a>
             ) : null}
@@ -246,3 +247,4 @@ function VaultSession({ session }: { session: ReturnType<typeof useAcademySessio
     </AcademyFrame>
   );
 }
+

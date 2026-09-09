@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { AcademyFrame } from "@/components/AcademyFrame";
+import { academyJoinHref } from "@/lib/academy-navigation";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
 export const Route = createFileRoute("/redeem")({
   head: () => ({
@@ -52,7 +53,7 @@ function Redemption({ session }: { session: ReturnType<typeof useAcademySession>
               First sign in with the same email you used at checkout. Your code stays private; do not
               put it in a website link.
             </p>
-            <a className="academy-button" href="/join">
+            <a className="academy-button" href={academyJoinHref("/redeem", true)}>
               Sign in or create an account
             </a>
           </>
@@ -112,3 +113,4 @@ function Redemption({ session }: { session: ReturnType<typeof useAcademySession>
     </AcademyFrame>
   );
 }
+

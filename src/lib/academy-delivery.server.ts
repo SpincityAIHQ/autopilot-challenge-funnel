@@ -1,8 +1,9 @@
 import { academyDb } from "./academy.server";
+import { composeAccessCodeMessage } from "./academy-messages";
 import { accessCode, codeHash, accessCodeReady } from "./academy-access.server";
 export async function deliverAccessCodes() {
   const secret = process.env.ACADEMY_ACCESS_CODE_SECRET;
-  const endpoint = process.env.ACADEMY_GHL_ACCESS_WEBHOOK_URL;
+  const endpoint = process.env.ACADEMY_GHL_ACCESS_WEBHOOK_URL || process.env.ACADEMY_GHL_WEBHOOK_URL;
   let allowed = false;
   try {
     const u = new URL(endpoint ?? "");
@@ -52,7 +53,7 @@ export async function deliverAccessCodes() {
             .eq("order_id", c.order_id)
             .eq("line_id", c.line_id)
             .maybeSingle(),
-          db.from("academy_orders").select("needs_review").eq("order_id", c.order_id).maybeSingle(),
+          db.from("academy_orders").select("needs_review,financial_status").eq("order_id", c.order_id).maybeSingle(),
           db
             .from("academy_access_codes")
             .select("generation,code_hash,email,redeemed_at,expires_at")
@@ -77,15 +78,35 @@ export async function deliverAccessCodes() {
         else {
           const value = accessCode(c.id, c.generation, secret);
           if (codeHash(value) !== c.code_hash) throw new Error("ACCESS_KEY_MISMATCH");
+          const profile = await db.from("academy_profiles").select("user_id,email,phone,sms_consent,marketing_consent,timezone").eq("email", c.email).maybeSingle();
+          if (profile.error) throw new Error("CUSTOMER_PREFERENCES_UNAVAILABLE");
+          // A distinct outbox event and idempotency key keep SMS retries independent
+          // from this purchase email. The sender rechecks consent and purchase state.
+          if (profile.data?.sms_consent && profile.data.phone) {
+            const sms = await db.from("academy_outbox").upsert({
+              dedup_key: `purchase-access-sms:${c.id}:${c.generation}`,
+              user_id: profile.data.user_id, name: "purchase_access_sms",
+              payload: { codeId: c.id, generation: c.generation, purpose: "transactional", channel: "sms" },
+            }, { onConflict: "dedup_key", ignoreDuplicates: true });
+            if (sms.error) throw new Error("PURCHASE_SMS_NOT_QUEUED");
+          }
+          const message = composeAccessCodeMessage(c.tier, value, c.expires_at);
           attempted = true;
           const r = await fetch(endpoint!, {
             method: "POST",
-            headers: { "Content-Type": "application/json", "X-Academy-Event-Id": row.id },
+            headers: { "Content-Type": "application/json", "X-Academy-Event-Id": row.id, "Idempotency-Key": row.id },
             signal: AbortSignal.timeout(8000),
             body: JSON.stringify({
               event_id: row.id,
               event_name: "purchase_access_code",
-              purpose: "transactional",
+              purpose: "transactional", intent: "purchase_access_code", suppress_sales: true,
+              channel: "email", send_email: true, send_sms: false, send_voice: false, voice_call_allowed: false,
+              purchase_verified: true, financial_status: o.data.financial_status,
+              order_id: c.order_id, line_id: c.line_id, customer_lifecycle: "customer",
+              user_id: profile.data?.user_id ?? null,
+              marketing_consent: Boolean(profile.data?.marketing_consent), sms_consent: Boolean(profile.data?.sms_consent),
+              timezone: profile.data?.timezone ?? null,
+              ...message,
               email: c.email,
               tier: c.tier,
               access_code: value,
@@ -117,3 +138,4 @@ export async function deliverAccessCodes() {
   }
   return { accessEmail: "enabled", accepted, unknown };
 }
+

@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { GuideAvatar } from "./AcademyFrame";
+import { useRouterState } from "@tanstack/react-router";
+import { academyJoinHref } from "@/lib/academy-navigation";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
 import { GUIDES, type LessonMeta } from "@/lib/academy";
 import type { LearningGuidance } from "@/lib/academy-guidance";
@@ -19,6 +21,7 @@ export function ThothBubble() {
   return <ThothSession key={session.email ?? "anonymous"} session={session} />;
 }
 function ThothSession({ session }: { session: ReturnType<typeof useAcademySession> }) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const guide = GUIDES.thoth;
   const [open, setOpen] = useState(false);
   const [context, setContext] = useState<Context | null>(null);
@@ -106,7 +109,7 @@ function ThothSession({ session }: { session: ReturnType<typeof useAcademySessio
           <div className="academy-helper-body">
             {!session.email ? (
               <p>
-                <a href="/join">Sign in</a> and {guide.name} can answer from your lessons, your
+                <a href={academyJoinHref(pathname, true)}>Sign in</a> and {guide.name} can answer from your lessons, your
                 watch maps and your saved work.
               </p>
             ) : (
@@ -208,4 +211,5 @@ function ThothSession({ session }: { session: ReturnType<typeof useAcademySessio
     </div>
   );
 }
+
 
