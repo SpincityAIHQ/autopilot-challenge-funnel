@@ -15,6 +15,16 @@ function Home() {
   return (
     <AcademyFrame>
       <section className="academy-hero academy-hero-stacked">
+        <div>
+          <p className="academy-eyebrow">The AI AutoPilot education experience · by SpinCity</p>
+          <h1>
+            Your expertise.
+            <br />
+            Your business.
+            <br />
+            <em>Your AI team.</em>
+          </h1>
+        </div>
         <div className="academy-hero-media">
           <FunnelVideoSlot
             url={import.meta.env.VITE_ACADEMY_VSL_URL || null}
@@ -25,14 +35,6 @@ function Home() {
           />
         </div>
         <div>
-          <p className="academy-eyebrow">The AI AutoPilot education experience · by SpinCity</p>
-          <h1>
-            Your expertise.
-            <br />
-            Your business.
-            <br />
-            <em>Your AI team.</em>
-          </h1>
           <p className="academy-lead">
             An advanced learning environment built by Spin so his students get the best AI business
             information in the most cutting-edge way. The free training opens soon. Leave your name
