@@ -48,7 +48,7 @@ describe("Tutor evidence and conversation", () => {
       answer: "A".repeat(3000), created_at: `2026-09-09T00:0${i}:00Z`,
     }));
     const result = tutorConversation(rows, "student", "current");
-    expect(result).toHaveLength(6);
+    expect(result.length).toBe(6);
     expect(result[0].at).toBe("2026-09-09T00:03:00Z");
     expect(result[5].at).toBe("2026-09-09T00:08:00Z");
     expect(result.every((r) => r.question.length <= 1500 && r.answer.length <= 2500)).toBe(true);

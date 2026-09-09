@@ -89,17 +89,20 @@ BEGIN
         WHEN 'learning_stalled' THEN md5(e.workbook::text)
         ELSE e.last_learning_activity_at::text END AS evidence_key
     FROM evidence e
-    CROSS JOIN LATERAL (SELECT CASE
-      WHEN e.is_lesson AND e.workbook_status='needs_revision' THEN 'learning_feedback'
-      WHEN e.is_lesson AND e.quiz_total>0 AND e.quiz_score::numeric/e.quiz_total<0.8
-        AND e.updated_at<=now()-interval '2 hours' THEN 'learning_practice'
-      WHEN e.is_lesson AND e.workbook_status='approved' THEN 'learning_approved'
-      WHEN e.media_version<>'' AND e.watched_seconds>=60 AND e.watched_percent<90
-        AND e.last_learning_activity_at<=now()-interval '48 hours' THEN 'learning_dropoff'
-      WHEN e.is_lesson AND e.content_version<>'' AND e.workbook_status='draft'
-        AND e.updated_at<=now()-interval '3 days' THEN 'learning_stalled'
-    END AS signal) n
-    WHERE n.signal IS NOT NULL
+    -- Enumerate every eligible signal, then remove already-sent evidence below.
+    -- An old low quiz score must not mask a later approval or replay return task.
+    CROSS JOIN LATERAL (VALUES
+      ('learning_feedback',e.is_lesson AND e.workbook_status='needs_revision'),
+      ('learning_practice',e.is_lesson AND e.quiz_total>0
+        AND e.quiz_score::numeric/nullif(e.quiz_total,0)<0.8
+        AND e.updated_at<=now()-interval '2 hours'),
+      ('learning_approved',e.is_lesson AND e.workbook_status='approved'),
+      ('learning_dropoff',e.media_version<>'' AND e.watched_seconds>=60 AND e.watched_percent<90
+        AND e.last_learning_activity_at<=now()-interval '48 hours'),
+      ('learning_stalled',e.is_lesson AND e.content_version<>'' AND e.workbook_status='draft'
+        AND e.updated_at<=now()-interval '3 days')
+    ) n(signal,eligible)
+    WHERE n.eligible IS TRUE
   ), candidates AS (
     SELECT s.*, 'learning:v2:'||s.user_id||':'||s.lesson_id||':'||
       CASE WHEN s.signal='learning_dropoff' THEN s.media_version ELSE s.content_version END||

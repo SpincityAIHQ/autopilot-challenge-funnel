@@ -9,21 +9,7 @@ const valid = {
 };
 function database(rows: Record<string, typeof valid>) {
   return {
-    from: (table: string) => ({
-      select: (_columns: string) => {
-        let id = "";
-        const query = {
-          eq: (column: string, value: string) => {
-            expect(table).toBe("academy_transcripts");
-            expect(column).toBe("lesson_id");
-            id = value;
-            return query;
-          },
-          maybeSingle: async () => ({ data: rows[id] ?? null, error: null }),
-        };
-        return query;
-      },
-    }),
+    readPrivateTranscript: async (id: string) => ({ data: rows[id] ?? null, error: null }),
     storage: { from: () => ({ download: async () => ({ data: null, error: true }) }) },
   };
 }

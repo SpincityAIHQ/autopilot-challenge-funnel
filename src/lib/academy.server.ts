@@ -20,7 +20,7 @@ import {
 import { lessonContent, scoreAnswers } from "./academy-content.server";
 import { isStaffEmail } from "./academy-staff.server";
 import { configuredVimeo, connectedSlots, vimeoDuration } from "./academy-media.server";
-import { loadTranscript, availableTranscriptIds } from "./academy-transcript.server";
+import { loadTranscript, availableTranscriptIds, type TranscriptStore } from "./academy-transcript.server";
 import { retrieveCues } from "./transcript";
 import { consumeRateLimit } from "./rate-limit";
 import { readLimitedBody } from "./academy-http.server";
@@ -42,6 +42,19 @@ export function academyDb() {
   if (!url || !key)
     throw new AcademyError("Student services are being connected. Please try again later.", 503);
   return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+}
+/** Keep the transcript adapter independent of Supabase's recursive query-builder types. */
+function transcriptStore(db: ReturnType<typeof academyDb>): TranscriptStore {
+  return {
+    storage: db.storage,
+    readPrivateTranscript: async (id) => {
+      const { data, error } = await db.from("academy_transcripts")
+        .select("source_vtt,source_sha256,media_version,active")
+        .eq("lesson_id", id)
+        .maybeSingle();
+      return { data, error };
+    },
+  };
 }
 export async function academyUser(request: Request): Promise<User> {
   const bearer = request.headers.get("authorization");
@@ -199,7 +212,7 @@ export async function handleAcademyGet(request: Request, path: string) {
     return {
       lessons: LESSONS,
       connected,
-      transcripts: await availableTranscriptIds(LESSONS.filter((l) => connected.includes(l.id)), academyDb()),
+      transcripts: await availableTranscriptIds(LESSONS.filter((l) => connected.includes(l.id)), transcriptStore(academyDb())),
       bookingConfigured: bookingFor([]).configured,
     };
   }
@@ -232,7 +245,7 @@ export async function handleAcademyGet(request: Request, path: string) {
     const lesson = lessonContent(id)!;
     await resolveMedia(lesson, db);
     const meta = LESSONS.find((l) => l.id === id)!;
-    lesson.transcript = lesson.media ? await loadTranscript(id, meta.envKey, db) : null;
+    lesson.transcript = lesson.media ? await loadTranscript(id, meta.envKey, transcriptStore(db)) : null;
     if (progress && progress.media_version !== lesson.media?.version) {
       progress.intervals = [];
       progress.duration = 0;
@@ -689,7 +702,7 @@ export async function handleAcademyPost(request: Request, path: string) {
     const vaultAllowsUser = vaultAllows(grants);
     const chapters = lesson.media?.chapters ?? [];
     const watch = progress ? watchSummary(progress) : null;
-    const cues = lesson.media ? await loadTranscript(d.lessonId, meta.envKey, db) : null;
+    const cues = lesson.media ? await loadTranscript(d.lessonId, meta.envKey, transcriptStore(db)) : null;
     const missed = progress
       ? chapterStatus(chapters, progress.intervals, progress.duration).filter(
           (c) => c.status !== "watched",

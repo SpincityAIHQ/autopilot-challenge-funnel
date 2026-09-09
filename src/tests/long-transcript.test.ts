@@ -15,7 +15,7 @@ function source(count: number) {
 describe("Long session transcripts", () => {
   it("keeps the final passage in a recording with more than 4000 cues", () => {
     const cues = parseTranscript(source(5040));
-    expect(cues).toHaveLength(5040);
+    expect(cues.length).toBe(5040);
     expect(cues.at(-1)?.end).toBe(25200);
     expect(retrieveCues(cues, { question: "Closingfeedback" }).at(-1)?.text)
       .toBe("Closingfeedback final passage.");

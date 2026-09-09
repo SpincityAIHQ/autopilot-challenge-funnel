@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { AcademyFrame, GuideAvatar, TicketBadge } from "./AcademyFrame";
+import { AcademyFrame, GuideAvatar } from "./AcademyFrame";
 import { LiveSpinAvatar } from "./LiveSpinAvatar";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
 import {
@@ -127,7 +127,6 @@ function GuideSession({
               <h1>{room === "spin" ? "Build with AI Spin." : "Learn with Thoth."}</h1>
             </div>
           </div>
-          <TicketBadge ticket={context?.ticket} />
         </div>
         <p className="academy-lead">
           {room === "spin"

@@ -23,12 +23,8 @@ type PrivateTranscriptRow = {
   media_version: string;
   active: boolean;
 };
-type PrivateTranscriptQuery = {
-  eq: (column: string, value: string) => PrivateTranscriptQuery;
-  maybeSingle: () => PromiseLike<{ data: unknown; error: unknown }>;
-};
-type Storage = {
-  from?: (table: string) => { select: (columns: string) => PrivateTranscriptQuery };
+export type TranscriptStore = {
+  readPrivateTranscript?: (id: string) => PromiseLike<{ data: unknown; error: unknown }>;
   storage: {
     from: (bucket: string) => {
       download: (path: string) => Promise<{ data: Blob | null; error: unknown }>;
@@ -96,12 +92,9 @@ function recordingVersion(envKey: string) {
   return process.env[`ACADEMY_MEDIA_VERSION_${envKey}`] || (vimeo ? `vimeo:${vimeo.id}` : "1");
 }
 /** A private row is authoritative: inactive, mismatched or damaged text is never served. */
-async function privateTranscript(id: string, version: string, db: Storage) {
-  if (!db.from) return { found: false, text: null };
-  const result = await db.from("academy_transcripts")
-    .select("source_vtt,source_sha256,media_version,active")
-    .eq("lesson_id", id)
-    .maybeSingle();
+async function privateTranscript(id: string, version: string, db: TranscriptStore) {
+  if (!db.readPrivateTranscript) return { found: false, text: null };
+  const result = await db.readPrivateTranscript(id);
   if (result.error || !result.data) return { found: false, text: null };
   const row = result.data as PrivateTranscriptRow;
   if (!row.active || row.media_version !== version || typeof row.source_vtt !== "string")
@@ -113,7 +106,7 @@ async function privateTranscript(id: string, version: string, db: Storage) {
 /** Only IDs with a successfully loaded, non-empty transcript are advertised. */
 export async function availableTranscriptIds(
   lessons: { id: string; envKey: string }[],
-  db: Storage,
+  db: TranscriptStore,
 ) {
   const results = await Promise.all(lessons.map(async (lesson) => (
     await loadTranscript(lesson.id, lesson.envKey, db)
@@ -123,7 +116,7 @@ export async function availableTranscriptIds(
 export async function loadTranscript(
   id: string,
   envKey: string,
-  db: Storage,
+  db: TranscriptStore,
 ): Promise<TranscriptCue[] | null> {
   const version = recordingVersion(envKey);
   const key = `${id}:${version}`;
