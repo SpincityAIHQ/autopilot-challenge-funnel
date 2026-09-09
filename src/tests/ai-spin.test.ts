@@ -42,8 +42,10 @@ describe("AI Spin access and learning evidence", () => {
     );
   });
   it("cancels stale coaching messages after the learner improves", () => {
-    expect(learningDeliveryEligible("learning_practice", p)).toBe(true);
-    expect(learningDeliveryEligible("learning_practice", { ...p, quiz_score: 3 })).toBe(false);
+    const waiting = { ...p, updated_at: new Date(Date.now() - 3 * 3600000).toISOString() };
+    expect(learningDeliveryEligible("learning_practice", p)).toBe(false);
+    expect(learningDeliveryEligible("learning_practice", waiting)).toBe(true);
+    expect(learningDeliveryEligible("learning_practice", { ...waiting, quiz_score: 3 })).toBe(false);
     expect(
       learningDeliveryEligible("learning_feedback", { ...p, workbook_status: "approved" }),
     ).toBe(false);
