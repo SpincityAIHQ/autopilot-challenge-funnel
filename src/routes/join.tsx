@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, useRef, type FormEvent } from "react";
 import { AcademyFrame } from "@/components/AcademyFrame";
 import { supabase } from "@/integrations/supabase/client";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
@@ -23,6 +23,34 @@ function Join() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [recovery, setRecovery] = useState(false);
+  const [verifyingEmail, setVerifyingEmail] = useState(false);
+  const verificationStarted = useRef(false);
+  const verificationBlocked = useRef(false);
+  useEffect(() => {
+    const fragment = new URLSearchParams(window.location.hash.slice(1));
+    const tokenHash = fragment.get("token_hash");
+    if (!tokenHash || fragment.get("type") !== "email" || verificationStarted.current) return;
+    verificationStarted.current = true;
+    verificationBlocked.current = true;
+    setVerifyingEmail(true);
+    // The one-use token stays out of query logs/referrers and is removed before requests.
+    window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    void (async () => {
+      try {
+        const response = await fetch("/api/academy/email-confirm", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tokenHash }),
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Email verification could not be completed.");
+        const signedIn = await supabase.auth.setSession({ access_token: result.access_token, refresh_token: result.refresh_token });
+        if (signedIn.error) throw new Error("Your verified session could not open. Please sign in again.");
+        verificationBlocked.current = false;
+        setOnboardingAttempt((attempt) => attempt + 1);
+      } catch (error) { setMessage((error as Error).message); }
+      finally { setVerifyingEmail(false); }
+    })();
+  }, []);
   const [profile, setProfile] = useState<OnboardingProfile | null>(null);
   const [onboardingAttempt, setOnboardingAttempt] = useState(0);
   const step = onboardingStep({ ...session, recovery, profile });
@@ -36,7 +64,7 @@ function Join() {
     return () => data.subscription.unsubscribe();
   }, []);
   useEffect(() => {
-    if (session.loading || !session.email || recovery) return;
+    if (session.loading || !session.email || recovery || verificationBlocked.current || verifyingEmail) return;
     const profileEmail = session.email;
     let active = true;
     setProfile(null);
@@ -54,10 +82,10 @@ function Join() {
     return () => {
       active = false;
     };
-  }, [session.loading, session.email, recovery, onboardingAttempt]);
+  }, [session.loading, session.email, recovery, onboardingAttempt, verifyingEmail]);
   useEffect(() => {
-    if (step === "ready") window.location.assign(academyJoinDestination(search.next));
-  }, [step, search.next]);
+    if (step === "ready" && !verificationBlocked.current && !verifyingEmail) window.location.assign(academyJoinDestination(search.next));
+  }, [step, search.next, verifyingEmail]);
   async function submit(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -73,6 +101,7 @@ function Join() {
             },
           });
       if (result.error) throw result.error;
+      if (result.data.session) { verificationBlocked.current = false; setOnboardingAttempt((attempt) => attempt + 1); }
       if (!result.data.session)
         setMessage(
           "Check your email to confirm your account. Then choose your reminders and enter your classroom.",
@@ -107,6 +136,7 @@ function Join() {
       setBusy(false);
     }
   }
+  if (verifyingEmail) return <AcademyFrame><section className="academy-auth academy-card"><p role="status">Verifying your email and opening your account…</p></section></AcademyFrame>;
   if (step === "recovery")
     return (
       <AcademyFrame>
@@ -162,8 +192,8 @@ function Join() {
           Thoth, your AI tutor, uses your saved activity to help you choose your next step.
         </p>
         <p>
-          Returning Summit attendee? Use the email address on your invitation. After you confirm
-          it, your purchased access opens automatically.
+          Returning Summit attendee? Use the email address on your invitation. Verify it, then
+          activate your purchased lessons when you are ready to begin at /redeem.
         </p>
         {session.email ? (
           <p>Signed in as {session.email}</p>
@@ -252,7 +282,7 @@ function Join() {
           <button
             type="button"
             className="academy-button"
-            onClick={() => setOnboardingAttempt((attempt) => attempt + 1)}
+            onClick={() => { verificationBlocked.current = false; setOnboardingAttempt((attempt) => attempt + 1); }}
           >
             Try opening my classroom again
           </button>

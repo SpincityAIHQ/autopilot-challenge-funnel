@@ -90,7 +90,7 @@ function Summit() {
                       : "Recording not connected yet."
                     : session.email
                       ? "Unlocks with the matching Summit ticket."
-                      : "Sign in and redeem your access code to watch."}
+                      : "Sign in with your purchase email to activate your ticket."}
                 </p>
                 <a
                   className={`academy-button ${unlocked ? "" : "academy-button-secondary"}`}
@@ -146,12 +146,12 @@ function Summit() {
             <p className="academy-eyebrow">Already purchased?</p>
             <h2>Activate your ticket.</h2>
             <p>
-              Sign in with the email you used at checkout, then redeem the access code sent for your
-              purchase. Each code unlocks its matching Summit tier.
+              Sign in with the email you used at checkout and activate your ticket when you are ready
+              to begin. Previously issued purchase codes still work on the same page.
             </p>
           </div>
           <a className="academy-button academy-button-secondary" href="/redeem">
-            Redeem my access code
+            Activate my purchased lessons
           </a>
         </div>
         <div className="academy-callout">
@@ -168,4 +168,3 @@ function Summit() {
     </AcademyFrame>
   );
 }
-
