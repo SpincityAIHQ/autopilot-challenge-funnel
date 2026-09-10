@@ -1,6 +1,7 @@
+import { academyGhlTransport, academyGhlTransportReady, dispatchAcademyGhl, type GhlDeliveryReceipt } from "./academy-ghl-messages.server";
 import { schedulerAuthorized } from "./academy-scheduler.server";
 import { academyDb } from "./academy.server";
-import { reconcileShopifyOrder } from "./academy-commerce.server";
+import { reconcileCommerceOrder } from "./academy-commerce.server";
 import { LESSONS, formatTime, tierAllows, watchSummary, type Interval } from "./academy";
 import { redeemedGrants } from "./academy-access.server";
 import type { User } from "@supabase/supabase-js";
@@ -26,7 +27,7 @@ export async function processAcademyIntegrations(request: Request) {
   if (receipts.error) throw new Error("DATABASE_UNAVAILABLE");
   for (const orderId of new Set((receipts.data ?? []).map((x) => x.order_id))) {
     try {
-      await reconcileShopifyOrder(orderId);
+      await reconcileCommerceOrder(orderId);
       const ids = receipts.data!.filter((x) => x.order_id === orderId).map((x) => x.event_id);
       const saved = await db
         .from("academy_commerce_receipts")
@@ -38,24 +39,25 @@ export async function processAcademyIntegrations(request: Request) {
       /* Durable receipt remains pending. Owner sees it in the integration queue. */
     }
   }
+  // Refunds must be seen even if a buyer never signs back in or a GHL workflow was interrupted.
+  if (process.env.ACADEMY_GHL_PAYMENTS_ENABLED === "true") {
+    const stale = await db.from("academy_orders").select("order_id")
+      .like("order_id", "ghl:%")
+      .lt("updated_at", new Date(Date.now() - 15 * 60000).toISOString())
+      .order("updated_at").limit(5);
+    if (stale.error) throw new Error("DATABASE_UNAVAILABLE");
+    for (const order of stale.data ?? []) {
+      try { await reconcileCommerceOrder(order.order_id); }
+      catch { /* Keep the order stale; access checks also require current provider verification. */ }
+    }
+  }
   const { deliverAccessCodes } = await import("./academy-delivery.server");
   const accessDelivery = await deliverAccessCodes();
   if (process.env.ACADEMY_LEARNING_NUDGES_ENABLED === "true") {
     const queued = await db.rpc("academy_queue_learning_nudges");
     if (queued.error) throw new Error("LEARNING_QUEUE_UNAVAILABLE");
   }
-  const endpoint = process.env.ACADEMY_GHL_WEBHOOK_URL;
-  let allowed = false;
-  try {
-    const url = new URL(endpoint ?? "");
-    allowed =
-      url.protocol === "https:" &&
-      url.hostname === "services.leadconnectorhq.com" &&
-      url.pathname.startsWith("/hooks/");
-  } catch {
-    /* Not configured. */
-  }
-  if (process.env.ACADEMY_GHL_ENABLED !== "true" || !allowed)
+  if (process.env.ACADEMY_GHL_ENABLED !== "true" || !academyGhlTransportReady())
     return Response.json(
       { orders, accepted, accessDelivery, ghl: "not_enabled" },
       { headers: { "Cache-Control": "no-store" } },
@@ -67,6 +69,7 @@ export async function processAcademyIntegrations(request: Request) {
     let deferUntil: string | null = null;
     let holdReason: string | null = null;
     let attempted = false;
+    let providerReceipt: GhlDeliveryReceipt | null = null;
     const policy = academyMessagePolicy(row.name);
     try {
       const profile = await db
@@ -98,6 +101,7 @@ export async function processAcademyIntegrations(request: Request) {
         let composed: AcademyMessage | null = null;
         let eligible = true;
         let draftBrief: MessageDraftBrief | null = null;
+        let purchaseSnapshot: { codeId: string; generation: string; codeHash: string; orderId: string; lineId: string; tier: string } | null = null;
         let evidenceSnapshot: { lessonId: string; updatedAt: string; lastLearningAt: string; mediaVersion: string | null; contentVersion: string | null } | null = null;
         if (row.name.startsWith("learning_")) {
           const lessonId = String(row.payload?.lessonId ?? "");
@@ -194,19 +198,7 @@ export async function processAcademyIntegrations(request: Request) {
               stopped_at: resume === null ? null : formatTime(resume), resume_seconds: resume,
               lesson_url: composed?.action_url, evidence_updated_at: p.data.updated_at,
             };
-            // A backlog must not become a burst of messages when a paused scheduler resumes.
-            // An unknown attempt is included because the provider may already have sent it.
-            const threshold = new Date(Date.now() - 86400000).toISOString();
-            const recent = await db.from("academy_outbox").select("completed_at,locked_at")
-              .eq("user_id", row.user_id).like("name", "learning_%")
-              .in("status", ["accepted", "delivered", "unknown"])
-              .or(`completed_at.gte.${threshold},and(completed_at.is.null,locked_at.gte.${threshold})`)
-              .order("completed_at", { ascending: false, nullsFirst: false }).limit(1).maybeSingle();
-            if (recent.error) throw recent.error;
-            if (recent.data) {
-              const recentAt = Date.parse(recent.data.completed_at ?? recent.data.locked_at);
-              if (Number.isFinite(recentAt)) deferUntil = new Date(recentAt + 86400000).toISOString();
-            }
+
           }
         } else if (["webinar_registered", "webinar_registered_sms", "customer_returned", "customer_preferences_updated"].includes(row.name)) {
           const grants = await redeemedGrants({ id: row.user_id, email: profile.data.email } as User);
@@ -220,7 +212,7 @@ export async function processAcademyIntegrations(request: Request) {
           const c = code.data;
           eligible = Boolean(c && c.email === profile.data.email && c.generation === row.payload?.generation);
           if (eligible && c) {
-            await reconcileShopifyOrder(c.order_id);
+            await reconcileCommerceOrder(c.order_id);
             const [grant, order, freshCode] = await Promise.all([
               db.from("academy_grants").select("active,email,tier").eq("order_id", c.order_id).eq("line_id", c.line_id).maybeSingle(),
               db.from("academy_orders").select("needs_review,financial_status").eq("order_id", c.order_id).maybeSingle(),
@@ -240,6 +232,7 @@ export async function processAcademyIntegrations(request: Request) {
               eligible = freshCode.data?.redeemed_by === row.user_id && Date.parse(freshCode.data?.access_until ?? "") > Date.now();
               if (eligible) composed = composeAccessActivatedMessage(c.tier, freshCode.data!.access_until);
             }
+            if (eligible) purchaseSnapshot = { codeId: c.id, generation: c.generation, codeHash: c.code_hash, orderId: c.order_id, lineId: c.line_id, tier: c.tier };
             learningPayload = { ...learningPayload, purchase_verified: eligible, intent: row.name === "purchase_access_sms" ? "purchase_access_code" : "access_confirmation", suppress_sales: true, order_id: c.order_id, line_id: c.line_id, tier: c.tier, financial_status: order.data?.financial_status };
           }
         } else if (row.name === "purchase_updated") {
@@ -255,6 +248,21 @@ export async function processAcademyIntegrations(request: Request) {
             (purchases.data ?? []).length === 0 && importedPurchase.data !== true;
           composed = eligible ? composeWebinarReminder() : null;
         } else eligible = false;
+        if (eligible && composed && policy.marketingRequired) {
+        // A backlog must not become a burst of messages when a paused scheduler resumes.
+        // An unknown attempt is included because the provider may already have sent it.
+        const threshold = new Date(Date.now() - 86400000).toISOString();
+        const recent = await db.from("academy_outbox").select("completed_at,locked_at")
+          .eq("user_id", row.user_id).in("name", ["webinar_not_started", "learning_dropoff", "learning_practice", "learning_feedback", "learning_approved", "learning_stalled"])
+          .in("status", ["accepted", "delivered", "unknown"])
+          .or(`completed_at.gte.${threshold},and(completed_at.is.null,locked_at.gte.${threshold})`)
+          .order("completed_at", { ascending: false, nullsFirst: false }).limit(1).maybeSingle();
+        if (recent.error) throw recent.error;
+        if (recent.data) {
+          const recentAt = Date.parse(recent.data.completed_at ?? recent.data.locked_at);
+          if (Number.isFinite(recentAt)) deferUntil = new Date(recentAt + 86400000).toISOString();
+        }
+        }
         if (!eligible || !composed) status = "cancelled";
         else if (deferUntil) status = "pending";
         else {
@@ -269,11 +277,13 @@ export async function processAcademyIntegrations(request: Request) {
             : { ...composed, message_origin: "authored_template" as const, generation_state: "authored_welcome" };
           // A model call can take time. Recheck consent, identity, entitlement and saved
           // learning state after drafting and immediately before the outbound request.
+          const profileEmail = profile.data.email;
+          const checkLatestEligibility = async () => {
           const freshProfile = await db.from("academy_profiles")
             .select("email,marketing_consent,sms_consent,phone,timezone")
             .eq("user_id", row.user_id).maybeSingle();
           if (freshProfile.error) throw freshProfile.error;
-          let freshEligible = Boolean(freshProfile.data && freshProfile.data.email === profile.data.email && (!policy.marketingRequired || freshProfile.data.marketing_consent) && (!policy.sms || (freshProfile.data.sms_consent && freshProfile.data.phone)));
+          let freshEligible = Boolean(freshProfile.data && freshProfile.data.email === profileEmail && (!policy.marketingRequired || freshProfile.data.marketing_consent) && (!policy.sms || (freshProfile.data.sms_consent && freshProfile.data.phone)));
           if (evidenceSnapshot && freshEligible) {
             const [freshProgress, freshActivity, freshPresence, freshGrants] = await Promise.all([
               db.from("academy_progress").select("updated_at,media_version,content_version")
@@ -281,7 +291,7 @@ export async function processAcademyIntegrations(request: Request) {
               db.from("academy_progress").select("updated_at").eq("user_id", row.user_id)
                 .order("updated_at", { ascending: false }).limit(1).maybeSingle(),
               db.from("academy_learning_activity").select("last_active_at").eq("user_id", row.user_id).maybeSingle(),
-              redeemedGrants({ id: row.user_id, email: profile.data.email } as User),
+              redeemedGrants({ id: row.user_id, email: profileEmail } as User),
             ]);
             if (freshProgress.error || freshActivity.error || freshPresence.error) throw new Error("ELIGIBILITY_UNAVAILABLE");
             const freshLatestAt = Math.max(Date.parse(freshActivity.data?.updated_at ?? "") || 0, Date.parse(freshPresence.data?.last_active_at ?? "") || 0);
@@ -292,46 +302,86 @@ export async function processAcademyIntegrations(request: Request) {
               freshProgress.data.content_version === evidenceSnapshot.contentVersion &&
               (row.name !== "learning_dropoff" || freshLatestAt === Date.parse(evidenceSnapshot.lastLearningAt)));
           }
+          if (row.name === "webinar_not_started" && freshEligible) {
+            const [latestWebinar, latestPurchases, latestImported] = await Promise.all([
+              db.from("academy_progress").select("intervals").eq("user_id", row.user_id).eq("lesson_id", "free-webinar").maybeSingle(),
+              db.from("academy_grants").select("tier").eq("email", profileEmail).eq("active", true),
+              db.rpc("academy_has_imported_ticket", { p_user: row.user_id }),
+            ]);
+            if (latestWebinar.error || latestPurchases.error || latestImported.error) throw new Error("ELIGIBILITY_UNAVAILABLE");
+            freshEligible = Boolean(slotMedia("free-webinar")) && (latestWebinar.data?.intervals ?? []).length === 0 &&
+              (latestPurchases.data ?? []).length === 0 && latestImported.data !== true;
+          }
+          if (purchaseSnapshot && freshEligible) {
+            const snapshot = purchaseSnapshot;
+            const [latestCode, latestGrant, latestOrder] = await Promise.all([
+              db.from("academy_access_codes").select("generation,code_hash,email,redeemed_by,redeemed_at,expires_at,access_until")
+                .eq("id", snapshot.codeId).maybeSingle(),
+              db.from("academy_grants").select("active,email,tier").eq("order_id", snapshot.orderId).eq("line_id", snapshot.lineId).maybeSingle(),
+              db.from("academy_orders").select("needs_review").eq("order_id", snapshot.orderId).maybeSingle(),
+            ]);
+            if (latestCode.error || latestGrant.error || latestOrder.error) throw new Error("PURCHASE_CHECK_UNAVAILABLE");
+            freshEligible = Boolean(latestCode.data && latestCode.data.generation === snapshot.generation &&
+              latestCode.data.code_hash === snapshot.codeHash && latestCode.data.email === profileEmail &&
+              latestGrant.data?.active && latestGrant.data.email === profileEmail && latestGrant.data.tier === snapshot.tier &&
+              latestOrder.data && !latestOrder.data.needs_review &&
+              (row.name === "purchase_access_sms"
+                ? !latestCode.data.redeemed_at && Date.parse(latestCode.data.expires_at) > Date.now()
+                : latestCode.data.redeemed_by === row.user_id && Date.parse(latestCode.data.access_until) > Date.now()));
+          }
           const freshWindow = learningMessageWindow(freshProfile.data?.timezone);
+            return { freshProfile, freshEligible, freshWindow };
+          };
+          const { freshProfile, freshEligible, freshWindow } = await checkLatestEligibility();
           if (!freshEligible || !freshProfile.data) {
             status = "cancelled";
           } else if (policy.daytimeRequired && !freshWindow.allowed) {
             status = "pending"; deferUntil = freshWindow.deferUntil; holdReason = freshWindow.reason;
           } else {
+          const deliveryProfile = freshProfile.data;
           // Preserve exactly what was prepared, including fallback provenance, before
           // submitting it. Unknown outcomes retain the same draft for reconciliation.
           const audit = await db.from("academy_outbox").update({
             payload: { ...row.payload, delivery: { ...learningPayload, ...messageDraft, prepared_at: new Date().toISOString(), channel: policy.crmOnly ? "none" : policy.sms ? "sms" : "email", sms_permitted: Boolean(freshProfile.data.sms_consent) } },
           }).eq("id", row.id).eq("status", "processing").select("id").maybeSingle();
           if (audit.error || !audit.data) throw new Error("MESSAGE_AUDIT_NOT_SAVED");
-          attempted = true;
-          const response = await fetch(endpoint!, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "X-Academy-Event-Id": row.id, "Idempotency-Key": row.id },
-            body: JSON.stringify({
+          const dispatched = await dispatchAcademyGhl({
               event_id: row.id, event_name: row.name, user_id: row.user_id,
-              email: freshProfile.data.email,
+              email: deliveryProfile.email,
               channel: policy.crmOnly ? "none" : policy.sms ? "sms" : "email",
               send_email: !policy.crmOnly && !policy.sms, send_sms: policy.sms, send_voice: false, voice_call_allowed: false,
               purpose: policy.purpose,
-              phone: freshProfile.data.sms_consent ? freshProfile.data.phone : null,
+              phone: freshProfile.data.sms_consent ? deliveryProfile.phone : null,
               sms_consent: Boolean(freshProfile.data.sms_consent), timezone: freshProfile.data.timezone,
               marketing_consent: Boolean(freshProfile.data.marketing_consent), consent_version: "academy-marketing-2026-09-06",
               occurred_at: row.created_at, source: "ai-autopilot-academy",
               ...learningPayload, ...(policy.crmOnly ? {} : messageDraft),
-            }),
-            signal: AbortSignal.timeout(8000),
+            }, {
+            onAttempt: () => { attempted = true; },
+            beforeSend: async () => {
+              const latest = await checkLatestEligibility();
+              if (!latest.freshEligible || !latest.freshProfile.data ||
+                latest.freshProfile.data.email !== deliveryProfile.email ||
+                (policy.sms && latest.freshProfile.data.phone !== deliveryProfile.phone)) return false;
+              if (policy.daytimeRequired && !latest.freshWindow.allowed) {
+                deferUntil = latest.freshWindow.deferUntil;
+                holdReason = latest.freshWindow.reason;
+                throw new Error("MESSAGE_WINDOW_CLOSED");
+              }
+              return true;
+            },
           });
-          // HTTP acceptance proves the inbound workflow received the request. It does
-          // not establish that its email/SMS action ran or reached the learner.
-          status = response.ok ? "accepted" : "unknown";
+          status = dispatched.status;
+          providerReceipt = dispatched.receipt;
           }
         }
       }
     } catch {
       // Only an attempted outbound request has an ambiguous delivery outcome.
       // Recover transient database/preparation failures without inventing acceptance.
-      if (!attempted && row.attempts < 3) {
+      if (!attempted && deferUntil && holdReason) {
+        status = "pending";
+      } else if (!attempted && row.attempts < 3) {
         status = "pending";
         deferUntil = new Date(Date.now() + 5 * 60000).toISOString();
         holdReason = "preparation_unavailable";
@@ -339,6 +389,7 @@ export async function processAcademyIntegrations(request: Request) {
     }
     const saved = await db.from("academy_outbox").update({
       status, completed_at: status === "pending" ? null : new Date().toISOString(),
+      ...(providerReceipt ? { provider_receipt: providerReceipt } : {}),
       ...(status === "pending" && deferUntil ? {
         ...(holdReason ? { payload: { ...row.payload, policy_hold: { reason: holdReason, checked_at: new Date().toISOString(), due_at: deferUntil } } } : {}),
         due_at: deferUntil, locked_at: null, attempts: holdReason === "preparation_unavailable" ? row.attempts : Math.max(0, row.attempts - 1),
@@ -349,7 +400,7 @@ export async function processAcademyIntegrations(request: Request) {
     if (status === "unknown") unknown++;
   }
   return Response.json(
-    { orders, accepted, unknown, accessDelivery, deliveryEvidence: "webhook_acceptance_only" },
+    { orders, accepted, unknown, accessDelivery, deliveryEvidence: academyGhlTransport() === "api" ? "provider_acceptance_only" : "webhook_acceptance_only" },
     { headers: { "Cache-Control": "no-store" } },
   );
 }

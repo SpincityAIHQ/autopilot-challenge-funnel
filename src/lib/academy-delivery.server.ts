@@ -1,23 +1,15 @@
+import { academyGhlTransportReady, dispatchAcademyGhl, type GhlDeliveryReceipt } from "./academy-ghl-messages.server";
 import { academyDb } from "./academy.server";
 import { composeAccessCodeMessage } from "./academy-messages";
 import { accessCode, codeHash, accessCodeReady } from "./academy-access.server";
 export async function deliverAccessCodes() {
   const secret = process.env.ACADEMY_ACCESS_CODE_SECRET;
-  const endpoint = process.env.ACADEMY_GHL_ACCESS_WEBHOOK_URL || process.env.ACADEMY_GHL_WEBHOOK_URL;
-  let allowed = false;
-  try {
-    const u = new URL(endpoint ?? "");
-    allowed =
-      u.protocol === "https:" &&
-      u.hostname === "services.leadconnectorhq.com" &&
-      u.pathname.startsWith("/hooks/");
-  } catch {}
   if (
     !accessCodeReady() ||
     process.env.ACADEMY_ACCESS_EMAIL_ENABLED !== "true" ||
     !secret ||
     secret.length < 32 ||
-    !allowed
+    !academyGhlTransportReady(process.env, true)
   )
     return { accessEmail: "not_enabled", accepted: 0, unknown: 0 };
   const db = academyDb(),
@@ -28,6 +20,7 @@ export async function deliverAccessCodes() {
   for (const row of claimed.data ?? []) {
     let status = "unknown";
     let attempted = false;
+    let providerReceipt: GhlDeliveryReceipt | null = null;
     try {
       const code = await db
         .from("academy_access_codes")
@@ -44,8 +37,8 @@ export async function deliverAccessCodes() {
       )
         status = "cancelled";
       else {
-        const { reconcileShopifyOrder } = await import("./academy-commerce.server");
-        await reconcileShopifyOrder(c.order_id);
+        const { reconcileCommerceOrder } = await import("./academy-commerce.server");
+        await reconcileCommerceOrder(c.order_id);
         const [g, o, fresh] = await Promise.all([
           db
             .from("academy_grants")
@@ -91,12 +84,7 @@ export async function deliverAccessCodes() {
             if (sms.error) throw new Error("PURCHASE_SMS_NOT_QUEUED");
           }
           const message = composeAccessCodeMessage(c.tier, value, c.expires_at, process.env.ACADEMY_EMAIL_TICKETS_ENABLED === "true", c.programme_ends_at);
-          attempted = true;
-          const r = await fetch(endpoint!, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "X-Academy-Event-Id": row.id, "Idempotency-Key": row.id },
-            signal: AbortSignal.timeout(8000),
-            body: JSON.stringify({
+          const dispatched = await dispatchAcademyGhl({
               event_id: row.id,
               event_name: "purchase_access_code",
               purpose: "transactional", intent: "purchase_access_code", suppress_sales: true,
@@ -116,9 +104,26 @@ export async function deliverAccessCodes() {
               programme_ends_at: c.programme_ends_at ?? null,
               terms_version: c.terms_version,
               redeem_url: "https://aiautopilotsummit.com/redeem",
-            }),
+            }, {
+            accessEmail: true,
+            onAttempt: () => { attempted = true; },
+            beforeSend: async () => {
+              const [latestCode, latestGrant, latestOrder] = await Promise.all([
+                db.from("academy_access_codes").select("generation,code_hash,email,redeemed_at,expires_at")
+                  .eq("id", c.id).maybeSingle(),
+                db.from("academy_grants").select("active,email,tier").eq("order_id", c.order_id).eq("line_id", c.line_id).maybeSingle(),
+                db.from("academy_orders").select("needs_review").eq("order_id", c.order_id).maybeSingle(),
+              ]);
+              if (latestCode.error || latestGrant.error || latestOrder.error) throw new Error("PURCHASE_CHECK_UNAVAILABLE");
+              return Boolean(latestCode.data && latestCode.data.generation === c.generation &&
+                latestCode.data.code_hash === c.code_hash && latestCode.data.email === c.email &&
+                !latestCode.data.redeemed_at && Date.parse(latestCode.data.expires_at) > Date.now() &&
+                latestGrant.data?.active && latestGrant.data.email === c.email && latestGrant.data.tier === c.tier &&
+                latestOrder.data && !latestOrder.data.needs_review);
+            },
           });
-          status = r.ok ? "accepted" : "unknown";
+          status = dispatched.status;
+          providerReceipt = dispatched.receipt;
         }
       }
     } catch {
@@ -128,6 +133,7 @@ export async function deliverAccessCodes() {
       .from("academy_access_deliveries")
       .update({
         status,
+        ...(providerReceipt ? { provider_receipt: providerReceipt } : {}),
         completed_at: status === "pending" ? null : new Date().toISOString(),
         due_at: new Date(Date.now() + Math.min(2 ** row.attempts, 60) * 60000).toISOString(),
       })

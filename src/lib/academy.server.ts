@@ -1,3 +1,4 @@
+import { academyGhlTransportReady } from "./academy-ghl-messages.server";
 import { createClient, type User } from "@supabase/supabase-js";
 import { z } from "zod";
 import {
@@ -376,7 +377,7 @@ export async function handleAcademyGet(request: Request, path: string) {
       integrations: {
         shopify: shopifyReady,
         ghl: Boolean(
-          process.env.ACADEMY_GHL_ENABLED === "true" && process.env.ACADEMY_GHL_WEBHOOK_URL,
+          process.env.ACADEMY_GHL_ENABLED === "true" && academyGhlTransportReady(),
         ),
         tutor: tutorReady(),
       },

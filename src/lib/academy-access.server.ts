@@ -18,7 +18,7 @@ export function accessCode(id: string, generation: string, secret: string) {
 export function codeHash(value: string) {
   const normal = value.toUpperCase().replace(/[\s-]/g, "");
   if (!/^SPIN[A-F0-9]{32}$/.test(normal))
-    throw new AcademyError("Check the code and use the email from your Shopify order.");
+    throw new AcademyError("Check the code and use the email from your purchase.");
   return createHash("sha256").update(normal).digest("hex");
 }
 export function accessCodeReady() {
@@ -66,7 +66,7 @@ export async function ensureOrderCodes(orderId: string) {
 export async function redeemAccess(user: User, value: string) {
   if (!accessCodeReady())
     throw new AcademyError(
-      "Code activation is being connected. Your Shopify order remains with the team.",
+      "Code activation is being connected. Your purchase remains with the team.",
       503,
     );
   const hash = codeHash(value),
@@ -79,9 +79,9 @@ export async function redeemAccess(user: User, value: string) {
   if (c.error) throw new AcademyError("Access could not be checked. Try again shortly.", 503);
   const email = user.email!.trim().toLowerCase();
   if (!c.data || c.data.email !== email)
-    throw new AcademyError("Check the code and use the email from your Shopify order.");
-  const { reconcileShopifyOrder } = await import("./academy-commerce.server");
-  await reconcileShopifyOrder(c.data.order_id);
+    throw new AcademyError("Check the code and use the email from your purchase.");
+  const { reconcileCommerceOrder } = await import("./academy-commerce.server");
+  await reconcileCommerceOrder(c.data.order_id);
   const r = await db.rpc("academy_redeem_access_code", {
     p_user: user.id,
     p_email: email,
@@ -107,9 +107,9 @@ export async function requestAccessCode(user: User) {
     .eq("active", true)
     .limit(20);
   if (rows.error) throw new AcademyError("Please try again shortly.", 503);
-  const { reconcileShopifyOrder } = await import("./academy-commerce.server");
+  const { reconcileCommerceOrder } = await import("./academy-commerce.server");
   for (const id of [...new Set((rows.data ?? []).map((r) => r.order_id))].slice(0, 5))
-    await reconcileShopifyOrder(id);
+    await reconcileCommerceOrder(id);
   return {
     ok: true,
     message:
@@ -146,9 +146,9 @@ export async function claimEmailTickets(user: User) {
   if (matching.data.length > 100)
     throw new AcademyError("The team needs to review this account's purchases.", 503);
   const orderIds = [...new Set(matching.data.map((g) => g.order_id))];
-  const { reconcileShopifyOrder } = await import("./academy-commerce.server");
+  const { reconcileCommerceOrder } = await import("./academy-commerce.server");
   // Recheck every candidate order, including claimed orders whose confirmation needs repair.
-  for (const orderId of orderIds) await reconcileShopifyOrder(orderId);
+  for (const orderId of orderIds) await reconcileCommerceOrder(orderId);
   const codes = await db.from("academy_access_codes")
     .select("code_hash,redeemed_at,redeemed_by,access_until,expires_at")
     .in("order_id", orderIds).eq("email", email);
@@ -191,8 +191,8 @@ export async function redeemedGrants(user: User, forceRefresh = false) {
     (o) => forceRefresh || Date.now() - Date.parse(o.updated_at) > 300000,
   );
   if (stale.length) {
-    const { reconcileShopifyOrder } = await import("./academy-commerce.server");
-    for (const o of stale) await reconcileShopifyOrder(o.order_id);
+    const { reconcileCommerceOrder } = await import("./academy-commerce.server");
+    for (const o of stale) await reconcileCommerceOrder(o.order_id);
   }
   const [grants, states] = await Promise.all([
     db.from("academy_grants").select("order_id,line_id,tier,email,active").in("order_id", ids),

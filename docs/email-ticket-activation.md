@@ -2,7 +2,7 @@
 
 Purchased access starts only when the signed-in learner chooses **Activate my purchased lessons** at `/redeem`. Signup, the free webinar, dashboard visits, message processing and ordinary entitlement reads do not claim tickets or start a redemption-based clock. Previously issued purchase codes continue to work.
 
-The app matches the authenticated email to verified paid Shopify grants. Before each claim it reconciles the order with Shopify and uses the existing locked redemption function. Refunds, cancellations, test/unpaid orders, team quantities, review holds, another account's redemption and original expiry rules remain enforced. Historical imported tickets are read without mutation; their existing fixed expiry is preserved when explicitly claimed.
+The app matches the authenticated email to verified paid purchase grants. Before each claim it reconciles the order with its source provider (GHL/Stripe for new checkout, Shopify for historical orders) and uses the existing locked redemption function. Refunds, cancellations, test/unpaid orders, team quantities, review holds, another account's redemption and original expiry rules remain enforced. Historical imported tickets are read without mutation; their existing fixed expiry is preserved when explicitly claimed.
 
 ## Native email verification
 
@@ -22,9 +22,9 @@ Fresh signups use their ordinary single confirmation email; they do not need a s
 
 ## Activation gates
 
-- `ACADEMY_EMAIL_TICKETS_ENABLED=true`: enables explicit matching and no-purchase-code delivery copy. Leave off until email proof, Shopify reconciliation and access terms are verified.
+- `ACADEMY_EMAIL_TICKETS_ENABLED=true`: enables explicit matching and no-purchase-code delivery copy. Leave off until email proof, provider reconciliation and access terms are verified.
 - `ACADEMY_EMAIL_TICKET_LINKS_ENABLED=true`: enables fresh native verification links. Leave off until both Auth templates and real inbox delivery are verified.
-- Existing Shopify and access settings remain required: shop/app credentials, webhook enablement, `ACADEMY_PAID_ACCESS_ENABLED`, `ACADEMY_ACCESS_CODES_ENABLED`, `ACADEMY_ACCESS_CODE_SECRET`, `ACADEMY_ACCESS_TERMS_JSON`, and purchase email configuration.
+- Provider credentials remain required for each source in use. Shopify credentials continue to verify historical Shopify purchases; new GHL purchases use the private integration and readback configuration in `docs/ghl-payments.md`. Shared access settings remain required: `ACADEMY_PAID_ACCESS_ENABLED`, `ACADEMY_ACCESS_CODES_ENABLED`, `ACADEMY_ACCESS_CODE_SECRET`, `ACADEMY_ACCESS_TERMS_JSON`, and purchase email configuration.
 
 Access-confirmation queue failure does not block a committed entitlement. The result reports `confirmationPending`; repeating activation or the same legacy code repairs queueing idempotently without extending access. This is distinct from proving that GHL actually delivered the message.
 
@@ -32,6 +32,6 @@ Access-confirmation queue failure does not block a committed entitlement. The re
 
 Local fixtures execute the actual claim/redemption code, intercepted provider calls and existing PostgreSQL issuance, reconciliation, redemption and message-queue functions. Separate fixtures exercise native email-proof failure modes and the compiled join callback, including failed-link recovery. They do not prove production SMTP/GHL delivery or a real paid order.
 
-Before launch, prove a fresh signup's one-click email confirmation, a historical account's fresh link, an actual paid order, tier-correct activation, fixed expiry on retry, and inbox confirmation. The Shopify transport helper must ship with the updated `/studio` readiness check.
+Before launch, prove a fresh signup's one-click email confirmation, a historical account's fresh link, an actual paid order, tier-correct activation, fixed expiry on retry, and inbox confirmation. Provider transport configuration is not proof of a successful charge or delivered message; verify the source provider and delivery separately.
 
 Sources: [Supabase email links](https://supabase.com/docs/guides/auth/auth-email-passwordless), [native OTP verification](https://supabase.com/docs/reference/javascript/auth-verifyotp), [server-controlled user metadata](https://supabase.com/docs/reference/javascript/auth-admin-updateuserbyid).

@@ -39,7 +39,7 @@ export function learningDeliveryEligible(name: string, p: DeliveryProgress | nul
     if (!p.duration || !Number.isFinite(p.duration) || p.duration <= 0) return false;
     const watched = mergeIntervals(p.intervals ?? [], p.duration).reduce((total, [a, b]) => total + b - a, 0);
     const away = Date.now() - Date.parse(p.last_learning_activity_at ?? p.updated_at);
-    return Number.isFinite(away) && watched >= 60 && (watched / p.duration) < 0.9 && away >= 48 * 3600000;
+    return Number.isFinite(away) && watched > 0 && (watched / p.duration) < 0.9 && away >= 48 * 3600000;
   }
   if (lesson.kind === "session") return false;
   if (name === "learning_feedback") return p.workbook_status === "needs_revision";
