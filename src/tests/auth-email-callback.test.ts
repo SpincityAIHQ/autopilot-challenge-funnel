@@ -24,7 +24,7 @@ describe("auth email verification link", () => {
     expect(() => buildJoinVerificationUrl({ url: null })).toThrow();
   });
   test("accepts an explicit token_hash field when the hook supplies one", () => {
-    expect(buildJoinVerificationUrl({ token_hash: hash, redirect_to: "/join?next=/redeem" })).toBe(
+    expect(buildJoinVerificationUrl({ token_hash: hash, redirect_to: "/join?next=/redeem" } as { url?: string | null })).toBe(
       `https://aiautopilotsummit.com/join?mode=signin&next=%2Fredeem#token_hash=${hash}&type=email`,
     );
   });
