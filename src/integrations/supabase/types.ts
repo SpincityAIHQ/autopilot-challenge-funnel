@@ -78,7 +78,6 @@ export type Database = {
       }
       academy_access_deliveries: {
         Row: {
-          provider_receipt: Json | null
           attempts: number
           code_id: string
           completed_at: string | null
@@ -87,10 +86,10 @@ export type Database = {
           generation: string
           id: string
           locked_at: string | null
+          provider_receipt: Json | null
           status: string
         }
         Insert: {
-          provider_receipt?: Json | null
           attempts?: number
           code_id: string
           completed_at?: string | null
@@ -99,10 +98,10 @@ export type Database = {
           generation: string
           id?: string
           locked_at?: string | null
+          provider_receipt?: Json | null
           status?: string
         }
         Update: {
-          provider_receipt?: Json | null
           attempts?: number
           code_id?: string
           completed_at?: string | null
@@ -111,6 +110,7 @@ export type Database = {
           generation?: string
           id?: string
           locked_at?: string | null
+          provider_receipt?: Json | null
           status?: string
         }
         Relationships: [
@@ -415,7 +415,6 @@ export type Database = {
       }
       academy_outbox: {
         Row: {
-          provider_receipt: Json | null
           attempts: number
           completed_at: string | null
           created_at: string
@@ -425,11 +424,11 @@ export type Database = {
           locked_at: string | null
           name: string
           payload: Json
+          provider_receipt: Json | null
           status: string
           user_id: string | null
         }
         Insert: {
-          provider_receipt?: Json | null
           attempts?: number
           completed_at?: string | null
           created_at?: string
@@ -439,11 +438,11 @@ export type Database = {
           locked_at?: string | null
           name: string
           payload?: Json
+          provider_receipt?: Json | null
           status?: string
           user_id?: string | null
         }
         Update: {
-          provider_receipt?: Json | null
           attempts?: number
           completed_at?: string | null
           created_at?: string
@@ -453,6 +452,7 @@ export type Database = {
           locked_at?: string | null
           name?: string
           payload?: Json
+          provider_receipt?: Json | null
           status?: string
           user_id?: string | null
         }
@@ -1629,6 +1629,7 @@ export type Database = {
           generation: string
           id: string
           locked_at: string | null
+          provider_receipt: Json | null
           status: string
         }[]
         SetofOptions: {
@@ -1656,6 +1657,7 @@ export type Database = {
           locked_at: string | null
           name: string
           payload: Json
+          provider_receipt: Json | null
           status: string
           user_id: string | null
         }[]
