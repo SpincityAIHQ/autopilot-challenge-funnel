@@ -1,3 +1,4 @@
+import { academyGhlTransportReady } from "./academy-ghl-messages.server";
 import { createClient, type User } from "@supabase/supabase-js";
 import { z } from "zod";
 import {
@@ -367,6 +368,16 @@ export async function handleAcademyGet(request: Request, path: string) {
       /* Missing or mismatched credentials keep readiness false. */
     }
     const shopifyReady = shopifyConfigured && process.env.ACADEMY_SHOPIFY_ENABLED === "true";
+    const { academyGhlTransportReady } = await import("./academy-ghl-messages.server");
+    let ghlPaymentsConfigured = false;
+    try {
+      const { ghlPaymentConfiguration } = await import("./academy-ghl-payments.server");
+      ghlPaymentConfiguration();
+      ghlPaymentsConfigured = true;
+    } catch {
+      /* Disabled or incomplete GHL checkout keeps readiness false. */
+    }
+    const { timedTiers } = await import("./academy-email-tickets.server");
     const [submissions, registrations, learners, checkouts, pending] = await Promise.all([
       db
         .from("academy_progress")
@@ -424,6 +435,9 @@ export async function handleAcademyGet(request: Request, path: string) {
     const readiness = launchReadiness({
       env: process.env,
       shopifyConfigured,
+      ghlTransportReady: academyGhlTransportReady(),
+      ghlPaymentsConfigured,
+      timedTiers: [...timedTiers()],
       connected: connectedSlots(LESSONS),
       transcripts: LESSONS.filter((l) => transcriptConfigured(l.id, l.envKey)).map((l) => l.id),
       counts: {
@@ -450,9 +464,7 @@ export async function handleAcademyGet(request: Request, path: string) {
       },
       integrations: {
         shopify: shopifyReady,
-        ghl: Boolean(
-          process.env.ACADEMY_GHL_ENABLED === "true" && process.env.ACADEMY_GHL_WEBHOOK_URL,
-        ),
+        ghl: Boolean(process.env.ACADEMY_GHL_ENABLED === "true" && academyGhlTransportReady()),
         tutor: tutorReady(),
       },
     };

@@ -32,6 +32,12 @@ describe("Email-matched tickets from live purchases", () => {
     expect(
       ticketRowsForOrder({ orderId: "o", grants, needsReview: true }).every((r) => !r.active),
     ).toBe(true);
+    // A tier with an approved rolling term keeps the purchase-code clock; no ticket row.
+    expect(
+      ticketRowsForOrder({ orderId: "o", grants, needsReview: false, timedTiers: ["ga"] }).map(
+        (r) => r.tier,
+      ),
+    ).toEqual(["vip"]);
     expect(emailTicketsEnabled({ ACADEMY_EMAIL_TICKETS_ENABLED: "true" })).toBe(true);
     expect(emailTicketsEnabled({})).toBe(false);
   });
@@ -67,6 +73,9 @@ describe("Launch board", () => {
   const base = {
     env: {} as Record<string, string | undefined>,
     shopifyConfigured: false,
+    ghlTransportReady: false,
+    ghlPaymentsConfigured: false,
+    timedTiers: [] as string[],
     connected: [] as string[],
     transcripts: [] as string[],
     counts: {
@@ -119,10 +128,31 @@ describe("Launch board", () => {
     expect(loose.state).toBe("partial");
     expect(loose.detail).toContain("timezone");
   });
+  it("swaps the blocking checkout row when GHL sells the tickets", () => {
+    const items = launchReadiness({
+      ...base,
+      env: { ACADEMY_CHECKOUT_PROVIDER: "ghl", ACADEMY_GHL_TRANSPORT: "api" },
+    });
+    expect(items.find((i) => i.key === "shopify")!.blocking).toBe(false);
+    const pay = items.find((i) => i.key === "ghl-payments")!;
+    expect(pay.blocking).toBe(true);
+    expect(pay.state).toBe("missing");
+    expect(items.find((i) => i.key === "ghl")!.detail).toContain("ACADEMY_GHL_PRIVATE_TOKEN");
+    const timed = launchReadiness({
+      ...base,
+      timedTiers: ["ga"],
+      env: {
+        ACADEMY_EMAIL_TICKETS_ENABLED: "true",
+        ACADEMY_ACCELERATOR_ENDS_AT: "2026-12-31T23:59:59-05:00",
+      },
+    }).find((i) => i.key === "email-tickets")!;
+    expect(timed.detail).toContain("timed by purchase code: ga");
+  });
   it("goes green when the connections are present", () => {
     const items = launchReadiness({
       ...base,
       shopifyConfigured: true,
+      ghlTransportReady: true,
       env: {
         ACADEMY_SHOPIFY_SHOP: "x.myshopify.com",
         SHOPIFY_CLIENT_ID: "id",

@@ -107,7 +107,7 @@ export const SUMMIT_OFFERS = [
     price: 22,
     label: "The foundation",
     includes: "Day 1 Main + Day 2 Main recordings",
-    url: "https://spincityhq.com/products/ai-autopilot-summit-general-admission",
+    url: "/api/public/checkout/ga",
   },
   {
     tier: "vip",
@@ -115,7 +115,7 @@ export const SUMMIT_OFFERS = [
     price: 99,
     label: "Go deeper",
     includes: "General Admission + both VIP after-hours recordings",
-    url: "https://spincityhq.com/products/ai-autopilot-summit-vip",
+    url: "/api/public/checkout/vip",
   },
   {
     tier: "vault",
@@ -123,7 +123,7 @@ export const SUMMIT_OFFERS = [
     price: 298,
     label: "The complete Summit",
     includes: "VIP + Day 3 Emerald intensive + the Vault: skills, prompts, plug-ins and templates",
-    url: "https://spincityhq.com/products/ai-autopilot-summit-vip-emerald-vault-key",
+    url: "/api/public/checkout/vault",
   },
 ] as const;
 export const ACCELERATOR_OFFER = {
@@ -133,7 +133,7 @@ export const ACCELERATOR_OFFER = {
   label: "Guided implementation",
   includes:
     "September–December 2026 group build rooms, every day's replay, live AI Spin avatar and 1-on-1 time with SpinCity",
-  url: "https://spincityhq.com/products/q4-ai-accelerator",
+  url: "/api/public/checkout/accelerator",
 } as const;
 export const COMMUNITY_URL =
   "https://www.skool.com/the-ascended-masters/about?ref=ce11d00bd3994b97bfd25e10976d9f0b";

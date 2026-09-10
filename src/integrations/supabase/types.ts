@@ -86,6 +86,7 @@ export type Database = {
           generation: string
           id: string
           locked_at: string | null
+          provider_receipt: Json | null
           status: string
         }
         Insert: {
@@ -97,6 +98,7 @@ export type Database = {
           generation: string
           id?: string
           locked_at?: string | null
+          provider_receipt?: Json | null
           status?: string
         }
         Update: {
@@ -108,6 +110,7 @@ export type Database = {
           generation?: string
           id?: string
           locked_at?: string | null
+          provider_receipt?: Json | null
           status?: string
         }
         Relationships: [
@@ -421,6 +424,7 @@ export type Database = {
           locked_at: string | null
           name: string
           payload: Json
+          provider_receipt: Json | null
           status: string
           user_id: string | null
         }
@@ -434,6 +438,7 @@ export type Database = {
           locked_at?: string | null
           name: string
           payload?: Json
+          provider_receipt?: Json | null
           status?: string
           user_id?: string | null
         }
@@ -447,6 +452,7 @@ export type Database = {
           locked_at?: string | null
           name?: string
           payload?: Json
+          provider_receipt?: Json | null
           status?: string
           user_id?: string | null
         }
@@ -1623,6 +1629,7 @@ export type Database = {
           generation: string
           id: string
           locked_at: string | null
+          provider_receipt: Json | null
           status: string
         }[]
         SetofOptions: {
@@ -1650,6 +1657,7 @@ export type Database = {
           locked_at: string | null
           name: string
           payload: Json
+          provider_receipt: Json | null
           status: string
           user_id: string | null
         }[]

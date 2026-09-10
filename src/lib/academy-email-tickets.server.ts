@@ -1,6 +1,10 @@
 import { academyDb } from "./academy.server";
-import { emailTicketsEnabled, ticketRowsForOrder } from "./email-tickets";
-import { explicitProgrammeEnd } from "./academy-access-terms.server";
+import { emailTicketsEnabled, ticketRowsForOrder, TICKET_TIERS } from "./email-tickets";
+import { accessTermsFor, explicitProgrammeEnd } from "./academy-access-terms.server";
+/** Tiers whose approved rolling term makes the purchase-code path the right clock. */
+export function timedTiers(env: Record<string, string | undefined> = process.env) {
+  return TICKET_TIERS.filter((tier) => accessTermsFor(tier, env) !== null);
+}
 /**
  * After every reconciliation, mirror the order's paid lines into the imported
  * tickets table. The purchaser opens them by choosing "Activate my purchased
@@ -21,6 +25,7 @@ export async function syncEmailTickets(orderId: string) {
     grants: grants.data ?? [],
     needsReview: Boolean(order.data.needs_review),
     acceleratorEndsAt: explicitProgrammeEnd(process.env.ACADEMY_ACCELERATOR_ENDS_AT),
+    timedTiers: timedTiers(),
   });
   if (!rows.length) return { synced: 0 };
   const saved = await db.from("academy_imported_tickets").upsert(
@@ -44,7 +49,10 @@ export async function queuePurchaseConfirmations(orderId: string) {
   ]);
   if (order.error || grants.error || !order.data) throw new Error("PURCHASE_QUEUE_UNAVAILABLE");
   if (order.data.needs_review) return { queued: 0 };
-  const active = (grants.data ?? []).filter((g) => g.active && g.email.includes("@"));
+  const timed = timedTiers();
+  const active = (grants.data ?? []).filter(
+    (g) => g.active && g.email.includes("@") && !timed.includes(g.tier as (typeof timed)[number]),
+  );
   if (!active.length) return { queued: 0 };
   const profile = await db
     .from("academy_profiles")

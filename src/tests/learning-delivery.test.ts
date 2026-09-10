@@ -16,8 +16,16 @@ describe("student follow-up eligibility", () => {
     expect(learningDeliveryEligible("learning_dropoff", progress({ intervals: [[0, 950]] }))).toBe(false);
     expect(learningDeliveryEligible("learning_dropoff", progress({ duration: 0 }))).toBe(false);
     expect(learningDeliveryEligible("learning_dropoff", progress({ duration: 27111, intervals: [[0,300]], updated_at: at(48) }))).toBe(true);
-    expect(learningDeliveryEligible("learning_dropoff", progress({ intervals: [[0,59]] }))).toBe(false);
+    expect(learningDeliveryEligible("learning_dropoff", progress({ intervals: [[0,59]] }))).toBe(true);
     expect(learningDeliveryEligible("learning_dropoff", progress({ last_learning_activity_at: at(1) }))).toBe(false);
+  });
+  test("brief recorded starts qualify only after 48 hours and cancel on return", () => {
+    for (const seconds of [0, 1, 59, 60]) {
+      const p = progress({ duration: 27111, intervals: seconds ? [[0, seconds]] : [], updated_at: at(48) });
+      expect(learningDeliveryEligible("learning_dropoff", p)).toBe(seconds > 0);
+      expect(learningDeliveryEligible("learning_dropoff", { ...p, updated_at: at(47 + 59 / 60) })).toBe(false);
+      expect(learningDeliveryEligible("learning_dropoff", { ...p, last_learning_activity_at: at(1) })).toBe(false);
+    }
   });
   test("a new low quiz attempt receives breathing room and a pass cancels practice", () => {
     expect(learningDeliveryEligible("learning_practice", progress({ quiz_score: 1, quiz_total: 3 }))).toBe(true);

@@ -166,3 +166,12 @@ export async function handleShopifyWebhook(request: Request) {
   // A scheduler processes durable receipts; acknowledging this receipt does not claim access was granted.
   return new Response("Recorded", { status: 200 });
 }
+
+/** Provider dispatch preserves historical Shopify purchases while GHL sells new tickets. */
+export async function reconcileCommerceOrder(orderId: string) {
+  if (orderId.startsWith("ghl:")) {
+    const { reconcileGhlOrder } = await import("./academy-ghl-payments.server");
+    return reconcileGhlOrder(orderId);
+  }
+  return reconcileShopifyOrder(orderId);
+}

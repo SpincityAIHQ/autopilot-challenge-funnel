@@ -20,6 +20,12 @@ export type ReadinessInput = {
   env: Record<string, string | undefined>;
   /** Result of shopifyAdminClient.webhookConfiguration() on the server: shop, mode and secrets agree. */
   shopifyConfigured: boolean;
+  /** academyGhlTransportReady(): the selected GHL transport (webhook URL or private API) is usable. */
+  ghlTransportReady: boolean;
+  /** ghlPaymentConfiguration() succeeded: GHL checkout with Stripe can be read back. */
+  ghlPaymentsConfigured: boolean;
+  /** Tiers with an approved rolling term; they use the purchase-code path, not email tickets. */
+  timedTiers: string[];
   connected: string[];
   transcripts: string[];
   counts: {
@@ -60,11 +66,11 @@ export function launchReadiness(input: ReadinessInput): ReadinessItem[] {
     : ["ACADEMY_SHOPIFY_SHOP", "SHOPIFY_ADMIN_ACCESS_TOKEN", "ACADEMY_SHOPIFY_WEBHOOK_SECRET"];
   const missingShopify = shopifyKeys.filter((k) => !has(env, k));
   const programmeEnd = explicitProgrammeEnd(env.ACADEMY_ACCELERATOR_ENDS_AT);
+  const checkoutProvider = env.ACADEMY_CHECKOUT_PROVIDER?.trim() || "shopify";
+  const ghlTransport = env.ACADEMY_GHL_TRANSPORT?.trim() || "webhook";
+  const openTiers = ["ga", "vip", "vault"].filter((t) => !input.timedTiers.includes(t));
   const emailTicketsOn = on(env, "ACADEMY_EMAIL_TICKETS_ENABLED");
   const twoConfirmations = emailTicketsOn && on(env, "ACADEMY_ACCESS_EMAIL_ENABLED");
-  const ghlUrlOk = /^https:\/\/services\.leadconnectorhq\.com\/hooks\//.test(
-    env.ACADEMY_GHL_WEBHOOK_URL ?? "",
-  );
   const lastRun = input.lastOutboxRunAt ? Date.parse(input.lastOutboxRunAt) : NaN;
   const schedulerFresh = Number.isFinite(lastRun) && Date.now() - lastRun < 30 * 60000;
   const items: ReadinessItem[] = [
@@ -150,7 +156,31 @@ export function launchReadiness(input: ReadinessInput): ReadinessItem[] {
           : "Credentials present but they do not agree (shop domain, auth mode or webhook secret)",
       action:
         "In the Shopify Dev Dashboard create an app with client_credentials and read_orders, install it on the store, and add SHOPIFY_CLIENT_ID and SHOPIFY_CLIENT_SECRET (legacy custom-app token works too: SHOPIFY_ADMIN_ACCESS_TOKEN + ACADEMY_SHOPIFY_WEBHOOK_SECRET). Subscribe orders/paid, orders/updated, orders/cancelled and refunds/create to /api/public/webhooks/shopify; then set ACADEMY_SHOPIFY_ENABLED=true.",
-      blocking: true,
+      blocking: checkoutProvider !== "ghl",
+    },
+    {
+      key: "ghl-payments",
+      group: "purchases",
+      label: "GHL checkout with Stripe",
+      state:
+        checkoutProvider === "ghl"
+          ? input.ghlPaymentsConfigured
+            ? "ready"
+            : "missing"
+          : input.ghlPaymentsConfigured
+            ? "partial"
+            : "off",
+      detail:
+        checkoutProvider === "ghl"
+          ? input.ghlPaymentsConfigured
+            ? "Checkout provider is GHL; payment readback configured"
+            : "Checkout provider is GHL but the payment readback is not configured, so no new ticket can be verified"
+          : input.ghlPaymentsConfigured
+            ? "Configured but ACADEMY_CHECKOUT_PROVIDER still points at Shopify"
+            : "Off: Shopify is the checkout provider",
+      action:
+        "Per docs/ghl-payments.md: private integration token and location, connected Stripe acct_ id, a 32+ character payment webhook secret, ACADEMY_GHL_TICKET_PRICES_JSON, checkout links and hosts; then ACADEMY_GHL_PAYMENTS_ENABLED=true and ACADEMY_CHECKOUT_PROVIDER=ghl after one real $22 purchase verifies end to end.",
+      blocking: checkoutProvider === "ghl",
     },
     {
       key: "email-tickets",
@@ -161,14 +191,14 @@ export function launchReadiness(input: ReadinessInput): ReadinessItem[] {
         ? twoConfirmations
           ? "Both the purchase confirmation and the access-code email are on: purchasers would get two emails"
           : programmeEnd
-            ? "New paid orders become tickets; the purchaser activates them at /redeem"
+            ? `New paid orders become tickets the purchaser activates at /redeem. Open-ended tiers: ${openTiers.length ? openTiers.join(", ") : "none"}${input.timedTiers.length ? `; timed by purchase code: ${input.timedTiers.join(", ")}` : ""}`
             : has(env, "ACADEMY_ACCELERATOR_ENDS_AT")
               ? "ACADEMY_ACCELERATOR_ENDS_AT is not an explicit ISO timestamp with timezone; Accelerator lines are skipped"
               : "On for Summit tiers; Accelerator lines skipped until ACADEMY_ACCELERATOR_ENDS_AT is set"
         : "Off: purchases would wait for access codes and ACADEMY_ACCESS_TERMS_JSON",
       action: twoConfirmations
         ? "Keep one confirmation path: leave ACADEMY_ACCESS_EMAIL_ENABLED off while ACADEMY_EMAIL_TICKETS_ENABLED is on."
-        : "Set ACADEMY_EMAIL_TICKETS_ENABLED=true and ACADEMY_ACCELERATOR_ENDS_AT to the programme end with a timezone (e.g. 2026-12-31T23:59:59-05:00).",
+        : "Set ACADEMY_EMAIL_TICKETS_ENABLED=true and ACADEMY_ACCELERATOR_ENDS_AT to the programme end with a timezone (e.g. 2026-12-31T23:59:59-05:00). Decide per tier whether access is open-ended (ticket) or a rolling term (add the tier to ACADEMY_ACCESS_TERMS_JSON and it switches to the purchase-code path).",
       blocking: true,
     },
     {
@@ -202,16 +232,24 @@ export function launchReadiness(input: ReadinessInput): ReadinessItem[] {
     {
       key: "ghl",
       group: "messaging",
-      label: "GHL inbound workflow (welcome, purchase, coaching)",
+      label: "GHL sender (welcome, purchase, coaching)",
       state:
-        on(env, "ACADEMY_GHL_ENABLED") && ghlUrlOk ? "ready" : ghlUrlOk ? "partial" : "missing",
-      detail: ghlUrlOk
+        on(env, "ACADEMY_GHL_ENABLED") && input.ghlTransportReady
+          ? "ready"
+          : input.ghlTransportReady
+            ? "partial"
+            : "missing",
+      detail: input.ghlTransportReady
         ? on(env, "ACADEMY_GHL_ENABLED")
-          ? "Enabled"
-          : "URL present; ACADEMY_GHL_ENABLED is not true"
-        : "No valid services.leadconnectorhq.com hook URL",
+          ? `Enabled, transport: ${ghlTransport === "api" ? "direct GHL API" : "inbound workflow webhook"}`
+          : "Transport configured; ACADEMY_GHL_ENABLED is not true"
+        : ghlTransport === "api"
+          ? "Transport is api but ACADEMY_GHL_PRIVATE_TOKEN or ACADEMY_GHL_LOCATION_ID is missing"
+          : "No valid services.leadconnectorhq.com hook URL in ACADEMY_GHL_WEBHOOK_URL",
       action:
-        "In GHL: verify the email action on the inbound workflow, add an SMS action gated on send_sms=true, branch on event_name (webinar_registered, purchase_confirmed, learning_*), and send a test to your own inbox.",
+        ghlTransport === "api"
+          ? "Per docs/ghl-direct-messages.md: private integration token and location, verified ACADEMY_GHL_EMAIL_FROM and an E.164 ACADEMY_GHL_SMS_FROM, apply scripts/enable-ghl-api-message-receipts.sql, then send a test to your own inbox and phone."
+          : "In GHL: verify the email action on the inbound workflow, add an SMS action gated on send_sms=true, branch on event_name (webinar_registered, purchase_confirmed, learning_*), and send a test to your own inbox.",
       blocking: true,
     },
     {

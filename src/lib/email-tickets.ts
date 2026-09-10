@@ -22,13 +22,17 @@ export const TICKET_TERMS_NOTE =
 /**
  * One ticket per paid line. Accelerator tickets need a fixed programme end
  * (ACADEMY_ACCELERATOR_ENDS_AT); without it the Accelerator line is skipped so
- * no open-ended Accelerator access is ever created by accident.
+ * no open-ended Accelerator access is ever created by accident. Tiers listed in
+ * `timedTiers` have an approved rolling term in ACADEMY_ACCESS_TERMS_JSON and are
+ * not mirrored: their access clock must start at activation through the
+ * purchase-code path, which a ticket row cannot express.
  */
 export function ticketRowsForOrder(input: {
   orderId: string;
   grants: GrantLine[];
   needsReview: boolean;
   acceleratorEndsAt?: string | null;
+  timedTiers?: string[];
   batch?: string;
 }): TicketRow[] {
   const ends = input.acceleratorEndsAt ? Date.parse(input.acceleratorEndsAt) : NaN;
@@ -38,6 +42,7 @@ export function ticketRowsForOrder(input: {
     const email = g.email.trim().toLowerCase();
     if (!email.includes("@")) return [];
     if (g.tier === "accelerator" && !acceleratorEnd) return [];
+    if (input.timedTiers?.includes(g.tier)) return [];
     return [
       {
         source_kind: "shopify_order" as const,
@@ -56,6 +61,7 @@ export function ticketRowsForOrder(input: {
 export function emailTicketsEnabled(env: NodeJS.ProcessEnv = process.env) {
   return env.ACADEMY_EMAIL_TICKETS_ENABLED === "true";
 }
+export const TICKET_TIERS = ["ga", "vip", "vault", "accelerator"] as const;
 export const TIER_LABELS: Record<string, string> = {
   ga: "General Admission",
   vip: "Summit + VIP",
