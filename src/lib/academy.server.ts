@@ -335,6 +335,14 @@ export async function handleAcademyGet(request: Request, path: string) {
   }
   if (path === "studio") {
     requireInstructor(user);
+    let shopifyReady = false;
+    if (process.env.ACADEMY_SHOPIFY_ENABLED === "true") {
+      try {
+        const { shopifyAdminClient } = await import("./academy-shopify.server");
+        shopifyAdminClient.webhookConfiguration();
+        shopifyReady = true;
+      } catch { /* Missing or mismatched credentials keep readiness false. */ }
+    }
     const [submissions, registrations, learners, checkouts, pending] = await Promise.all([
       db
         .from("academy_progress")
@@ -366,9 +374,7 @@ export async function handleAcademyGet(request: Request, path: string) {
         pendingIntegrations: pending.count ?? 0,
       },
       integrations: {
-        shopify: Boolean(
-          process.env.ACADEMY_SHOPIFY_WEBHOOK_SECRET && process.env.SHOPIFY_ADMIN_ACCESS_TOKEN,
-        ),
+        shopify: shopifyReady,
         ghl: Boolean(
           process.env.ACADEMY_GHL_ENABLED === "true" && process.env.ACADEMY_GHL_WEBHOOK_URL,
         ),
@@ -385,6 +391,20 @@ export async function handleAcademyPost(request: Request, path: string) {
   const origin = request.headers.get("origin");
   if (origin && origin !== new URL(request.url).origin)
     throw new AcademyError("Request origin was not accepted.", 403);
+  if (path === "email-confirm") {
+    if (!origin || origin !== new URL(request.url).origin)
+      throw new AcademyError("Request origin was not accepted.", 403);
+    const secret = process.env.RATE_LIMIT_HMAC_SECRET;
+    if (!secret) throw new AcademyError("Email verification is temporarily unavailable.", 503);
+    const allowed = await consumeRateLimit(request, "academy-email-confirm", 12, 600, secret);
+    if (!allowed.ok) throw new AcademyError("Please wait before trying another email link.", 429);
+    let input: unknown;
+    try { input = JSON.parse(await readLimitedBody(request, 2048)); }
+    catch { throw new AcademyError("This verification link is invalid."); }
+    const d = z.object({ tokenHash: z.string().regex(/^[a-f0-9]{56,64}$/i) }).strict().parse(input);
+    const { completeEmailVerification } = await import("./academy-email-ownership.server");
+    return completeEmailVerification(d.tokenHash);
+  }
   const user = await academyUser(request);
   const db = academyDb();
   let raw: string;
@@ -398,7 +418,7 @@ export async function handleAcademyPost(request: Request, path: string) {
       p_user: user.id,
       p_bucket: path,
       p_limit:
-        path === "tutor" ? 15 : ["redeem", "request-code", "avatar-start"].includes(path) ? 5 : 240,
+        path === "tutor" ? 15 : ["redeem", "request-code", "activate-tickets", "request-ticket-verification", "avatar-start"].includes(path) ? 5 : 240,
     }),
   );
   if (quota.data !== true) throw new AcademyError("Please wait before trying again.", 429);
@@ -407,6 +427,16 @@ export async function handleAcademyPost(request: Request, path: string) {
     input = JSON.parse(raw);
   } catch {
     throw new AcademyError("Invalid request.");
+  }
+  if (path === "activate-tickets") {
+    z.object({ confirmActivation: z.literal(true) }).strict().parse(input);
+    const { claimEmailTickets } = await import("./academy-access.server");
+    return claimEmailTickets(user);
+  }
+  if (path === "request-ticket-verification") {
+    z.object({}).strict().parse(input);
+    const { requestTicketVerification } = await import("./academy-email-ownership.server");
+    return requestTicketVerification(user);
   }
   if (path === "redeem") {
     const d = z.object({ code: z.string().trim().min(10).max(80) }).parse(input);
@@ -859,7 +889,7 @@ export async function handleAcademyPost(request: Request, path: string) {
                   ? "/vault (open for this student: skills, prompts, plug-ins, playbooks and scorecards)"
                   : "/vault opens with the Emerald Vault Key or the Accelerator",
                 access:
-                  "Returning Summit attendees on the imported invitation list unlock their purchased ticket automatically after confirming the invited email. New Shopify purchases use the purchase code at /redeem in a confirmed account with the purchasing email. Active Accelerator access permits AI Spin, the live avatar when connected and 1-on-1 booking when configured; Thoth text chat works for entitled lessons on every ticket.",
+                  "Purchased lessons activate at /redeem after verifying the purchase email and choosing Activate my purchased lessons. This explicit action starts any redemption-based access period. Previously issued purchase codes remain usable there. Opening free training or the dashboard does not activate a new ticket. Active Accelerator access permits AI Spin, the live avatar when connected and 1-on-1 booking when configured; Thoth text chat works for entitled lessons on every ticket.",
               },
               question: d.question,
             }),
@@ -899,4 +929,3 @@ export async function handleAcademyPost(request: Request, path: string) {
   }
   throw new AcademyError("Not found", 404);
 }
-

@@ -167,7 +167,20 @@ export async function processAcademyIntegrations(request: Request) {
               lessonId, updatedAt: p.data.updated_at, lastLearningAt,
               mediaVersion: p.data.media_version, contentVersion: p.data.content_version,
             };
-            draftBrief = { assistant, interventionReason: String(row.payload?.interventionReason ?? row.name), lessonTitle: lesson.title };
+            draftBrief = {
+              eventName: row.name, assistant,
+              interventionReason: String(row.payload?.interventionReason ?? row.name),
+              lessonTitle: lesson.title, lessonSkill: lesson.skill,
+              evidence: {
+                watchedPercent: watch?.coverage ?? 0,
+                needsPractice: row.name === "learning_practice",
+                instructorStatus: p.data.workbook_status === "needs_revision" ? "needs_revision"
+                  : p.data.workbook_status === "approved" ? "approved" : "none",
+                missingActivity: Boolean(missingActivity),
+              },
+              practiceFocus: weakPoints,
+              missingActivityLabel: missingActivity?.label,
+            };
             learningPayload = {
               engine: "SPINXP", policy_version: "spinxp-2026-09-09.1", intent: "learning_support", suppress_sales: true,
               intervention_reason: draftBrief.interventionReason,
@@ -201,7 +214,7 @@ export async function processAcademyIntegrations(request: Request) {
           learningPayload = { ...learningPayload, access_tiers: grants, suppress_sales: true, intent: policy.crmOnly ? "customer_sync" : "account_confirmation" };
         } else if (["access_activated", "access_activated_sms", "purchase_access_sms"].includes(row.name)) {
           const code = await db.from("academy_access_codes")
-            .select("id,generation,order_id,line_id,email,tier,redeemed_by,access_until,redeemed_at,expires_at,code_hash")
+            .select("id,generation,order_id,line_id,email,tier,redeemed_by,access_until,redeemed_at,expires_at,code_hash,programme_ends_at")
             .eq("id", String(row.payload?.codeId ?? "")).maybeSingle();
           if (code.error) throw code.error;
           const c = code.data;
@@ -221,7 +234,7 @@ export async function processAcademyIntegrations(request: Request) {
                 const { accessCode, codeHash } = await import("./academy-access.server");
                 const value = accessCode(c.id, c.generation, process.env.ACADEMY_ACCESS_CODE_SECRET ?? "");
                 eligible = codeHash(value) === c.code_hash;
-                if (eligible) composed = composeAccessCodeMessage(c.tier, value, c.expires_at);
+                if (eligible) composed = composeAccessCodeMessage(c.tier, value, c.expires_at, process.env.ACADEMY_EMAIL_TICKETS_ENABLED === "true", c.programme_ends_at);
               }
             } else if (eligible) {
               eligible = freshCode.data?.redeemed_by === row.user_id && Date.parse(freshCode.data?.access_until ?? "") > Date.now();
@@ -340,4 +353,3 @@ export async function processAcademyIntegrations(request: Request) {
     { headers: { "Cache-Control": "no-store" } },
   );
 }
-
