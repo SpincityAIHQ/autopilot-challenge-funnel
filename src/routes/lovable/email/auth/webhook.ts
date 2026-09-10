@@ -12,7 +12,7 @@ import { buildJoinVerificationUrl } from '@/lib/email-templates/auth-callback'
 // Configuration
 const SITE_NAME = "AI AutoPilot Summit"
 const SENDER_DOMAIN = "notify.nuamenti.com"
-const ROOT_DOMAIN = "nuamenti.com"
+// Sender stays on the verified notify.nuamenti.com domain.
 const FROM_DOMAIN = "notify.nuamenti.com"
 const SITE_URL = "https://aiautopilotsummit.com"
 
