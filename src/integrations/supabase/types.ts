@@ -78,6 +78,7 @@ export type Database = {
       }
       academy_access_deliveries: {
         Row: {
+          provider_receipt: Json | null
           attempts: number
           code_id: string
           completed_at: string | null
@@ -89,6 +90,7 @@ export type Database = {
           status: string
         }
         Insert: {
+          provider_receipt?: Json | null
           attempts?: number
           code_id: string
           completed_at?: string | null
@@ -100,6 +102,7 @@ export type Database = {
           status?: string
         }
         Update: {
+          provider_receipt?: Json | null
           attempts?: number
           code_id?: string
           completed_at?: string | null
@@ -412,6 +415,7 @@ export type Database = {
       }
       academy_outbox: {
         Row: {
+          provider_receipt: Json | null
           attempts: number
           completed_at: string | null
           created_at: string
@@ -425,6 +429,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          provider_receipt?: Json | null
           attempts?: number
           completed_at?: string | null
           created_at?: string
@@ -438,6 +443,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          provider_receipt?: Json | null
           attempts?: number
           completed_at?: string | null
           created_at?: string

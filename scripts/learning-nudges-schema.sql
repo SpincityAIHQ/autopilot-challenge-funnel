@@ -97,7 +97,7 @@ BEGIN
         AND e.quiz_score::numeric/nullif(e.quiz_total,0)<0.8
         AND e.updated_at<=now()-interval '2 hours'),
       ('learning_approved',e.is_lesson AND e.workbook_status='approved'),
-      ('learning_dropoff',e.media_version<>'' AND e.watched_seconds>=60 AND e.watched_percent<90
+      ('learning_dropoff',e.media_version<>'' AND e.watched_seconds>0 AND e.watched_percent<90
         AND e.last_learning_activity_at<=now()-interval '48 hours'),
       ('learning_stalled',e.is_lesson AND e.content_version<>'' AND e.workbook_status='draft'
         AND e.updated_at<=now()-interval '3 days')
@@ -122,13 +122,14 @@ BEGIN
       'lastLearningActivityAt',c.last_learning_activity_at,'lastLearningAt',c.last_learning_activity_at,
       'milestoneId',c.milestone_id,'milestoneLabel',c.milestone_label,
       'interventionReason',CASE WHEN c.signal='learning_dropoff' THEN
-        CASE WHEN c.milestone_id IS NOT NULL THEN 'break_not_returned_48h'
+        CASE WHEN c.watched_seconds<60 THEN 'brief_start_48h'
+          WHEN c.milestone_id IS NOT NULL THEN 'break_not_returned_48h'
           WHEN c.watched_furthest<=3600 THEN 'early_exit_48h' ELSE 'incomplete_replay_48h' END
         ELSE c.signal END)
   FROM candidates c
   WHERE NOT EXISTS (SELECT 1 FROM public.academy_outbox x WHERE x.dedup_key=c.event_key)
     AND NOT EXISTS (SELECT 1 FROM public.academy_outbox x WHERE x.user_id=c.user_id
-      AND x.name LIKE 'learning_%' AND x.status<>'cancelled'
+      AND (x.name LIKE 'learning_%' OR x.name='webinar_not_started') AND x.status<>'cancelled'
       AND greatest(x.created_at,coalesce(x.completed_at,x.created_at))>now()-interval '24 hours')
   ORDER BY c.user_id,CASE c.signal WHEN 'learning_feedback' THEN 1 WHEN 'learning_practice' THEN 2
     WHEN 'learning_approved' THEN 3 WHEN 'learning_dropoff' THEN 4 ELSE 5 END,
@@ -140,8 +141,8 @@ END $$;
 REVOKE ALL ON FUNCTION public.academy_queue_learning_nudges() FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.academy_queue_learning_nudges() TO service_role;
 
--- A student can have at most one learning delivery in flight, including when
--- two worker invocations overlap. Other students and non-learning jobs proceed.
+-- A student can have at most one optional learning/reminder delivery in flight,
+-- including across worker invocations. Transactional email and SMS stay independent.
 CREATE OR REPLACE FUNCTION public.academy_claim_outbox(p_limit integer)
 RETURNS SETOF public.academy_outbox
 LANGUAGE plpgsql SECURITY INVOKER SET search_path='' AS $$
@@ -154,12 +155,12 @@ BEGIN
   WHERE id IN (
     SELECT o.id FROM public.academy_outbox o
     WHERE o.status IN ('pending','retry') AND o.due_at<=now() AND o.attempts<3
-      AND (o.name NOT LIKE 'learning_%' OR (
+      AND ((o.name NOT LIKE 'learning_%' AND o.name<>'webinar_not_started') OR (
         NOT EXISTS (SELECT 1 FROM public.academy_outbox inflight
-          WHERE inflight.user_id=o.user_id AND inflight.name LIKE 'learning_%'
+          WHERE inflight.user_id=o.user_id AND (inflight.name LIKE 'learning_%' OR inflight.name='webinar_not_started')
             AND inflight.status='processing')
         AND o.id=(SELECT first_job.id FROM public.academy_outbox first_job
-          WHERE first_job.user_id=o.user_id AND first_job.name LIKE 'learning_%'
+          WHERE first_job.user_id=o.user_id AND (first_job.name LIKE 'learning_%' OR first_job.name='webinar_not_started')
             AND first_job.status IN ('pending','retry') AND first_job.due_at<=now()
             AND first_job.attempts<3 ORDER BY first_job.due_at,first_job.id LIMIT 1)
       ))

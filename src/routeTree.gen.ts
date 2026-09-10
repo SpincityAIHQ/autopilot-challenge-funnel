@@ -70,11 +70,13 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicWebhooksShopifyRouteImport } from './routes/api/public/webhooks/shopify'
+import { Route as ApiPublicWebhooksGhlPaymentRouteImport } from './routes/api/public/webhooks/ghl-payment'
 import { Route as ApiPublicWebhooksCommasRouteImport } from './routes/api/public/webhooks/commas'
 import { Route as ApiPublicResourcesReadRouteImport } from './routes/api/public/resources/read'
 import { Route as ApiPublicResourcesLogoutRouteImport } from './routes/api/public/resources/logout'
 import { Route as ApiPublicResourcesExchangeRouteImport } from './routes/api/public/resources/exchange'
 import { Route as ApiPublicResourcesEntitlementSummaryRouteImport } from './routes/api/public/resources/entitlement-summary'
+import { Route as ApiPublicCheckoutTierRouteImport } from './routes/api/public/checkout/$tier'
 import { Route as ApiPublicAdminSummitLeadsRouteImport } from './routes/api/public/admin/summit-leads'
 import { Route as ApiPublicAdminSummitAuditRouteImport } from './routes/api/public/admin/summit-audit'
 import { Route as ApiPublicAdminOwnerLoginRouteImport } from './routes/api/public/admin/owner-login'
@@ -394,6 +396,12 @@ const ApiPublicWebhooksShopifyRoute =
     path: '/api/public/webhooks/shopify',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicWebhooksGhlPaymentRoute =
+  ApiPublicWebhooksGhlPaymentRouteImport.update({
+    id: '/api/public/webhooks/ghl-payment',
+    path: '/api/public/webhooks/ghl-payment',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicWebhooksCommasRoute = ApiPublicWebhooksCommasRouteImport.update({
   id: '/api/public/webhooks/commas',
   path: '/api/public/webhooks/commas',
@@ -422,6 +430,11 @@ const ApiPublicResourcesEntitlementSummaryRoute =
     path: '/api/public/resources/entitlement-summary',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicCheckoutTierRoute = ApiPublicCheckoutTierRouteImport.update({
+  id: '/api/public/checkout/$tier',
+  path: '/api/public/checkout/$tier',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAdminSummitLeadsRoute =
   ApiPublicAdminSummitLeadsRouteImport.update({
     id: '/api/public/admin/summit-leads',
@@ -502,11 +515,13 @@ export interface FileRoutesByFullPath {
   '/api/public/admin/owner-login': typeof ApiPublicAdminOwnerLoginRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
+  '/api/public/checkout/$tier': typeof ApiPublicCheckoutTierRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
+  '/api/public/webhooks/ghl-payment': typeof ApiPublicWebhooksGhlPaymentRoute
   '/api/public/webhooks/shopify': typeof ApiPublicWebhooksShopifyRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -573,11 +588,13 @@ export interface FileRoutesByTo {
   '/api/public/admin/owner-login': typeof ApiPublicAdminOwnerLoginRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
+  '/api/public/checkout/$tier': typeof ApiPublicCheckoutTierRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
+  '/api/public/webhooks/ghl-payment': typeof ApiPublicWebhooksGhlPaymentRoute
   '/api/public/webhooks/shopify': typeof ApiPublicWebhooksShopifyRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -645,11 +662,13 @@ export interface FileRoutesById {
   '/api/public/admin/owner-login': typeof ApiPublicAdminOwnerLoginRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
+  '/api/public/checkout/$tier': typeof ApiPublicCheckoutTierRoute
   '/api/public/resources/entitlement-summary': typeof ApiPublicResourcesEntitlementSummaryRoute
   '/api/public/resources/exchange': typeof ApiPublicResourcesExchangeRoute
   '/api/public/resources/logout': typeof ApiPublicResourcesLogoutRoute
   '/api/public/resources/read': typeof ApiPublicResourcesReadRoute
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
+  '/api/public/webhooks/ghl-payment': typeof ApiPublicWebhooksGhlPaymentRoute
   '/api/public/webhooks/shopify': typeof ApiPublicWebhooksShopifyRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -718,11 +737,13 @@ export interface FileRouteTypes {
     | '/api/public/admin/owner-login'
     | '/api/public/admin/summit-audit'
     | '/api/public/admin/summit-leads'
+    | '/api/public/checkout/$tier'
     | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
     | '/api/public/resources/logout'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
+    | '/api/public/webhooks/ghl-payment'
     | '/api/public/webhooks/shopify'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -789,11 +810,13 @@ export interface FileRouteTypes {
     | '/api/public/admin/owner-login'
     | '/api/public/admin/summit-audit'
     | '/api/public/admin/summit-leads'
+    | '/api/public/checkout/$tier'
     | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
     | '/api/public/resources/logout'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
+    | '/api/public/webhooks/ghl-payment'
     | '/api/public/webhooks/shopify'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -860,11 +883,13 @@ export interface FileRouteTypes {
     | '/api/public/admin/owner-login'
     | '/api/public/admin/summit-audit'
     | '/api/public/admin/summit-leads'
+    | '/api/public/checkout/$tier'
     | '/api/public/resources/entitlement-summary'
     | '/api/public/resources/exchange'
     | '/api/public/resources/logout'
     | '/api/public/resources/read'
     | '/api/public/webhooks/commas'
+    | '/api/public/webhooks/ghl-payment'
     | '/api/public/webhooks/shopify'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -931,11 +956,13 @@ export interface RootRouteChildren {
   ApiPublicAdminOwnerLoginRoute: typeof ApiPublicAdminOwnerLoginRoute
   ApiPublicAdminSummitAuditRoute: typeof ApiPublicAdminSummitAuditRoute
   ApiPublicAdminSummitLeadsRoute: typeof ApiPublicAdminSummitLeadsRoute
+  ApiPublicCheckoutTierRoute: typeof ApiPublicCheckoutTierRoute
   ApiPublicResourcesEntitlementSummaryRoute: typeof ApiPublicResourcesEntitlementSummaryRoute
   ApiPublicResourcesExchangeRoute: typeof ApiPublicResourcesExchangeRoute
   ApiPublicResourcesLogoutRoute: typeof ApiPublicResourcesLogoutRoute
   ApiPublicResourcesReadRoute: typeof ApiPublicResourcesReadRoute
   ApiPublicWebhooksCommasRoute: typeof ApiPublicWebhooksCommasRoute
+  ApiPublicWebhooksGhlPaymentRoute: typeof ApiPublicWebhooksGhlPaymentRoute
   ApiPublicWebhooksShopifyRoute: typeof ApiPublicWebhooksShopifyRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -1371,6 +1398,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWebhooksShopifyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/webhooks/ghl-payment': {
+      id: '/api/public/webhooks/ghl-payment'
+      path: '/api/public/webhooks/ghl-payment'
+      fullPath: '/api/public/webhooks/ghl-payment'
+      preLoaderRoute: typeof ApiPublicWebhooksGhlPaymentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhooks/commas': {
       id: '/api/public/webhooks/commas'
       path: '/api/public/webhooks/commas'
@@ -1404,6 +1438,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/resources/entitlement-summary'
       fullPath: '/api/public/resources/entitlement-summary'
       preLoaderRoute: typeof ApiPublicResourcesEntitlementSummaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/checkout/$tier': {
+      id: '/api/public/checkout/$tier'
+      path: '/api/public/checkout/$tier'
+      fullPath: '/api/public/checkout/$tier'
+      preLoaderRoute: typeof ApiPublicCheckoutTierRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/admin/summit-leads': {
@@ -1503,12 +1544,14 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicAdminOwnerLoginRoute: ApiPublicAdminOwnerLoginRoute,
   ApiPublicAdminSummitAuditRoute: ApiPublicAdminSummitAuditRoute,
   ApiPublicAdminSummitLeadsRoute: ApiPublicAdminSummitLeadsRoute,
+  ApiPublicCheckoutTierRoute: ApiPublicCheckoutTierRoute,
   ApiPublicResourcesEntitlementSummaryRoute:
     ApiPublicResourcesEntitlementSummaryRoute,
   ApiPublicResourcesExchangeRoute: ApiPublicResourcesExchangeRoute,
   ApiPublicResourcesLogoutRoute: ApiPublicResourcesLogoutRoute,
   ApiPublicResourcesReadRoute: ApiPublicResourcesReadRoute,
   ApiPublicWebhooksCommasRoute: ApiPublicWebhooksCommasRoute,
+  ApiPublicWebhooksGhlPaymentRoute: ApiPublicWebhooksGhlPaymentRoute,
   ApiPublicWebhooksShopifyRoute: ApiPublicWebhooksShopifyRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,

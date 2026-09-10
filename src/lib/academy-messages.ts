@@ -58,7 +58,10 @@ export function composeLearningMessage(c: LearningMessageContext): AcademyMessag
       const checkpoint = c.interventionReason === "break_not_returned_48h" && c.milestoneLabel
         ? ` Your saved viewing ends near “${clean(c.milestoneLabel, 100)}.”`
         : c.interventionReason === "early_exit_48h" ? " Your saved viewing ends within the first hour of the recording." : "";
-      evidence = `Your saved viewing progress for “${title}” is ${coverage}%.${time ? ` Your saved place is ${time}.` : ""}${checkpoint} No newer learning activity is saved in your account for at least 48 hours.`;
+      const viewing = c.interventionReason === "brief_start_48h"
+        ? `You started “${title}”; your saved viewing covers less than a minute.`
+        : `Your saved viewing progress for “${title}” is ${coverage}%.`;
+      evidence = `${viewing}${time ? ` Your saved place is ${time}.` : ""}${checkpoint} No newer learning activity is saved in your account for at least 48 hours.`;
       next = `Open the lesson${time ? ` and continue around ${time}` : ""}. Take 10 minutes, then name one idea you can apply. If something is unclear, ask ${c.assistant} about that part inside the lesson.`;
       action = "Continue your lesson";
       sms = `${c.assistant}: “${title}” is ${coverage}% watched.${time ? ` Continue around ${time}.` : ""} Take the next 10 minutes when you’re ready.`;
