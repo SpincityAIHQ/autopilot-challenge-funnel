@@ -14,7 +14,10 @@ const ALLOWED_NEXT = ["/redeem", "/learn"] as const;
 
 const TOKEN_HASH = /^[a-f0-9]{56,64}$/i;
 
-function tokenHashFrom(data: { url?: string | null } & Record<string, unknown>): string | null {
+type HookLike = { url?: string | null } & Record<string, unknown>;
+
+function tokenHashFrom(input: { url?: string | null }): string | null {
+  const data = input as HookLike;
   const direct = data["token_hash"];
   if (typeof direct === "string" && TOKEN_HASH.test(direct)) return direct;
   if (typeof data.url === "string") {
@@ -32,7 +35,8 @@ function tokenHashFrom(data: { url?: string | null } & Record<string, unknown>):
 }
 
 /** Only a short local path we own may be carried forward. */
-function validatedNext(data: { url?: string | null } & Record<string, unknown>): string | null {
+function validatedNext(input: { url?: string | null }): string | null {
+  const data = input as HookLike;
   const candidates: string[] = [];
   const direct = data["redirect_to"];
   if (typeof direct === "string") candidates.push(direct);
@@ -56,9 +60,7 @@ function validatedNext(data: { url?: string | null } & Record<string, unknown>):
   return null;
 }
 
-export function buildJoinVerificationUrl(
-  data: { url?: string | null } & Record<string, unknown>,
-): string {
+export function buildJoinVerificationUrl(data: { url?: string | null }): string {
   const tokenHash = tokenHashFrom(data);
   if (!tokenHash) throw new Error("Auth email rejected: no verification token hash present.");
   const next = validatedNext(data);
