@@ -1,8 +1,9 @@
 /**
- * Live Shopify purchases become email-matched tickets, the same path that
- * activates historical Summit purchasers: the purchaser creates or signs in to
- * an account with the purchase email, confirms it, and the ticket claims itself.
- * No access code, no redemption step, no invented access duration.
+ * Live Shopify purchases become email-matched tickets, the same table and
+ * activation path as the historical Summit purchasers: the purchaser creates or
+ * signs in to an account with the purchase email, verifies it, and chooses
+ * "Activate my purchased lessons" at /redeem. No purchase code to type, no
+ * invented access duration.
  */
 export type GrantLine = { line_id: string; tier: string; email: string; active: boolean };
 export type TicketRow = {

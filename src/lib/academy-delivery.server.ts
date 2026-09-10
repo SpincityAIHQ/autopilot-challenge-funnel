@@ -90,7 +90,7 @@ export async function deliverAccessCodes() {
             }, { onConflict: "dedup_key", ignoreDuplicates: true });
             if (sms.error) throw new Error("PURCHASE_SMS_NOT_QUEUED");
           }
-          const message = composeAccessCodeMessage(c.tier, value, c.expires_at);
+          const message = composeAccessCodeMessage(c.tier, value, c.expires_at, process.env.ACADEMY_EMAIL_TICKETS_ENABLED === "true", c.programme_ends_at);
           attempted = true;
           const r = await fetch(endpoint!, {
             method: "POST",
@@ -113,6 +113,7 @@ export async function deliverAccessCodes() {
               code_expires_at: c.expires_at,
               access_hours: c.access_hours,
               access_starts: "redemption",
+              programme_ends_at: c.programme_ends_at ?? null,
               terms_version: c.terms_version,
               redeem_url: "https://aiautopilotsummit.com/redeem",
             }),
@@ -138,4 +139,3 @@ export async function deliverAccessCodes() {
   }
   return { accessEmail: "enabled", accepted, unknown };
 }
-

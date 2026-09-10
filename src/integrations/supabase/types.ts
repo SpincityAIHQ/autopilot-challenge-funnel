@@ -26,6 +26,7 @@ export type Database = {
           issued_at: string
           line_id: string
           order_id: string
+          programme_ends_at: string | null
           redeemed_at: string | null
           redeemed_by: string | null
           terms_version: string
@@ -42,6 +43,7 @@ export type Database = {
           issued_at?: string
           line_id: string
           order_id: string
+          programme_ends_at?: string | null
           redeemed_at?: string | null
           redeemed_by?: string | null
           terms_version: string
@@ -58,6 +60,7 @@ export type Database = {
           issued_at?: string
           line_id?: string
           order_id?: string
+          programme_ends_at?: string | null
           redeemed_at?: string | null
           redeemed_by?: string | null
           terms_version?: string
@@ -1669,6 +1672,7 @@ export type Database = {
           p_id: string
           p_line: string
           p_order: string
+          p_programme_end?: string
           p_terms: string
         }
         Returns: string

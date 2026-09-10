@@ -1,10 +1,12 @@
 import { academyDb } from "./academy.server";
 import { emailTicketsEnabled, ticketRowsForOrder } from "./email-tickets";
+import { explicitProgrammeEnd } from "./academy-access-terms.server";
 /**
  * After every reconciliation, mirror the order's paid lines into the imported
- * tickets table so the purchaser's confirmed account claims them on sign-in.
- * Refunds and cancellations flip the same rows inactive. Idempotent by
- * (source_kind, source_key).
+ * tickets table. The purchaser opens them by choosing "Activate my purchased
+ * lessons" at /redeem with a verified purchase email (claimImportedTickets);
+ * nothing here grants access by itself. Refunds and cancellations flip the same
+ * rows inactive. Idempotent by (source_kind, source_key).
  */
 export async function syncEmailTickets(orderId: string) {
   if (!emailTicketsEnabled()) return { synced: 0 };
@@ -18,7 +20,7 @@ export async function syncEmailTickets(orderId: string) {
     orderId,
     grants: grants.data ?? [],
     needsReview: Boolean(order.data.needs_review),
-    acceleratorEndsAt: process.env.ACADEMY_ACCELERATOR_ENDS_AT ?? null,
+    acceleratorEndsAt: explicitProgrammeEnd(process.env.ACADEMY_ACCELERATOR_ENDS_AT),
   });
   if (!rows.length) return { synced: 0 };
   const saved = await db.from("academy_imported_tickets").upsert(

@@ -187,7 +187,7 @@ export function composeAccessActivatedMessage(tier: string, accessUntil: string)
   return message(
     `Your ${label} access is activated`,
     [
-      `Your access code has been redeemed and your ${label} lessons are unlocked for this account.`,
+      `Your ${label} lessons are unlocked for this account.`,
       `Your current access ends at ${new Date(accessUntil).toISOString()}. Your dashboard shows your available lessons and saved progress.`,
     ],
     "Open your lessons",
@@ -197,7 +197,13 @@ export function composeAccessActivatedMessage(tier: string, accessUntil: string)
   );
 }
 
-export function composeAccessCodeMessage(tier: string, code: string, expiresAt: string) {
+export function composeAccessCodeMessage(
+  tier: string,
+  code: string,
+  expiresAt: string,
+  emailTicket = false,
+  programmeEndsAt?: string | null,
+) {
   const names: Record<string, string> = {
     ga: "General Admission",
     vip: "VIP",
@@ -205,12 +211,28 @@ export function composeAccessCodeMessage(tier: string, code: string, expiresAt: 
     accelerator: "Accelerator",
   };
   const label = names[tier] ?? "Course";
+  const cutoff = programmeEndsAt
+    ? ` This programme ends at ${new Date(programmeEndsAt).toISOString()}; activating later does not extend that date.`
+    : "";
+  if (emailTicket)
+    return message(
+      `Your ${label} purchase: open your lessons`,
+      [
+        `Your ${label} purchase is verified. Sign in or create your account using this purchase email, then verify it through your inbox.`,
+        `When you are ready to begin, choose “Activate my purchased lessons”. Your matching ticket opens without a purchase code. This starts your course access period; simply signing in or watching the free training does not.${cutoff}`,
+        `If you received a purchase code earlier, it still works on the same page.`,
+      ],
+      "Activate my purchased lessons",
+      "https://aiautopilotsummit.com/redeem",
+      `AI AutoPilot: Your ${label} purchase is verified. Sign in with your purchase email, then activate your purchased lessons when ready.`,
+      true,
+    );
   return message(
     `Your ${label} purchase: activate your access`,
     [
       `Your ${label} purchase is verified. Sign in or create your account using this purchase email, then enter your access code.`,
       `Your access code: ${code}`,
-      `Redeem this code before ${new Date(expiresAt).toISOString()}. Your course access period starts when you redeem it.`,
+      `Redeem this code before ${new Date(expiresAt).toISOString()}. Your course access period starts when you redeem it.${cutoff}`,
     ],
     "Activate your access",
     "https://aiautopilotsummit.com/redeem",
@@ -220,10 +242,17 @@ export function composeAccessCodeMessage(tier: string, code: string, expiresAt: 
 }
 
 /**
- * Transactional purchase confirmation. The ticket activates by email match, so
- * the one instruction is: use this exact email on the account.
+ * Transactional purchase confirmation, sent to the purchase email whether or
+ * not an account exists yet. Purchased lessons open only when the signed-in
+ * learner chooses "Activate my purchased lessons" at /redeem with a verified
+ * purchase email; no purchase code is needed and none is included here.
  */
-export function composePurchaseConfirmedMessage(tier: string, hasAccount: boolean, email: string) {
+export function composePurchaseConfirmedMessage(
+  tier: string,
+  hasAccount: boolean,
+  email: string,
+  programmeEndsAt?: string | null,
+) {
   const names: Record<string, string> = {
     ga: "General Admission",
     vip: "Summit + VIP",
@@ -232,18 +261,22 @@ export function composePurchaseConfirmedMessage(tier: string, hasAccount: boolea
   };
   const label = names[tier] ?? "Summit";
   const guide = tier === "accelerator" ? "AI Spin" : "Thoth";
+  const cutoff = programmeEndsAt
+    ? ` This programme ends at ${new Date(programmeEndsAt).toISOString()}; activating later does not extend that date.`
+    : "";
   return message(
     `Your ${label} ticket is ready`,
     [
       `Your ${label} purchase is confirmed. Your ticket is matched to ${email}.`,
       hasAccount
-        ? `Sign in with that email and your ${label} lessons unlock on your dashboard automatically.`
-        : `Create your free account with that exact email, confirm it from the confirmation email, and your ${label} lessons unlock automatically. No code to enter.`,
+        ? `Sign in with that email, verify it from your inbox if asked, then choose “Activate my purchased lessons”. Your ${label} lessons open the moment you do.`
+        : `Create your free account with that exact email, confirm it from the email we send, then choose “Activate my purchased lessons”. Your ${label} lessons open the moment you do; there is no code to type.`,
+      `Activating starts your access period; simply signing in or watching the free training does not.${cutoff}`,
       `${guide} is your guide inside: every recording, every timed word, your watch map and your activity sheet.`,
     ],
-    hasAccount ? "Open your lessons" : "Create your account",
-    `https://aiautopilotsummit.com${hasAccount ? "/learn" : "/join"}`,
-    `AI AutoPilot: Your ${label} ticket is ready. ${hasAccount ? "Sign in" : "Create your account"} with ${email} and your lessons unlock automatically.`,
+    hasAccount ? "Activate my purchased lessons" : "Create your account",
+    `https://aiautopilotsummit.com${hasAccount ? "/redeem" : "/join?next=%2Fredeem"}`,
+    `AI AutoPilot: Your ${label} ticket is ready. ${hasAccount ? "Sign in" : "Create your account"} with ${email}, then choose Activate my purchased lessons.`,
     true,
   );
 }

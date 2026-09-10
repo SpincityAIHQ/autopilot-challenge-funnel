@@ -79,7 +79,15 @@ async function deliverPurchaseConfirmation(
   const sms = row.name === "purchase_confirmed_sms";
   if (sms && !(profile.data?.sms_consent && profile.data.phone))
     return { status: "cancelled", attempted: false };
-  const composed = composePurchaseConfirmedMessage(grant.data!.tier, Boolean(profile.data), email);
+  const { explicitProgrammeEnd } = await import("./academy-access-terms.server");
+  const composed = composePurchaseConfirmedMessage(
+    grant.data!.tier,
+    Boolean(profile.data),
+    email,
+    grant.data!.tier === "accelerator"
+      ? explicitProgrammeEnd(process.env.ACADEMY_ACCELERATOR_ENDS_AT)
+      : null,
+  );
   const audit = await db
     .from("academy_outbox")
     .update({
@@ -410,9 +418,24 @@ export async function processAcademyIntegrations(request: Request) {
               contentVersion: p.data.content_version,
             };
             draftBrief = {
+              eventName: row.name,
               assistant,
               interventionReason: String(row.payload?.interventionReason ?? row.name),
               lessonTitle: lesson.title,
+              lessonSkill: lesson.skill,
+              evidence: {
+                watchedPercent: watch?.coverage ?? 0,
+                needsPractice: row.name === "learning_practice",
+                instructorStatus:
+                  p.data.workbook_status === "needs_revision"
+                    ? "needs_revision"
+                    : p.data.workbook_status === "approved"
+                      ? "approved"
+                      : "none",
+                missingActivity: Boolean(missingActivity),
+              },
+              practiceFocus: weakPoints,
+              missingActivityLabel: missingActivity?.label,
             };
             learningPayload = {
               engine: "SPINXP",
@@ -490,7 +513,7 @@ export async function processAcademyIntegrations(request: Request) {
           const code = await db
             .from("academy_access_codes")
             .select(
-              "id,generation,order_id,line_id,email,tier,redeemed_by,access_until,redeemed_at,expires_at,code_hash",
+              "id,generation,order_id,line_id,email,tier,redeemed_by,access_until,redeemed_at,expires_at,code_hash,programme_ends_at",
             )
             .eq("id", String(row.payload?.codeId ?? ""))
             .maybeSingle();
@@ -546,7 +569,14 @@ export async function processAcademyIntegrations(request: Request) {
                   process.env.ACADEMY_ACCESS_CODE_SECRET ?? "",
                 );
                 eligible = codeHash(value) === c.code_hash;
-                if (eligible) composed = composeAccessCodeMessage(c.tier, value, c.expires_at);
+                if (eligible)
+                  composed = composeAccessCodeMessage(
+                    c.tier,
+                    value,
+                    c.expires_at,
+                    process.env.ACADEMY_EMAIL_TICKETS_ENABLED === "true",
+                    c.programme_ends_at,
+                  );
               }
             } else if (eligible) {
               eligible =

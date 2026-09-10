@@ -1,4 +1,5 @@
 import { LESSONS, type LessonMeta } from "./academy";
+import { explicitProgrammeEnd } from "./academy-access-terms.server";
 /**
  * The launch board. Every connection the complete experience depends on, its
  * current state, and the exact human action that turns it green. The server
@@ -17,6 +18,8 @@ export type ReadinessItem = {
 };
 export type ReadinessInput = {
   env: Record<string, string | undefined>;
+  /** Result of shopifyAdminClient.webhookConfiguration() on the server: shop, mode and secrets agree. */
+  shopifyConfigured: boolean;
   connected: string[];
   transcripts: string[];
   counts: {
@@ -50,12 +53,15 @@ export function launchReadiness(input: ReadinessInput): ReadinessItem[] {
     "VITE_ACADEMY_VSL_ACCELERATOR",
   ];
   const missingVsl = vsl.filter((k) => !has(env, k));
-  const shopifyKeys = [
-    "ACADEMY_SHOPIFY_SHOP",
-    "SHOPIFY_ADMIN_ACCESS_TOKEN",
-    "ACADEMY_SHOPIFY_WEBHOOK_SECRET",
-  ];
+  // Either a Dev Dashboard app (client credentials) or a legacy custom app token.
+  const clientMode = has(env, "SHOPIFY_CLIENT_ID") || has(env, "SHOPIFY_CLIENT_SECRET");
+  const shopifyKeys = clientMode
+    ? ["ACADEMY_SHOPIFY_SHOP", "SHOPIFY_CLIENT_ID", "SHOPIFY_CLIENT_SECRET"]
+    : ["ACADEMY_SHOPIFY_SHOP", "SHOPIFY_ADMIN_ACCESS_TOKEN", "ACADEMY_SHOPIFY_WEBHOOK_SECRET"];
   const missingShopify = shopifyKeys.filter((k) => !has(env, k));
+  const programmeEnd = explicitProgrammeEnd(env.ACADEMY_ACCELERATOR_ENDS_AT);
+  const emailTicketsOn = on(env, "ACADEMY_EMAIL_TICKETS_ENABLED");
+  const twoConfirmations = emailTicketsOn && on(env, "ACADEMY_ACCESS_EMAIL_ENABLED");
   const ghlUrlOk = /^https:\/\/services\.leadconnectorhq\.com\/hooks\//.test(
     env.ACADEMY_GHL_WEBHOOK_URL ?? "",
   );
@@ -130,36 +136,57 @@ export function launchReadiness(input: ReadinessInput): ReadinessItem[] {
       group: "purchases",
       label: "Shopify connection",
       state:
-        missingShopify.length === 0 && on(env, "ACADEMY_SHOPIFY_ENABLED")
+        input.shopifyConfigured && on(env, "ACADEMY_SHOPIFY_ENABLED")
           ? "ready"
-          : missingShopify.length < shopifyKeys.length
+          : input.shopifyConfigured || missingShopify.length < shopifyKeys.length
             ? "partial"
             : "missing",
-      detail: missingShopify.length
-        ? `Missing: ${missingShopify.join(", ")}`
-        : on(env, "ACADEMY_SHOPIFY_ENABLED")
-          ? "Credentials present and webhooks enabled"
-          : "Credentials present; ACADEMY_SHOPIFY_ENABLED is not true",
+      detail: input.shopifyConfigured
+        ? on(env, "ACADEMY_SHOPIFY_ENABLED")
+          ? `Credentials verified (${clientMode ? "client credentials" : "legacy token"}) and webhooks enabled`
+          : "Credentials verified; ACADEMY_SHOPIFY_ENABLED is not true"
+        : missingShopify.length
+          ? `Missing: ${missingShopify.join(", ")}`
+          : "Credentials present but they do not agree (shop domain, auth mode or webhook secret)",
       action:
-        "In Shopify admin create an Admin API token with read_orders; add the shop domain, token and webhook signing secret as secrets; subscribe orders/paid, orders/updated, orders/cancelled and refunds/create to /api/public/webhooks/shopify; then set ACADEMY_SHOPIFY_ENABLED=true.",
+        "In the Shopify Dev Dashboard create an app with client_credentials and read_orders, install it on the store, and add SHOPIFY_CLIENT_ID and SHOPIFY_CLIENT_SECRET (legacy custom-app token works too: SHOPIFY_ADMIN_ACCESS_TOKEN + ACADEMY_SHOPIFY_WEBHOOK_SECRET). Subscribe orders/paid, orders/updated, orders/cancelled and refunds/create to /api/public/webhooks/shopify; then set ACADEMY_SHOPIFY_ENABLED=true.",
       blocking: true,
     },
     {
       key: "email-tickets",
       group: "purchases",
-      label: "Automatic tickets by purchase email",
-      state: on(env, "ACADEMY_EMAIL_TICKETS_ENABLED")
-        ? has(env, "ACADEMY_ACCELERATOR_ENDS_AT")
+      label: "Tickets by purchase email (no code)",
+      state: emailTicketsOn ? (programmeEnd && !twoConfirmations ? "ready" : "partial") : "off",
+      detail: emailTicketsOn
+        ? twoConfirmations
+          ? "Both the purchase confirmation and the access-code email are on: purchasers would get two emails"
+          : programmeEnd
+            ? "New paid orders become tickets; the purchaser activates them at /redeem"
+            : has(env, "ACADEMY_ACCELERATOR_ENDS_AT")
+              ? "ACADEMY_ACCELERATOR_ENDS_AT is not an explicit ISO timestamp with timezone; Accelerator lines are skipped"
+              : "On for Summit tiers; Accelerator lines skipped until ACADEMY_ACCELERATOR_ENDS_AT is set"
+        : "Off: purchases would wait for access codes and ACADEMY_ACCESS_TERMS_JSON",
+      action: twoConfirmations
+        ? "Keep one confirmation path: leave ACADEMY_ACCESS_EMAIL_ENABLED off while ACADEMY_EMAIL_TICKETS_ENABLED is on."
+        : "Set ACADEMY_EMAIL_TICKETS_ENABLED=true and ACADEMY_ACCELERATOR_ENDS_AT to the programme end with a timezone (e.g. 2026-12-31T23:59:59-05:00).",
+      blocking: true,
+    },
+    {
+      key: "email-proof",
+      group: "purchases",
+      label: "Purchase-email verification (activation gate)",
+      state: on(env, "ACADEMY_EMAIL_TICKET_LINKS_ENABLED")
+        ? has(env, "RATE_LIMIT_HMAC_SECRET")
           ? "ready"
           : "partial"
-        : "off",
-      detail: on(env, "ACADEMY_EMAIL_TICKETS_ENABLED")
-        ? has(env, "ACADEMY_ACCELERATOR_ENDS_AT")
-          ? "New paid orders become tickets the purchaser claims by signing in"
-          : "On for Summit tiers; Accelerator lines skipped until ACADEMY_ACCELERATOR_ENDS_AT is set"
-        : "Off: purchases would wait for access codes",
+        : "missing",
+      detail: on(env, "ACADEMY_EMAIL_TICKET_LINKS_ENABLED")
+        ? has(env, "RATE_LIMIT_HMAC_SECRET")
+          ? "Verification links on; the Auth email templates cannot be checked from here, so prove one in your own inbox"
+          : "Verification links on but RATE_LIMIT_HMAC_SECRET is missing, so the callback refuses"
+        : "Off: nobody can activate a ticket, historical or new, until purchase emails can be verified",
       action:
-        "Set ACADEMY_EMAIL_TICKETS_ENABLED=true and ACADEMY_ACCELERATOR_ENDS_AT to the programme end (ISO date, e.g. 2026-12-31T23:59:59-05:00).",
+        "In Supabase Auth: turn on Confirm email (no auto-confirm), set the Site URL and allow the /join redirect, and change the Confirm signup and Magic Link templates to the token_hash link in docs/email-ticket-activation.md. Then set ACADEMY_EMAIL_TICKET_LINKS_ENABLED=true and verify one fresh signup and one returning account yourself.",
       blocking: true,
     },
     {
@@ -169,7 +196,7 @@ export function launchReadiness(input: ReadinessInput): ReadinessItem[] {
       state: counts.importedTickets > 0 ? "ready" : "missing",
       detail: `${counts.importedTickets} tickets imported, ${counts.importedClaimed} claimed by a signed-in account`,
       action:
-        "Email every imported purchaser: create your account with the purchase email and your ticket activates itself.",
+        "Email every imported purchaser: create your account with the purchase email, verify it, then choose Activate my purchased lessons at /redeem.",
       blocking: false,
     },
     {

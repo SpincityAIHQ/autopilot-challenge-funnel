@@ -41,10 +41,17 @@ describe("Email-matched tickets from live purchases", () => {
     expect(academyMessagePolicy("purchase_confirmed_sms").sms).toBe(true);
     const m = composePurchaseConfirmedMessage("vault", false, "buyer@example.com");
     expect(m.message_subject).toContain("Emerald Vault Key");
-    expect(m.action_url).toBe("https://aiautopilotsummit.com/join");
+    expect(m.action_url).toBe("https://aiautopilotsummit.com/join?next=%2Fredeem");
+    expect(m.message_text).toContain("Activate my purchased lessons");
+    expect(m.message_text).toContain("simply signing in or watching the free training does not");
+    expect(m.message_text).not.toMatch(/code:/i);
     expect(composePurchaseConfirmedMessage("ga", true, "b@e.com").action_url).toBe(
-      "https://aiautopilotsummit.com/learn",
+      "https://aiautopilotsummit.com/redeem",
     );
+    expect(
+      composePurchaseConfirmedMessage("accelerator", true, "b@e.com", "2026-12-31T23:59:59Z")
+        .message_text,
+    ).toContain("programme ends at 2026-12-31T23:59:59.000Z");
   });
   it("runs the ticket sync and confirmations from reconciliation", () => {
     const src = readFileSync("src/lib/academy-commerce.server.ts", "utf8");
@@ -59,6 +66,7 @@ describe("Email-matched tickets from live purchases", () => {
 describe("Launch board", () => {
   const base = {
     env: {} as Record<string, string | undefined>,
+    shopifyConfigured: false,
     connected: [] as string[],
     transcripts: [] as string[],
     counts: {
@@ -81,6 +89,7 @@ describe("Launch board", () => {
       "free-training-video",
       "shopify",
       "email-tickets",
+      "email-proof",
       "ghl",
       "scheduler",
       "tutor",
@@ -91,16 +100,37 @@ describe("Launch board", () => {
       expect(JSON.stringify(i)).not.toMatch(/sk_|shpat_|Bearer /);
     }
   });
-  it("goes green when the connections are present", () => {
+  it("holds the board when the two purchase emails would both send", () => {
     const items = launchReadiness({
       ...base,
       env: {
+        ACADEMY_EMAIL_TICKETS_ENABLED: "true",
+        ACADEMY_ACCESS_EMAIL_ENABLED: "true",
+        ACADEMY_ACCELERATOR_ENDS_AT: "2026-12-31T23:59:59-05:00",
+      },
+    });
+    const row = items.find((i) => i.key === "email-tickets")!;
+    expect(row.state).toBe("partial");
+    expect(row.action).toContain("ACADEMY_ACCESS_EMAIL_ENABLED");
+    const loose = launchReadiness({
+      ...base,
+      env: { ACADEMY_EMAIL_TICKETS_ENABLED: "true", ACADEMY_ACCELERATOR_ENDS_AT: "2026-12-31" },
+    }).find((i) => i.key === "email-tickets")!;
+    expect(loose.state).toBe("partial");
+    expect(loose.detail).toContain("timezone");
+  });
+  it("goes green when the connections are present", () => {
+    const items = launchReadiness({
+      ...base,
+      shopifyConfigured: true,
+      env: {
         ACADEMY_SHOPIFY_SHOP: "x.myshopify.com",
-        SHOPIFY_ADMIN_ACCESS_TOKEN: "t",
-        ACADEMY_SHOPIFY_WEBHOOK_SECRET: "s",
+        SHOPIFY_CLIENT_ID: "id",
+        SHOPIFY_CLIENT_SECRET: "secret",
         ACADEMY_SHOPIFY_ENABLED: "true",
         ACADEMY_EMAIL_TICKETS_ENABLED: "true",
-        ACADEMY_ACCELERATOR_ENDS_AT: "2026-12-31T23:59:59Z",
+        ACADEMY_EMAIL_TICKET_LINKS_ENABLED: "true",
+        ACADEMY_ACCELERATOR_ENDS_AT: "2026-12-31T23:59:59-05:00",
         ACADEMY_GHL_ENABLED: "true",
         ACADEMY_GHL_WEBHOOK_URL: "https://services.leadconnectorhq.com/hooks/abc",
         LOVABLE_API_KEY: "k",

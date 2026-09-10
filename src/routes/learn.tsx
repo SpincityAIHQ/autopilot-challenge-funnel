@@ -125,7 +125,7 @@ function LearningSession({ session }: { session: ReturnType<typeof useAcademySes
                       See what it unlocks
                     </a>
                     <a className="academy-text-button" href="/redeem">
-                      Redeem a purchase code
+                      Activate a purchased ticket
                     </a>
                   </div>
                 </div>
