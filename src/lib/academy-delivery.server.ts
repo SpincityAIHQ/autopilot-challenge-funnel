@@ -137,6 +137,11 @@ export async function deliverAccessCodes() {
                 latestOrder.data && !latestOrder.data.needs_review);
             },
           });
+          };
+          // Same code lifecycle guards on both transports; stable delivery key.
+          const dispatched = sendVia === "native"
+            ? await dispatchAcademyNativeEmail(codePayload, codeOptions)
+            : await dispatchAcademyGhl(codePayload, codeOptions);
           status = dispatched.status;
           providerReceipt = dispatched.receipt;
         }
