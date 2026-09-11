@@ -81,3 +81,34 @@ The source baseline is 09362a8e52fbe1b2ee5edc82d784f16915ee1d9a. Revert the new 
 ## Existing website baseline
 
 Lovable reports 703 visitors / 1,166 pageviews / 65% bounce for Aug 7–Sep 5 UTC; 179 visitors / 260 pageviews / 82% bounce for Aug 30–Sep 5. Mobile counts are 547 and 143 respectively. Instagram referrers account for 347 and 110 of the reported visitors, but paid versus organic is unknown. These counts are not yet linked to student events or Shopify orders. They support a mobile-first classroom, not a claimed webinar conversion rate.
+
+## Native email (September 11, 2026 direction)
+
+Lovable-managed email is the primary EMAIL sender; GoHighLevel is optional and still owns SMS, CRM sync, pipeline and phone.
+
+Flags (server-side):
+
+- `ACADEMY_MESSAGE_TRANSPORT` — `lovable` (default) | `ghl` | `off`. Selection only; unrecognised values fail closed to `off`.
+- `ACADEMY_NATIVE_EMAIL_ENABLED` — the actual native send gate. Default false. Currently **false**: no customer native email may leave the app.
+- `LOVABLE_API_KEY` — required server credential. Present.
+- Existing master/sequence flags (`ACADEMY_LEARNING_NUDGES_ENABLED`, `ACADEMY_ACCESS_EMAIL_ENABLED`, `ACADEMY_EMAIL_TICKETS_ENABLED`, `ACADEMY_EMAIL_TICKET_LINKS_ENABLED`) are unchanged and still apply on top of the gate.
+
+Event → template mapping (anything absent is held, never guessed):
+
+| Event | Template | Purpose |
+| --- | --- | --- |
+| `webinar_registered` | `academy-account-welcome` | transactional |
+| `access_activated` | `academy-access-activated` | transactional |
+| `purchase_access_code` | `academy-purchase-access-code` | transactional |
+| `webinar_not_started` | `academy-never-started` | marketing |
+| `learning_dropoff` | `academy-learning-inactivity` | marketing |
+
+Held pending authored templates: `learning_practice`, `learning_feedback`, `learning_approved`, `learning_stalled`.
+
+Semantics preserved: claim locks, consent, suppression, dedupe, quiet hours, daily caps (including `unknown`) and a final eligibility check run after rendering and immediately before the provider call. Stable idempotency key is `<event>:email:<outbox id>`. Provider `sent:true` records `accepted` (submission accepted — **not** inbox delivery); suppression records `cancelled` with a reason; ambiguous post-submit errors record `unknown` for reconciliation. There is no cross-provider fallback and no invented `failed` status. A provider that is unavailable for a row's channel holds the row as `pending` without consuming an attempt, so unavailable SMS/CRM never starves natively deliverable email.
+
+Purchase access-code email has its own path in `academy-delivery.server.ts` and is no longer GoHighLevel-dependent; all existing code lifecycle, grant and order-review guards are unchanged.
+
+Owner-only harness: `GET/POST /api/public/admin/academy-email-test` (same-origin, rate-limited, owner session required, recipient forced to the signed-in owner address, never touches the queue). GET renders a template; POST refuses while the gate is false.
+
+Remaining activation steps: send each template to the owner inbox through the harness, confirm branding, production links, unsubscribe footer on the marketing templates and actual inbox receipt, then set `ACADEMY_NATIVE_EMAIL_ENABLED=true`. Delivery is unproven until then. Native checkout (Stripe/Paddle) readiness is recorded separately and unchanged by this pass.
