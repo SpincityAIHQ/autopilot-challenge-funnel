@@ -31,6 +31,13 @@ export interface SendTemplateEmailOptions {
   purpose?: 'transactional'
 
   /**
+   * Owner-test only: prefixes the rendered subject so a sample is obvious in
+   * the inbox. Customer dispatch never sets this.
+   */
+  subjectPrefix?: string
+
+
+  /**
    * Final eligibility check, run AFTER rendering and immediately before the
    * provider call. Returning false cancels the send without an attempt.
    */
