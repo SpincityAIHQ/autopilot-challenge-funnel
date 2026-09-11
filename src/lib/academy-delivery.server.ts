@@ -1,17 +1,31 @@
 import { academyGhlTransportReady, dispatchAcademyGhl, type GhlDeliveryReceipt } from "./academy-ghl-messages.server";
+import { academyEmailTransport, nativeEmailReady } from "./academy-email-transport";
+import { dispatchAcademyNativeEmail, type NativeEmailReceipt } from "./academy-native-email.server";
 import { academyDb } from "./academy.server";
 import { composeAccessCodeMessage } from "./academy-messages";
 import { accessCode, codeHash, accessCodeReady } from "./academy-access.server";
 export async function deliverAccessCodes() {
   const secret = process.env.ACADEMY_ACCESS_CODE_SECRET;
+  // Purchase access-code email is no longer GHL-dependent: native email is the
+  // primary sender and GHL remains available when it is the selected transport.
+  const emailTransport = academyEmailTransport();
+  const sendVia: "native" | "ghl" | null =
+    emailTransport === "lovable"
+      ? nativeEmailReady()
+        ? "native"
+        : null
+      : emailTransport === "ghl" && academyGhlTransportReady(process.env, true)
+        ? "ghl"
+        : null;
   if (
     !accessCodeReady() ||
     process.env.ACADEMY_ACCESS_EMAIL_ENABLED !== "true" ||
     !secret ||
     secret.length < 32 ||
-    !academyGhlTransportReady(process.env, true)
+    !sendVia
   )
     return { accessEmail: "not_enabled", accepted: 0, unknown: 0 };
+
   const db = academyDb(),
     claimed = await db.rpc("academy_claim_access_deliveries", { p_limit: 10 });
   if (claimed.error) throw new Error("ACCESS_QUEUE_UNAVAILABLE");
