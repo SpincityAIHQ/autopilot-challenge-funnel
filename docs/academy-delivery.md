@@ -95,15 +95,17 @@ Flags (server-side):
 
 Event → template mapping (anything absent is held, never guessed):
 
-| Event | Template | Purpose |
-| --- | --- | --- |
-| `webinar_registered` | `academy-account-welcome` | transactional |
-| `access_activated` | `academy-access-activated` | transactional |
-| `purchase_access_code` | `academy-purchase-access-code` | transactional |
-| `webinar_not_started` | `academy-never-started` | marketing |
-| `learning_dropoff` | `academy-learning-inactivity` | marketing |
+| Event | Template | Provider purpose | App consent class |
+| --- | --- | --- | --- |
+| `webinar_registered` | `academy-account-welcome` | transactional | account_access |
+| `access_activated` | `academy-access-activated` | transactional | account_access |
+| `purchase_access_code` | `academy-purchase-access-code` | transactional | account_access |
+| `webinar_not_started` | `academy-never-started` | transactional | optional_learning |
+| `learning_dropoff` | `academy-learning-inactivity` | transactional | optional_learning |
 
-Held pending authored templates: `learning_practice`, `learning_feedback`, `learning_approved`, `learning_stalled`.
+Per the current native docs, managed app email is user-triggered transactional only and `@lovable.dev/email-js` supports no `marketing` purpose, so every app email is sent with `purpose: 'transactional'` and service-related reminder copy. The app's own optional-consent classification (`nativeEmailConsentClass`) is kept separate and still blocks optional learning reminders without consent. The provider appends its unsubscribe footer to **all** app email (Auth email is separate); the templates add no unsubscribe link, footer or opt-out page of their own.
+
+Held pending authored templates: `learning_practice`, `learning_feedback`, `learning_approved`, `learning_stalled`. Held as unsupported promotional/upsell events: `summit_offer`, `vault_upsell`, `accelerator_offer`.
 
 Semantics preserved: claim locks, consent, suppression, dedupe, quiet hours, daily caps (including `unknown`) and a final eligibility check run after rendering and immediately before the provider call. Stable idempotency key is `<event>:email:<outbox id>`. Provider `sent:true` records `accepted` (submission accepted — **not** inbox delivery); suppression records `cancelled` with a reason; ambiguous post-submit errors record `unknown` for reconciliation. There is no cross-provider fallback and no invented `failed` status. A provider that is unavailable for a row's channel holds the row as `pending` without consuming an attempt, so unavailable SMS/CRM never starves natively deliverable email.
 
@@ -111,4 +113,4 @@ Purchase access-code email has its own path in `academy-delivery.server.ts` and 
 
 Owner-only harness: `GET/POST /api/public/admin/academy-email-test` (same-origin, rate-limited, owner session required, recipient forced to the signed-in owner address, never touches the queue). GET renders a template; POST refuses while the gate is false.
 
-Remaining activation steps: send each template to the owner inbox through the harness, confirm branding, production links, unsubscribe footer on the marketing templates and actual inbox receipt, then set `ACADEMY_NATIVE_EMAIL_ENABLED=true`. Delivery is unproven until then. Native checkout (Stripe/Paddle) readiness is recorded separately and unchanged by this pass.
+Remaining activation steps: send each template to the owner inbox through the harness, confirm branding, production links, the provider-appended unsubscribe footer and actual inbox receipt, then set `ACADEMY_NATIVE_EMAIL_ENABLED=true`. Delivery is unproven until then. Native checkout (Stripe/Paddle) readiness is recorded separately and unchanged by this pass.
