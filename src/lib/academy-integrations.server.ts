@@ -15,6 +15,17 @@ import { learningMessageWindow } from "./academy-message-window";
 import { draftAcademyMessage, type MessageDraftBrief } from "./academy-message-draft.server";
 import { lessonContent, scoreAnswers, slotMedia } from "./academy-content.server";
 export { learningDeliveryEligible, type DeliveryProgress } from "./academy-learning-delivery";
+/** Provider-supplied backoff for a held row, otherwise a conservative hold. */
+function heldDelayMinutes(receipt: { retryAfterSeconds?: number | null } | null): number {
+  const seconds = receipt?.retryAfterSeconds;
+  if (typeof seconds === "number" && Number.isFinite(seconds) && seconds > 0)
+    return Math.min(60, Math.max(1, Math.ceil(seconds / 60)));
+  return 60;
+}
+function heldReason(receipt: { reason?: string } | null): string {
+  return typeof receipt?.reason === "string" && receipt.reason ? receipt.reason : "message_held";
+}
+
 export async function processAcademyIntegrations(request: Request) {
   if (!(await schedulerAuthorized(request, () => academyDb()))) return new Response("Unauthorized", { status: 401 });
   const db = academyDb();
