@@ -1,15 +1,16 @@
-# Roadmap
+# Native email pass — status
 
-## Native Lovable email (Sept 11 direction) — in progress
-- [ ] Template families: welcome/account-ready, 24h never-started, 48h inactivity, access-activated, purchase access code
-- [ ] Event -> template mapping; unsupported events held (fail closed)
-- [ ] ACADEMY_MESSAGE_TRANSPORT = lovable|ghl|off (default lovable); native send gate ACADEMY_NATIVE_EMAIL_ENABLED default false
-- [ ] Remove blanket GHL-ready early return for native email in academy-integrations.server.ts
-- [ ] Native path in academy-delivery.server.ts for purchase access codes (stable delivery key)
-- [ ] Owner-only test harness (server-only auth, verified owner recipient, cannot drain backlog)
-- [ ] Tests: native/off/ghl, SMS+CRM pending without attempt burn, purpose mapping, suppression->cancelled, unknown on ambiguous, idempotency, owner isolation
-- [ ] Typecheck + build; update operator docs with flags and remaining activation steps
+Done (preview only, nothing enabled, nothing sent):
+- [x] `ACADEMY_MESSAGE_TRANSPORT` lovable|ghl|off (default lovable) + `ACADEMY_NATIVE_EMAIL_ENABLED` gate (false)
+- [x] Five branded templates + registry (welcome, access activated, purchase code, 24h never started, inactivity)
+- [x] Native dispatcher with accepted/cancelled/unknown contract, stable idempotency, documented purpose
+- [x] Queue integration: no blanket GHL early return; unavailable transport holds without consuming an attempt
+- [x] Purchase access-code delivery no longer GHL-dependent
+- [x] Owner-only preview/test route (no queue access, owner recipient only)
+- [x] 14 focused tests, typecheck, production build
+- [x] Operator docs
 
-## Deferred (not this pass)
-- Native checkout / payment provider enablement (docs note only)
-- Any real sends, owner inbox tests, publication
+Open (owner action required):
+- [ ] Owner inbox tests of each template, then set `ACADEMY_NATIVE_EMAIL_ENABLED=true`
+- [ ] `ACADEMY_GHL_PAYMENT_WEBHOOK_SECRET` must match the provider — cannot be generated here
+- [ ] Native checkout provider decision (out of scope for this pass)
