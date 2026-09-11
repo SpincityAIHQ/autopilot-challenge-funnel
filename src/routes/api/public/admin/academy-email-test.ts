@@ -103,6 +103,7 @@ export const Route = createFileRoute("/api/public/admin/academy-email-test")({
         const result = await sendTemplateEmail(template, verifiedOwner, {
           templateData: entry?.previewData ?? {},
           purpose: nativeEmailPurpose(eventFor(template)),
+          subjectPrefix: "Test — AI AutoPilot —",
           idempotencyKey: `owner-test:${runId}:${verifiedOwner}:${template}`,
         });
         // Provider acceptance is not proof of inbox delivery.

@@ -31,6 +31,13 @@ export interface SendTemplateEmailOptions {
   purpose?: 'transactional'
 
   /**
+   * Owner-test only: prefixes the rendered subject so a sample is obvious in
+   * the inbox. Customer dispatch never sets this.
+   */
+  subjectPrefix?: string
+
+
+  /**
    * Final eligibility check, run AFTER rendering and immediately before the
    * provider call. Returning false cancels the send without an attempt.
    */
@@ -75,10 +82,11 @@ export async function sendTemplateEmail(
   const element = React.createElement(template.component, templateData)
   const html = await render(element)
   const text = await render(element, { plainText: true })
-  const subject =
+  const baseSubject =
     typeof template.subject === 'function'
       ? template.subject(templateData)
       : template.subject
+  const subject = options.subjectPrefix ? `${options.subjectPrefix} ${baseSubject}` : baseSubject
 
   // Rendering can take time. The caller re-checks consent, identity and
   // entitlement here, after rendering and immediately before the provider call.
