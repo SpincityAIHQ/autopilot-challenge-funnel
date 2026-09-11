@@ -242,7 +242,7 @@ describe("native message rendering", () => {
 
 describe("provider error classification", () => {
   it("treats a documented rate limit as a definite, retryable non-acceptance", async () => {
-    const error = new EmailAPIError("rate limited", 429, "rate_limited", 30);
+    const error = new EmailAPIError(429, "rate limited", 30, "rate_limited");
     const classified = classifyNativeSendError(error, true);
     expect(classified.kind).toBe("rate_limited");
     const out = await dispatchAcademyNativeEmail(base, { env: ready, sendImpl: sender(error).impl });
@@ -253,7 +253,7 @@ describe("provider error classification", () => {
   it("treats other 4xx as definite rejection, not a blind retry", async () => {
     const out = await dispatchAcademyNativeEmail(base, {
       env: ready,
-      sendImpl: sender(new EmailAPIError("bad request", 400, "invalid_request")).impl,
+      sendImpl: sender(new EmailAPIError(400, "bad request", null, "invalid_request")).impl,
     });
     expect(out.status).toBe("cancelled");
     expect(out.receipt.evidence).toBe("provider_rejected");
@@ -268,7 +268,7 @@ describe("provider error classification", () => {
     expect(out.receipt.evidence).toBe("outcome_unknown");
     const server = await dispatchAcademyNativeEmail(base, {
       env: ready,
-      sendImpl: sender(new EmailAPIError("upstream", 502, "server_error")).impl,
+      sendImpl: sender(new EmailAPIError(502, "upstream", null, "server_error")).impl,
     });
     expect(server.status).toBe("unknown");
   });
