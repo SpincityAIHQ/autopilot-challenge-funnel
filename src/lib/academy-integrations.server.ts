@@ -477,8 +477,8 @@ export async function processAcademyIntegrations(request: Request) {
         // Held work stays pending with no attempt consumed and nothing completed.
         status: "pending", completed_at: null, locked_at: null,
         attempts: Math.max(0, row.attempts - 1),
-        due_at: new Date(Date.now() + heldDelayMinutes(providerReceipt) * 60000).toISOString(),
-        payload: { ...row.payload, policy_hold: { reason: heldReason(providerReceipt), checked_at: new Date().toISOString() } },
+        due_at: new Date(Date.now() + heldDelayMinutes(providerReceipt as { retryAfterSeconds?: number | null } | null) * 60000).toISOString(),
+        payload: { ...row.payload, policy_hold: { reason: heldReason(providerReceipt as { reason?: string } | null), checked_at: new Date().toISOString() } },
       } : {}),
       ...(status === "pending" && deferUntil ? {
         ...(holdReason ? { payload: { ...row.payload, policy_hold: { reason: holdReason, checked_at: new Date().toISOString(), due_at: deferUntil } } } : {}),
