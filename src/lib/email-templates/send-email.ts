@@ -79,7 +79,14 @@ export async function sendTemplateEmail(
       ? template.subject(templateData)
       : template.subject
 
+  // Rendering can take time. The caller re-checks consent, identity and
+  // entitlement here, after rendering and immediately before the provider call.
+  if (options.beforeSend && !(await options.beforeSend())) {
+    return { sent: false, reason: 'cancelled_before_send' }
+  }
+
   try {
+    options.onAttempt?.()
     await sendLovableEmail(
       {
         to: recipient,
@@ -88,13 +95,14 @@ export async function sendTemplateEmail(
         subject,
         html,
         text,
-        purpose: 'transactional',
+        purpose: options.purpose ?? 'transactional',
         label: templateName,
         idempotency_key: options.idempotencyKey || crypto.randomUUID(),
         reply_to: options.replyTo,
       },
       { apiKey, sendUrl: process.env.LOVABLE_SEND_URL }
     )
+
   } catch (error: unknown) {
     if (error instanceof EmailAPIError && error.code === 'recipient_suppressed') {
       return { sent: false, reason: 'recipient_suppressed' }
