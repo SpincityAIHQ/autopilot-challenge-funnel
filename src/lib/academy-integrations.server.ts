@@ -395,7 +395,7 @@ export async function processAcademyIntegrations(request: Request) {
             payload: { ...row.payload, delivery: { ...learningPayload, ...messageDraft, prepared_at: new Date().toISOString(), channel: policy.crmOnly ? "none" : policy.sms ? "sms" : "email", sms_permitted: Boolean(freshProfile.data.sms_consent) } },
           }).eq("id", row.id).eq("status", "processing").select("id").maybeSingle();
           if (audit.error || !audit.data) throw new Error("MESSAGE_AUDIT_NOT_SAVED");
-          const dispatched = await dispatchAcademyGhl({
+          const outboundPayload = {
               event_id: row.id, event_name: row.name, user_id: row.user_id,
               email: deliveryProfile.email,
               channel: policy.crmOnly ? "none" : policy.sms ? "sms" : "email",
@@ -406,7 +406,8 @@ export async function processAcademyIntegrations(request: Request) {
               marketing_consent: Boolean(freshProfile.data.marketing_consent), consent_version: "academy-marketing-2026-09-06",
               occurred_at: row.created_at, source: "ai-autopilot-academy",
               ...learningPayload, ...(policy.crmOnly ? {} : messageDraft),
-            }, {
+            };
+          const outboundOptions = {
             onAttempt: () => { attempted = true; },
             beforeSend: async () => {
               const latest = await checkLatestEligibility();
@@ -420,9 +421,13 @@ export async function processAcademyIntegrations(request: Request) {
               }
               return true;
             },
-          });
+          };
+          const dispatched = sendVia === "native"
+            ? await dispatchAcademyNativeEmail(outboundPayload, outboundOptions)
+            : await dispatchAcademyGhl(outboundPayload, outboundOptions);
           status = dispatched.status;
           providerReceipt = dispatched.receipt;
+
           }
         }
       }
