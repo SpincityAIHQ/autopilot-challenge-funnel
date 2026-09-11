@@ -1,4 +1,9 @@
 import type { ComponentType } from 'react'
+import { template as accountWelcome } from './academy-account-welcome'
+import { template as accessActivated } from './academy-access-activated'
+import { template as purchaseAccessCode } from './academy-purchase-access-code'
+import { template as neverStarted } from './academy-never-started'
+import { template as learningInactivity } from './academy-learning-inactivity'
 
 export interface TemplateEntry {
   component: ComponentType<any>
@@ -11,13 +16,14 @@ export interface TemplateEntry {
 
 /**
  * Template registry — maps template names to their React Email components.
- * Import and register new templates here after creating them in this directory.
  *
- * Example:
- *   import { template as welcomeTemplate } from './welcome'
- *   // then add to TEMPLATES: 'welcome': welcomeTemplate
+ * Event -> template mapping lives in `src/lib/academy-email-transport.ts`.
+ * Events without an entry there are held: no template is guessed for them.
  */
 export const TEMPLATES: Record<string, TemplateEntry> = {
-  // Add templates here as they are created, e.g.:
-  // 'welcome': welcomeTemplate,
+  'academy-account-welcome': accountWelcome,
+  'academy-access-activated': accessActivated,
+  'academy-purchase-access-code': purchaseAccessCode,
+  'academy-never-started': neverStarted,
+  'academy-learning-inactivity': learningInactivity,
 }

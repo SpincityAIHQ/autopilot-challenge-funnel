@@ -16,14 +16,28 @@ const FROM_DOMAIN = "notify.nuamenti.com"
 
 export type SendTemplateEmailResult =
   | { sent: true }
-  | { sent: false; reason: 'recipient_suppressed' }
+  | { sent: false; reason: 'recipient_suppressed' | 'cancelled_before_send' }
 
 export interface SendTemplateEmailOptions {
   templateData?: Record<string, any>
   /** Dedupes retries of the same logical send; defaults to a random UUID (no dedupe). */
   idempotencyKey?: string
   replyTo?: string
+  /**
+   * Documented provider classification for this specific template. Account and
+   * access notices are 'transactional'; optional learning follow-ups are
+   * 'marketing', so the provider applies unsubscribe handling to them.
+   */
+  purpose?: 'transactional' | 'marketing'
+  /**
+   * Final eligibility check, run AFTER rendering and immediately before the
+   * provider call. Returning false cancels the send without an attempt.
+   */
+  beforeSend?: () => Promise<boolean>
+  /** Called once the outbound request is about to be made (outcome ambiguous from here). */
+  onAttempt?: () => void
 }
+
 
 /**
  * Renders a registered template and sends it through Lovable's managed email
