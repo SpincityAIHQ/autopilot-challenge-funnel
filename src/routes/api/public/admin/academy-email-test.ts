@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { getCookie } from "@tanstack/react-start/server";
 import { hashToken } from "@/lib/access-tokens.server";
 import { assertSameOrigin, consumeRateLimit } from "@/lib/rate-limit";
-import { NATIVE_EMAIL_TEMPLATES, nativeEmailPurpose, nativeEmailReady } from "@/lib/academy-email-transport";
+import { NATIVE_EMAIL_TEMPLATES, nativeEmailPurpose, nativeEmailReady, ownerEmailTestReady } from "@/lib/academy-email-transport";
 
 /**
  * Owner-only native email harness.
@@ -65,7 +65,7 @@ export const Route = createFileRoute("/api/public/admin/academy-email-test")({
         if (g.error) return g.error;
         const template = new URL(request.url).searchParams.get("template") ?? "";
         if (!template)
-          return new Response(JSON.stringify({ templates: templateNames, nativeReady: nativeEmailReady() }), { headers: noStore() });
+          return new Response(JSON.stringify({ templates: templateNames, nativeReady: nativeEmailReady(), ownerTestReady: ownerEmailTestReady() }), { headers: noStore() });
         if (!templateNames.includes(template))
           return new Response("Not found", { status: 404, headers: noStore("text/plain") });
         const [{ TEMPLATES }, { render }, React] = await Promise.all([
