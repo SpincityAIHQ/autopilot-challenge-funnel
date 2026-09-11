@@ -57,9 +57,21 @@ export async function processAcademyIntegrations(request: Request) {
     const queued = await db.rpc("academy_queue_learning_nudges");
     if (queued.error) throw new Error("LEARNING_QUEUE_UNAVAILABLE");
   }
-  if (process.env.ACADEMY_GHL_ENABLED !== "true" || !academyGhlTransportReady())
+  // Lovable-native email is primary; GoHighLevel is optional and only carries
+  // SMS and CRM-only sync unless it is explicitly selected for email.
+  const emailTransport = academyEmailTransport();
+  const nativeReady = nativeEmailReady();
+  const ghlReady = process.env.ACADEMY_GHL_ENABLED === "true" && academyGhlTransportReady();
+  if (!nativeReady && !ghlReady)
     return Response.json(
-      { orders, accepted, accessDelivery, ghl: "not_enabled" },
+      {
+        orders,
+        accepted,
+        accessDelivery,
+        email: emailTransport,
+        native: "not_enabled",
+        ghl: "not_enabled",
+      },
       { headers: { "Cache-Control": "no-store" } },
     );
   const claimed = await db.rpc("academy_claim_outbox", { p_limit: 10 });
@@ -69,9 +81,47 @@ export async function processAcademyIntegrations(request: Request) {
     let deferUntil: string | null = null;
     let holdReason: string | null = null;
     let attempted = false;
-    let providerReceipt: GhlDeliveryReceipt | null = null;
+    let providerReceipt: GhlDeliveryReceipt | NativeEmailReceipt | null = null;
     const policy = academyMessagePolicy(row.name);
+    const rowChannel = policy.crmOnly ? "none" : policy.sms ? "sms" : "email";
+    const sendVia: "native" | "ghl" | null =
+      rowChannel === "email"
+        ? emailTransport === "lovable"
+          ? nativeReady
+            ? "native"
+            : null
+          : emailTransport === "ghl" && ghlReady
+            ? "ghl"
+            : null
+        : ghlReady
+          ? "ghl"
+          : null;
+    if (!sendVia) {
+      // Hold without burning an attempt: an unavailable SMS/CRM provider must
+      // never starve, cancel or retry-exhaust a natively deliverable email.
+      const saved = await db
+        .from("academy_outbox")
+        .update({
+          status: "pending",
+          completed_at: null,
+          locked_at: null,
+          attempts: Math.max(0, row.attempts - 1),
+          due_at: new Date(Date.now() + 15 * 60000).toISOString(),
+          payload: {
+            ...row.payload,
+            policy_hold: {
+              reason: rowChannel === "email" ? "email_transport_unavailable" : "sms_or_crm_transport_unavailable",
+              checked_at: new Date().toISOString(),
+            },
+          },
+        })
+        .eq("id", row.id)
+        .eq("status", "processing");
+      if (saved.error) throw new Error("QUEUE_RECEIPT_NOT_SAVED");
+      continue;
+    }
     try {
+
       const profile = await db
         .from("academy_profiles")
         .select("email,timezone,marketing_consent,phone,sms_consent")
