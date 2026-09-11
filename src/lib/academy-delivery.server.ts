@@ -34,7 +34,7 @@ export async function deliverAccessCodes() {
   for (const row of claimed.data ?? []) {
     let status = "unknown";
     let attempted = false;
-    let providerReceipt: GhlDeliveryReceipt | null = null;
+    let providerReceipt: GhlDeliveryReceipt | NativeEmailReceipt | null = null;
     try {
       const code = await db
         .from("academy_access_codes")
