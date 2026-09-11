@@ -458,7 +458,16 @@ export async function processAcademyIntegrations(request: Request) {
     if (status === "unknown") unknown++;
   }
   return Response.json(
-    { orders, accepted, unknown, accessDelivery, deliveryEvidence: academyGhlTransport() === "api" ? "provider_acceptance_only" : "webhook_acceptance_only" },
+    {
+      orders, accepted, unknown, accessDelivery,
+      email: emailTransport,
+      native: nativeReady ? "enabled" : "not_enabled",
+      // Acceptance by a provider is never evidence of inbox delivery.
+      deliveryEvidence: emailTransport === "lovable" && nativeReady
+        ? "provider_acceptance_only"
+        : academyGhlTransport() === "api" ? "provider_acceptance_only" : "webhook_acceptance_only",
+    },
     { headers: { "Cache-Control": "no-store" } },
   );
+
 }
