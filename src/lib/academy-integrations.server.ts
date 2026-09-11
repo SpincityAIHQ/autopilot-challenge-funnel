@@ -1,5 +1,8 @@
 import { academyGhlTransport, academyGhlTransportReady, dispatchAcademyGhl, type GhlDeliveryReceipt } from "./academy-ghl-messages.server";
+import { academyEmailTransport, nativeEmailReady } from "./academy-email-transport";
+import { dispatchAcademyNativeEmail, type NativeEmailReceipt } from "./academy-native-email.server";
 import { schedulerAuthorized } from "./academy-scheduler.server";
+
 import { academyDb } from "./academy.server";
 import { reconcileCommerceOrder } from "./academy-commerce.server";
 import { LESSONS, formatTime, tierAllows, watchSummary, type Interval } from "./academy";
