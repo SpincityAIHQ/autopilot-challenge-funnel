@@ -98,7 +98,7 @@ export async function deliverAccessCodes() {
             if (sms.error) throw new Error("PURCHASE_SMS_NOT_QUEUED");
           }
           const message = composeAccessCodeMessage(c.tier, value, c.expires_at, process.env.ACADEMY_EMAIL_TICKETS_ENABLED === "true", c.programme_ends_at);
-          const dispatched = await dispatchAcademyGhl({
+          const codePayload = {
               event_id: row.id,
               event_name: "purchase_access_code",
               purpose: "transactional", intent: "purchase_access_code", suppress_sales: true,
