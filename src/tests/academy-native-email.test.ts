@@ -111,7 +111,7 @@ describe("native dispatch", () => {
     const { impl, calls } = sender({ sent: true });
     const out = await dispatchAcademyNativeEmail(consented, { env: ready, sendImpl: impl });
     expect(out.status).toBe("accepted");
-    expect(calls[0].options.purpose).toBe("marketing");
+    expect(calls[0].options.purpose).toBe("transactional");
 
     const denied = await dispatchAcademyNativeEmail(
       { ...consented, marketing_consent: false },
