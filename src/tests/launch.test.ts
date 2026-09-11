@@ -4,6 +4,12 @@ import { ticketRowsForOrder, emailTicketsEnabled } from "../lib/email-tickets";
 import { academyMessagePolicy } from "../lib/academy-message-policy";
 import { launchReadiness, readinessSummary } from "../lib/launch-readiness";
 import { composePurchaseConfirmedMessage } from "../lib/academy-messages";
+import {
+  nativeEmailConsentClass,
+  nativeEmailSupportedEvent,
+  nativeEmailTemplate,
+} from "../lib/academy-email-transport";
+import { academyClaimableEvents } from "../lib/academy-message-policy";
 
 describe("Email-matched tickets from live purchases", () => {
   const grants = [
@@ -59,6 +65,26 @@ describe("Email-matched tickets from live purchases", () => {
         .message_text,
     ).toContain("programme ends at 2026-12-31T23:59:59.000Z");
   });
+  it("has an authored native email template and is claimable on either transport", () => {
+    expect(nativeEmailTemplate("purchase_confirmed")).toBe("academy-purchase-confirmed");
+    expect(nativeEmailSupportedEvent("purchase_confirmed")).toBe(true);
+    expect(nativeEmailConsentClass("purchase_confirmed")).toBe("account_access");
+    const nativeOnly = academyClaimableEvents({
+      emailVia: "native",
+      smsReady: false,
+      crmReady: false,
+      nativeSupportsEvent: nativeEmailSupportedEvent,
+    });
+    expect(nativeOnly).toContain("purchase_confirmed");
+    expect(nativeOnly).not.toContain("purchase_confirmed_sms");
+    const withGhl = academyClaimableEvents({
+      emailVia: "ghl",
+      smsReady: true,
+      crmReady: true,
+      nativeSupportsEvent: nativeEmailSupportedEvent,
+    });
+    expect(withGhl).toContain("purchase_confirmed_sms");
+  });
   it("runs the ticket sync and confirmations from reconciliation", () => {
     const src = readFileSync("src/lib/academy-commerce.server.ts", "utf8");
     expect(src).toContain("syncEmailTickets(id)");
@@ -74,6 +100,9 @@ describe("Launch board", () => {
     env: {} as Record<string, string | undefined>,
     shopifyConfigured: false,
     ghlTransportReady: false,
+    emailTransport: "lovable" as const,
+    nativeEmailReady: false,
+    ownerEmailTestReady: false,
     ghlPaymentsConfigured: false,
     timedTiers: [] as string[],
     connected: [] as string[],
@@ -99,11 +128,15 @@ describe("Launch board", () => {
       "shopify",
       "email-tickets",
       "email-proof",
-      "ghl",
+      "native-email",
       "scheduler",
       "tutor",
     ])
       expect(summary.blockers).toContain(key);
+    expect(summary.blockers).not.toContain("ghl");
+    const ghlEmail = launchReadiness({ ...base, emailTransport: "ghl" });
+    expect(ghlEmail.find((i) => i.key === "ghl")!.blocking).toBe(true);
+    expect(ghlEmail.find((i) => i.key === "native-email")!.blocking).toBe(false);
     for (const i of items) {
       expect(i.action.length).toBeGreaterThan(10);
       expect(JSON.stringify(i)).not.toMatch(/sk_|shpat_|Bearer /);
@@ -153,6 +186,7 @@ describe("Launch board", () => {
       ...base,
       shopifyConfigured: true,
       ghlTransportReady: true,
+      nativeEmailReady: true,
       env: {
         ACADEMY_SHOPIFY_SHOP: "x.myshopify.com",
         SHOPIFY_CLIENT_ID: "id",
@@ -161,8 +195,7 @@ describe("Launch board", () => {
         ACADEMY_EMAIL_TICKETS_ENABLED: "true",
         ACADEMY_EMAIL_TICKET_LINKS_ENABLED: "true",
         ACADEMY_ACCELERATOR_ENDS_AT: "2026-12-31T23:59:59-05:00",
-        ACADEMY_GHL_ENABLED: "true",
-        ACADEMY_GHL_WEBHOOK_URL: "https://services.leadconnectorhq.com/hooks/abc",
+        ACADEMY_NATIVE_EMAIL_ENABLED: "true",
         LOVABLE_API_KEY: "k",
         RATE_LIMIT_HMAC_SECRET: "r",
       },

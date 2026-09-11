@@ -22,6 +22,12 @@ export type ReadinessInput = {
   shopifyConfigured: boolean;
   /** academyGhlTransportReady(): the selected GHL transport (webhook URL or private API) is usable. */
   ghlTransportReady: boolean;
+  /** academyEmailTransport(): which provider carries email; native Lovable email is the default. */
+  emailTransport: "lovable" | "ghl" | "off";
+  /** nativeEmailReady(): native email selected, ACADEMY_NATIVE_EMAIL_ENABLED=true and LOVABLE_API_KEY present. */
+  nativeEmailReady: boolean;
+  /** ownerEmailTestReady(): the owner-inbox test harness can send while customer dispatch stays off. */
+  ownerEmailTestReady: boolean;
   /** ghlPaymentConfiguration() succeeded: GHL checkout with Stripe can be read back. */
   ghlPaymentsConfigured: boolean;
   /** Tiers with an approved rolling term; they use the purchase-code path, not email tickets. */
@@ -68,6 +74,7 @@ export function launchReadiness(input: ReadinessInput): ReadinessItem[] {
   const programmeEnd = explicitProgrammeEnd(env.ACADEMY_ACCELERATOR_ENDS_AT);
   const checkoutProvider = env.ACADEMY_CHECKOUT_PROVIDER?.trim() || "shopify";
   const ghlTransport = env.ACADEMY_GHL_TRANSPORT?.trim() || "webhook";
+  const emailViaGhl = input.emailTransport === "ghl";
   const openTiers = ["ga", "vip", "vault"].filter((t) => !input.timedTiers.includes(t));
   const emailTicketsOn = on(env, "ACADEMY_EMAIL_TICKETS_ENABLED");
   const twoConfirmations = emailTicketsOn && on(env, "ACADEMY_ACCESS_EMAIL_ENABLED");
@@ -230,15 +237,43 @@ export function launchReadiness(input: ReadinessInput): ReadinessItem[] {
       blocking: false,
     },
     {
+      key: "native-email",
+      group: "messaging",
+      label: "Native email sender (welcome, purchase, coaching)",
+      state:
+        input.emailTransport === "lovable"
+          ? input.nativeEmailReady
+            ? "ready"
+            : has(env, "LOVABLE_API_KEY")
+              ? "partial"
+              : "missing"
+          : "off",
+      detail:
+        input.emailTransport === "lovable"
+          ? input.nativeEmailReady
+            ? "Customer email leaves through Lovable-managed email; acceptance is not inbox proof"
+            : has(env, "LOVABLE_API_KEY")
+              ? input.ownerEmailTestReady
+                ? "Owner-inbox test harness on; customer dispatch still off (ACADEMY_NATIVE_EMAIL_ENABLED)"
+                : "Sender credential present; nothing can leave until ACADEMY_NATIVE_EMAIL_ENABLED=true"
+              : "LOVABLE_API_KEY is missing"
+          : `Off: ACADEMY_MESSAGE_TRANSPORT is ${input.emailTransport}`,
+      action:
+        "Set ACADEMY_OWNER_EMAIL_TEST_ENABLED=true, send every template (welcome, purchase confirmed, access activated, access code, reminders) to your own inbox from /api/public/admin/academy-email-test, confirm branding, links and the provider footer, then unset the test flag and set ACADEMY_NATIVE_EMAIL_ENABLED=true.",
+      blocking: input.emailTransport === "lovable",
+    },
+    {
       key: "ghl",
       group: "messaging",
-      label: "GHL sender (welcome, purchase, coaching)",
+      label: emailViaGhl ? "GHL sender (email, SMS, CRM)" : "GHL (SMS and CRM sync, optional)",
       state:
         on(env, "ACADEMY_GHL_ENABLED") && input.ghlTransportReady
           ? "ready"
           : input.ghlTransportReady
             ? "partial"
-            : "missing",
+            : emailViaGhl
+              ? "missing"
+              : "off",
       detail: input.ghlTransportReady
         ? on(env, "ACADEMY_GHL_ENABLED")
           ? `Enabled, transport: ${ghlTransport === "api" ? "direct GHL API" : "inbound workflow webhook"}`
@@ -249,8 +284,8 @@ export function launchReadiness(input: ReadinessInput): ReadinessItem[] {
       action:
         ghlTransport === "api"
           ? "Per docs/ghl-direct-messages.md: private integration token and location, verified ACADEMY_GHL_EMAIL_FROM and an E.164 ACADEMY_GHL_SMS_FROM, apply scripts/enable-ghl-api-message-receipts.sql, then send a test to your own inbox and phone."
-          : "In GHL: verify the email action on the inbound workflow, add an SMS action gated on send_sms=true, branch on event_name (webinar_registered, purchase_confirmed, learning_*), and send a test to your own inbox.",
-      blocking: true,
+          : "In GHL: verify the email action on the inbound workflow, add an SMS action gated on send_sms=true, branch on event_name (webinar_registered, purchase_confirmed, learning_*), and send a test to your own inbox. Without GHL, SMS rows wait and email still goes out natively.",
+      blocking: emailViaGhl,
     },
     {
       key: "scheduler",

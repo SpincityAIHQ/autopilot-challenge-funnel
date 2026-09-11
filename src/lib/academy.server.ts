@@ -369,6 +369,8 @@ export async function handleAcademyGet(request: Request, path: string) {
     }
     const shopifyReady = shopifyConfigured && process.env.ACADEMY_SHOPIFY_ENABLED === "true";
     const { academyGhlTransportReady } = await import("./academy-ghl-messages.server");
+    const { academyEmailTransport, nativeEmailReady, ownerEmailTestReady } =
+      await import("./academy-email-transport");
     let ghlPaymentsConfigured = false;
     try {
       const { ghlPaymentConfiguration } = await import("./academy-ghl-payments.server");
@@ -436,6 +438,9 @@ export async function handleAcademyGet(request: Request, path: string) {
       env: process.env,
       shopifyConfigured,
       ghlTransportReady: academyGhlTransportReady(),
+      emailTransport: academyEmailTransport(),
+      nativeEmailReady: nativeEmailReady(),
+      ownerEmailTestReady: ownerEmailTestReady(),
       ghlPaymentsConfigured,
       timedTiers: [...timedTiers()],
       connected: connectedSlots(LESSONS),

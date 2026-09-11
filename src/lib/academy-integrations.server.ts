@@ -4,7 +4,14 @@ import {
   dispatchAcademyGhl,
   type GhlDeliveryReceipt,
 } from "./academy-ghl-messages.server";
+import {
+  academyEmailTransport,
+  nativeEmailReady,
+  nativeEmailSupportedEvent,
+} from "./academy-email-transport";
+import { dispatchAcademyNativeEmail, type NativeEmailReceipt } from "./academy-native-email.server";
 import { schedulerAuthorized } from "./academy-scheduler.server";
+
 import { academyDb } from "./academy.server";
 import { reconcileCommerceOrder } from "./academy-commerce.server";
 import { LESSONS, formatTime, tierAllows, watchSummary, type Interval } from "./academy";
@@ -24,11 +31,22 @@ import {
   composePurchaseConfirmedMessage,
   type AcademyMessage,
 } from "./academy-messages";
-import { academyMessagePolicy } from "./academy-message-policy";
+import { academyClaimableEvents, academyMessagePolicy } from "./academy-message-policy";
 import { learningMessageWindow } from "./academy-message-window";
 import { draftAcademyMessage, type MessageDraftBrief } from "./academy-message-draft.server";
 import { lessonContent, scoreAnswers, slotMedia } from "./academy-content.server";
 export { learningDeliveryEligible, type DeliveryProgress } from "./academy-learning-delivery";
+/** Provider-supplied backoff for a held row, otherwise a conservative hold. */
+function heldDelayMinutes(receipt: { retryAfterSeconds?: number | null } | null): number {
+  const seconds = receipt?.retryAfterSeconds;
+  if (typeof seconds === "number" && Number.isFinite(seconds) && seconds > 0)
+    return Math.min(60, Math.max(1, Math.ceil(seconds / 60)));
+  return 60;
+}
+function heldReason(receipt: { reason?: string } | null): string {
+  return typeof receipt?.reason === "string" && receipt.reason ? receipt.reason : "message_held";
+}
+
 const isPurchaseConfirmation = (name: string) =>
   name === "purchase_confirmed" || name === "purchase_confirmed_sms";
 type OutboxRow = {
@@ -42,15 +60,17 @@ type OutboxRow = {
 /**
  * Purchase confirmations reach the purchase email even before an account
  * exists. Every attempt re-reads the order and grant so a refund between
- * queueing and sending cancels the message.
+ * queueing and sending cancels the message. Email rides the selected email
+ * transport (native Lovable email or GoHighLevel); SMS is always GoHighLevel.
  */
 async function deliverPurchaseConfirmation(
   db: ReturnType<typeof academyDb>,
   row: OutboxRow,
+  sendVia: "native" | "ghl",
 ): Promise<{
-  status: "accepted" | "unknown" | "cancelled";
+  status: "accepted" | "unknown" | "cancelled" | "held";
   attempted: boolean;
-  receipt: GhlDeliveryReceipt | null;
+  receipt: GhlDeliveryReceipt | NativeEmailReceipt | null;
 }> {
   const orderId = String(row.payload?.orderId ?? ""),
     lineId = String(row.payload?.lineId ?? ""),
@@ -113,6 +133,7 @@ async function deliverPurchaseConfirmation(
           message_origin: "authored_template",
           prepared_at: new Date().toISOString(),
           channel: sms ? "sms" : "email",
+          transport: sendVia,
         },
       },
     })
@@ -123,50 +144,52 @@ async function deliverPurchaseConfirmation(
   if (audit.error || !audit.data) throw new Error("MESSAGE_AUDIT_NOT_SAVED");
   let attempted = false;
   const phone = first.profile?.phone ?? null;
-  const dispatched = await dispatchAcademyGhl(
-    {
-      event_id: row.id,
-      event_name: row.name,
-      user_id: first.profile?.user_id ?? null,
-      email,
-      channel: sms ? "sms" : "email",
-      send_email: !sms,
-      send_sms: sms,
-      send_voice: false,
-      voice_call_allowed: false,
-      purpose: "transactional",
-      intent: "purchase_confirmed",
-      suppress_sales: true,
-      phone: sms ? phone : null,
-      sms_consent: Boolean(first.profile?.sms_consent),
-      timezone: first.profile?.timezone ?? null,
-      marketing_consent: Boolean(first.profile?.marketing_consent),
-      purchase_verified: true,
-      financial_status: first.order?.financial_status,
-      order_id: orderId,
-      line_id: lineId,
-      tier: first.grant.tier,
-      ticket_activation: "email_match",
-      account_exists: Boolean(first.profile),
-      customer_lifecycle: "customer",
-      occurred_at: row.created_at,
-      source: "ai-autopilot-academy",
-      ...composed,
+  const outboundPayload = {
+    event_id: row.id,
+    event_name: row.name,
+    user_id: first.profile?.user_id ?? null,
+    email,
+    channel: sms ? "sms" : "email",
+    send_email: !sms,
+    send_sms: sms,
+    send_voice: false,
+    voice_call_allowed: false,
+    purpose: "transactional",
+    intent: "purchase_confirmed",
+    suppress_sales: true,
+    phone: sms ? phone : null,
+    sms_consent: Boolean(first.profile?.sms_consent),
+    timezone: first.profile?.timezone ?? null,
+    marketing_consent: Boolean(first.profile?.marketing_consent),
+    purchase_verified: true,
+    financial_status: first.order?.financial_status,
+    order_id: orderId,
+    line_id: lineId,
+    tier: first.grant.tier,
+    ticket_activation: "email_match",
+    account_exists: Boolean(first.profile),
+    customer_lifecycle: "customer",
+    occurred_at: row.created_at,
+    source: "ai-autopilot-academy",
+    ...composed,
+  };
+  const outboundOptions = {
+    onAttempt: () => {
+      attempted = true;
     },
-    {
-      onAttempt: () => {
-        attempted = true;
-      },
-      beforeSend: async () => {
-        const latest = await check();
-        return (
-          latest.eligible &&
-          latest.grant?.tier === first.grant!.tier &&
-          (!sms || latest.profile?.phone === phone)
-        );
-      },
+    beforeSend: async () => {
+      const latest = await check();
+      return (
+        latest.eligible &&
+        latest.grant?.tier === first.grant!.tier &&
+        (!sms || latest.profile?.phone === phone)
+      );
     },
-  );
+  };
+  const dispatched =
+    sendVia === "native"
+      ? await dispatchAcademyNativeEmail(outboundPayload, outboundOptions)
+      : await dispatchAcademyGhl(outboundPayload, outboundOptions);
   return { status: dispatched.status, attempted, receipt: dispatched.receipt };
 }
 export async function processAcademyIntegrations(request: Request) {
@@ -175,7 +198,8 @@ export async function processAcademyIntegrations(request: Request) {
   const db = academyDb();
   let orders = 0,
     accepted = 0,
-    unknown = 0;
+    unknown = 0,
+    held = 0;
   const receipts = await db
     .from("academy_commerce_receipts")
     .select("event_id,order_id")
@@ -221,19 +245,86 @@ export async function processAcademyIntegrations(request: Request) {
     const queued = await db.rpc("academy_queue_learning_nudges");
     if (queued.error) throw new Error("LEARNING_QUEUE_UNAVAILABLE");
   }
-  if (process.env.ACADEMY_GHL_ENABLED !== "true" || !academyGhlTransportReady())
+  // Lovable-native email is primary; GoHighLevel is optional and only carries
+  // SMS and CRM-only sync unless it is explicitly selected for email.
+  const emailTransport = academyEmailTransport();
+  const nativeReady = nativeEmailReady();
+  const ghlReady = process.env.ACADEMY_GHL_ENABLED === "true" && academyGhlTransportReady();
+  if (!nativeReady && !ghlReady)
     return Response.json(
-      { orders, accepted, accessDelivery, ghl: "not_enabled" },
+      {
+        orders,
+        accepted,
+        accessDelivery,
+        email: emailTransport,
+        native: "not_enabled",
+        ghl: "not_enabled",
+      },
       { headers: { "Cache-Control": "no-store" } },
     );
-  const claimed = await db.rpc("academy_claim_outbox", { p_limit: 10 });
+  const emailVia: "native" | "ghl" | null =
+    emailTransport === "lovable"
+      ? nativeReady
+        ? "native"
+        : null
+      : emailTransport === "ghl" && ghlReady
+        ? "ghl"
+        : null;
+  const claimableEvents = academyClaimableEvents({
+    emailVia,
+    smsReady: ghlReady,
+    crmReady: ghlReady,
+    nativeSupportsEvent: nativeEmailSupportedEvent,
+  });
+  if (claimableEvents.length === 0)
+    return Response.json(
+      {
+        orders,
+        accepted,
+        accessDelivery,
+        email: emailTransport,
+        native: nativeReady ? "enabled" : "not_enabled",
+        ghl: ghlReady ? "enabled" : "not_enabled",
+        claimed: 0,
+      },
+      { headers: { "Cache-Control": "no-store" } },
+    );
+  const claimed = await db.rpc("academy_claim_outbox", { p_limit: 10, p_names: claimableEvents });
   if (claimed.error) throw new Error("QUEUE_UNAVAILABLE");
   for (const row of (claimed.data ?? []).filter((r: OutboxRow) => isPurchaseConfirmation(r.name))) {
+    const purchaseVia: "native" | "ghl" | null =
+      row.name === "purchase_confirmed_sms" ? (ghlReady ? "ghl" : null) : emailVia;
+    if (!purchaseVia) {
+      // Hold without burning an attempt: the confirmation waits for its transport.
+      const held = await db
+        .from("academy_outbox")
+        .update({
+          status: "pending",
+          completed_at: null,
+          locked_at: null,
+          attempts: Math.max(0, row.attempts - 1),
+          due_at: new Date(Date.now() + 15 * 60000).toISOString(),
+          payload: {
+            ...row.payload,
+            policy_hold: {
+              reason:
+                row.name === "purchase_confirmed_sms"
+                  ? "sms_or_crm_transport_unavailable"
+                  : "email_transport_unavailable",
+              checked_at: new Date().toISOString(),
+            },
+          },
+        })
+        .eq("id", row.id)
+        .eq("status", "processing");
+      if (held.error) throw new Error("QUEUE_RECEIPT_NOT_SAVED");
+      continue;
+    }
     let status = "unknown",
       attempted = false,
-      receipt: GhlDeliveryReceipt | null = null;
+      receipt: GhlDeliveryReceipt | NativeEmailReceipt | null = null;
     try {
-      const outcome = await deliverPurchaseConfirmation(db, row as OutboxRow);
+      const outcome = await deliverPurchaseConfirmation(db, row as OutboxRow, purchaseVia);
       status = outcome.status;
       attempted = outcome.attempted;
       receipt = outcome.receipt;
@@ -246,6 +337,26 @@ export async function processAcademyIntegrations(request: Request) {
         status,
         completed_at: status === "pending" ? null : new Date().toISOString(),
         ...(receipt ? { provider_receipt: receipt } : {}),
+        ...(status === "held"
+          ? {
+              // Held work stays pending with no attempt consumed and nothing completed.
+              status: "pending",
+              completed_at: null,
+              locked_at: null,
+              attempts: Math.max(0, row.attempts - 1),
+              due_at: new Date(
+                Date.now() +
+                  heldDelayMinutes(receipt as { retryAfterSeconds?: number | null } | null) * 60000,
+              ).toISOString(),
+              payload: {
+                ...row.payload,
+                policy_hold: {
+                  reason: heldReason(receipt as { reason?: string } | null),
+                  checked_at: new Date().toISOString(),
+                },
+              },
+            }
+          : {}),
         ...(status === "pending"
           ? { due_at: new Date(Date.now() + 5 * 60000).toISOString(), locked_at: null }
           : {}),
@@ -255,6 +366,7 @@ export async function processAcademyIntegrations(request: Request) {
     if (saved.error) throw new Error("QUEUE_RECEIPT_NOT_SAVED");
     if (status === "accepted") accepted++;
     if (status === "unknown") unknown++;
+    if (status === "held") held++;
   }
   for (const row of (claimed.data ?? []).filter(
     (r: OutboxRow) => !isPurchaseConfirmation(r.name),
@@ -263,8 +375,48 @@ export async function processAcademyIntegrations(request: Request) {
     let deferUntil: string | null = null;
     let holdReason: string | null = null;
     let attempted = false;
-    let providerReceipt: GhlDeliveryReceipt | null = null;
+    let providerReceipt: GhlDeliveryReceipt | NativeEmailReceipt | null = null;
     const policy = academyMessagePolicy(row.name);
+    const rowChannel = policy.crmOnly ? "none" : policy.sms ? "sms" : "email";
+    const sendVia: "native" | "ghl" | null =
+      rowChannel === "email"
+        ? emailTransport === "lovable"
+          ? nativeReady
+            ? "native"
+            : null
+          : emailTransport === "ghl" && ghlReady
+            ? "ghl"
+            : null
+        : ghlReady
+          ? "ghl"
+          : null;
+    if (!sendVia) {
+      // Hold without burning an attempt: an unavailable SMS/CRM provider must
+      // never starve, cancel or retry-exhaust a natively deliverable email.
+      const saved = await db
+        .from("academy_outbox")
+        .update({
+          status: "pending",
+          completed_at: null,
+          locked_at: null,
+          attempts: Math.max(0, row.attempts - 1),
+          due_at: new Date(Date.now() + 15 * 60000).toISOString(),
+          payload: {
+            ...row.payload,
+            policy_hold: {
+              reason:
+                rowChannel === "email"
+                  ? "email_transport_unavailable"
+                  : "sms_or_crm_transport_unavailable",
+              checked_at: new Date().toISOString(),
+            },
+          },
+        })
+        .eq("id", row.id)
+        .eq("status", "processing");
+      if (saved.error) throw new Error("QUEUE_RECEIPT_NOT_SAVED");
+      continue;
+    }
     try {
       const profile = await db
         .from("academy_profiles")
@@ -858,50 +1010,52 @@ export async function processAcademyIntegrations(request: Request) {
               .select("id")
               .maybeSingle();
             if (audit.error || !audit.data) throw new Error("MESSAGE_AUDIT_NOT_SAVED");
-            const dispatched = await dispatchAcademyGhl(
-              {
-                event_id: row.id,
-                event_name: row.name,
-                user_id: row.user_id,
-                email: deliveryProfile.email,
-                channel: policy.crmOnly ? "none" : policy.sms ? "sms" : "email",
-                send_email: !policy.crmOnly && !policy.sms,
-                send_sms: policy.sms,
-                send_voice: false,
-                voice_call_allowed: false,
-                purpose: policy.purpose,
-                phone: freshProfile.data.sms_consent ? deliveryProfile.phone : null,
-                sms_consent: Boolean(freshProfile.data.sms_consent),
-                timezone: freshProfile.data.timezone,
-                marketing_consent: Boolean(freshProfile.data.marketing_consent),
-                consent_version: "academy-marketing-2026-09-06",
-                occurred_at: row.created_at,
-                source: "ai-autopilot-academy",
-                ...learningPayload,
-                ...(policy.crmOnly ? {} : messageDraft),
+            const outboundPayload = {
+              event_id: row.id,
+              event_name: row.name,
+              user_id: row.user_id,
+              email: deliveryProfile.email,
+              channel: policy.crmOnly ? "none" : policy.sms ? "sms" : "email",
+              send_email: !policy.crmOnly && !policy.sms,
+              send_sms: policy.sms,
+              send_voice: false,
+              voice_call_allowed: false,
+              purpose: policy.purpose,
+              phone: freshProfile.data.sms_consent ? deliveryProfile.phone : null,
+              sms_consent: Boolean(freshProfile.data.sms_consent),
+              timezone: freshProfile.data.timezone,
+              marketing_consent: Boolean(freshProfile.data.marketing_consent),
+              consent_version: "academy-marketing-2026-09-06",
+              occurred_at: row.created_at,
+              source: "ai-autopilot-academy",
+              ...learningPayload,
+              ...(policy.crmOnly ? {} : messageDraft),
+            };
+            const outboundOptions = {
+              onAttempt: () => {
+                attempted = true;
               },
-              {
-                onAttempt: () => {
-                  attempted = true;
-                },
-                beforeSend: async () => {
-                  const latest = await checkLatestEligibility();
-                  if (
-                    !latest.freshEligible ||
-                    !latest.freshProfile.data ||
-                    latest.freshProfile.data.email !== deliveryProfile.email ||
-                    (policy.sms && latest.freshProfile.data.phone !== deliveryProfile.phone)
-                  )
-                    return false;
-                  if (policy.daytimeRequired && !latest.freshWindow.allowed) {
-                    deferUntil = latest.freshWindow.deferUntil;
-                    holdReason = latest.freshWindow.reason;
-                    throw new Error("MESSAGE_WINDOW_CLOSED");
-                  }
-                  return true;
-                },
+              beforeSend: async () => {
+                const latest = await checkLatestEligibility();
+                if (
+                  !latest.freshEligible ||
+                  !latest.freshProfile.data ||
+                  latest.freshProfile.data.email !== deliveryProfile.email ||
+                  (policy.sms && latest.freshProfile.data.phone !== deliveryProfile.phone)
+                )
+                  return false;
+                if (policy.daytimeRequired && !latest.freshWindow.allowed) {
+                  deferUntil = latest.freshWindow.deferUntil;
+                  holdReason = latest.freshWindow.reason;
+                  throw new Error("MESSAGE_WINDOW_CLOSED");
+                }
+                return true;
               },
-            );
+            };
+            const dispatched =
+              sendVia === "native"
+                ? await dispatchAcademyNativeEmail(outboundPayload, outboundOptions)
+                : await dispatchAcademyGhl(outboundPayload, outboundOptions);
             status = dispatched.status;
             providerReceipt = dispatched.receipt;
           }
@@ -924,6 +1078,29 @@ export async function processAcademyIntegrations(request: Request) {
         status,
         completed_at: status === "pending" ? null : new Date().toISOString(),
         ...(providerReceipt ? { provider_receipt: providerReceipt } : {}),
+        ...(status === "held"
+          ? {
+              // Held work stays pending with no attempt consumed and nothing completed.
+              status: "pending",
+              completed_at: null,
+              locked_at: null,
+              attempts: Math.max(0, row.attempts - 1),
+              due_at: new Date(
+                Date.now() +
+                  heldDelayMinutes(
+                    providerReceipt as { retryAfterSeconds?: number | null } | null,
+                  ) *
+                    60000,
+              ).toISOString(),
+              payload: {
+                ...row.payload,
+                policy_hold: {
+                  reason: heldReason(providerReceipt as { reason?: string } | null),
+                  checked_at: new Date().toISOString(),
+                },
+              },
+            }
+          : {}),
         ...(status === "pending" && deferUntil
           ? {
               ...(holdReason
@@ -952,15 +1129,24 @@ export async function processAcademyIntegrations(request: Request) {
     if (saved.error) throw new Error("QUEUE_RECEIPT_NOT_SAVED");
     if (status === "accepted") accepted++;
     if (status === "unknown") unknown++;
+    if (status === "held") held++;
   }
   return Response.json(
     {
       orders,
       accepted,
       unknown,
+      held,
       accessDelivery,
+      email: emailTransport,
+      native: nativeReady ? "enabled" : "not_enabled",
+      // Acceptance by a provider is never evidence of inbox delivery.
       deliveryEvidence:
-        academyGhlTransport() === "api" ? "provider_acceptance_only" : "webhook_acceptance_only",
+        emailTransport === "lovable" && nativeReady
+          ? "provider_acceptance_only"
+          : academyGhlTransport() === "api"
+            ? "provider_acceptance_only"
+            : "webhook_acceptance_only",
     },
     { headers: { "Cache-Control": "no-store" } },
   );
