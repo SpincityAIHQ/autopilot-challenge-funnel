@@ -45,21 +45,27 @@ export function nativeEmailReady(env: Env = process.env): boolean {
  * never guessed onto another template and never silently sent.
  */
 export const NATIVE_EMAIL_TEMPLATES: Record<string, string> = {
-  // Account / access confirmations (transactional)
+  // Account / access notices
   webinar_registered: "academy-account-welcome",
   access_activated: "academy-access-activated",
   purchase_access_code: "academy-purchase-access-code",
-  // Optional learning follow-ups (marketing consent required)
+  // Service-related learning reminders (app-side optional consent still applies)
   webinar_not_started: "academy-never-started",
   learning_dropoff: "academy-learning-inactivity",
 };
 
-/** Events deliberately held until their own template is authored and reviewed. */
+/**
+ * Events deliberately held: their own template is not authored and reviewed, or
+ * they are promotional/upsell in nature, which native app email does not carry.
+ */
 export const NATIVE_EMAIL_HELD_EVENTS = [
   "learning_practice",
   "learning_feedback",
   "learning_approved",
   "learning_stalled",
+  "summit_offer",
+  "vault_upsell",
+  "accelerator_offer",
 ];
 
 export function nativeEmailTemplate(eventName: string): string | null {
@@ -67,15 +73,26 @@ export function nativeEmailTemplate(eventName: string): string | null {
 }
 
 /**
- * Documented provider purpose per event. Account and access messages are
- * transactional; optional learning follow-ups are marketing, so the provider
- * applies its own unsubscribe footer and suppression to them.
+ * Provider purpose. Lovable's managed app email is user-triggered transactional
+ * only and the provider appends its own unsubscribe footer to EVERY app email,
+ * so 'transactional' is the single supported value in @lovable.dev/email-js.
+ * Do NOT send an unsupported 'marketing' purpose.
  */
-export function nativeEmailPurpose(eventName: string): "transactional" | "marketing" {
-  return ["webinar_registered", "access_activated", "purchase_access_code"].includes(eventName)
-    ? "transactional"
-    : "marketing";
+export function nativeEmailPurpose(_eventName: string): "transactional" {
+  return "transactional";
 }
+
+/**
+ * The app's OWN consent classification, kept separate from provider purpose.
+ * 'optional_learning' still requires the learner's marketing consent before the
+ * app queues or sends the reminder; it does not change the provider purpose.
+ */
+export function nativeEmailConsentClass(eventName: string): "account_access" | "optional_learning" {
+  return ["webinar_registered", "access_activated", "purchase_access_code"].includes(eventName)
+    ? "account_access"
+    : "optional_learning";
+}
+
 
 /** Stable, logical idempotency key: one logical event, one channel. */
 export function nativeEmailIdempotencyKey(eventId: string, eventName: string): string {
