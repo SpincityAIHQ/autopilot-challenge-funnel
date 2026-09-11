@@ -34,6 +34,7 @@ export async function deliverAccessCodes() {
   for (const row of claimed.data ?? []) {
     let status = "unknown";
     let attempted = false;
+    let heldRow = false;
     let providerReceipt: GhlDeliveryReceipt | NativeEmailReceipt | null = null;
     try {
       const code = await db
@@ -141,7 +142,10 @@ export async function deliverAccessCodes() {
           const dispatched = sendVia === "native"
             ? await dispatchAcademyNativeEmail(codePayload, codeOptions)
             : await dispatchAcademyGhl(codePayload, codeOptions);
-          status = dispatched.status;
+          // A held outcome (unauthored template or documented rate limit) keeps
+          // the code delivery pending; it never completes or exhausts attempts.
+          status = dispatched.status === "held" ? "pending" : dispatched.status;
+          if (dispatched.status === "held") heldRow = true;
           providerReceipt = dispatched.receipt;
         }
       }
@@ -154,6 +158,7 @@ export async function deliverAccessCodes() {
         status,
         ...(providerReceipt ? { provider_receipt: providerReceipt } : {}),
         completed_at: status === "pending" ? null : new Date().toISOString(),
+        ...(heldRow ? { attempts: Math.max(0, row.attempts - 1) } : {}),
         due_at: new Date(Date.now() + Math.min(2 ** row.attempts, 60) * 60000).toISOString(),
       })
       .eq("id", row.id)
