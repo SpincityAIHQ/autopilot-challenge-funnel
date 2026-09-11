@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { getCookie } from "@tanstack/react-start/server";
 import { hashToken } from "@/lib/access-tokens.server";
 import { assertSameOrigin, consumeRateLimit } from "@/lib/rate-limit";
-import { NATIVE_EMAIL_TEMPLATES, nativeEmailPurpose, nativeEmailReady } from "@/lib/academy-email-transport";
+import { NATIVE_EMAIL_TEMPLATES, nativeEmailPurpose, nativeEmailReady, ownerEmailTestReady } from "@/lib/academy-email-transport";
 
 /**
  * Owner-only native email harness.
@@ -65,7 +65,7 @@ export const Route = createFileRoute("/api/public/admin/academy-email-test")({
         if (g.error) return g.error;
         const template = new URL(request.url).searchParams.get("template") ?? "";
         if (!template)
-          return new Response(JSON.stringify({ templates: templateNames, nativeReady: nativeEmailReady() }), { headers: noStore() });
+          return new Response(JSON.stringify({ templates: templateNames, nativeReady: nativeEmailReady(), ownerTestReady: ownerEmailTestReady() }), { headers: noStore() });
         if (!templateNames.includes(template))
           return new Response("Not found", { status: 404, headers: noStore("text/plain") });
         const [{ TEMPLATES }, { render }, React] = await Promise.all([
@@ -81,19 +81,29 @@ export const Route = createFileRoute("/api/public/admin/academy-email-test")({
       POST: async ({ request }) => {
         const g = await guard(request, "emailtest");
         if (g.error) return g.error;
-        if (!nativeEmailReady())
-          return new Response(JSON.stringify({ sent: false, reason: "native_email_not_enabled" }), { status: 503, headers: noStore() });
-        const body = (await request.json().catch(() => null)) as { template?: string } | null;
+        // Independent owner-test gate: inbox proof must NOT require the
+        // production customer-dispatch gate to be enabled first.
+        if (!ownerEmailTestReady())
+          return new Response(JSON.stringify({ sent: false, reason: "owner_test_not_enabled" }), { status: 503, headers: noStore() });
+        const verifiedOwner = (process.env.ACADEMY_OWNER_TEST_EMAIL ?? "sebastian@spincityhq.com").trim().toLowerCase();
+        if (g.owner !== verifiedOwner)
+          return new Response(JSON.stringify({ sent: false, reason: "not_verified_owner" }), { status: 403, headers: noStore() });
+        const body = (await request.json().catch(() => null)) as { template?: string; runId?: string } | null;
         const template = body?.template ?? "";
         if (!templateNames.includes(template))
           return new Response(JSON.stringify({ sent: false, reason: "unsupported_template" }), { status: 400, headers: noStore() });
+        const runId = /^[A-Za-z0-9_-]{4,64}$/.test(body?.runId ?? "")
+          ? body!.runId!
+          : new Date().toISOString().slice(0, 10);
         const { TEMPLATES } = await import("@/lib/email-templates/registry");
         const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
         const entry = (TEMPLATES as Record<string, any>)[template];
-        const result = await sendTemplateEmail(template, g.owner!, {
+        // Recipient is hard-fixed to the verified owner; no caller-supplied
+        // address or template data is accepted, and no queue row is touched.
+        const result = await sendTemplateEmail(template, verifiedOwner, {
           templateData: entry?.previewData ?? {},
           purpose: nativeEmailPurpose(eventFor(template)),
-          idempotencyKey: `owner-test:${template}:${new Date().toISOString().slice(0, 16)}`,
+          idempotencyKey: `owner-test:${runId}:${verifiedOwner}:${template}`,
         });
         // Provider acceptance is not proof of inbox delivery.
         return new Response(
@@ -101,6 +111,7 @@ export const Route = createFileRoute("/api/public/admin/academy-email-test")({
           { headers: noStore() },
         );
       },
+
     },
   },
 });

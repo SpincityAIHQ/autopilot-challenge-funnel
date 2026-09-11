@@ -1,5 +1,5 @@
 import { academyGhlTransport, academyGhlTransportReady, dispatchAcademyGhl, type GhlDeliveryReceipt } from "./academy-ghl-messages.server";
-import { academyEmailTransport, nativeEmailReady } from "./academy-email-transport";
+import { academyEmailTransport, nativeEmailReady, nativeEmailSupportedEvent } from "./academy-email-transport";
 import { dispatchAcademyNativeEmail, type NativeEmailReceipt } from "./academy-native-email.server";
 import { schedulerAuthorized } from "./academy-scheduler.server";
 
@@ -10,17 +10,29 @@ import { redeemedGrants } from "./academy-access.server";
 import type { User } from "@supabase/supabase-js";
 import { learningDeliveryEligible, learningResumeSeconds, type DeliveryProgress } from "./academy-learning-delivery";
 import { composeLearningMessage, composeWelcomeMessage, composeWebinarReminder, composeAccessActivatedMessage, composeAccessCodeMessage, type AcademyMessage } from "./academy-messages";
-import { academyMessagePolicy } from "./academy-message-policy";
+import { academyClaimableEvents, academyMessagePolicy } from "./academy-message-policy";
 import { learningMessageWindow } from "./academy-message-window";
 import { draftAcademyMessage, type MessageDraftBrief } from "./academy-message-draft.server";
 import { lessonContent, scoreAnswers, slotMedia } from "./academy-content.server";
 export { learningDeliveryEligible, type DeliveryProgress } from "./academy-learning-delivery";
+/** Provider-supplied backoff for a held row, otherwise a conservative hold. */
+function heldDelayMinutes(receipt: { retryAfterSeconds?: number | null } | null): number {
+  const seconds = receipt?.retryAfterSeconds;
+  if (typeof seconds === "number" && Number.isFinite(seconds) && seconds > 0)
+    return Math.min(60, Math.max(1, Math.ceil(seconds / 60)));
+  return 60;
+}
+function heldReason(receipt: { reason?: string } | null): string {
+  return typeof receipt?.reason === "string" && receipt.reason ? receipt.reason : "message_held";
+}
+
 export async function processAcademyIntegrations(request: Request) {
   if (!(await schedulerAuthorized(request, () => academyDb()))) return new Response("Unauthorized", { status: 401 });
   const db = academyDb();
   let orders = 0,
     accepted = 0,
-    unknown = 0;
+    unknown = 0,
+    held = 0;
   const receipts = await db
     .from("academy_commerce_receipts")
     .select("event_id,order_id")
@@ -77,7 +89,20 @@ export async function processAcademyIntegrations(request: Request) {
       },
       { headers: { "Cache-Control": "no-store" } },
     );
-  const claimed = await db.rpc("academy_claim_outbox", { p_limit: 10 });
+  const emailVia: "native" | "ghl" | null =
+    emailTransport === "lovable" ? (nativeReady ? "native" : null) : emailTransport === "ghl" && ghlReady ? "ghl" : null;
+  const claimableEvents = academyClaimableEvents({
+    emailVia,
+    smsReady: ghlReady,
+    crmReady: ghlReady,
+    nativeSupportsEvent: nativeEmailSupportedEvent,
+  });
+  if (claimableEvents.length === 0)
+    return Response.json(
+      { orders, accepted, accessDelivery, email: emailTransport, native: nativeReady ? "enabled" : "not_enabled", ghl: ghlReady ? "enabled" : "not_enabled", claimed: 0 },
+      { headers: { "Cache-Control": "no-store" } },
+    );
+  const claimed = await db.rpc("academy_claim_outbox", { p_limit: 10, p_names: claimableEvents });
   if (claimed.error) throw new Error("QUEUE_UNAVAILABLE");
   for (const row of claimed.data ?? []) {
     let status = "unknown";
@@ -448,6 +473,13 @@ export async function processAcademyIntegrations(request: Request) {
     const saved = await db.from("academy_outbox").update({
       status, completed_at: status === "pending" ? null : new Date().toISOString(),
       ...(providerReceipt ? { provider_receipt: providerReceipt } : {}),
+      ...(status === "held" ? {
+        // Held work stays pending with no attempt consumed and nothing completed.
+        status: "pending", completed_at: null, locked_at: null,
+        attempts: Math.max(0, row.attempts - 1),
+        due_at: new Date(Date.now() + heldDelayMinutes(providerReceipt as { retryAfterSeconds?: number | null } | null) * 60000).toISOString(),
+        payload: { ...row.payload, policy_hold: { reason: heldReason(providerReceipt as { reason?: string } | null), checked_at: new Date().toISOString() } },
+      } : {}),
       ...(status === "pending" && deferUntil ? {
         ...(holdReason ? { payload: { ...row.payload, policy_hold: { reason: holdReason, checked_at: new Date().toISOString(), due_at: deferUntil } } } : {}),
         due_at: deferUntil, locked_at: null, attempts: holdReason === "preparation_unavailable" ? row.attempts : Math.max(0, row.attempts - 1),
@@ -456,10 +488,11 @@ export async function processAcademyIntegrations(request: Request) {
     if (saved.error) throw new Error("QUEUE_RECEIPT_NOT_SAVED");
     if (status === "accepted") accepted++;
     if (status === "unknown") unknown++;
+    if (status === "held") held++;
   }
   return Response.json(
     {
-      orders, accepted, unknown, accessDelivery,
+      orders, accepted, unknown, held, accessDelivery,
       email: emailTransport,
       native: nativeReady ? "enabled" : "not_enabled",
       // Acceptance by a provider is never evidence of inbox delivery.

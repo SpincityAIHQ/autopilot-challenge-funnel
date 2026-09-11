@@ -9,7 +9,15 @@ import {
   nativeEmailTemplate,
   NATIVE_EMAIL_HELD_EVENTS,
 } from "@/lib/academy-email-transport";
-import { dispatchAcademyNativeEmail } from "@/lib/academy-native-email.server";
+import {
+  classifyNativeSendError,
+  dispatchAcademyNativeEmail,
+  nativeEmailParagraphs,
+} from "@/lib/academy-native-email.server";
+import { ownerEmailTestEnabled, ownerEmailTestReady, nativeEmailSupportedEvent } from "@/lib/academy-email-transport";
+import { academyClaimableEvents } from "@/lib/academy-message-policy";
+import { composeWelcomeMessage } from "@/lib/academy-messages";
+import { EmailAPIError } from "@lovable.dev/email-js";
 
 const ready = {
   ACADEMY_MESSAGE_TRANSPORT: "lovable",
@@ -134,7 +142,8 @@ describe("native dispatch", () => {
       { ...base, event_name: "learning_practice" },
       { env: ready, sendImpl: sender({ sent: true }).impl },
     );
-    expect(out.status).toBe("cancelled");
+    expect(out.status).toBe("held");
+    expect(out.receipt.evidence).toBe("held");
     expect(out.receipt.reason).toBe("template_not_authored");
   });
 
@@ -191,5 +200,113 @@ describe("native dispatch", () => {
       onAttempt: () => { attempts++; },
     });
     expect(attempts).toBe(1);
+  });
+});
+
+
+describe("owner test gate", () => {
+  it("is off by default and never requires the production send gate", () => {
+    expect(ownerEmailTestEnabled({})).toBe(false);
+    expect(ownerEmailTestReady({ ACADEMY_OWNER_EMAIL_TEST_ENABLED: "true" })).toBe(false);
+    // Production gate stays OFF while the owner harness is usable.
+    const env = { ACADEMY_OWNER_EMAIL_TEST_ENABLED: "true", LOVABLE_API_KEY: "k" };
+    expect(ownerEmailTestReady(env)).toBe(true);
+    expect(nativeEmailEnabled(env)).toBe(false);
+    expect(nativeEmailReady(env)).toBe(false);
+  });
+});
+
+describe("native message rendering", () => {
+  const welcome = composeWelcomeMessage(false, "Thoth", true);
+
+  it("keeps meaningful paragraphs and drops the action line", () => {
+    const paragraphs = nativeEmailParagraphs(welcome.message_text);
+    expect(paragraphs.length).toBeGreaterThan(2);
+    expect(paragraphs.some((p) => p.includes("Thoth"))).toBe(true);
+    expect(paragraphs.some((p) => /https?:\/\//.test(p))).toBe(false);
+  });
+
+  it("removes every composed opt-out sentence so the provider footer is not duplicated", () => {
+    const text = nativeEmailParagraphs(welcome.message_text).join(" ").toLowerCase();
+    for (const phrase of ["turn them off", "unsubscribe", "opt out", "reply stop", "promotional email"])
+      expect(text.includes(phrase)).toBe(false);
+    // Service guidance in the same paragraph is preserved.
+    expect(text).toContain("keep passwords");
+  });
+
+  it("preserves newline structure rather than collapsing the body", () => {
+    expect(nativeEmailParagraphs("One.\n\nTwo.\n\nThree.")).toEqual(["One.", "Two.", "Three."]);
+    expect(nativeEmailParagraphs("One.\u0000\n\nTwo.").length).toBe(2);
+  });
+});
+
+describe("provider error classification", () => {
+  it("treats a documented rate limit as a definite, retryable non-acceptance", async () => {
+    const error = new EmailAPIError(429, "rate limited", 30, "rate_limited");
+    const classified = classifyNativeSendError(error, true);
+    expect(classified.kind).toBe("rate_limited");
+    const out = await dispatchAcademyNativeEmail(base, { env: ready, sendImpl: sender(error).impl });
+    expect(out.status).toBe("held");
+    expect(out.receipt.retryAfterSeconds).toBe(30);
+  });
+
+  it("treats other 4xx as definite rejection, not a blind retry", async () => {
+    const out = await dispatchAcademyNativeEmail(base, {
+      env: ready,
+      sendImpl: sender(new EmailAPIError(400, "bad request", null, "invalid_request")).impl,
+    });
+    expect(out.status).toBe("cancelled");
+    expect(out.receipt.evidence).toBe("provider_rejected");
+  });
+
+  it("keeps an ambiguous post-submit failure unknown", async () => {
+    const out = await dispatchAcademyNativeEmail(base, {
+      env: ready,
+      sendImpl: sender(new Error("socket hang up")).impl,
+    });
+    expect(out.status).toBe("unknown");
+    expect(out.receipt.evidence).toBe("outcome_unknown");
+    const server = await dispatchAcademyNativeEmail(base, {
+      env: ready,
+      sendImpl: sender(new EmailAPIError(502, "upstream", null, "server_error")).impl,
+    });
+    expect(server.status).toBe("unknown");
+  });
+
+  it("records provider suppression as a cancellation with a reason", async () => {
+    const out = await dispatchAcademyNativeEmail(base, {
+      env: ready,
+      sendImpl: sender({ sent: false, reason: "recipient_suppressed" }).impl,
+    });
+    expect(out.status).toBe("cancelled");
+    expect(out.receipt.reason).toBe("recipient_suppressed");
+  });
+});
+
+describe("pre-claim eligibility", () => {
+  it("excludes unavailable SMS/CRM and unauthored native events", () => {
+    const nativeOnly = academyClaimableEvents({
+      emailVia: "native", smsReady: false, crmReady: false, nativeSupportsEvent: nativeEmailSupportedEvent,
+    });
+    expect(nativeOnly).toContain("webinar_registered");
+    expect(nativeOnly).toContain("webinar_not_started");
+    expect(nativeOnly.some((n) => n.endsWith("_sms"))).toBe(false);
+    expect(nativeOnly).not.toContain("customer_returned");
+    expect(nativeOnly).not.toContain("learning_practice");
+  });
+
+  it("claims nothing when no transport is available", () => {
+    expect(
+      academyClaimableEvents({ emailVia: null, smsReady: false, crmReady: false, nativeSupportsEvent: nativeEmailSupportedEvent }),
+    ).toEqual([]);
+  });
+
+  it("keeps SMS and CRM eligible when GoHighLevel is available", () => {
+    const both = academyClaimableEvents({
+      emailVia: "ghl", smsReady: true, crmReady: true, nativeSupportsEvent: nativeEmailSupportedEvent,
+    });
+    expect(both).toContain("access_activated_sms");
+    expect(both).toContain("customer_returned");
+    expect(both).toContain("learning_practice");
   });
 });

@@ -98,3 +98,25 @@ export function nativeEmailConsentClass(eventName: string): "account_access" | "
 export function nativeEmailIdempotencyKey(eventId: string, eventName: string): string {
   return `${eventName}:email:${eventId}`;
 }
+
+/**
+ * OWNER TEST GATE — deliberately independent of the production send gate.
+ *
+ * `ACADEMY_OWNER_EMAIL_TEST_ENABLED=true` allows exactly one owner-addressed
+ * template send for inbox proof while `ACADEMY_NATIVE_EMAIL_ENABLED` stays
+ * false, so customer dispatch is never a precondition for testing. It grants
+ * nothing else: the harness never claims, drains or completes queue rows.
+ */
+export function ownerEmailTestEnabled(env: Env = process.env): boolean {
+  return env.ACADEMY_OWNER_EMAIL_TEST_ENABLED === "true";
+}
+
+/** Owner test readiness: sender configuration only, NOT the production gate. */
+export function ownerEmailTestReady(env: Env = process.env): boolean {
+  return ownerEmailTestEnabled(env) && Boolean(env.LOVABLE_API_KEY);
+}
+
+/** True when this event has an authored, reviewed native template. */
+export function nativeEmailSupportedEvent(eventName: string): boolean {
+  return !NATIVE_EMAIL_HELD_EVENTS.includes(eventName) && Boolean(NATIVE_EMAIL_TEMPLATES[eventName]);
+}
