@@ -136,7 +136,6 @@ export async function deliverAccessCodes() {
                 latestGrant.data?.active && latestGrant.data.email === c.email && latestGrant.data.tier === c.tier &&
                 latestOrder.data && !latestOrder.data.needs_review);
             },
-          });
           };
           // Same code lifecycle guards on both transports; stable delivery key.
           const dispatched = sendVia === "native"
