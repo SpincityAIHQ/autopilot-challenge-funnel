@@ -1645,29 +1645,53 @@ export type Database = {
           tier: string
         }[]
       }
-      academy_claim_outbox: {
-        Args: { p_limit: number }
-        Returns: {
-          attempts: number
-          completed_at: string | null
-          created_at: string
-          dedup_key: string
-          due_at: string
-          id: string
-          locked_at: string | null
-          name: string
-          payload: Json
-          provider_receipt: Json | null
-          status: string
-          user_id: string | null
-        }[]
-        SetofOptions: {
-          from: "*"
-          to: "academy_outbox"
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
+      academy_claim_outbox:
+        | {
+            Args: { p_limit: number }
+            Returns: {
+              attempts: number
+              completed_at: string | null
+              created_at: string
+              dedup_key: string
+              due_at: string
+              id: string
+              locked_at: string | null
+              name: string
+              payload: Json
+              provider_receipt: Json | null
+              status: string
+              user_id: string | null
+            }[]
+            SetofOptions: {
+              from: "*"
+              to: "academy_outbox"
+              isOneToOne: false
+              isSetofReturn: true
+            }
+          }
+        | {
+            Args: { p_limit: number; p_names: string[] }
+            Returns: {
+              attempts: number
+              completed_at: string | null
+              created_at: string
+              dedup_key: string
+              due_at: string
+              id: string
+              locked_at: string | null
+              name: string
+              payload: Json
+              provider_receipt: Json | null
+              status: string
+              user_id: string | null
+            }[]
+            SetofOptions: {
+              from: "*"
+              to: "academy_outbox"
+              isOneToOne: false
+              isSetofReturn: true
+            }
+          }
       academy_has_imported_ticket: {
         Args: { p_user: string }
         Returns: boolean
