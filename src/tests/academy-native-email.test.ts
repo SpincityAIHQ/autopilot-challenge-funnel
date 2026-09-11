@@ -4,6 +4,7 @@ import {
   nativeEmailEnabled,
   nativeEmailIdempotencyKey,
   nativeEmailPurpose,
+  nativeEmailConsentClass,
   nativeEmailReady,
   nativeEmailTemplate,
   NATIVE_EMAIL_HELD_EVENTS,
@@ -68,10 +69,12 @@ describe("transport selection", () => {
     for (const held of NATIVE_EMAIL_HELD_EVENTS) expect(nativeEmailTemplate(held)).toBeNull();
   });
 
-  it("documents purpose per event and uses stable idempotency keys", () => {
+  it("always uses the supported transactional purpose and stable idempotency keys", () => {
     expect(nativeEmailPurpose("access_activated")).toBe("transactional");
     expect(nativeEmailPurpose("purchase_access_code")).toBe("transactional");
-    expect(nativeEmailPurpose("learning_dropoff")).toBe("marketing");
+    expect(nativeEmailPurpose("learning_dropoff")).toBe("transactional");
+    expect(nativeEmailConsentClass("access_activated")).toBe("account_access");
+    expect(nativeEmailConsentClass("learning_dropoff")).toBe("optional_learning");
     expect(nativeEmailIdempotencyKey("evt-1", "webinar_registered")).toBe("webinar_registered:email:evt-1");
     expect(nativeEmailIdempotencyKey("evt-1", "webinar_registered")).toBe(
       nativeEmailIdempotencyKey("evt-1", "webinar_registered"),
@@ -103,12 +106,12 @@ describe("native dispatch", () => {
     expect(calls[0].options.idempotencyKey).toBe("webinar_registered:email:evt-1");
   });
 
-  it("sends optional learning email as marketing and requires consent", async () => {
+  it("sends optional learning email as transactional and still requires app consent", async () => {
     const consented = { ...base, event_name: "learning_dropoff", marketing_consent: true };
     const { impl, calls } = sender({ sent: true });
     const out = await dispatchAcademyNativeEmail(consented, { env: ready, sendImpl: impl });
     expect(out.status).toBe("accepted");
-    expect(calls[0].options.purpose).toBe("marketing");
+    expect(calls[0].options.purpose).toBe("transactional");
 
     const denied = await dispatchAcademyNativeEmail(
       { ...consented, marketing_consent: false },

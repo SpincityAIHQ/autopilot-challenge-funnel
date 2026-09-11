@@ -24,11 +24,12 @@ export interface SendTemplateEmailOptions {
   idempotencyKey?: string
   replyTo?: string
   /**
-   * Documented provider classification for this specific template. Account and
-   * access notices are 'transactional'; optional learning follow-ups are
-   * 'marketing', so the provider applies unsubscribe handling to them.
+   * Provider purpose. Lovable's managed app email is user-triggered
+   * transactional only, and the provider appends its own unsubscribe footer to
+   * every app email, so 'transactional' is the only supported value.
    */
-  purpose?: 'transactional' | 'marketing'
+  purpose?: 'transactional'
+
   /**
    * Final eligibility check, run AFTER rendering and immediately before the
    * provider call. Returning false cancels the send without an attempt.
