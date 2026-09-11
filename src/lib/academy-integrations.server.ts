@@ -1,5 +1,5 @@
 import { academyGhlTransport, academyGhlTransportReady, dispatchAcademyGhl, type GhlDeliveryReceipt } from "./academy-ghl-messages.server";
-import { academyEmailTransport, nativeEmailReady } from "./academy-email-transport";
+import { academyEmailTransport, nativeEmailReady, nativeEmailSupportedEvent } from "./academy-email-transport";
 import { dispatchAcademyNativeEmail, type NativeEmailReceipt } from "./academy-native-email.server";
 import { schedulerAuthorized } from "./academy-scheduler.server";
 
@@ -20,7 +20,8 @@ export async function processAcademyIntegrations(request: Request) {
   const db = academyDb();
   let orders = 0,
     accepted = 0,
-    unknown = 0;
+    unknown = 0,
+    held = 0;
   const receipts = await db
     .from("academy_commerce_receipts")
     .select("event_id,order_id")
