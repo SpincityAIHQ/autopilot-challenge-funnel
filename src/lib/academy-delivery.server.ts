@@ -118,7 +118,8 @@ export async function deliverAccessCodes() {
               programme_ends_at: c.programme_ends_at ?? null,
               terms_version: c.terms_version,
               redeem_url: "https://aiautopilotsummit.com/redeem",
-            }, {
+            };
+          const codeOptions = {
             accessEmail: true,
             onAttempt: () => { attempted = true; },
             beforeSend: async () => {
