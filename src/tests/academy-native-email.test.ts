@@ -82,11 +82,16 @@ describe("transport selection", () => {
 describe("native dispatch", () => {
   it("refuses without an attempt when native email is not enabled", async () => {
     const { impl, calls } = sender({ sent: true });
-    await expect(dispatchAcademyNativeEmail(base, { env: {}, sendImpl: impl })).rejects.toThrow(
-      "NATIVE_EMAIL_NOT_ENABLED",
-    );
+    let message = "";
+    try {
+      await dispatchAcademyNativeEmail(base, { env: {}, sendImpl: impl });
+    } catch (error) {
+      message = (error as Error).message;
+    }
+    expect(message).toBe("NATIVE_EMAIL_NOT_ENABLED");
     expect(calls.length).toBe(0);
   });
+
 
   it("accepts a transactional send without any GoHighLevel configuration", async () => {
     const { impl, calls } = sender({ sent: true });
