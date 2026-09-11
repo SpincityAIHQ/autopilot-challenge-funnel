@@ -23,8 +23,14 @@ if (process.env.ACADEMY_NATIVE_EMAIL_ENABLED === "true") {
   throw new Error("production native email gate must stay off");
 }
 
+const SAMPLE_NOTE = "Sample only — this is an owner test message. It carries no real purchase, access code or entitlement.";
+const SAMPLE_TEMPLATES = new Set(["academy-purchase-access-code", "academy-access-activated"]);
+
 for (const [name, entry] of Object.entries(TEMPLATES)) {
-  const data = entry.previewData ?? {};
+  const base = entry.previewData ?? {};
+  const data = SAMPLE_TEMPLATES.has(name)
+    ? { ...base, paragraphs: [SAMPLE_NOTE, ...((base as any).paragraphs ?? [])] }
+    : base;
   const el = React.createElement(entry.component, data);
   const html = await render(el);
   const links = [...html.matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
