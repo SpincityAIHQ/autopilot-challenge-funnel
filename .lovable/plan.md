@@ -1,65 +1,94 @@
-# Email automation: run the sequences on Lovable, keep GHL optional
+# Shopify connection diagnostic (read-only) — no changes made
 
-## How it works today
+## 1. Is the store connected?
 
-Your app already has a full automation engine — what it is missing is a working way to actually send the email.
+No. There is no native Lovable Shopify integration attached to this project, and
+no Shopify credentials exist in the runtime.
 
-1. Something happens (someone signs up, buys a ticket, goes quiet for 24/48h).
-2. A message is queued in the database with the right timing, consent rules and eligibility checks.
-3. A scheduler wakes up, re-checks eligibility, and hands the message to a sender.
-4. Step 4 is the problem: the only sender wired in is GoHighLevel, and it stays switched off until GHL credentials are in place. So messages get prepared and never leave.
+Runtime presence (values never read or printed):
 
-Meanwhile, your own sending domain (notify.nuamenti.com) is already verified and live on Lovable — it is what sends your sign-in and confirmation emails today. That same channel can send the automation emails, with delivery, bounce handling, unsubscribes and rate limits managed for you.
+| Setting | State |
+| --- | --- |
+| ACADEMY_SHOPIFY_SHOP | absent (no hostname set) |
+| SHOPIFY_CLIENT_ID | absent |
+| SHOPIFY_CLIENT_SECRET | absent |
+| SHOPIFY_ADMIN_ACCESS_TOKEN | absent |
+| ACADEMY_SHOPIFY_WEBHOOK_SECRET | absent |
+| ACADEMY_SHOPIFY_AUTH_MODE | absent (unset) |
+| ACADEMY_SHOPIFY_ENABLED | absent → webhook route answers 503 |
+| ACADEMY_PAID_ACCESS_ENABLED | absent |
 
-## What I propose
+Project secret names present: ACADEMY_ACCESS_CODE_SECRET,
+ACADEMY_VIMEO_ACCELERATOR_DAY_01, LOVABLE_API_KEY (managed),
+RATE_LIMIT_HMAC_SECRET, SUMMIT_OWNER_EMAILS, SUMMIT_OWNER_PASSWORD.
+Workspace connectors available: Stripe (live), Stripe (sandbox), Firecrawl —
+none linked, and none is a Shopify connector.
 
-Make Lovable the email sender for your sequences, and leave GHL as an optional add-on rather than a blocker.
+## 2. What the code expects
 
-- Add a sender setting with three modes: Lovable email (new default), GHL, or off.
-- Build branded email templates in your green/gold/black style for the messages the app already queues:
-  - Welcome / account ready
-  - 24h "never started" nudge
-  - 48h inactivity recovery, based on saved progress
-  - Access-ready note after a verified purchase and activation
-- Keep every existing guard exactly as-is: consent required, verified purchase checks, suppression, daily caps, dedupe, quiet hours, late eligibility re-check before each send.
-- Text messages stay with GHL. Lovable sends email only, so SMS keeps waiting on your GHL connection.
-- Nothing is broadcast automatically. Sends stay behind the existing enable flags until you confirm a test email landed in your own inbox.
+`src/lib/academy-shopify.server.ts` expects an **app-owned custom Shopify app on
+the single allowlisted store `64dwd2-0j.myshopify.com`** (any other hostname is
+rejected). Two supported modes:
 
-## Trade-offs
+- `client_credentials`: SHOPIFY_CLIENT_ID + SHOPIFY_CLIENT_SECRET; the client
+  secret doubles as the webhook signing secret; the exchanged token must carry
+  `read_orders` or `write_orders` or the exchange is rejected.
+- `legacy`: SHOPIFY_ADMIN_ACCESS_TOKEN + separate ACADEMY_SHOPIFY_WEBHOOK_SECRET.
 
-- Lovable adds a small unsubscribe footer to marketing-style emails and hosts the unsubscribe page. That cannot be turned off, and account/sign-in emails are unaffected.
-- No bulk blasts through the app: each email is triggered by one person's action. A one-time campaign to your existing list still belongs in a mail tool with your CSV.
-- If GHL is connected later, contacts and SMS still flow there; you can flip the sender back with one setting.
+With both a legacy token and client credentials present, ACADEMY_SHOPIFY_AUTH_MODE
+must be set explicitly or startup fails by design.
 
-## Technical notes
+## 3. Storefront vs Admin bridge
 
-- Register templates in `src/lib/email-templates/registry.ts` and send through the scaffolded `sendTemplateEmail` helper (`send-email.ts`), which is already configured for `notify.nuamenti.com`.
-- Add `ACADEMY_MESSAGE_TRANSPORT` (`lovable` | `ghl` | `off`) read in `src/lib/academy-integrations.server.ts`; when `lovable`, route the prepared draft to `sendTemplateEmail` instead of `dispatchAcademyGhl`, mapping the message type to a template name.
-- Record the same receipt/status shape used today (`sent`, `suppressed` on `{ sent:false, reason:'recipient_suppressed' }`, `failed` on throw) so the queue, audits and analytics stay unchanged.
-- SMS-policy rows (`policy.sms`) continue to require the GHL transport; when it is unavailable they stay queued exactly as now.
-- No changes to checkout, entitlements, Thoth, or Auth email templates.
+Two separate things, only the first is live:
 
-## Verification before anything goes out
+- **Storefront checkout (live):** public cart permalinks on spincityhq.com. No
+  credentials needed, no order data returned to this app.
+- **Admin/webhook bridge (not connected):** Admin GraphQL order reads plus
+  HMAC-verified `orders/paid|updated|cancelled` and `refunds/create` webhooks.
+  This is what grants entitlements and access codes.
 
-1. Send one test of each template to your inbox only.
-2. Confirm branding, links and the unsubscribe footer.
-3. Then turn the sequence flags on.
+A managed/native connector geared at storefront data does **not** supply what
+this app needs: a merchant-installed app on that store with `read_orders` and
+a webhook signing secret owned by the same app identity. Nothing in the current
+connector UI can provision that here — it must be an owner-created custom app in
+the SpinCity Shopify admin, with the values pasted into Project Settings → Secrets.
 
-## Can Lovable be the one-stop shop? (payments)
+## 4. Evidence the bridge has never run
 
-Yes for the two pieces you are fighting with — email and checkout.
+academy_orders 0, academy_grants 0, academy_access_codes 0,
+academy_commerce_receipts 0. Outbox holds 40 pending/retry rows (unrelated
+messaging backlog). So no reconciliation has ever executed.
 
-**Email:** covered above. Your verified sender is already live here.
+## 5. Purchase CTA configuration today (for reference, not edited)
 
-**Payments:** Lovable has built-in checkout (Stripe or Paddle) that does not need your own merchant account to start, and it can sell GA $22, VIP $99, Emerald $298 and the $4,000 Accelerator as digital products. Because the payment confirmation would then land inside this app, ticket access could be granted automatically the moment a payment clears — no manual matching, no code emails by hand. That is the part the fastpaydirect/GHL links cannot do reliably today.
+- `src/lib/academy.ts` — SUMMIT_OFFERS point at `/api/public/checkout/{ga|vip|vault}`.
+- `src/routes/api/public/checkout/$tier.ts` → `src/lib/academy-checkout.server.ts`,
+  which currently returns **product pages** (`/products/...`), not the verified
+  cart permalinks, when provider = shopify.
+- `src/lib/reserve-checkout.ts` + `.env.production` — reserve funnel already uses
+  the verified cart permalinks for GA/VIP/Emerald; no Accelerator entry.
+- `docs/shopify-funnel-map.md` — funnel table to keep in sync.
+- Variant → tier map already correct in `src/lib/academy-commerce.server.ts`:
+  50980696129783 ga, 50980697571575 vip, 50980698194167 vault, 51080447492343
+  accelerator.
 
-Trade-offs to know before switching:
-- Existing GHL/fastpaydirect payment links stay valid; the app would gain a second, native checkout path. Running both means two places to reconcile, so it is cleaner to pick one going forward.
-- Products and prices have to be recreated on the new provider; past Shopify/Zelle/Cash App buyers are unaffected and keep their granted access.
-- Requires a Pro plan, and live payments need identity verification with the provider before real money moves. A test mode works immediately.
+Files that would change to move every CTA onto the verified variants
+(GA 50980696129783 $22, VIP 50980697571575 $99, Emerald 50980698194167 $298,
+Accelerator 51080447492343 $4,000): `src/lib/academy-checkout.server.ts`,
+`src/lib/reserve-checkout.ts`, `.env.production`, `docs/shopify-funnel-map.md`,
+and the matching tests in `src/tests/reserve-funnel.test.ts` /
+`academy-ghl-payments.test.ts`. **Not edited.**
 
-Suggested order:
-1. Ship the Lovable email sequences (above) — smallest change, unblocks nurture today.
-2. Then decide on native checkout. If yes, I run the provider eligibility check, enable it, create the four tiers, and wire payment-confirmed to automatic access grants.
+## 6. Remaining owner-only actions (blocking)
 
-**What stays in GHL:** SMS/text, phone, pipeline and CRM records. Lovable does not send texts.
+1. In the SpinCity Shopify admin for `64dwd2-0j.myshopify.com`, create/confirm a
+   custom app with `read_orders` scope.
+2. Save in Project Settings → Secrets: `ACADEMY_SHOPIFY_SHOP` (the store host),
+   then either the client ID + client secret pair, or the Admin access token plus
+   a webhook secret; set `ACADEMY_SHOPIFY_AUTH_MODE` accordingly.
+3. Register the four order webhooks against
+   `/api/public/webhooks/shopify` on the production domain.
+4. Only then flip `ACADEMY_SHOPIFY_ENABLED` and `ACADEMY_PAID_ACCESS_ENABLED`.
+
+No edits, secret changes, sends, retries, flag changes, or publishing were done.
