@@ -74,7 +74,7 @@ describe("/join auth flow invariants", () => {
   });
 
   test("signup without a session shows check-inbox, not another signup form", () => {
-    expect(source).toContain("setAwaitingConfirmation(submitted)");
+    expect(controllerSource).toContain('host.setAwaitingConfirmation(submitted)');
     expect(source).toContain("Check your inbox");
     expect(source).toContain("Back to sign in");
   });
