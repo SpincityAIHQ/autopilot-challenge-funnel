@@ -51,10 +51,13 @@ export const DEFAULT_EMAIL_COOLDOWN_SECONDS = 60;
 const MAX_COOLDOWN_SECONDS = 60 * 30;
 
 export const COOLDOWN_NOTE =
-  "You can try another email in a moment. The server limit may last longer than this countdown.";
+  "You can retry this request after the countdown. The server limit may last longer than the countdown.";
 
 const TEMPORARY =
-  "Something went wrong on our side. Nothing was changed — please try again in a few moments.";
+  "We could not confirm the result of that request. It may or may not have gone through — please wait a few moments and check before trying again.";
+
+const TEMPORARY_EMAIL =
+  "We could not confirm the result of that request. An email may still have been sent — check your inbox and spam folder before trying again.";
 
 function readString(value: unknown): string | null {
   return typeof value === "string" && value.length > 0 ? value : null;
@@ -170,7 +173,7 @@ export function describeAuthError(
     case "over_request_rate_limit":
       return feedback(
         "error",
-        `Too many attempts from this device. ${COOLDOWN_NOTE}`,
+        `Too many attempts have been made for now. ${COOLDOWN_NOTE}`,
         null,
         cooldown,
       );
@@ -221,14 +224,36 @@ export function describeAuthError(
       break;
   }
 
-  if (status !== null && status >= 500) return feedback("error", TEMPORARY);
+  const emailAction = action === "signup" || action === "resend" || action === "reset";
+  if (status !== null && status >= 500)
+    return feedback("error", emailAction ? TEMPORARY_EMAIL : TEMPORARY);
   if (action === "confirm-link")
     return feedback(
       "error",
       "We could not complete that confirmation link. Request a new confirmation email and use the newest one.",
       "resend-confirmation",
     );
-  return feedback("error", TEMPORARY);
+  return feedback("error", emailAction ? TEMPORARY_EMAIL : TEMPORARY);
+}
+
+/** Existence-sensitive outcomes must be indistinguishable from an accepted request. */
+const EXISTENCE_SENSITIVE: ReadonlySet<string> = new Set([
+  "user_not_found",
+  "user_already_exists",
+  "email_not_confirmed",
+]);
+
+/** Classify a returned or thrown auth error to its allowlisted identifier. */
+export function classifyAuthError(error: unknown): string | null {
+  return classify((error ?? null) as AuthErrorLike | null).known;
+}
+
+export function isExistenceSensitive(known: string | null): boolean {
+  return known !== null && EXISTENCE_SENSITIVE.has(known);
+}
+
+export function isRateLimited(known: string | null): boolean {
+  return known === "over_email_send_rate_limit" || known === "over_request_rate_limit";
 }
 
 /** Neutral success copy. Provider acceptance is never inbox delivery. */
