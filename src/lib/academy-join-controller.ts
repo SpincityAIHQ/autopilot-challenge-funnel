@@ -73,7 +73,12 @@ export function createJoinController(host: JoinHost) {
     const known = classifyAuthError(error);
     if (!isRateLimited(known)) return null;
     const retryAfter = normalizeRetryAfter((error as { retryAfterSeconds?: unknown })?.retryAfterSeconds);
-    return { seconds: retryAfter ?? DEFAULT_EMAIL_COOLDOWN_SECONDS, alsoAttempts: true };
+    return {
+      seconds: retryAfter ?? DEFAULT_EMAIL_COOLDOWN_SECONDS,
+      // An email-send limit gates email requests only; password sign-in stays
+      // available. Request-rate limits (and a bare 429) gate attempts as well.
+      alsoAttempts: known === "over_request_rate_limit",
+    };
   }
 
   async function guard(work: () => Promise<void>) {
@@ -102,6 +107,25 @@ export function createJoinController(host: JoinHost) {
     host.setFeedback(describeAuthSuccess(action));
   }
 
+  type EmailAction = "signup" | "resend" | "reset";
+
+  /**
+   * Single action-aware normalisation point for BOTH returned and thrown
+   * errors. On email actions an existence-sensitive failure is indistinguishable
+   * from an accepted request — same copy, state and cooldown.
+   */
+  function handleError(
+    action: "signin" | "signup" | "resend" | "reset" | "update-password",
+    error: unknown,
+    stale: boolean,
+    submitted?: string,
+  ) {
+    const emailAction = action === "signup" || action === "resend" || action === "reset";
+    if (emailAction && isExistenceSensitive(classifyAuthError(error)))
+      return acceptedEmailRequest(action as EmailAction, submitted ?? "", stale);
+    return failure(action, error, stale);
+  }
+
   function failure(action: "signin" | "signup" | "resend" | "reset" | "update-password", error: unknown, stale: boolean) {
     const limit = cooldownFor(error);
     if (limit) host.applyCooldown(limit.seconds, limit.alsoAttempts);
@@ -118,7 +142,7 @@ export function createJoinController(host: JoinHost) {
         try {
           const result = await host.client.signInWithPassword({ email, password });
           const stale = token !== host.token();
-          if (result?.error) return failure("signin", result.error, stale);
+          if (result?.error) return handleError("signin", result.error, stale);
           // Only an actual returned session unblocks onboarding.
           if (result?.data?.session) {
             host.setAwaitingConfirmation(null);
@@ -126,7 +150,7 @@ export function createJoinController(host: JoinHost) {
             host.onSession();
           }
         } catch (error) {
-          failure("signin", error, token !== host.token());
+          handleError("signin", error, token !== host.token());
         }
       });
     },
@@ -141,12 +165,8 @@ export function createJoinController(host: JoinHost) {
             options: { emailRedirectTo: host.redirectTo() },
           });
           const stale = token !== host.token();
-          if (result?.error) {
-            // A duplicate signup must be indistinguishable from an eligible one.
-            if (isExistenceSensitive(classifyAuthError(result.error)))
-              return acceptedEmailRequest("signup", email, stale);
-            return failure("signup", result.error, stale);
-          }
+          // A duplicate signup must be indistinguishable from an eligible one.
+          if (result?.error) return handleError("signup", result.error, stale, email);
           if (result?.data?.session) {
             if (stale) return;
             host.setAwaitingConfirmation(null);
@@ -156,7 +176,7 @@ export function createJoinController(host: JoinHost) {
           }
           acceptedEmailRequest("signup", email, stale);
         } catch (error) {
-          failure("signup", error, token !== host.token());
+          handleError("signup", error, token !== host.token(), email);
         }
       });
     },
@@ -171,11 +191,10 @@ export function createJoinController(host: JoinHost) {
             options: { emailRedirectTo: host.redirectTo() },
           });
           const stale = token !== host.token();
-          if (result?.error && !isExistenceSensitive(classifyAuthError(result.error)))
-            return failure("resend", result.error, stale);
+          if (result?.error) return handleError("resend", result.error, stale, email);
           acceptedEmailRequest("resend", email, stale);
         } catch (error) {
-          failure("resend", error, token !== host.token());
+          handleError("resend", error, token !== host.token(), email);
         }
       });
     },
@@ -188,11 +207,10 @@ export function createJoinController(host: JoinHost) {
             redirectTo: host.redirectTo(),
           });
           const stale = token !== host.token();
-          if (result?.error && !isExistenceSensitive(classifyAuthError(result.error)))
-            return failure("reset", result.error, stale);
+          if (result?.error) return handleError("reset", result.error, stale, email);
           acceptedEmailRequest("reset", email, stale);
         } catch (error) {
-          failure("reset", error, token !== host.token());
+          handleError("reset", error, token !== host.token(), email);
         }
       });
     },
@@ -201,10 +219,10 @@ export function createJoinController(host: JoinHost) {
       await guard(async () => {
         try {
           const result = await host.client.updateUser({ password });
-          if (result?.error) return failure("update-password", result.error, false);
+          if (result?.error) return handleError("update-password", result.error, false);
           host.setFeedback(describeAuthSuccess("update-password"));
         } catch (error) {
-          failure("update-password", error, false);
+          handleError("update-password", error, false);
         }
       });
     },
