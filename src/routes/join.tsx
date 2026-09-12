@@ -1,15 +1,27 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect, useRef, type FormEvent } from "react";
+import { useState, useEffect, useRef, useCallback, type FormEvent } from "react";
 import { AcademyFrame } from "@/components/AcademyFrame";
 import { supabase } from "@/integrations/supabase/client";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
 import { onboardingStep, type OnboardingProfile } from "@/lib/academy-onboarding";
 import { academyJoinDestination, academyJoinHref, academyJoinSearch } from "@/lib/academy-navigation";
+import { createJoinController } from "@/lib/academy-join-controller";
+import {
+  COOLDOWN_STORAGE_KEY,
+  cooldownDeadline,
+  cooldownLabel,
+  cooldownRemaining,
+  describeAuthError,
+  readStoredDeadline,
+  type AuthFeedback,
+} from "@/lib/academy-auth-feedback";
+
 export const Route = createFileRoute("/join")({
   validateSearch: academyJoinSearch,
   head: () => ({ meta: [{ title: "Access your training | AI AutoPilot" }] }),
   component: Join,
 });
+
 function Join() {
   const search = Route.useSearch();
   const session = useAcademySession();
@@ -21,11 +33,68 @@ function Join() {
   const [smsConsent, setSmsConsent] = useState(false);
 
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState("");
+  const [feedback, setFeedback] = useState<AuthFeedback | null>(null);
+  /** Set only after a signup that produced no session: show check-inbox, not another signup. */
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState<string | null>(null);
+  /** Durable: a confirmation email is needed. Survives feedback/email changes. */
+  const [confirmationHelp, setConfirmationHelp] = useState(false);
   const [recovery, setRecovery] = useState(false);
   const [verifyingEmail, setVerifyingEmail] = useState(false);
   const verificationStarted = useRef(false);
   const verificationBlocked = useRef(false);
+
+  // ---- shared in-flight + staleness guards ----
+  const inFlight = useRef(false);
+  const requestToken = useRef(0);
+
+  // ---- cooldowns (deadline timestamps; never auto-retry) ----
+  const [emailCooldownUntil, setEmailCooldownUntil] = useState<number | null>(null);
+  const [attemptCooldownUntil, setAttemptCooldownUntil] = useState<number | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    try {
+      const stored = readStoredDeadline(
+        window.sessionStorage.getItem(COOLDOWN_STORAGE_KEY),
+        Date.now(),
+      );
+      if (stored) setEmailCooldownUntil(stored);
+    } catch {
+      /* storage unavailable — cooldown simply is not restored */
+    }
+  }, []);
+
+  const emailCooldownLeft = cooldownRemaining(emailCooldownUntil, now);
+  const attemptCooldownLeft = cooldownRemaining(attemptCooldownUntil, now);
+  const anyCooldown = emailCooldownLeft > 0 || attemptCooldownLeft > 0;
+
+  useEffect(() => {
+    if (!anyCooldown) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [anyCooldown]);
+
+  const applyCooldown = useCallback((seconds: number, alsoAttempts: boolean) => {
+    const deadline = cooldownDeadline(Date.now(), seconds);
+    // Never shorten a longer existing deadline.
+    setEmailCooldownUntil((prev) => Math.max(prev ?? 0, deadline));
+    setNow(Date.now());
+    if (alsoAttempts) setAttemptCooldownUntil((prev) => Math.max(prev ?? 0, deadline));
+    try {
+      const stored = readStoredDeadline(
+        window.sessionStorage.getItem(COOLDOWN_STORAGE_KEY),
+        Date.now(),
+      );
+      window.sessionStorage.setItem(
+        COOLDOWN_STORAGE_KEY,
+        String(Math.max(stored ?? 0, deadline)),
+      );
+    } catch {
+      /* storage unavailable — countdown still runs for this view */
+    }
+  }, []);
+
+
   useEffect(() => {
     const fragment = new URLSearchParams(window.location.hash.slice(1));
     const tokenHash = fragment.get("token_hash");
@@ -38,23 +107,50 @@ function Join() {
     void (async () => {
       try {
         const response = await fetch("/api/academy/email-confirm", {
-          method: "POST", headers: { "Content-Type": "application/json" },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ tokenHash }),
         });
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || "Email verification could not be completed.");
-        const signedIn = await supabase.auth.setSession({ access_token: result.access_token, refresh_token: result.refresh_token });
-        if (signedIn.error) throw new Error("Your verified session could not open. Please sign in again.");
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          // Never surface raw backend text or the token itself.
+          setConfirmationHelp(true);
+          setFeedback(
+            describeAuthError("confirm-link", {
+              code: typeof result?.code === "string" ? result.code : undefined,
+              status: response.status,
+            }),
+          );
+          return;
+        }
+        const signedIn = await supabase.auth.setSession({
+          access_token: result.access_token,
+          refresh_token: result.refresh_token,
+        });
+        if (signedIn.error) {
+          setConfirmationHelp(true);
+          setFeedback(describeAuthError("confirm-link", signedIn.error));
+          return;
+        }
         verificationBlocked.current = false;
+        setConfirmationHelp(false);
+        setAwaitingConfirmation(null);
         setOnboardingAttempt((attempt) => attempt + 1);
-      } catch (error) { setMessage((error as Error).message); }
-      finally { setVerifyingEmail(false); }
+      } catch (error) {
+        setConfirmationHelp(true);
+        setFeedback(describeAuthError("confirm-link", error as Record<string, unknown>));
+      } finally {
+        setVerifyingEmail(false);
+      }
     })();
   }, []);
+
   const [profile, setProfile] = useState<OnboardingProfile | null>(null);
   const [onboardingAttempt, setOnboardingAttempt] = useState(0);
   const step = onboardingStep({ ...session, recovery, profile });
+
   useEffect(() => setLogin(search.mode === "signin"), [search.mode]);
+
   useEffect(() => {
     if (new URLSearchParams(window.location.hash.slice(1)).get("type") === "recovery")
       setRecovery(true);
@@ -63,61 +159,116 @@ function Join() {
     });
     return () => data.subscription.unsubscribe();
   }, []);
+
   useEffect(() => {
-    if (session.loading || !session.email || recovery || verificationBlocked.current || verifyingEmail) return;
+    if (
+      session.loading ||
+      !session.email ||
+      recovery ||
+      verificationBlocked.current ||
+      verifyingEmail
+    )
+      return;
     const profileEmail = session.email;
     let active = true;
     setProfile(null);
     setConsent(false);
     setSmsConsent(false);
     setPhone("");
-    setMessage("");
+    setFeedback(null);
     academyApi<{ registered: boolean }>("onboarding")
       .then((result) => {
         if (active) setProfile({ email: profileEmail, registered: result.registered });
       })
-      .catch((error) => {
-        if (active) setMessage((error as Error).message);
+      .catch(() => {
+        if (active) setFeedback(describeAuthError("signin", null));
       });
     return () => {
       active = false;
     };
   }, [session.loading, session.email, recovery, onboardingAttempt, verifyingEmail]);
+
   useEffect(() => {
-    if (step === "ready" && !verificationBlocked.current && !verifyingEmail) window.location.assign(academyJoinDestination(search.next));
+    if (step === "ready" && !verificationBlocked.current && !verifyingEmail)
+      window.location.assign(academyJoinDestination(search.next));
   }, [step, search.next, verifyingEmail]);
-  async function submit(e: FormEvent) {
+
+  const redirectTo = () =>
+    `${window.location.origin}${academyJoinHref(search.next ?? "", true)}`;
+
+  const controller = useRef(
+    createJoinController({
+      client: {
+        signInWithPassword: (args) => supabase.auth.signInWithPassword(args),
+        signUp: (args) => supabase.auth.signUp(args),
+        resend: (args) => supabase.auth.resend(args),
+        resetPasswordForEmail: (email, options) =>
+          supabase.auth.resetPasswordForEmail(email, options),
+        updateUser: (args) => supabase.auth.updateUser(args),
+      },
+      redirectTo: () => redirectTo(),
+      token: () => requestToken.current,
+      setBusy,
+      setFeedback,
+      applyCooldown: (seconds, alsoAttempts) => applyCooldown(seconds, alsoAttempts),
+      setAwaitingConfirmation,
+      setConfirmationHelp,
+      onSession: () => {
+        verificationBlocked.current = false;
+        setOnboardingAttempt((attempt) => attempt + 1);
+      },
+    }),
+  ).current;
+
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    setBusy(true);
-    setMessage("");
-    try {
-      const result = login
-        ? await supabase.auth.signInWithPassword({ email, password })
-        : await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-              emailRedirectTo: `${window.location.origin}${academyJoinHref(search.next ?? "", true)}`,
-            },
-          });
-      if (result.error) throw result.error;
-      if (result.data.session) { verificationBlocked.current = false; setOnboardingAttempt((attempt) => attempt + 1); }
-      if (!result.data.session)
-        setMessage(
-          "Check your email to confirm your account. Then choose your reminders and enter your classroom.",
-        );
-      // The verified session runs the profile check above. Existing preferences
-      // are never rewritten by a sign-in or an email-confirmation redirect.
-    } catch {
-      setMessage("We could not complete sign-in. Check your details or try again shortly.");
-    } finally {
-      setBusy(false);
+    const submitted = email.trim();
+    if (!submitted || busy) return;
+    if (login) {
+      if (attemptCooldownLeft > 0) return;
+      await controller.signIn(submitted, password);
+      return;
     }
+    if (emailCooldownLeft > 0 || attemptCooldownLeft > 0) return;
+    await controller.signUp(submitted, password);
   }
+
+  /** Explicit, user-initiated only. Never called on mount, never repeats signUp. */
+  async function resendConfirmation() {
+    const target = (awaitingConfirmation ?? email).trim();
+    if (!target) {
+      setFeedback({
+        tone: "error",
+        message: "Enter your email address first, then request the confirmation email.",
+        offer: null,
+        cooldownSeconds: null,
+      });
+      return;
+    }
+    if (busy || emailCooldownLeft > 0 || attemptCooldownLeft > 0) return;
+    await controller.resend(target);
+  }
+
+  async function sendReset() {
+    const target = email.trim();
+    if (!target) {
+      setFeedback({
+        tone: "error",
+        message: "Enter your email address first, then request the reset email.",
+        offer: null,
+        cooldownSeconds: null,
+      });
+      return;
+    }
+    if (busy || emailCooldownLeft > 0 || attemptCooldownLeft > 0) return;
+    await controller.reset(target);
+  }
+
   async function register() {
-    if (step !== "preferences") return;
+    if (step !== "preferences" || inFlight.current) return;
+    inFlight.current = true;
     setBusy(true);
-    setMessage("");
+    setFeedback(null);
     try {
       const result = await academyApi<{ nextPath: string }>("register", {
         marketingConsent: consent,
@@ -128,15 +279,46 @@ function Join() {
           ? Object.fromEntries(new URLSearchParams(window.location.search).entries())
           : {},
       });
-
       window.location.assign(academyJoinDestination(search.next, result.nextPath));
-    } catch (e) {
-      setMessage((e as Error).message);
+    } catch {
+      setFeedback(describeAuthError("signin", null));
     } finally {
+      inFlight.current = false;
       setBusy(false);
     }
   }
-  if (verifyingEmail) return <AcademyFrame><section className="academy-auth academy-card"><p role="status">Verifying your email and opening your account…</p></section></AcademyFrame>;
+
+  const statusText = feedback?.message || session.error || "";
+  const cooldownText =
+    emailCooldownLeft > 0 ? cooldownLabel(emailCooldownLeft) : "";
+  const emailSendBlocked = busy || emailCooldownLeft > 0 || attemptCooldownLeft > 0;
+
+  const alerts = (
+    <>
+      {cooldownText ? (
+        <p role="status" aria-live="polite" className="academy-status">
+          {cooldownText}
+        </p>
+      ) : null}
+      <p
+        role={feedback?.tone === "error" ? "alert" : "status"}
+        aria-live="polite"
+        className="academy-status"
+      >
+        {statusText}
+      </p>
+    </>
+  );
+
+  if (verifyingEmail)
+    return (
+      <AcademyFrame>
+        <section className="academy-auth academy-card">
+          <p role="status">Verifying your email and opening your account…</p>
+        </section>
+      </AcademyFrame>
+    );
+
   if (step === "recovery")
     return (
       <AcademyFrame>
@@ -145,12 +327,8 @@ function Join() {
           <form
             onSubmit={async (e) => {
               e.preventDefault();
-              setBusy(true);
-              const result = await supabase.auth.updateUser({ password });
-              setBusy(false);
-              if (result.error)
-                setMessage("The password could not be updated. Please request a new reset email.");
-              else window.location.assign(academyJoinHref(search.next ?? "/learn", true));
+              if (busy || attemptCooldownLeft > 0) return;
+              await controller.updatePassword(password);
             }}
           >
             <label>
@@ -164,16 +342,61 @@ function Join() {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </label>
-            <button className="academy-button" disabled={busy}>
-              Save password
+            <button className="academy-button" disabled={busy || attemptCooldownLeft > 0}>
+              {busy ? "Saving…" : "Save password"}
             </button>
           </form>
-          <p role="status" className="academy-status">
-            {message}
-          </p>
+          {feedback?.tone === "success" ? (
+            <button
+              type="button"
+              className="academy-button"
+              onClick={() => window.location.assign(academyJoinHref(search.next ?? "/learn", true))}
+            >
+              Continue to my classroom
+            </button>
+          ) : null}
+          {alerts}
         </section>
       </AcademyFrame>
     );
+
+  // Signup accepted, no session: check-inbox state (never another signup form).
+  if (awaitingConfirmation && !session.email)
+    return (
+      <AcademyFrame>
+        <section className="academy-auth academy-card">
+          <p className="academy-eyebrow">One more step</p>
+          <h1>Check your inbox</h1>
+          <p>
+            Open the confirmation email we requested for {awaitingConfirmation}, then return here to
+            enter your classroom. Check your spam folder if you do not see it.
+          </p>
+          <button
+            type="button"
+            className="academy-button"
+            onClick={resendConfirmation}
+            disabled={emailSendBlocked}
+          >
+            {busy ? "Working…" : "Resend confirmation email"}
+          </button>
+          <button
+            type="button"
+            className="academy-text-button"
+            onClick={() => {
+              setAwaitingConfirmation(null);
+              setLogin(true);
+              setPassword("");
+              setFeedback(null);
+            }}
+            disabled={busy}
+          >
+            Back to sign in
+          </button>
+          {alerts}
+        </section>
+      </AcademyFrame>
+    );
+
   return (
     <AcademyFrame>
       <section className="academy-auth academy-card">
@@ -198,7 +421,7 @@ function Join() {
         {session.email ? (
           <p>Signed in as {session.email}</p>
         ) : step === "signed-out" ? (
-          <form onSubmit={submit}>
+          <form onSubmit={onSubmit}>
             <label>
               Email
               <input
@@ -206,14 +429,21 @@ function Join() {
                 autoComplete="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  requestToken.current += 1;
+                  setEmail(e.target.value);
+                  setFeedback(null);
+                  // confirmationHelp is deliberately NOT cleared here: entering
+                  // an address must not remove the recovery control.
+                }}
               />
             </label>
             <label>
               Password
               <input
                 type="password"
-                minLength={12}
+                // Older valid passwords must remain submittable on sign-in.
+                {...(login ? {} : { minLength: 12 })}
                 autoComplete={login ? "current-password" : "new-password"}
                 required
                 value={password}
@@ -221,13 +451,28 @@ function Join() {
               />
             </label>
             {!login ? <p className="academy-muted">Use at least 12 characters.</p> : null}
-            <button className="academy-button" disabled={busy}>
+            <button
+              className="academy-button"
+              disabled={busy || (login ? attemptCooldownLeft > 0 : emailSendBlocked)}
+            >
               {busy ? "Working…" : login ? "Sign in" : "Create account"}
             </button>
           </form>
         ) : (
           <p role="status">Checking your sign-in…</p>
         )}
+
+        {!session.email && (confirmationHelp || feedback?.offer === "resend-confirmation") ? (
+          <button
+            type="button"
+            className="academy-button"
+            onClick={resendConfirmation}
+            disabled={busy || emailCooldownLeft > 0 || attemptCooldownLeft > 0}
+          >
+            Resend confirmation email
+          </button>
+        ) : null}
+
         {step === "preferences" ? (
           <>
             <p>
@@ -265,61 +510,54 @@ function Join() {
           </>
         ) : null}
 
-        {step === "preferences" ? (
-          <button type="button" className="academy-button" onClick={register} disabled={busy}>
-            {busy ? "Saving…" : "Enter my classroom"}
-          </button>
-        ) : step === "signed-out" ? (
-          <button
-            type="button"
-            className="academy-text-button"
-            onClick={() => setLogin(!login)}
-            disabled={busy}
-          >
-            {login ? "Create a free account" : "Already have an account? Sign in"}
-          </button>
-        ) : session.email && message ? (
-          <button
-            type="button"
-            className="academy-button"
-            onClick={() => { verificationBlocked.current = false; setOnboardingAttempt((attempt) => attempt + 1); }}
-          >
-            Try opening my classroom again
-          </button>
-        ) : null}
-        {login && !session.email ? (
-          <button
-            type="button"
-            className="academy-text-button"
-            onClick={async () => {
-              if (!email) {
-                setMessage("Enter your email address first.");
-                return;
-              }
-              setBusy(true);
-              try {
-                await supabase.auth.resetPasswordForEmail(email, {
-                  redirectTo: `${window.location.origin}${academyJoinHref(search.next ?? "/learn", true)}`,
-                });
-                setMessage("If an account matches, a password reset email will arrive shortly.");
-              } catch {
-                setMessage("Password reset is temporarily unavailable.");
-              } finally {
-                setBusy(false);
-              }
-            }}
-            disabled={busy}
-          >
-            Forgot your password?
-          </button>
-        ) : null}
+        <div className="academy-auth-actions">
+          {step === "preferences" ? (
+            <button type="button" className="academy-button" onClick={register} disabled={busy}>
+              {busy ? "Saving…" : "Enter my classroom"}
+            </button>
+          ) : step === "signed-out" ? (
+            <button
+              type="button"
+              className="academy-text-button"
+              onClick={() => {
+                setLogin(!login);
+                setPassword("");
+                setFeedback(null);
+              }}
+              disabled={busy}
+            >
+              {login ? "Create a free account" : "Already have an account? Sign in"}
+            </button>
+          ) : session.email && feedback ? (
+            <button
+              type="button"
+              className="academy-button"
+              onClick={() => {
+                verificationBlocked.current = false;
+                setOnboardingAttempt((attempt) => attempt + 1);
+              }}
+            >
+              Try opening my classroom again
+            </button>
+          ) : null}
+
+          {login && !session.email ? (
+            <button
+              type="button"
+              className="academy-text-button"
+              onClick={sendReset}
+              disabled={emailSendBlocked}
+            >
+              Forgot your password?
+            </button>
+          ) : null}
+        </div>
+
         <p className="academy-muted">
           Learning activity is saved to provide your course progress. Optional marketing is
           separate. <a href="/privacy">Privacy policy</a>
         </p>
-        <p role="status" className="academy-status">
-          {message || session.error}
-        </p>
+        {alerts}
       </section>
     </AcademyFrame>
   );
