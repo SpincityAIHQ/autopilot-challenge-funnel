@@ -12,7 +12,6 @@ import {
   cooldownLabel,
   cooldownRemaining,
   describeAuthError,
-  describeAuthSuccess,
   readStoredDeadline,
   type AuthFeedback,
 } from "@/lib/academy-auth-feedback";
@@ -511,46 +510,48 @@ function Join() {
           </>
         ) : null}
 
-        {step === "preferences" ? (
-          <button type="button" className="academy-button" onClick={register} disabled={busy}>
-            {busy ? "Saving…" : "Enter my classroom"}
-          </button>
-        ) : step === "signed-out" ? (
-          <button
-            type="button"
-            className="academy-text-button"
-            onClick={() => {
-              setLogin(!login);
-              setPassword("");
-              setFeedback(null);
-            }}
-            disabled={busy}
-          >
-            {login ? "Create a free account" : "Already have an account? Sign in"}
-          </button>
-        ) : session.email && feedback ? (
-          <button
-            type="button"
-            className="academy-button"
-            onClick={() => {
-              verificationBlocked.current = false;
-              setOnboardingAttempt((attempt) => attempt + 1);
-            }}
-          >
-            Try opening my classroom again
-          </button>
-        ) : null}
+        <div className="academy-auth-actions">
+          {step === "preferences" ? (
+            <button type="button" className="academy-button" onClick={register} disabled={busy}>
+              {busy ? "Saving…" : "Enter my classroom"}
+            </button>
+          ) : step === "signed-out" ? (
+            <button
+              type="button"
+              className="academy-text-button"
+              onClick={() => {
+                setLogin(!login);
+                setPassword("");
+                setFeedback(null);
+              }}
+              disabled={busy}
+            >
+              {login ? "Create a free account" : "Already have an account? Sign in"}
+            </button>
+          ) : session.email && feedback ? (
+            <button
+              type="button"
+              className="academy-button"
+              onClick={() => {
+                verificationBlocked.current = false;
+                setOnboardingAttempt((attempt) => attempt + 1);
+              }}
+            >
+              Try opening my classroom again
+            </button>
+          ) : null}
 
-        {login && !session.email ? (
-          <button
-            type="button"
-            className="academy-text-button"
-            onClick={sendReset}
-            disabled={emailSendBlocked}
-          >
-            Forgot your password?
-          </button>
-        ) : null}
+          {login && !session.email ? (
+            <button
+              type="button"
+              className="academy-text-button"
+              onClick={sendReset}
+              disabled={emailSendBlocked}
+            >
+              Forgot your password?
+            </button>
+          ) : null}
+        </div>
 
         <p className="academy-muted">
           Learning activity is saved to provide your course progress. Optional marketing is
