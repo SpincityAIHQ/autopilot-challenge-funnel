@@ -222,30 +222,8 @@ function Join() {
     [applyCooldown],
   );
 
-  async function submit(e: FormEvent) {
-    e.preventDefault();
-    const submitted = email.trim();
-    if (!submitted || busy || inFlight.current) return;
-    if (login) {
-      if (attemptCooldownLeft > 0) return;
-      await run("signin", () =>
-        supabase.auth.signInWithPassword({ email: submitted, password }),
-      );
-      return;
-    }
-    if (emailCooldownLeft > 0 || attemptCooldownLeft > 0) return;
-    await run(
-      "signup",
-      () =>
-        supabase.auth.signUp({
-          email: submitted,
-          password,
-          options: { emailRedirectTo: redirectTo() },
-        }),
-      // Success handling reads the latest result through a second pass below.
-      undefined,
-    ).then(() => undefined);
-  }
+
+
 
   /**
    * signUp needs its result, so it is run explicitly rather than through `run`'s
