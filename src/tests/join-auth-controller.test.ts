@@ -144,6 +144,78 @@ describe("anti-enumeration equivalence", () => {
   });
 });
 
+describe("thrown existence-sensitive failures match accepted outcomes", () => {
+  const codes = ["user_not_found", "user_already_exists", "email_exists", "email_not_confirmed"];
+  const actions = ["signup", "resend", "reset"] as const;
+
+  const runAction = (h: ReturnType<typeof harness>, action: (typeof actions)[number]) =>
+    action === "signup"
+      ? h.controller.signUp("a@b.com", "password1234")
+      : action === "resend"
+        ? h.controller.resend("a@b.com")
+        : h.controller.reset("a@b.com");
+
+  for (const action of actions) {
+    for (const code of codes) {
+      test(`${action}: thrown ${code} is indistinguishable from acceptance`, async () => {
+        const accepted = harness({ signUp: async () => ({ data: { session: null } }) });
+        await runAction(accepted, action);
+
+        const thrown = () => {
+          throw Object.assign(new Error("provider detail"), { code, status: 400 });
+        };
+        const h = harness({
+          signUp: thrown as never,
+          resend: thrown as never,
+          resetPasswordForEmail: thrown as never,
+        });
+        await runAction(h, action);
+
+        expect(h.state.feedback).toEqual(accepted.state.feedback);
+        expect(h.state.cooldowns).toEqual(accepted.state.cooldowns);
+        expect(h.state.awaiting).toEqual(accepted.state.awaiting);
+        expect(h.state.confirmationHelp).toBe(accepted.state.confirmationHelp);
+        // Confirmation status is never exposed through an email action.
+        expect(h.state.feedback?.message).not.toContain("Confirm your email");
+        expect(h.state.feedback?.message).not.toContain("provider detail");
+      });
+
+      test(`${action}: returned ${code} matches the thrown outcome`, async () => {
+        const error = { code, status: 400 };
+        const returned = harness({
+          signUp: async () => ({ error }),
+          resend: async () => ({ error }),
+          resetPasswordForEmail: async () => ({ error }),
+        });
+        await runAction(returned, action);
+        const thrown = () => {
+          throw Object.assign(new Error("x"), error);
+        };
+        const threw = harness({
+          signUp: thrown as never,
+          resend: thrown as never,
+          resetPasswordForEmail: thrown as never,
+        });
+        await runAction(threw, action);
+        expect(threw.state.feedback).toEqual(returned.state.feedback);
+        expect(threw.state.cooldowns).toEqual(returned.state.cooldowns);
+        expect(threw.state.awaiting).toEqual(returned.state.awaiting);
+      });
+    }
+  }
+
+  test("sign-in keeps explicit email_not_confirmed guidance when thrown", async () => {
+    const h = harness({
+      signInWithPassword: () => {
+        throw Object.assign(new Error("x"), { code: "email_not_confirmed", status: 400 });
+      },
+    });
+    await h.controller.signIn("a@b.com", "pw");
+    expect(h.state.feedback?.message).toContain("Confirm your email before signing in");
+    expect(h.state.feedback?.offer).toBe("resend-confirmation");
+  });
+});
+
 describe("cooldowns and stale requests", () => {
   test("changing the address mid-flight still applies the send cooldown", async () => {
     const gate = deferred<{ data: { session: null } }>();
@@ -154,6 +226,40 @@ describe("cooldowns and stale requests", () => {
     await pending;
     expect(h.state.cooldowns).toEqual([{ seconds: 60, alsoAttempts: false }]);
     expect(h.state.feedback).toBe(null); // stale UI feedback suppressed
+  });
+
+  test("email-send limits gate email sends only, not password sign-in", async () => {
+    const error = { code: "over_email_send_rate_limit", status: 429 };
+    const returned = harness({ resend: async () => ({ error }) });
+    await returned.controller.resend("a@b.com");
+    expect(returned.state.cooldowns).toEqual([{ seconds: 60, alsoAttempts: false }]);
+
+    const threw = harness({
+      resetPasswordForEmail: () => {
+        throw Object.assign(new Error("x"), error);
+      },
+    });
+    await threw.controller.reset("a@b.com");
+    expect(threw.state.cooldowns).toEqual([{ seconds: 60, alsoAttempts: false }]);
+  });
+
+  test("request-rate limits and bare 429s gate attempts as well", async () => {
+    for (const error of [
+      { code: "over_request_rate_limit", status: 429 },
+      { status: 429 },
+    ]) {
+      const h = harness({ signInWithPassword: async () => ({ error }) });
+      await h.controller.signIn("a@b.com", "pw");
+      expect(h.state.cooldowns).toEqual([{ seconds: 60, alsoAttempts: true }]);
+
+      const threw = harness({
+        signInWithPassword: () => {
+          throw Object.assign(new Error("x"), error);
+        },
+      });
+      await threw.controller.signIn("a@b.com", "pw");
+      expect(threw.state.cooldowns).toEqual([{ seconds: 60, alsoAttempts: true }]);
+    }
   });
 
   test("rate limits guard attempts for resend, signup and reset too", async () => {
