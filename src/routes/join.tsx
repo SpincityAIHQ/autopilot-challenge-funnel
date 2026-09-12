@@ -5,13 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
 import { onboardingStep, type OnboardingProfile } from "@/lib/academy-onboarding";
 import { academyJoinDestination, academyJoinHref, academyJoinSearch } from "@/lib/academy-navigation";
+import { createJoinController } from "@/lib/academy-join-controller";
 import {
   COOLDOWN_STORAGE_KEY,
   cooldownDeadline,
   cooldownLabel,
   cooldownRemaining,
   describeAuthError,
-  describeAuthSuccess,
   readStoredDeadline,
   type AuthFeedback,
 } from "@/lib/academy-auth-feedback";
@@ -36,6 +36,8 @@ function Join() {
   const [feedback, setFeedback] = useState<AuthFeedback | null>(null);
   /** Set only after a signup that produced no session: show check-inbox, not another signup. */
   const [awaitingConfirmation, setAwaitingConfirmation] = useState<string | null>(null);
+  /** Durable: a confirmation email is needed. Survives feedback/email changes. */
+  const [confirmationHelp, setConfirmationHelp] = useState(false);
   const [recovery, setRecovery] = useState(false);
   const [verifyingEmail, setVerifyingEmail] = useState(false);
   const verificationStarted = useRef(false);
@@ -74,15 +76,24 @@ function Join() {
 
   const applyCooldown = useCallback((seconds: number, alsoAttempts: boolean) => {
     const deadline = cooldownDeadline(Date.now(), seconds);
-    setEmailCooldownUntil(deadline);
+    // Never shorten a longer existing deadline.
+    setEmailCooldownUntil((prev) => Math.max(prev ?? 0, deadline));
     setNow(Date.now());
-    if (alsoAttempts) setAttemptCooldownUntil(deadline);
+    if (alsoAttempts) setAttemptCooldownUntil((prev) => Math.max(prev ?? 0, deadline));
     try {
-      window.sessionStorage.setItem(COOLDOWN_STORAGE_KEY, String(deadline));
+      const stored = readStoredDeadline(
+        window.sessionStorage.getItem(COOLDOWN_STORAGE_KEY),
+        Date.now(),
+      );
+      window.sessionStorage.setItem(
+        COOLDOWN_STORAGE_KEY,
+        String(Math.max(stored ?? 0, deadline)),
+      );
     } catch {
       /* storage unavailable — countdown still runs for this view */
     }
   }, []);
+
 
   useEffect(() => {
     const fragment = new URLSearchParams(window.location.hash.slice(1));
@@ -103,6 +114,7 @@ function Join() {
         const result = await response.json().catch(() => ({}));
         if (!response.ok) {
           // Never surface raw backend text or the token itself.
+          setConfirmationHelp(true);
           setFeedback(
             describeAuthError("confirm-link", {
               code: typeof result?.code === "string" ? result.code : undefined,
@@ -116,13 +128,16 @@ function Join() {
           refresh_token: result.refresh_token,
         });
         if (signedIn.error) {
+          setConfirmationHelp(true);
           setFeedback(describeAuthError("confirm-link", signedIn.error));
           return;
         }
         verificationBlocked.current = false;
+        setConfirmationHelp(false);
         setAwaitingConfirmation(null);
         setOnboardingAttempt((attempt) => attempt + 1);
       } catch (error) {
+        setConfirmationHelp(true);
         setFeedback(describeAuthError("confirm-link", error as Record<string, unknown>));
       } finally {
         setVerifyingEmail(false);
@@ -181,126 +196,57 @@ function Join() {
   const redirectTo = () =>
     `${window.location.origin}${academyJoinHref(search.next ?? "", true)}`;
 
-  /**
-   * Shared runner: synchronous in-flight guard, stale-result rejection,
-   * unified handling of BOTH returned `error` objects and thrown failures,
-   * and busy release in `finally`.
-   */
-  const run = useCallback(
-    async (
-      action: Parameters<typeof describeAuthError>[0],
-      fn: () => Promise<{ error?: unknown } | void>,
-      onSuccess?: () => void,
-    ) => {
-      if (inFlight.current) return;
-      inFlight.current = true;
-      const token = requestToken.current;
-      setBusy(true);
-      setFeedback(null);
-      try {
-        const result = (await fn()) as { error?: unknown } | void;
-        if (token !== requestToken.current) return; // address changed mid-flight
-        const returned = result && typeof result === "object" ? result.error : null;
-        if (returned) {
-          const mapped = describeAuthError(action, returned as Record<string, unknown>);
-          setFeedback(mapped);
-          if (mapped.cooldownSeconds)
-            applyCooldown(mapped.cooldownSeconds, action === "signin");
-          return;
-        }
-        onSuccess?.();
-      } catch (error) {
-        if (token !== requestToken.current) return;
-        const mapped = describeAuthError(action, error as Record<string, unknown>);
-        setFeedback(mapped);
-        if (mapped.cooldownSeconds) applyCooldown(mapped.cooldownSeconds, action === "signin");
-      } finally {
-        inFlight.current = false;
-        setBusy(false);
-      }
-    },
-    [applyCooldown],
-  );
-
-
-
-
-  /**
-   * signUp needs its result, so it is run explicitly rather than through `run`'s
-   * success callback. Kept as a distinct handler to avoid a signup loop.
-   */
-  async function submitSignup(submitted: string) {
-    if (inFlight.current) return;
-    inFlight.current = true;
-    const token = requestToken.current;
-    setBusy(true);
-    setFeedback(null);
-    try {
-      const result = await supabase.auth.signUp({
-        email: submitted,
-        password,
-        options: { emailRedirectTo: redirectTo() },
-      });
-      if (token !== requestToken.current) return;
-      if (result.error) {
-        const mapped = describeAuthError("signup", result.error);
-        setFeedback(mapped);
-        if (mapped.cooldownSeconds) applyCooldown(mapped.cooldownSeconds, false);
-        return;
-      }
-      if (result.data.session) {
+  const controller = useRef(
+    createJoinController({
+      client: {
+        signInWithPassword: (args) => supabase.auth.signInWithPassword(args),
+        signUp: (args) => supabase.auth.signUp(args),
+        resend: (args) => supabase.auth.resend(args),
+        resetPasswordForEmail: (email, options) =>
+          supabase.auth.resetPasswordForEmail(email, options),
+        updateUser: (args) => supabase.auth.updateUser(args),
+      },
+      redirectTo: () => redirectTo(),
+      token: () => requestToken.current,
+      setBusy,
+      setFeedback,
+      applyCooldown: (seconds, alsoAttempts) => applyCooldown(seconds, alsoAttempts),
+      setAwaitingConfirmation,
+      setConfirmationHelp,
+      onSession: () => {
         verificationBlocked.current = false;
-        setAwaitingConfirmation(null);
         setOnboardingAttempt((attempt) => attempt + 1);
-        return;
-      }
-      // No session: an email was requested. Show check-inbox, start the cooldown.
-      setAwaitingConfirmation(submitted);
-      setFeedback(describeAuthSuccess("signup"));
-      applyCooldown(60, false);
-    } catch (error) {
-      if (token !== requestToken.current) return;
-      const mapped = describeAuthError("signup", error as Record<string, unknown>);
-      setFeedback(mapped);
-      if (mapped.cooldownSeconds) applyCooldown(mapped.cooldownSeconds, false);
-    } finally {
-      inFlight.current = false;
-      setBusy(false);
-    }
-  }
+      },
+    }),
+  ).current;
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     const submitted = email.trim();
-    if (!submitted || busy || inFlight.current) return;
+    if (!submitted || busy) return;
     if (login) {
       if (attemptCooldownLeft > 0) return;
-      await run("signin", () =>
-        supabase.auth.signInWithPassword({ email: submitted, password }),
-      );
+      await controller.signIn(submitted, password);
       return;
     }
     if (emailCooldownLeft > 0 || attemptCooldownLeft > 0) return;
-    await submitSignup(submitted);
+    await controller.signUp(submitted, password);
   }
 
   /** Explicit, user-initiated only. Never called on mount, never repeats signUp. */
   async function resendConfirmation() {
     const target = (awaitingConfirmation ?? email).trim();
-    if (!target || emailCooldownLeft > 0 || attemptCooldownLeft > 0) return;
-    await run(
-      "resend",
-      () =>
-        supabase.auth.resend({
-          type: "signup",
-          email: target,
-          options: { emailRedirectTo: redirectTo() },
-        }),
-      () => {
-        setFeedback(describeAuthSuccess("resend"));
-        applyCooldown(60, false);
-      },
-    );
+    if (!target) {
+      setFeedback({
+        tone: "error",
+        message: "Enter your email address first, then request the confirmation email.",
+        offer: null,
+        cooldownSeconds: null,
+      });
+      return;
+    }
+    if (busy || emailCooldownLeft > 0 || attemptCooldownLeft > 0) return;
+    await controller.resend(target);
   }
 
   async function sendReset() {
@@ -308,21 +254,14 @@ function Join() {
     if (!target) {
       setFeedback({
         tone: "error",
-        message: "Enter your email address first.",
+        message: "Enter your email address first, then request the reset email.",
         offer: null,
         cooldownSeconds: null,
       });
       return;
     }
-    if (emailCooldownLeft > 0 || attemptCooldownLeft > 0) return;
-    await run(
-      "reset",
-      () => supabase.auth.resetPasswordForEmail(target, { redirectTo: redirectTo() }),
-      () => {
-        setFeedback(describeAuthSuccess("reset"));
-        applyCooldown(60, false);
-      },
-    );
+    if (busy || emailCooldownLeft > 0 || attemptCooldownLeft > 0) return;
+    await controller.reset(target);
   }
 
   async function register() {
@@ -388,12 +327,8 @@ function Join() {
           <form
             onSubmit={async (e) => {
               e.preventDefault();
-              await run(
-                "update-password",
-                () => supabase.auth.updateUser({ password }),
-                () => setFeedback(describeAuthSuccess("update-password")),
-              );
-
+              if (busy || attemptCooldownLeft > 0) return;
+              await controller.updatePassword(password);
             }}
           >
             <label>
@@ -407,7 +342,7 @@ function Join() {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </label>
-            <button className="academy-button" disabled={busy}>
+            <button className="academy-button" disabled={busy || attemptCooldownLeft > 0}>
               {busy ? "Saving…" : "Save password"}
             </button>
           </form>
@@ -498,6 +433,8 @@ function Join() {
                   requestToken.current += 1;
                   setEmail(e.target.value);
                   setFeedback(null);
+                  // confirmationHelp is deliberately NOT cleared here: entering
+                  // an address must not remove the recovery control.
                 }}
               />
             </label>
@@ -525,12 +462,12 @@ function Join() {
           <p role="status">Checking your sign-in…</p>
         )}
 
-        {!session.email && feedback?.offer === "resend-confirmation" ? (
+        {!session.email && (confirmationHelp || feedback?.offer === "resend-confirmation") ? (
           <button
             type="button"
             className="academy-button"
             onClick={resendConfirmation}
-            disabled={emailSendBlocked}
+            disabled={busy || emailCooldownLeft > 0 || attemptCooldownLeft > 0}
           >
             Resend confirmation email
           </button>
@@ -573,46 +510,48 @@ function Join() {
           </>
         ) : null}
 
-        {step === "preferences" ? (
-          <button type="button" className="academy-button" onClick={register} disabled={busy}>
-            {busy ? "Saving…" : "Enter my classroom"}
-          </button>
-        ) : step === "signed-out" ? (
-          <button
-            type="button"
-            className="academy-text-button"
-            onClick={() => {
-              setLogin(!login);
-              setPassword("");
-              setFeedback(null);
-            }}
-            disabled={busy}
-          >
-            {login ? "Create a free account" : "Already have an account? Sign in"}
-          </button>
-        ) : session.email && feedback ? (
-          <button
-            type="button"
-            className="academy-button"
-            onClick={() => {
-              verificationBlocked.current = false;
-              setOnboardingAttempt((attempt) => attempt + 1);
-            }}
-          >
-            Try opening my classroom again
-          </button>
-        ) : null}
+        <div className="academy-auth-actions">
+          {step === "preferences" ? (
+            <button type="button" className="academy-button" onClick={register} disabled={busy}>
+              {busy ? "Saving…" : "Enter my classroom"}
+            </button>
+          ) : step === "signed-out" ? (
+            <button
+              type="button"
+              className="academy-text-button"
+              onClick={() => {
+                setLogin(!login);
+                setPassword("");
+                setFeedback(null);
+              }}
+              disabled={busy}
+            >
+              {login ? "Create a free account" : "Already have an account? Sign in"}
+            </button>
+          ) : session.email && feedback ? (
+            <button
+              type="button"
+              className="academy-button"
+              onClick={() => {
+                verificationBlocked.current = false;
+                setOnboardingAttempt((attempt) => attempt + 1);
+              }}
+            >
+              Try opening my classroom again
+            </button>
+          ) : null}
 
-        {login && !session.email ? (
-          <button
-            type="button"
-            className="academy-text-button"
-            onClick={sendReset}
-            disabled={emailSendBlocked}
-          >
-            Forgot your password?
-          </button>
-        ) : null}
+          {login && !session.email ? (
+            <button
+              type="button"
+              className="academy-text-button"
+              onClick={sendReset}
+              disabled={emailSendBlocked}
+            >
+              Forgot your password?
+            </button>
+          ) : null}
+        </div>
 
         <p className="academy-muted">
           Learning activity is saved to provide your course progress. Optional marketing is

@@ -62,8 +62,14 @@ describe("error mapping is allowlisted and safe", () => {
     ];
     for (const err of cases) {
       const f = describeAuthError("signin", err as never);
+      // Outcome-uncertain wording: never claims nothing was changed.
       expect(f.message).toBe(
-        "Something went wrong on our side. Nothing was changed — please try again in a few moments.",
+        "We could not confirm the result of that request. It may or may not have gone through — please wait a few moments and check before trying again.",
+      );
+      expect(f.message).not.toContain("Nothing was changed");
+      // Email requests advise checking the inbox before retrying.
+      expect(describeAuthError("reset", err as never).message).toContain(
+        "check your inbox and spam folder before trying again",
       );
       expect(f.cooldownSeconds).toBeNull();
     }
@@ -91,6 +97,17 @@ describe("error mapping is allowlisted and safe", () => {
     const unknownLink = describeAuthError("confirm-link", { status: 400 });
     expect(unknownLink.message).toContain("Request a new confirmation email");
     expect(RAW_LEAK.test(unknownLink.message)).toBe(false);
+  });
+});
+
+describe("cooldown note wording", () => {
+  test("never suggests bypassing provider limits with another address", () => {
+    const f = describeAuthError("resend", { code: "over_email_send_rate_limit", status: 429 });
+    expect(f.message).not.toContain("another email");
+    expect(f.message).toContain("retry this request after the countdown");
+    expect(f.message).toContain("server limit may last longer");
+    const attempts = describeAuthError("signin", { code: "over_request_rate_limit", status: 429 });
+    expect(attempts.message).not.toContain("from this device");
   });
 });
 
