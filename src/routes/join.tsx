@@ -393,9 +393,7 @@ function Join() {
                 () => supabase.auth.updateUser({ password }),
                 () => setFeedback(describeAuthSuccess("update-password")),
               );
-              if (!inFlight.current) {
-                // navigation happens only when no error is showing
-              }
+
             }}
           >
             <label>
