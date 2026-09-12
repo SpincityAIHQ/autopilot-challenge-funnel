@@ -50,7 +50,8 @@ describe("/join auth flow invariants", () => {
 
   test("every auth call is mapped through the allowlisted helper", () => {
     expect(source).toContain("describeAuthError");
-    expect(source).toContain("describeAuthSuccess");
+    expect(controllerSource).toContain("describeAuthSuccess");
+    expect(controllerSource).not.toContain("error.message");
     // No raw provider text ever reaches the UI.
     expect(source).not.toContain("error.message");
     expect(source).not.toContain("(error as Error).message");
