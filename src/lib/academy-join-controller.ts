@@ -46,7 +46,7 @@ export interface JoinAuthClient {
     options?: { emailRedirectTo?: string };
   }): Promise<JoinAuthResult>;
   resetPasswordForEmail(email: string, options?: { redirectTo?: string }): Promise<JoinAuthResult>;
-  updateUser(args: { password: string }): Promise<JoinAuthResult>;
+  updateUser(args: { password: string }): Promise<{ error?: unknown }>;
 }
 
 export interface JoinHost {
