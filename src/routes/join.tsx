@@ -74,15 +74,24 @@ function Join() {
 
   const applyCooldown = useCallback((seconds: number, alsoAttempts: boolean) => {
     const deadline = cooldownDeadline(Date.now(), seconds);
-    setEmailCooldownUntil(deadline);
+    // Never shorten a longer existing deadline.
+    setEmailCooldownUntil((prev) => Math.max(prev ?? 0, deadline));
     setNow(Date.now());
-    if (alsoAttempts) setAttemptCooldownUntil(deadline);
+    if (alsoAttempts) setAttemptCooldownUntil((prev) => Math.max(prev ?? 0, deadline));
     try {
-      window.sessionStorage.setItem(COOLDOWN_STORAGE_KEY, String(deadline));
+      const stored = readStoredDeadline(
+        window.sessionStorage.getItem(COOLDOWN_STORAGE_KEY),
+        Date.now(),
+      );
+      window.sessionStorage.setItem(
+        COOLDOWN_STORAGE_KEY,
+        String(Math.max(stored ?? 0, deadline)),
+      );
     } catch {
       /* storage unavailable — countdown still runs for this view */
     }
   }, []);
+
 
   useEffect(() => {
     const fragment = new URLSearchParams(window.location.hash.slice(1));
