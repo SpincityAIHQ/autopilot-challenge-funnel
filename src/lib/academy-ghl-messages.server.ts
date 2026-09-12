@@ -30,6 +30,7 @@ const object = (value: unknown): value is Record<string, unknown> => Boolean(val
 const supportedEvents = new Set([
   "webinar_registered", "webinar_registered_sms", "customer_returned", "customer_preferences_updated",
   "purchase_updated", "purchase_access_code", "access_activated", "access_activated_sms", "purchase_access_sms",
+  "purchase_confirmed", "purchase_confirmed_sms",
   "webinar_not_started", "learning_dropoff", "learning_practice", "learning_feedback", "learning_approved", "learning_stalled",
 ]);
 
@@ -129,7 +130,7 @@ export async function dispatchAcademyGhl(payload: Payload, options: Options = {}
     ({ transport, evidence, recordedAt: new Date().toISOString(), channel, ...extra });
   const suppress = (reason: string, extra: Partial<GhlDeliveryReceipt> = {}) =>
     ({ status: "cancelled" as const, receipt: receipt("suppressed", { reason, ...extra }) });
-  const purchase = ["purchase_access_code", "access_activated", "access_activated_sms", "purchase_access_sms"].includes(name);
+  const purchase = ["purchase_access_code", "access_activated", "access_activated_sms", "purchase_access_sms", "purchase_confirmed", "purchase_confirmed_sms"].includes(name);
   if (!supportedEvents.has(name) || !validId(payload.event_id)) return suppress("unsupported_event");
   if (purchase && payload.purchase_verified !== true) return suppress("purchase_not_verified");
   if ((channel === "sms" && (payload.send_sms !== true || payload.send_email === true || payload.sms_consent !== true || !validPhone(payload.phone))) ||
