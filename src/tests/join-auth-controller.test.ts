@@ -284,7 +284,7 @@ describe("cooldowns and stale requests", () => {
       }),
     });
     await h.controller.resend("a@b.com");
-    expect(h.state.cooldowns).toEqual([{ seconds: 120, alsoAttempts: true }]);
+    expect(h.state.cooldowns).toEqual([{ seconds: 120, alsoAttempts: false }]);
   });
 });
 
