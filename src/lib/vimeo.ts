@@ -141,7 +141,8 @@ export function createPlayerHealth() {
     },
     /** The bounded handshake gave up. Only meaningful while nothing answered. */
     timedOut(): PlayerStatus {
-      if (!alive) status = "unresponsive";
+      // A reported error is the more specific truth; keep it.
+      if (!alive && status !== "error") status = "unresponsive";
       return status;
     },
     /** True once a non-error message proved the embed is alive. */
