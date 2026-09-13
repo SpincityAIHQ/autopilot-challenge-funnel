@@ -5,7 +5,9 @@
  * The paid entitlement lookup and the database are both faked here; no real
  * account, request or purchase is involved.
  */
-import { describe, it, expect, beforeAll, afterAll, mock } from "bun:test";
+import { describe, it, expect, beforeAll, afterAll } from "bun:test";
+// bun:test's module mocker is untyped in this project's type setup.
+const { mock } = require("bun:test") as { mock: { module: (p: string, f: () => unknown) => void } };
 
 const USER = {
   id: "00000000-0000-4000-8000-000000000001",
@@ -86,7 +88,6 @@ describe("Free training survives a paid-service failure", () => {
         body: JSON.stringify({ marketingConsent: false, timezone: "America/New_York" }),
       }),
       "register",
-      { marketingConsent: false, timezone: "America/New_York" },
     )) as { ok: boolean; nextPath: string };
     expect(result.ok).toBe(true);
     expect(result.nextPath).toBe("/class");
