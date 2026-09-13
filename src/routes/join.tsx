@@ -301,8 +301,16 @@ function Join() {
     emailCooldownLeft > 0 ? cooldownLabel(emailCooldownLeft) : "";
   const emailSendBlocked = busy || emailCooldownLeft > 0 || attemptCooldownLeft > 0;
 
+  const alertRef = useRef<HTMLDivElement | null>(null);
+  // On a phone the card is taller than the screen, so a message rendered below
+  // the fold reads as "nothing happened". Bring it into view when it changes.
+  useEffect(() => {
+    if (!statusText && !cooldownText) return;
+    alertRef.current?.scrollIntoView({ block: "center", behavior: "auto" });
+  }, [statusText, cooldownText]);
+
   const alerts = (
-    <>
+    <div ref={alertRef} className="academy-auth-alerts">
       {cooldownText ? (
         <p role="status" aria-live="polite" className="academy-status">
           {cooldownText}
@@ -315,7 +323,7 @@ function Join() {
       >
         {statusText}
       </p>
-    </>
+    </div>
   );
 
   if (verifyingEmail)
