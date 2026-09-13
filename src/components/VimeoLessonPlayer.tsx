@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { mergeIntervals, type LessonMedia } from "@/lib/academy";
 import { academyApi } from "@/lib/academy-client";
-import { VIMEO_PLAYER_ORIGIN, WatchTracker, parseVimeoMessage } from "@/lib/vimeo";
+import { VIMEO_PLAYER_ORIGIN, WatchTracker, createPlayerHealth, parseVimeoMessage } from "@/lib/vimeo";
 import { VIMEO_PLAYER_SANDBOX } from "@/lib/video-embed";
+import { PLAYER_ERROR_NOTE, PLAYER_SILENT_NOTE } from "@/lib/vimeo";
 /**
  * Vimeo slot with viewing telemetry. The player reports time through the
  * postMessage API; spans of continuous playback become watched intervals that
@@ -12,6 +13,11 @@ import { VIMEO_PLAYER_SANDBOX } from "@/lib/video-embed";
  * because a single `ready` message can arrive before this window is listening;
  * without a retry the player would stay silent for the whole lesson.
  */
+function createNote(status: string): { tone: "warn"; text: string } | null {
+  if (status === "live" || status === "waiting") return null;
+  return { tone: "warn", text: status === "error" ? PLAYER_ERROR_NOTE : PLAYER_SILENT_NOTE };
+}
+
 export function VimeoLessonPlayer({
   lessonId,
   media,
@@ -35,7 +41,7 @@ export function VimeoLessonPlayer({
   const lastSave = useRef(0);
   const busy = useRef(false);
   const ready = useRef(false);
-  const talking = useRef(false);
+  const health = useRef(createPlayerHealth());
   const [note, setNote] = useState<{ tone: "ok" | "warn"; text: string } | null>(null);
   const send = (method: string, value?: unknown) => {
     frame.current?.contentWindow?.postMessage(
@@ -82,21 +88,26 @@ export function VimeoLessonPlayer({
         return;
       const msg = parseVimeoMessage(event.data);
       if (!msg) return;
-      talking.current = true;
+      const status = health.current.observe(msg);
+      // A live player clears a stale "not responding" or error note; an error
+      // event never counts as the embed being alive.
+      setNote((prev) =>
+        status === "live"
+          ? prev?.tone === "warn"
+            ? null
+            : prev
+          : { tone: "warn", text: health.current.note()! },
+      );
+      if (status === "error") tracker.current.close();
       if ("method" in msg) {
         if (msg.method === "getDuration" && typeof msg.value === "number" && msg.value > 0)
           duration.current = msg.value;
         return;
       }
       switch (msg.event) {
-        // The player reports its own failures (blocked embed, privacy, network).
-        // Say so plainly; playback state is never assumed from silence.
+        // The player reports its own failures (blocked embed, privacy, network);
+        // the note is already set above. Playback is never assumed from silence.
         case "error":
-          tracker.current.close();
-          setNote({
-            tone: "warn",
-            text: "The recording could not start in this browser. Refresh the page, and if it stays blocked try another browser or connection, or tell the team so we can check the recording.",
-          });
           break;
         case "ready":
           ready.current = true;
@@ -146,7 +157,7 @@ export function VimeoLessonPlayer({
     let tries = 0;
     const handshake = window.setInterval(() => {
       tries += 1;
-      if (talking.current) {
+      if (health.current.alive) {
         window.clearInterval(handshake);
         return;
       }
@@ -154,10 +165,8 @@ export function VimeoLessonPlayer({
         window.clearInterval(handshake);
         // The player never answered: blocked embed, extension or connection.
         // Say what to try; never imply the recording played.
-        setNote({
-          tone: "warn",
-          text: "The player has not responded yet. Refresh the page, and if it stays blank try another browser or turn off a blocker or private-window setting for this site.",
-        });
+        const note = createNote(health.current.timedOut());
+        if (note) setNote(note);
         return;
       }
       subscribe();
