@@ -194,6 +194,10 @@ function Join() {
       window.location.assign(academyJoinDestination(search.next));
   }, [step, search.next, verifyingEmail]);
 
+  // Read inside controller callbacks without re-creating the controller.
+  const sessionRef = useRef<string | null>(null);
+  sessionRef.current = session.email;
+
   const redirectTo = () =>
     `${window.location.origin}${academyJoinHref(search.next ?? "", true)}`;
 
@@ -214,6 +218,9 @@ function Join() {
       applyCooldown: (seconds, alsoAttempts) => applyCooldown(seconds, alsoAttempts),
       setAwaitingConfirmation,
       setConfirmationHelp,
+      // Never overwrite newer feedback, and never speak over a live session.
+      setStaleFeedback: (stale) =>
+        setFeedback((prev) => (prev ? prev : sessionRef.current ? prev : stale)),
       onSession: () => {
         verificationBlocked.current = false;
         setOnboardingAttempt((attempt) => attempt + 1);
@@ -443,6 +450,14 @@ function Join() {
               <input
                 type="email"
                 autoComplete="email"
+                onInvalid={(e) => {
+                  // Belt and braces: if native validation fires anywhere, the
+                  // reason becomes visible page text instead of a lost bubble.
+                  e.preventDefault();
+                  setFeedback(
+                    validateJoinForm(email.trim(), password, login ? "signin" : "signup"),
+                  );
+                }}
                 required
                 value={email}
                 onChange={(e) => {
@@ -462,6 +477,12 @@ function Join() {
                 {...(login ? {} : { minLength: 12 })}
                 autoComplete={login ? "current-password" : "new-password"}
                 aria-describedby={login ? undefined : "join-password-rule"}
+                onInvalid={(e) => {
+                  e.preventDefault();
+                  setFeedback(
+                    validateJoinForm(email.trim(), password, login ? "signin" : "signup"),
+                  );
+                }}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
