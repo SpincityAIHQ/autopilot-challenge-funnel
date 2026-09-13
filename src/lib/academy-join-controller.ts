@@ -75,6 +75,19 @@ export interface JoinHost {
 export const DEFAULT_REQUEST_TIMEOUT_MS = 25000;
 
 /**
+ * An email send timed out and has still not resolved. Pressing again could
+ * send a second message or burn the provider allowance, so we say plainly what
+ * is unknown instead of silently doing nothing or locking on "Working…".
+ */
+export const PENDING_EMAIL_SEND: AuthFeedback = {
+  tone: "info",
+  message:
+    "Your last email request has not come back yet, so we cannot tell whether it was sent. Check your inbox and spam folder first. If nothing arrives, reload this page before requesting another.",
+  offer: null,
+  cooldownSeconds: null,
+};
+
+/**
  * Neutral wording for an outcome that belongs to an address the user has since
  * changed. It reveals nothing about any account and promises no delivery.
  */
@@ -89,25 +102,42 @@ export const STALE_COMPLETION: AuthFeedback = {
 /** Shared synchronous in-flight guard, one per controller instance. */
 export function createJoinController(host: JoinHost, timeoutMs = DEFAULT_REQUEST_TIMEOUT_MS) {
   let inFlight = false;
+  /** An email send that timed out and has still not resolved either way. */
+  let pendingEmailSend = false;
 
   /**
    * Bounded wait. A timeout is deliberately mapped to the safe temporary
    * outcome: the request may still have been accepted upstream, so the copy
    * never claims nothing happened.
    */
-  function bounded<T>(work: Promise<T>): Promise<T> {
+  function bounded<T>(work: Promise<T>, onLate?: (settled: boolean) => void): Promise<T> {
     if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) return work;
     return new Promise<T>((resolve, reject) => {
-      const timer = setTimeout(
-        () => reject({ name: "AuthRetryableFetchError", status: 504 }),
-        timeoutMs,
-      );
+      let timedOut = false;
+      const timer = setTimeout(() => {
+        timedOut = true;
+        onLate?.(false);
+        reject({ name: "AuthRetryableFetchError", status: 504 });
+      }, timeoutMs);
+      /**
+       * A late answer is NOT discarded outright. A rate limit in it — returned
+       * or thrown — is an observed fact about the provider's allowance, so the
+       * cooldown is still extended. Nothing else is touched: no feedback, no
+       * session, no confirmation state, and never a retry.
+       */
+      const late = (error: unknown) => {
+        const limit = cooldownFor(error);
+        if (limit) host.applyCooldown(limit.seconds, limit.alsoAttempts);
+        onLate?.(true);
+      };
       work.then(
         (value) => {
+          if (timedOut) return late((value as { error?: unknown } | null)?.error);
           clearTimeout(timer);
           resolve(value);
         },
         (error) => {
+          if (timedOut) return late(error);
           clearTimeout(timer);
           reject(error);
         },
@@ -125,6 +155,23 @@ export function createJoinController(host: JoinHost, timeoutMs = DEFAULT_REQUEST
       // available. Request-rate limits (and a bare 429) gate attempts as well.
       alsoAttempts: known === "over_request_rate_limit",
     };
+  }
+
+  /**
+   * Wrap an email send so a timeout marks it pending and a late answer clears
+   * it. A second manual send is refused while one is unresolved.
+   */
+  function emailSend<T>(work: Promise<T>): Promise<T> {
+    return bounded(work, (settled) => {
+      pendingEmailSend = !settled;
+    });
+  }
+
+  /** True (and explains itself) when an earlier email send is still unresolved. */
+  function blockedByPendingEmail() {
+    if (!pendingEmailSend) return false;
+    host.setFeedback(PENDING_EMAIL_SEND);
+    return true;
   }
 
   async function guard(work: () => Promise<void>) {
@@ -204,9 +251,10 @@ export function createJoinController(host: JoinHost, timeoutMs = DEFAULT_REQUEST
 
     async signUp(email: string, password: string) {
       await guard(async () => {
+        if (blockedByPendingEmail()) return;
         const token = host.token();
         try {
-          const result = await bounded(
+          const result = await emailSend(
             host.client.signUp({
               email,
               password,
@@ -232,9 +280,10 @@ export function createJoinController(host: JoinHost, timeoutMs = DEFAULT_REQUEST
 
     async resend(email: string) {
       await guard(async () => {
+        if (blockedByPendingEmail()) return;
         const token = host.token();
         try {
-          const result = await bounded(
+          const result = await emailSend(
             host.client.resend({
               type: "signup",
               email,
@@ -252,9 +301,10 @@ export function createJoinController(host: JoinHost, timeoutMs = DEFAULT_REQUEST
 
     async reset(email: string) {
       await guard(async () => {
+        if (blockedByPendingEmail()) return;
         const token = host.token();
         try {
-          const result = await bounded(
+          const result = await emailSend(
             host.client.resetPasswordForEmail(email, { redirectTo: host.redirectTo() }),
           );
           const stale = token !== host.token();
@@ -280,6 +330,11 @@ export function createJoinController(host: JoinHost, timeoutMs = DEFAULT_REQUEST
 
     get busy() {
       return inFlight;
+    },
+
+    /** An email send timed out and has not resolved; sign-in is unaffected. */
+    get emailSendPending() {
+      return pendingEmailSend;
     },
   };
 }
