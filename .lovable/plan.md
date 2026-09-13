@@ -1,69 +1,72 @@
 # Stripe readiness inspection (read-only) — no changes made
 
-## Findings
+## Corrected readiness summary
 
-**Native payment tools: unavailable in this session.** There is no
-`recommend_payment_provider`, `enable_stripe_payments`, `enable_paddle_payments`,
-or `batch_create_product` in the available tool namespaces. So built-in
-Lovable Payments (Stripe/Paddle as merchant of record) cannot be enabled,
-checked for merchant approval, or product-configured from here. Merchant
-eligibility, account claim, and business verification status are therefore
-**not observable** with current tooling.
+Built-in Stripe on Lovable is a **payment service provider** integration, with
+Stripe Managed Payments as an **optional** add-on. It is not "Lovable as
+merchant of record"; any earlier wording to that effect was wrong and is removed.
 
-**Workspace/plan state**
-- Plan: Business, subscription active since Sep 5, 2026 — meets the Pro-or-higher
-  requirement for payments.
-- Billing: payment method and valid billing address on file.
-- Backend: Lovable Cloud active (database available for orders/entitlements).
+- Plan and backend requirements **appear met**: Business plan active, payment
+  method and billing address on file, Lovable Cloud database available.
+- **Unverified:** merchant approval, this project's exact payment-management
+  role, and whether any Stripe account is actually connected to this project.
+- Native payment eligibility/enable tools (`recommend_payment_provider`,
+  `enable_stripe_payments`, `batch_create_product`) are **not available in this
+  session**, so merchant approval, account claim, and business verification
+  status cannot be observed from here.
+- An externally verified `list_custom_connectors` returned **zero**. The
+  workspace catalog entries named "Stripe (live)" and "Stripe (sandbox)" are
+  therefore **not** established connected accounts and must not be read as one.
+  Neither is linked to this project.
 
-**Existing provider state in this project**
-- Workspace connections (none linked to this project): Stripe (live),
-  Stripe (sandbox), Firecrawl. These are developer API-key connectors for
-  calling Stripe's API — not built-in Lovable Payments, and not merchant approval.
-- Project secrets present (names only): ACADEMY_ACCESS_CODE_SECRET,
+## Current project payment state
+
+- No Stripe code anywhere in `src/`. Only reference is an empty
+  `ACADEMY_GHL_STRIPE_ACCOUNT_ID` inside the GHL adapter.
+- Project secrets (names only): ACADEMY_ACCESS_CODE_SECRET,
   ACADEMY_VIMEO_ACCELERATOR_DAY_01, LOVABLE_API_KEY, RATE_LIMIT_HMAC_SECRET,
   SUMMIT_OWNER_EMAILS, SUMMIT_OWNER_PASSWORD. No Stripe or Shopify credentials.
-- No Stripe code exists anywhere in `src/`. The only Stripe reference is
-  `ACADEMY_GHL_STRIPE_ACCOUNT_ID` (empty) inside the GHL payment adapter.
-- Shopify bridge still unconfigured: `ACADEMY_SHOPIFY_ENABLED` and
-  `ACADEMY_PAID_ACCESS_ENABLED` are unset, so order reconciliation returns 503.
+- Shopify bridge unconfigured: `ACADEMY_SHOPIFY_ENABLED` and
+  `ACADEMY_PAID_ACCESS_ENABLED` unset, reconciliation returns 503.
+- Owner reports **no working checkout today**. The current Shopify links are
+  therefore treated as broken, not as a fallback to keep live.
 
-**Existing checkout/entitlement adapter shape (reusable for Stripe)**
+## Existing adapter shape (observed, not endorsed for reuse)
+
 ```text
-checkout link  -> src/lib/academy-checkout.server.ts (provider switch:
-                  ACADEMY_CHECKOUT_PROVIDER = shopify | ghl)
+checkout link  -> src/lib/academy-checkout.server.ts (ACADEMY_CHECKOUT_PROVIDER)
                   routed by src/routes/api/public/checkout/$tier.ts
 webhook        -> src/routes/api/public/webhooks/{shopify,ghl-payment}.ts
-verify + map   -> academy-commerce.server.ts (HMAC, raw body, variant->tier map)
-                  academy-ghl-payments.server.ts (same shape, GHL/Stripe acct)
-persist        -> academy_reconcile_order RPC: academy_orders + academy_grants
-                  (idempotent on shopify_updated_at, needs_review flag)
+verify + map   -> academy-commerce.server.ts, academy-ghl-payments.server.ts
+persist        -> academy_reconcile_order RPC -> academy_orders, academy_grants
 deliver        -> academy-delivery.server.ts -> access code -> outbox -> email
 gate           -> academy-access.server.ts (ACADEMY_PAID_ACCESS_ENABLED)
 ```
-A Stripe adapter is a third provider branch in this same shape — no rework of
-entitlements, codes, delivery or access gating.
 
-## Minimum test-mode implementation (not started)
+`academy_reconcile_order` is Shopify-shaped (order/line/variant identifiers,
+`shopify_updated_at` ordering). Whether it can serve Stripe is **unknown until
+inspected**; no claim of unchanged reuse is made here.
 
-1. Link the existing **Stripe (sandbox)** workspace connection to this project.
-2. Add `academy-stripe.server.ts`: Checkout Session creation for GA $22 /
-   VIP $99 / Emerald $298 only (Accelerator stays downstream), plus
-   `constructEvent`-style signature verification on the raw body.
-3. Add `src/routes/api/public/webhooks/stripe.ts` handling
-   `checkout.session.completed` and `charge.refunded`, mapping Stripe price IDs
-   to the existing `ga | vip | vault` tiers and calling the existing
-   `academy_reconcile_order` RPC unchanged.
-4. Extend `ACADEMY_CHECKOUT_PROVIDER` with a `stripe` branch; keep Shopify
-   links live until a sandbox purchase-to-access journey passes.
-5. Secrets the owner must add: `STRIPE_SECRET_KEY` (test), `STRIPE_WEBHOOK_SECRET`,
-   `ACADEMY_STRIPE_PRICES_JSON`. Flags stay OFF until one sandbox purchase
-   reaches lesson access.
+## Owner-only blocker (exact next step)
 
-## Owner-only next step
+Open this project's **More > Payments > Stripe** and complete the actual
+provider setup and account claim/verification form there. Native setup tools are
+unavailable in this session, so nothing further can proceed until that shows a
+connected, approved Stripe account and the project's payment-management role.
 
-Because native payment tools are absent here, the only route to built-in
-Stripe (Lovable as merchant of record) is the Payments panel in the Lovable
-project UI. If it is not offered there, the sandbox connector path above is
-the available option. Nothing was enabled, created, claimed, published, sent or
-changed; `/join` recovery fixes untouched.
+## Fallback only — not approved, not started
+
+If built-in Stripe turns out to be unavailable to this project, a custom adapter
+would be considered separately. Any such work would have to require:
+
+- entitlement granted only on **verified paid** status, never on redirect
+- asynchronous payment **success and failure** handling (delayed/pending methods)
+- refund, dispute and cancellation reconciliation
+- provider-qualified idempotency keys (event id scoped per provider and mode)
+- strict **test/live separation** of keys, webhooks, prices and granted access
+- a prior inspection of `academy_reconcile_order` before any reuse
+
+Webinar scope stays GA / VIP / Emerald Summit replays; Accelerator is downstream.
+
+Nothing was enabled, created, claimed, linked, published, sent or changed. The
+`/join` recovery fixes are untouched. This note is the only file edited.
