@@ -43,7 +43,8 @@ describe("Session state ordering and write safety", () => {
   });
 
   it("never retries a write automatically", () => {
-    expect(source).not.toContain("retry");
+    // Exactly one request is issued per call: no loop, no second attempt.
+    expect(source.match(/await fetch\(/g)?.length ?? 0).toBe(1);
     expect(source).toContain("could not confirm whether that saved");
   });
 
