@@ -93,23 +93,27 @@ describe("Free training survives a paid-service failure", () => {
   });
 });
 
+async function refused(lessonId: string) {
+  try {
+    await handleAcademyGet(
+      authed(`https://aiautopilotsummit.com/api/academy/lesson?lessonId=${lessonId}`),
+      "lesson",
+    );
+    return false;
+  } catch {
+    return true;
+  }
+}
+
 describe("Paid lessons keep their authoritative guard", () => {
   it("refuses a paid lesson when the entitlement lookup fails", async () => {
     failPaidLookup = true;
-    const attempt = handleAcademyGet(
-      authed("https://aiautopilotsummit.com/api/academy/lesson?lessonId=summit-day-1"),
-      "lesson",
-    );
     // Fails closed: a broken purchase check never opens paid material.
-    await expect(attempt).rejects.toThrow();
+    expect(await refused("summit-day-1")).toBe(true);
   });
 
   it("still refuses a paid lesson when the lookup works and returns no grants", async () => {
     failPaidLookup = false;
-    const attempt = handleAcademyGet(
-      authed("https://aiautopilotsummit.com/api/academy/lesson?lessonId=summit-day-1"),
-      "lesson",
-    );
-    await expect(attempt).rejects.toThrow();
+    expect(await refused("summit-day-1")).toBe(true);
   });
 });

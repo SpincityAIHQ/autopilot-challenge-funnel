@@ -13,8 +13,10 @@ import {
 
 describe("Bounded reads", () => {
   it("ends a hanging read with a retryable message", async () => {
-    const attempt = withTimeout(new Promise(() => {}), 15, SESSION_TIMEOUT_MESSAGE);
-    await expect(attempt).rejects.toThrow(SESSION_TIMEOUT_MESSAGE);
+    const failure = await withTimeout(new Promise(() => {}), 15, SESSION_TIMEOUT_MESSAGE).catch(
+      (e: Error) => e,
+    );
+    expect((failure as Error).message).toBe(SESSION_TIMEOUT_MESSAGE);
     expect(SESSION_TIMEOUT_MESSAGE).toContain("refresh");
   });
 
@@ -23,8 +25,10 @@ describe("Bounded reads", () => {
   });
 
   it("keeps a real rejection as itself rather than a timeout", async () => {
-    const attempt = withTimeout(Promise.reject(new Error("offline")), 50, "late");
-    await expect(attempt).rejects.toThrow("offline");
+    const failure = await withTimeout(Promise.reject(new Error("offline")), 50, "late").catch(
+      (e: Error) => e,
+    );
+    expect((failure as Error).message).toBe("offline");
   });
 
   it("uses finite, human-scale limits", () => {
