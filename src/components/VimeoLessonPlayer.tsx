@@ -137,12 +137,23 @@ export function VimeoLessonPlayer({
     let tries = 0;
     const handshake = window.setInterval(() => {
       tries += 1;
-      if (talking.current || tries > 12) {
+      if (talking.current) {
         window.clearInterval(handshake);
+        return;
+      }
+      if (tries > 12) {
+        window.clearInterval(handshake);
+        // The player never answered: blocked embed, extension or connection.
+        // Say what to try; never imply the recording played.
+        setNote({
+          tone: "warn",
+          text: "The player has not responded yet. Refresh the page, and if it stays blank try another browser or turn off a blocker or private-window setting for this site.",
+        });
         return;
       }
       subscribe();
     }, 700);
+
     return () => {
       window.clearInterval(handshake);
       window.removeEventListener("message", onMessage);

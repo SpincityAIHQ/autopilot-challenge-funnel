@@ -18,7 +18,7 @@ import {
   type LessonContent,
   type LessonProgress,
 } from "./academy";
-import { lessonContent, scoreAnswers } from "./academy-content.server";
+import { lessonContent, scoreAnswers, slotMedia } from "./academy-content.server";
 import { isStaffEmail } from "./academy-staff.server";
 import { configuredVimeo, connectedSlots, vimeoDuration } from "./academy-media.server";
 import { loadTranscript, availableTranscriptIds, type TranscriptStore } from "./academy-transcript.server";
@@ -222,8 +222,15 @@ export async function handleAcademyGet(request: Request, path: string) {
     url.searchParams.get("lessonId") === "free-webinar" &&
     !request.headers.has("authorization")
   ) {
-    return { lesson: { ...lessonContent("free-webinar")!, media: null }, tutorReady: false };
+    // The recording itself is never sent to a signed-out visitor, but the page
+    // must say a free account opens it rather than claiming nothing is connected.
+    return {
+      lesson: { ...lessonContent("free-webinar")!, media: null },
+      tutorReady: false,
+      accountRequired: Boolean(slotMedia("free-webinar")),
+    };
   }
+
   const user = await academyUser(request);
   const db = academyDb();
   if (["onboarding", "dashboard", "lesson"].includes(path)) {
