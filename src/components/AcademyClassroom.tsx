@@ -284,12 +284,12 @@ function ClassroomSession({
                     <div>
                       <h2>
                         {media || accountRequired
-                          ? "Create your free account to watch"
+                          ? "Sign in with a free account to open the training"
                           : "Recording not connected yet"}
                       </h2>
                       <p>
                         {media || accountRequired
-                          ? "The free training is ready. A free account opens the recording and keeps your place, your watch map and your notes."
+                          ? "A free account opens the training and keeps your place, your watch map and your notes."
                           : isSession
                             ? "This build-room replay will appear here when the recording is connected."
                             : "You can start with the AI notes and activity below."}

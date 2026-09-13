@@ -19,6 +19,7 @@ function host(overrides: Partial<Record<string, unknown>> = {}) {
       setBusy: (b: boolean) => state.busy.push(b),
       setFeedback: (f: unknown) => state.feedback.push(f),
       applyCooldown: (s: number, a: boolean) => state.cooldowns.push([s, a]),
+      setStaleFeedback: () => {},
       setAwaitingConfirmation: () => {},
       setConfirmationHelp: () => {},
       onSession: () => {
@@ -83,11 +84,104 @@ describe("A stalled auth request recovers instead of sticking on Working", () =>
   });
 });
 
+describe("An interrupted request is never silently swallowed", () => {
+  it("reports a neutral completion when the address changed mid-flight", async () => {
+    let token = 1;
+    const stale: unknown[] = [];
+    const fresh: unknown[] = [];
+    const cooldowns: Array<[number, boolean]> = [];
+    const controller = createJoinController({
+      client: {
+        ...never,
+        signUp: async () => {
+          token = 2; // the user edited the address while the request was open
+          return { data: { session: null } };
+        },
+      } as JoinAuthClient,
+      redirectTo: () => "https://aiautopilotsummit.com/join",
+      token: () => token,
+      setBusy: () => {},
+      setFeedback: (f) => {
+        if (f) fresh.push(f);
+      },
+      applyCooldown: (s, a) => cooldowns.push([s, a]),
+      setAwaitingConfirmation: () => {},
+      setConfirmationHelp: () => {},
+      setStaleFeedback: (f) => stale.push(f),
+      onSession: () => {},
+    });
+    await controller.signUp("buyer@example.com", "a".repeat(12));
+    // The provider cooldown is honoured regardless of staleness...
+    expect(cooldowns).toEqual([[60, false]]);
+    // ...and the outcome is reported, neutrally, instead of disappearing.
+    expect(stale.length).toBe(1);
+    expect((stale[0] as { message: string }).message).toContain("earlier request has finished");
+    expect((stale[0] as { message: string }).message).not.toContain("account");
+    expect(fresh.length).toBe(0);
+  });
+
+  it("applies no cooldown and never retries after a timeout", async () => {
+    let calls = 0;
+    const cooldowns: unknown[] = [];
+    const controller = createJoinController({
+      client: {
+        ...never,
+        signUp: () => {
+          calls += 1;
+          return new Promise(() => {});
+        },
+      } as JoinAuthClient,
+      redirectTo: () => "https://aiautopilotsummit.com/join",
+      token: () => 1,
+      setBusy: () => {},
+      setFeedback: () => {},
+      applyCooldown: (s, a) => cooldowns.push([s, a]),
+      setAwaitingConfirmation: () => {},
+      setConfirmationHelp: () => {},
+      setStaleFeedback: () => {},
+      onSession: () => {},
+    }, 20);
+    await controller.signUp("buyer@example.com", "a".repeat(12));
+    await new Promise((r) => setTimeout(r, 60));
+    expect(calls).toBe(1);
+    expect(cooldowns.length).toBe(0);
+  });
+
+  it("does not let a late answer overwrite newer feedback", async () => {
+    let resolve!: (v: unknown) => void;
+    const feedback: unknown[] = [];
+    const controller = createJoinController({
+      client: {
+        ...never,
+        signUp: () => new Promise((r) => (resolve = r as (v: unknown) => void)),
+      } as JoinAuthClient,
+      redirectTo: () => "https://aiautopilotsummit.com/join",
+      token: () => 1,
+      setBusy: () => {},
+      setFeedback: (f) => {
+        if (f) feedback.push(f);
+      },
+      applyCooldown: () => {},
+      setAwaitingConfirmation: () => {},
+      setConfirmationHelp: () => {},
+      setStaleFeedback: () => {},
+      onSession: () => {},
+    }, 20);
+    await controller.signUp("buyer@example.com", "a".repeat(12)); // times out
+    const afterTimeout = feedback.length;
+    resolve({ data: { session: null } }); // provider answers late
+    await new Promise((r) => setTimeout(r, 30));
+    expect(feedback.length).toBe(afterTimeout);
+  });
+});
+
 describe("Join page renders feedback with the button", () => {
   const source = readFileSync("src/routes/join.tsx", "utf8");
 
   it("validates in the page rather than relying on the browser bubble", () => {
     expect(source).toContain("noValidate");
+    // Persistent handler in case native validation fires anywhere.
+    expect(source).toContain("onInvalid");
     expect(source).toContain("validateJoinForm");
   });
 

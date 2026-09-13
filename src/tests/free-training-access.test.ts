@@ -2,17 +2,28 @@ import { describe, it, expect, afterEach } from "bun:test";
 import { readFileSync } from "node:fs";
 import { handleAcademyGet } from "../lib/academy.server";
 import { slotMedia } from "../lib/academy-content.server";
+import { createPlayerHealth } from "../lib/vimeo";
 
 const FREE_URL = "https://aiautopilotsummit.com/api/academy/lesson?lessonId=free-webinar";
 const CONFIGURED = "https://vimeo.com/1225785709";
 
-function restore(value: string | undefined) {
-  if (value === undefined) delete process.env.ACADEMY_VIMEO_FREE_WEBINAR;
-  else process.env.ACADEMY_VIMEO_FREE_WEBINAR = value;
+/** Every environment variable this file touches, snapshotted and restored. */
+const TOUCHED = ["ACADEMY_VIMEO_FREE_WEBINAR", "ACADEMY_MEDIA_FREE_WEBINAR"] as const;
+
+function snapshot(): Record<string, string | undefined> {
+  return Object.fromEntries(TOUCHED.map((name) => [name, process.env[name]]));
+}
+
+function restore(saved: Record<string, string | undefined>) {
+  for (const name of TOUCHED) {
+    const value = saved[name];
+    if (value === undefined) delete process.env[name];
+    else process.env[name] = value;
+  }
 }
 
 describe("Free training visibility for a signed-out visitor", () => {
-  const original = process.env.ACADEMY_VIMEO_FREE_WEBINAR;
+  const original = snapshot();
   afterEach(() => restore(original));
 
   it("never sends the recording to an unauthenticated request", async () => {
@@ -55,7 +66,9 @@ describe("Classroom copy for the signed-out free training visitor", () => {
   const source = readFileSync("src/components/AcademyClassroom.tsx", "utf8");
 
   it("offers account creation instead of claiming the recording is missing", () => {
-    expect(source).toContain("Create your free account to watch");
+    expect(source).toContain("Sign in with a free account to open the training");
+    // Never assert readiness from configuration alone: playback is unverified.
+    expect(source).not.toContain("The free training is ready");
     expect(source).toContain("accountRequired");
     expect(source).toContain("Create a free account or sign in →");
   });
@@ -65,11 +78,39 @@ describe("Classroom copy for the signed-out free training visitor", () => {
   });
 });
 
-describe("Player guidance when the embed never responds", () => {
-  const source = readFileSync("src/components/VimeoLessonPlayer.tsx", "utf8");
+describe("Player guidance behaviour", () => {
+  it("warns only when nothing ever answered", () => {
+    const health = createPlayerHealth();
+    expect(health.timedOut()).toBe("unresponsive");
+    expect(health.note()).toContain("has not responded yet");
+  });
 
-  it("gives retry guidance without claiming the recording played", () => {
-    expect(source).toContain("The player has not responded yet");
-    expect(source).not.toContain("Playback started");
+  it("does not let an error event satisfy the handshake", () => {
+    const health = createPlayerHealth();
+    health.observe({ event: "error", data: { message: "blocked" } });
+    expect(health.alive).toBe(false);
+    expect(health.timedOut()).toBe("error");
+    expect(health.note()).toContain("could not start in this browser");
+  });
+
+  it("clears a stale unresponsive warning when the player answers late", () => {
+    const health = createPlayerHealth();
+    health.timedOut();
+    health.observe({ event: "ready" });
+    expect(health.status).toBe("live");
+    expect(health.note()).toBeNull();
+  });
+
+  it("clears an earlier error once playback actually reports time", () => {
+    const health = createPlayerHealth();
+    health.observe({ event: "error" });
+    health.observe({ event: "timeupdate", data: { seconds: 3, duration: 100 } });
+    expect(health.note()).toBeNull();
+  });
+
+  it("never claims playback happened", () => {
+    const health = createPlayerHealth();
+    expect(health.note()).toBeNull();
+    expect(health.status).toBe("waiting");
   });
 });
