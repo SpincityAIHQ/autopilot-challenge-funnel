@@ -69,6 +69,16 @@ export function useAcademySession() {
   }, []);
   return state;
 }
+/** Honest wording for an aborted request; never a retry. */
+function timeoutAware(error: unknown, isWrite: boolean): Error {
+  if ((error as Error)?.name !== "AbortError") return error as Error;
+  return new Error(
+    isWrite
+      ? "We could not confirm whether that saved. Reload the page to see the latest before trying again."
+      : "This is taking longer than expected. Check your connection and try again.",
+  );
+}
+
 export async function academyApi<T>(path: string, body?: unknown): Promise<T> {
   // The auth check itself is unchanged — only bounded, so a hanging read shows
   // a retryable message instead of an endless spinner.
@@ -92,21 +102,20 @@ export async function academyApi<T>(path: string, body?: unknown): Promise<T> {
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
     });
   } catch (error) {
-    // Never retried automatically. A write whose answer never arrived is
-    // reported as uncertain, never as "nothing happened".
-    if ((error as Error).name === "AbortError")
-      throw new Error(
-        body === undefined
-          ? "This is taking longer than expected. Check your connection and try again."
-          : "We could not confirm whether that saved. Reload the page to see the latest before trying again.",
-      );
-    throw error;
+    clearTimeout(timer);
+    throw timeoutAware(error, body !== undefined);
+  }
+  // The deadline stays armed until the BODY is parsed: headers can arrive
+  // promptly and the body then stall forever.
+  let result: { error?: string };
+  try {
+    result = (await response.json()) as { error?: string };
+  } catch (error) {
+    if ((error as Error).name === "AbortError") throw timeoutAware(error, body !== undefined);
+    result = { error: "The request could not be completed." };
   } finally {
     clearTimeout(timer);
   }
-  const result = await response
-    .json()
-    .catch(() => ({ error: "The request could not be completed." }));
   if (!response.ok) throw new Error(result.error || "The request could not be completed.");
   return result as T;
 }
