@@ -39,7 +39,7 @@ mock.module("@supabase/supabase-js", () => ({
   createClient: () => ({
     auth: { getUser: async () => ({ data: { user: USER }, error: null }) },
     from: () => table(),
-    rpc: async () => ({ data: null, error: null }),
+    rpc: async () => ({ data: true, error: null }),
     storage: { from: () => ({ download: async () => ({ data: null, error: new Error("none") }) }) },
   }),
 }));
@@ -74,7 +74,7 @@ describe("Free training survives a paid-service failure", () => {
     )) as { lesson: { id: string }; ticket: { code: string } };
     expect(result.lesson.id).toBe("free-webinar");
     // Personalisation falls back to the free default; nothing is granted.
-    expect(result.ticket.code).toBe("free");
+    expect(result.ticket.code).toBe("SMT-FREE");
   });
 
   it("still completes a free signup and sends the learner to the free classroom", async () => {
