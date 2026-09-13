@@ -4,12 +4,25 @@
  */
 import { describe, it, expect } from "bun:test";
 import { readFileSync } from "node:fs";
-import {
+const { mock } = require("bun:test") as { mock: { module: (p: string, f: () => unknown) => void } };
+
+// No real sign-in client in a unit test: the session read is faked.
+mock.module("@/integrations/supabase/client", () => ({
+  supabase: {
+    auth: {
+      getSession: async () => ({ data: { session: null }, error: null }),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+    },
+  },
+}));
+
+const {
   withTimeout,
   SESSION_TIMEOUT_MESSAGE,
   SESSION_TIMEOUT_MS,
   REQUEST_TIMEOUT_MS,
-} from "../lib/academy-client";
+  academyApi,
+} = require("../lib/academy-client") as typeof import("../lib/academy-client");
 
 describe("Bounded reads", () => {
   it("ends a hanging read with a retryable message", async () => {
@@ -36,6 +49,33 @@ describe("Bounded reads", () => {
     expect(SESSION_TIMEOUT_MS).toBeLessThanOrEqual(30000);
     expect(REQUEST_TIMEOUT_MS).toBeLessThanOrEqual(30000);
   });
+});
+
+// bun:test's per-test timeout argument is missing from this project's types.
+const slowIt = it as unknown as (name: string, fn: () => Promise<void>, timeout: number) => void;
+
+describe("A stalled response BODY still hits the deadline", () => {
+  slowIt("reports an honest uncertain-write message instead of hanging", async () => {
+    const realFetch = globalThis.fetch;
+    // Headers arrive at once; the body never resolves until the signal aborts.
+    globalThis.fetch = ((_url: string, init?: RequestInit) =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          new Promise((_resolve, reject) => {
+            init?.signal?.addEventListener("abort", () =>
+              reject(Object.assign(new Error("aborted"), { name: "AbortError" })),
+            );
+          }),
+      } as unknown as Response)) as typeof fetch;
+    try {
+      const failure = await academyApi("register", { ok: true }).catch((e: Error) => e);
+      expect((failure as Error).message).toContain("could not confirm whether that saved");
+      expect(REQUEST_TIMEOUT_MS).toBeLessThanOrEqual(30000);
+    } finally {
+      globalThis.fetch = realFetch;
+    }
+  }, 40000);
 });
 
 describe("Session state ordering and write safety", () => {

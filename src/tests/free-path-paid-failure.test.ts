@@ -17,9 +17,12 @@ const USER = {
 };
 
 let failPaidLookup = true;
+/** When true the purchase lookup never answers at all. */
+let hangPaidLookup = false;
 
 mock.module("../lib/academy-access.server", () => ({
   redeemedGrants: async () => {
+    if (hangPaidLookup) return new Promise(() => {});
     if (failPaidLookup) throw new Error("purchase service unavailable");
     return [];
   },
@@ -105,6 +108,26 @@ async function refused(lessonId: string) {
     return true;
   }
 }
+
+describe("Free training survives a purchase service that never answers", () => {
+  it("falls back to the free default within its own short deadline", async () => {
+    failPaidLookup = false;
+    hangPaidLookup = true;
+    const { OPTIONAL_GRANTS_TIMEOUT_MS } = await import("../lib/academy.server");
+    const started = Date.now();
+    const result = (await handleAcademyGet(
+      authed("https://aiautopilotsummit.com/api/academy/lesson?lessonId=free-webinar"),
+      "lesson",
+    )) as { lesson: { id: string }; ticket: { code: string } };
+    const elapsed = Date.now() - started;
+    hangPaidLookup = false;
+    expect(result.lesson.id).toBe("free-webinar");
+    expect(result.ticket.code).toBe("SMT-FREE");
+    // Bounded well inside the page's own request budget.
+    expect(elapsed).toBeLessThan(OPTIONAL_GRANTS_TIMEOUT_MS + 2000);
+    expect(OPTIONAL_GRANTS_TIMEOUT_MS).toBeLessThanOrEqual(5000);
+  });
+});
 
 describe("Paid lessons keep their authoritative guard", () => {
   it("refuses a paid lesson when the entitlement lookup fails", async () => {

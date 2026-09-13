@@ -83,9 +83,27 @@ export async function grantsFor(user: User) {
  * mutates entitlements, and is NEVER used to authorise paid material: every
  * paid lesson and paid action still goes through the strict `grantsFor` guard.
  */
+export const OPTIONAL_GRANTS_TIMEOUT_MS = 3000;
 export async function optionalGrantsFor(user: User): Promise<string[]> {
   try {
-    return await grantsFor(user);
+    // Bounded so a stalled commerce service cannot hold the free room open
+    // for the whole request budget. The underlying lookup is left to finish
+    // on its own — it may reconcile commerce state internally, so it is never
+    // cancelled, changed or repeated here; only its answer is waited for.
+    const lookup = grantsFor(user);
+    // A late failure must not surface as an unhandled rejection.
+    lookup.catch(() => {});
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      return await Promise.race([
+        lookup,
+        new Promise<string[]>((_, reject) => {
+          timer = setTimeout(() => reject(new Error("grants-timeout")), OPTIONAL_GRANTS_TIMEOUT_MS);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
   } catch {
     console.warn("ACADEMY_GRANTS_LOOKUP_UNAVAILABLE");
     return [];
