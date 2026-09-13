@@ -38,8 +38,11 @@ describe("Bounded reads", () => {
   });
 });
 
+// bun:test's per-test timeout argument is missing from this project's types.
+const slowIt = it as unknown as (name: string, fn: () => Promise<void>, timeout: number) => void;
+
 describe("A stalled response BODY still hits the deadline", () => {
-  it("reports an honest uncertain-write message instead of hanging", async () => {
+  slowIt("reports an honest uncertain-write message instead of hanging", async () => {
     const { academyApi, REQUEST_TIMEOUT_MS } = await import("../lib/academy-client");
     const realFetch = globalThis.fetch;
     // Headers arrive at once; the body never resolves until the signal aborts.

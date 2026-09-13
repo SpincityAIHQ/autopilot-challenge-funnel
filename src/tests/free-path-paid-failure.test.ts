@@ -126,7 +126,7 @@ describe("Free training survives a purchase service that never answers", () => {
     // Bounded well inside the page's own request budget.
     expect(elapsed).toBeLessThan(OPTIONAL_GRANTS_TIMEOUT_MS + 2000);
     expect(OPTIONAL_GRANTS_TIMEOUT_MS).toBeLessThanOrEqual(5000);
-  }, 20000);
+  });
 });
 
 describe("Paid lessons keep their authoritative guard", () => {
