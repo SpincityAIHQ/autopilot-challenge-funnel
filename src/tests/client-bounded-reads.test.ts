@@ -38,6 +38,31 @@ describe("Bounded reads", () => {
   });
 });
 
+describe("A stalled response BODY still hits the deadline", () => {
+  it("reports an honest uncertain-write message instead of hanging", async () => {
+    const { academyApi, REQUEST_TIMEOUT_MS } = await import("../lib/academy-client");
+    const realFetch = globalThis.fetch;
+    // Headers arrive at once; the body never resolves until the signal aborts.
+    globalThis.fetch = ((_url: string, init?: RequestInit) =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          new Promise((_resolve, reject) => {
+            init?.signal?.addEventListener("abort", () =>
+              reject(Object.assign(new Error("aborted"), { name: "AbortError" })),
+            );
+          }),
+      } as unknown as Response)) as typeof fetch;
+    try {
+      const failure = await academyApi("register", { ok: true }).catch((e: Error) => e);
+      expect((failure as Error).message).toContain("could not confirm whether that saved");
+      expect(REQUEST_TIMEOUT_MS).toBeLessThanOrEqual(30000);
+    } finally {
+      globalThis.fetch = realFetch;
+    }
+  }, 40000);
+});
+
 describe("Session state ordering and write safety", () => {
   const source = readFileSync("src/lib/academy-client.ts", "utf8");
 
