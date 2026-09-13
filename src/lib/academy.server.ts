@@ -222,8 +222,15 @@ export async function handleAcademyGet(request: Request, path: string) {
     url.searchParams.get("lessonId") === "free-webinar" &&
     !request.headers.has("authorization")
   ) {
-    return { lesson: { ...lessonContent("free-webinar")!, media: null }, tutorReady: false };
+    // The recording itself is never sent to a signed-out visitor, but the page
+    // must say a free account opens it rather than claiming nothing is connected.
+    return {
+      lesson: { ...lessonContent("free-webinar")!, media: null },
+      tutorReady: false,
+      accountRequired: Boolean(slotMedia("free-webinar")),
+    };
   }
+
   const user = await academyUser(request);
   const db = academyDb();
   if (["onboarding", "dashboard", "lesson"].includes(path)) {
