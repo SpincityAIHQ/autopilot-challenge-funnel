@@ -92,7 +92,8 @@ describe("Join page renders feedback with the button", () => {
   });
 
   it("places the alert region inside the form, not only at the card foot", () => {
-    const formEnd = source.indexOf("</form>");
-    expect(source.slice(0, formEnd)).toContain("{alerts}");
+    const start = source.indexOf("<form onSubmit={onSubmit}");
+    const end = source.indexOf("</form>", start);
+    expect(source.slice(start, end)).toContain("{alerts}");
   });
 });
