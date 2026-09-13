@@ -256,7 +256,37 @@ export function isRateLimited(known: string | null): boolean {
   return known === "over_email_send_rate_limit" || known === "over_request_rate_limit";
 }
 
+/** Minimum length for a newly chosen password (signup and new-password only). */
+export const MIN_NEW_PASSWORD_LENGTH = 12;
+
+/**
+ * Inline form validation, shown in the page itself.
+ *
+ * The browser's own validation bubble is easy to miss on a phone: it is
+ * anchored to the field, disappears on the next tap, and reads to the customer
+ * as "I pressed the button and nothing happened". We validate in the page so
+ * the reason is always visible text.
+ */
+export function validateJoinForm(
+  email: string,
+  password: string,
+  mode: "signin" | "signup",
+): AuthFeedback | null {
+  const address = email.trim();
+  if (!address) return feedback("error", "Enter your email address to continue.");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(address))
+    return feedback("error", "That email address does not look complete. Check it and try again.");
+  if (!password) return feedback("error", "Enter your password to continue.");
+  if (mode === "signup" && password.length < MIN_NEW_PASSWORD_LENGTH)
+    return feedback(
+      "error",
+      `Your password needs at least ${MIN_NEW_PASSWORD_LENGTH} characters. Add ${MIN_NEW_PASSWORD_LENGTH - password.length} more, then press Create account again.`,
+    );
+  return null;
+}
+
 /** Neutral success copy. Provider acceptance is never inbox delivery. */
+
 export function describeAuthSuccess(action: AuthAction): AuthFeedback {
   switch (action) {
     case "signup":

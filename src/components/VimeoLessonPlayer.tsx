@@ -44,7 +44,7 @@ export function VimeoLessonPlayer({
     );
   };
   const subscribe = () => {
-    for (const name of ["play", "pause", "ended", "timeupdate", "seeked"])
+    for (const name of ["play", "pause", "ended", "timeupdate", "seeked", "error"])
       send("addEventListener", name);
     send("getDuration");
   };
@@ -89,6 +89,15 @@ export function VimeoLessonPlayer({
         return;
       }
       switch (msg.event) {
+        // The player reports its own failures (blocked embed, privacy, network).
+        // Say so plainly; playback state is never assumed from silence.
+        case "error":
+          tracker.current.close();
+          setNote({
+            tone: "warn",
+            text: "The recording could not start in this browser. Refresh the page, and if it stays blocked try another browser or connection, or tell the team so we can check the recording.",
+          });
+          break;
         case "ready":
           ready.current = true;
           subscribe();

@@ -78,6 +78,9 @@ export async function grantsFor(user: User) {
 async function authorizeLesson(user: User, id: string) {
   const meta = LESSONS.find((x) => x.id === id);
   if (!meta) throw new AcademyError("This lesson was not found.", 404);
+  // Free training must never depend on the paid entitlement lookup: a purchase
+  // check that is slow or unavailable cannot be allowed to close the free room.
+  if (meta.tier === "free") return meta;
   if (!tierAllows(await grantsFor(user), meta.tier))
     throw new AcademyError(
       "This lesson requires the matching course access. If you purchased, sign in with your order email.",
@@ -235,8 +238,12 @@ export async function handleAcademyGet(request: Request, path: string) {
   const db = academyDb();
   if (["onboarding", "dashboard", "lesson"].includes(path)) {
     // Identity comes only from the verified auth session, never request input.
-    check(await db.rpc("academy_prepare_customer", { p_user: user.id, p_email: user.email! }));
-    check(await db.rpc("academy_queue_customer_return", { p_user: user.id }));
+    const prepared = await db.rpc("academy_prepare_customer", { p_user: user.id, p_email: user.email! });
+    // The profile row matters for registration; optional nurture queueing does
+    // not, and neither may close a classroom the learner is entitled to.
+    if (prepared.error && path === "onboarding") check(prepared);
+    const returned = await db.rpc("academy_queue_customer_return", { p_user: user.id });
+    if (returned.error) console.warn("ACADEMY_CUSTOMER_RETURN_QUEUE_FAILED");
   }
   if (path === "onboarding") {
     const profile = check(await db.from("academy_profiles").select("onboarding_complete")

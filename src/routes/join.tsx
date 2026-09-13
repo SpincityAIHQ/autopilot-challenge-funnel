@@ -13,6 +13,7 @@ import {
   cooldownRemaining,
   describeAuthError,
   readStoredDeadline,
+  validateJoinForm,
   type AuthFeedback,
 } from "@/lib/academy-auth-feedback";
 
@@ -222,8 +223,15 @@ function Join() {
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
+    if (busy) return;
     const submitted = email.trim();
-    if (!submitted || busy) return;
+    // Validated in the page: a native browser bubble is easy to miss on a
+    // phone, which reads as "I pressed the button and nothing happened".
+    const invalid = validateJoinForm(submitted, password, login ? "signin" : "signup");
+    if (invalid) {
+      setFeedback(invalid);
+      return;
+    }
     if (login) {
       if (attemptCooldownLeft > 0) return;
       await controller.signIn(submitted, password);
@@ -293,8 +301,16 @@ function Join() {
     emailCooldownLeft > 0 ? cooldownLabel(emailCooldownLeft) : "";
   const emailSendBlocked = busy || emailCooldownLeft > 0 || attemptCooldownLeft > 0;
 
+  const alertRef = useRef<HTMLDivElement | null>(null);
+  // On a phone the card is taller than the screen, so a message rendered below
+  // the fold reads as "nothing happened". Bring it into view when it changes.
+  useEffect(() => {
+    if (!statusText && !cooldownText) return;
+    alertRef.current?.scrollIntoView({ block: "center", behavior: "auto" });
+  }, [statusText, cooldownText]);
+
   const alerts = (
-    <>
+    <div ref={alertRef} className="academy-auth-alerts">
       {cooldownText ? (
         <p role="status" aria-live="polite" className="academy-status">
           {cooldownText}
@@ -307,7 +323,7 @@ function Join() {
       >
         {statusText}
       </p>
-    </>
+    </div>
   );
 
   if (verifyingEmail)
@@ -421,7 +437,7 @@ function Join() {
         {session.email ? (
           <p>Signed in as {session.email}</p>
         ) : step === "signed-out" ? (
-          <form onSubmit={onSubmit}>
+          <form onSubmit={onSubmit} noValidate>
             <label>
               Email
               <input
@@ -445,18 +461,25 @@ function Join() {
                 // Older valid passwords must remain submittable on sign-in.
                 {...(login ? {} : { minLength: 12 })}
                 autoComplete={login ? "current-password" : "new-password"}
+                aria-describedby={login ? undefined : "join-password-rule"}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </label>
-            {!login ? <p className="academy-muted">Use at least 12 characters.</p> : null}
+            {!login ? (
+              <p className="academy-muted" id="join-password-rule">
+                Use at least 12 characters.
+              </p>
+            ) : null}
             <button
               className="academy-button"
               disabled={busy || (login ? attemptCooldownLeft > 0 : emailSendBlocked)}
             >
               {busy ? "Working…" : login ? "Sign in" : "Create account"}
             </button>
+            {/* Feedback sits with the button so the reason is never off screen. */}
+            {alerts}
           </form>
         ) : (
           <p role="status">Checking your sign-in…</p>
@@ -557,7 +580,7 @@ function Join() {
           Learning activity is saved to provide your course progress. Optional marketing is
           separate. <a href="/privacy">Privacy policy</a>
         </p>
-        {alerts}
+        {step === "signed-out" ? null : alerts}
       </section>
     </AcademyFrame>
   );

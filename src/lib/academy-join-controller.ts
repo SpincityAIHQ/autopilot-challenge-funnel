@@ -65,9 +65,37 @@ export interface JoinHost {
   onSession(): void;
 }
 
+/** A request that never answers must not leave the button stuck on "Working…". */
+export const DEFAULT_REQUEST_TIMEOUT_MS = 25000;
+
 /** Shared synchronous in-flight guard, one per controller instance. */
-export function createJoinController(host: JoinHost) {
+export function createJoinController(host: JoinHost, timeoutMs = DEFAULT_REQUEST_TIMEOUT_MS) {
   let inFlight = false;
+
+  /**
+   * Bounded wait. A timeout is deliberately mapped to the safe temporary
+   * outcome: the request may still have been accepted upstream, so the copy
+   * never claims nothing happened.
+   */
+  function bounded<T>(work: Promise<T>): Promise<T> {
+    if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) return work;
+    return new Promise<T>((resolve, reject) => {
+      const timer = setTimeout(
+        () => reject({ name: "AuthRetryableFetchError", status: 504 }),
+        timeoutMs,
+      );
+      work.then(
+        (value) => {
+          clearTimeout(timer);
+          resolve(value);
+        },
+        (error) => {
+          clearTimeout(timer);
+          reject(error);
+        },
+      );
+    });
+  }
 
   function cooldownFor(error: unknown): { seconds: number; alsoAttempts: boolean } | null {
     const known = classifyAuthError(error);
@@ -93,6 +121,7 @@ export function createJoinController(host: JoinHost) {
       host.setBusy(false);
     }
   }
+
 
   /** Accepted-request outcome for signup / resend / reset. Never reveals existence. */
   function acceptedEmailRequest(
@@ -140,7 +169,7 @@ export function createJoinController(host: JoinHost) {
       await guard(async () => {
         const token = host.token();
         try {
-          const result = await host.client.signInWithPassword({ email, password });
+          const result = await bounded(host.client.signInWithPassword({ email, password }));
           const stale = token !== host.token();
           if (result?.error) return handleError("signin", result.error, stale);
           // Only an actual returned session unblocks onboarding.
@@ -159,11 +188,13 @@ export function createJoinController(host: JoinHost) {
       await guard(async () => {
         const token = host.token();
         try {
-          const result = await host.client.signUp({
-            email,
-            password,
-            options: { emailRedirectTo: host.redirectTo() },
-          });
+          const result = await bounded(
+            host.client.signUp({
+              email,
+              password,
+              options: { emailRedirectTo: host.redirectTo() },
+            }),
+          );
           const stale = token !== host.token();
           // A duplicate signup must be indistinguishable from an eligible one.
           if (result?.error) return handleError("signup", result.error, stale, email);
@@ -185,11 +216,13 @@ export function createJoinController(host: JoinHost) {
       await guard(async () => {
         const token = host.token();
         try {
-          const result = await host.client.resend({
-            type: "signup",
-            email,
-            options: { emailRedirectTo: host.redirectTo() },
-          });
+          const result = await bounded(
+            host.client.resend({
+              type: "signup",
+              email,
+              options: { emailRedirectTo: host.redirectTo() },
+            }),
+          );
           const stale = token !== host.token();
           if (result?.error) return handleError("resend", result.error, stale, email);
           acceptedEmailRequest("resend", email, stale);
@@ -203,9 +236,9 @@ export function createJoinController(host: JoinHost) {
       await guard(async () => {
         const token = host.token();
         try {
-          const result = await host.client.resetPasswordForEmail(email, {
-            redirectTo: host.redirectTo(),
-          });
+          const result = await bounded(
+            host.client.resetPasswordForEmail(email, { redirectTo: host.redirectTo() }),
+          );
           const stale = token !== host.token();
           if (result?.error) return handleError("reset", result.error, stale, email);
           acceptedEmailRequest("reset", email, stale);
@@ -218,7 +251,7 @@ export function createJoinController(host: JoinHost) {
     async updatePassword(password: string) {
       await guard(async () => {
         try {
-          const result = await host.client.updateUser({ password });
+          const result = await bounded(host.client.updateUser({ password }));
           if (result?.error) return handleError("update-password", result.error, false);
           host.setFeedback(describeAuthSuccess("update-password"));
         } catch (error) {
