@@ -222,11 +222,35 @@ function ClassroomSession({
           {error ? (
             <div className="academy-card" role="status">
               <p>{error}</p>
-              <a className="academy-button" href={session.email ? "/summit" : academyJoinHref(lessonId === "free-webinar" ? "/class" : "/summit")}>
-                {session.email ? "Explore access" : "Sign in or join free"}
-              </a>
+              {session.email ? (
+                // A signed-in learner who hit a temporary failure needs to retry,
+                // not a purchase page — the free room needs no purchase at all.
+                <button
+                  type="button"
+                  className="academy-button"
+                  onClick={() => {
+                    setError("");
+                    load().catch((e: Error) => setError(e.message));
+                  }}
+                >
+                  Try again
+                </button>
+              ) : (
+                <a
+                  className="academy-button"
+                  href={academyJoinHref(lessonId === "free-webinar" ? "/class" : "/summit")}
+                >
+                  Sign in or join free
+                </a>
+              )}
+              {session.email && meta?.tier !== "free" ? (
+                <a className="academy-text-button" href="/summit">
+                  Explore access
+                </a>
+              ) : null}
             </div>
           ) : !lesson ? (
+
             <p role="status" className="academy-status">
               Loading lesson…
             </p>
