@@ -105,3 +105,56 @@ export function parseVimeoMessage(raw: unknown): VimeoMessage | null {
   if (typeof d.method === "string") return { method: d.method, value: d.value };
   return null;
 }
+
+/**
+ * Player health, kept out of the component so the behaviour is testable.
+ *
+ * Rules:
+ *  - An `error` event is NOT proof the embed is alive: it must never satisfy
+ *    the handshake, because a blocked embed answering with an error would
+ *    otherwise cancel the "player has not responded" warning.
+ *  - Any other player message means the embed is alive.
+ *  - A late, valid `ready`/`timeupdate` clears a stale unresponsive warning
+ *    and clears a previous error: the recording actually started.
+ */
+export type PlayerStatus = "waiting" | "live" | "error" | "unresponsive";
+
+export const PLAYER_ERROR_NOTE =
+  "The recording could not start in this browser. Refresh the page, and if it stays blocked try another browser or connection, or tell the team so we can check the recording.";
+export const PLAYER_SILENT_NOTE =
+  "The player has not responded yet. Refresh the page, and if it stays blank try another browser or turn off a blocker or private-window setting for this site.";
+
+export function createPlayerHealth() {
+  let status: PlayerStatus = "waiting";
+  let alive = false;
+  return {
+    /** Feed every parsed player message. Returns the resulting status. */
+    observe(message: VimeoMessage | null): PlayerStatus {
+      if (!message) return status;
+      if ("event" in message && message.event === "error") {
+        status = "error";
+        return status;
+      }
+      alive = true;
+      status = "live";
+      return status;
+    },
+    /** The bounded handshake gave up. Only meaningful while nothing answered. */
+    timedOut(): PlayerStatus {
+      if (!alive) status = "unresponsive";
+      return status;
+    },
+    /** True once a non-error message proved the embed is alive. */
+    get alive() {
+      return alive;
+    },
+    get status() {
+      return status;
+    },
+    note(): string | null {
+      if (status === "error") return PLAYER_ERROR_NOTE;
+      if (status === "unresponsive") return PLAYER_SILENT_NOTE;
+      return null;
+    },
+  };
+}
