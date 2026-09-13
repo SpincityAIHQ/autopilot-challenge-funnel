@@ -61,12 +61,30 @@ export interface JoinHost {
   setAwaitingConfirmation(email: string | null): void;
   /** Durable "you need a confirmation email" recovery state. */
   setConfirmationHelp(on: boolean): void;
+  /**
+   * A request finished for an address the user has since edited. The outcome
+   * must not vanish silently, but it must never overwrite newer feedback or a
+   * newer session: the host applies it only when nothing newer exists.
+   */
+  setStaleFeedback(feedback: AuthFeedback): void;
   /** Called ONLY when a real session was returned. */
   onSession(): void;
 }
 
 /** A request that never answers must not leave the button stuck on "Working…". */
 export const DEFAULT_REQUEST_TIMEOUT_MS = 25000;
+
+/**
+ * Neutral wording for an outcome that belongs to an address the user has since
+ * changed. It reveals nothing about any account and promises no delivery.
+ */
+export const STALE_COMPLETION: AuthFeedback = {
+  tone: "info",
+  message:
+    "Your earlier request has finished. If you changed the address in the box, check the inbox for the address you first used, or press the button again for the new one.",
+  offer: null,
+  cooldownSeconds: null,
+};
 
 /** Shared synchronous in-flight guard, one per controller instance. */
 export function createJoinController(host: JoinHost, timeoutMs = DEFAULT_REQUEST_TIMEOUT_MS) {
@@ -130,7 +148,7 @@ export function createJoinController(host: JoinHost, timeoutMs = DEFAULT_REQUEST
     stale: boolean,
   ) {
     host.applyCooldown(DEFAULT_EMAIL_COOLDOWN_SECONDS, false);
-    if (stale) return;
+    if (stale) return host.setStaleFeedback(STALE_COMPLETION);
     if (action === "signup") host.setAwaitingConfirmation(submitted);
     if (action !== "reset") host.setConfirmationHelp(true);
     host.setFeedback(describeAuthSuccess(action));
@@ -158,7 +176,7 @@ export function createJoinController(host: JoinHost, timeoutMs = DEFAULT_REQUEST
   function failure(action: "signin" | "signup" | "resend" | "reset" | "update-password", error: unknown, stale: boolean) {
     const limit = cooldownFor(error);
     if (limit) host.applyCooldown(limit.seconds, limit.alsoAttempts);
-    if (stale) return;
+    if (stale) return host.setStaleFeedback(STALE_COMPLETION);
     const mapped = describeAuthError(action, error as Record<string, unknown>);
     host.setFeedback(mapped);
     if (mapped.offer === "resend-confirmation") host.setConfirmationHelp(true);
