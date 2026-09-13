@@ -258,17 +258,28 @@ function ClassroomSession({
                   <div className="academy-media-empty">
                     <PlayCircle size={40} />
                     <div>
-                      <h2>{media ? "Sign in to watch" : "Recording not connected yet"}</h2>
+                      <h2>
+                        {media || accountRequired
+                          ? "Create your free account to watch"
+                          : "Recording not connected yet"}
+                      </h2>
                       <p>
-                        {media
-                          ? "Keep your place, your watch map and your learning progress in your free account."
+                        {media || accountRequired
+                          ? "The free training is ready. A free account opens the recording and keeps your place, your watch map and your notes."
                           : isSession
                             ? "This build-room replay will appear here when the recording is connected."
                             : "You can start with the AI notes and activity below."}
                       </p>
-                      {!session.email ? <a href={academyJoinHref("/class")}>Join the free classroom →</a> : null}
+                      {!session.email ? (
+                        <a href={academyJoinHref(lessonId === "free-webinar" ? "/class" : "/summit")}>
+                          {accountRequired || media
+                            ? "Create a free account or sign in →"
+                            : "Join the free classroom →"}
+                        </a>
+                      ) : null}
                     </div>
                   </div>
+
                 )}
               </div>
               {media && session.email ? (
