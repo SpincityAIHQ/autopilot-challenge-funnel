@@ -319,7 +319,7 @@ function Join() {
   }, [feedback, emailCooldownUntil, attemptCooldownUntil]);
 
   const alerts = (
-    <div ref={alertRef} className="academy-auth-alerts">
+    <div ref={alertRef} id="academy-join-alert" className="academy-auth-alerts">
       {cooldownText ? (
         <p role="status" aria-live="polite" className="academy-status">
           {cooldownText}
