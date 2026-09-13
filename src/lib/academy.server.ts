@@ -18,7 +18,7 @@ import {
   type LessonContent,
   type LessonProgress,
 } from "./academy";
-import { lessonContent, scoreAnswers } from "./academy-content.server";
+import { lessonContent, scoreAnswers, slotMedia } from "./academy-content.server";
 import { isStaffEmail } from "./academy-staff.server";
 import { configuredVimeo, connectedSlots, vimeoDuration } from "./academy-media.server";
 import { loadTranscript, availableTranscriptIds, type TranscriptStore } from "./academy-transcript.server";
