@@ -20,3 +20,9 @@ Open (owner action required):
 - [x] Player shows retry guidance when the Vimeo embed never responds
 - [ ] Owner: confirm the free video's Vimeo privacy allows embedding on aiautopilotsummit.com
 - [ ] Publish after owner approval (not published in this build)
+- [x] /join: in-page validation messages, scrolled into view on phones
+- [x] /join: bounded auth request so "Working…" cannot stick forever
+- [x] Free lesson no longer waits on the paid entitlement lookup
+- [x] Optional nurture queueing can no longer close a classroom
+- [x] Signed-in lesson errors offer retry instead of a purchase page
+- [x] Video player reports its own playback errors

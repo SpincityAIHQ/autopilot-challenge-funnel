@@ -91,6 +91,11 @@ describe("Join page renders feedback with the button", () => {
     expect(source).toContain("validateJoinForm");
   });
 
+  it("scrolls the message into view on a tall phone card", () => {
+    expect(source).toContain("scrollIntoView");
+    expect(source).toContain("alertRef");
+  });
+
   it("places the alert region inside the form, not only at the card foot", () => {
     const start = source.indexOf("<form onSubmit={onSubmit}");
     const end = source.indexOf("</form>", start);
