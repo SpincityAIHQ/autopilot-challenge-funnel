@@ -36,6 +36,10 @@ describe("Error recovery offers the right next step", () => {
 describe("Player surfaces its own failures", () => {
   it("subscribes to the player error event", () => {
     expect(player).toContain('"seeked", "error"');
-    expect(player).toContain("The recording could not start in this browser");
+  });
+
+  it("drives its notes from the tested health state, not ad-hoc flags", () => {
+    expect(player).toContain("createPlayerHealth");
+    expect(player).not.toContain("talking.current");
   });
 });
