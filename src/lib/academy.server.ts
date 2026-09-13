@@ -75,6 +75,22 @@ export async function grantsFor(user: User) {
   const { redeemedGrants } = await import("./academy-access.server");
   return redeemedGrants(user);
 }
+/**
+ * Grants for PERSONALISATION only (ticket label, guide, next step).
+ *
+ * A paid-service failure must never close a free room or block a free signup,
+ * so this degrades to the free default. It never grants anything, never
+ * mutates entitlements, and is NEVER used to authorise paid material: every
+ * paid lesson and paid action still goes through the strict `grantsFor` guard.
+ */
+export async function optionalGrantsFor(user: User): Promise<string[]> {
+  try {
+    return await grantsFor(user);
+  } catch {
+    console.warn("ACADEMY_GRANTS_LOOKUP_UNAVAILABLE");
+    return [];
+  }
+}
 async function authorizeLesson(user: User, id: string) {
   const meta = LESSONS.find((x) => x.id === id);
   if (!meta) throw new AcademyError("This lesson was not found.", 404);
@@ -87,6 +103,13 @@ async function authorizeLesson(user: User, id: string) {
       403,
     );
   return meta;
+}
+/** Authorise, and reuse the authoritative grants when a paid tier required them. */
+async function authorizeLessonWithGrants(user: User, id: string) {
+  const meta = await authorizeLesson(user, id);
+  // Free tier: personalisation only, so a paid-service failure cannot close it.
+  const grants = meta.tier === "free" ? await optionalGrantsFor(user) : await grantsFor(user);
+  return { meta, grants };
 }
 function check<T extends { error: unknown }>(r: T): T {
   if (r.error) throw new AcademyError("Your changes could not be saved. Please try again.", 503);
@@ -252,7 +275,7 @@ export async function handleAcademyGet(request: Request, path: string) {
   }
   if (path === "lesson") {
     const id = url.searchParams.get("lessonId") ?? "";
-    await authorizeLesson(user, id);
+    const authorized = await authorizeLessonWithGrants(user, id);
     await recordLearningActivity(db, user, "GET", "lesson");
     const progress = check(
       await db
@@ -271,7 +294,7 @@ export async function handleAcademyGet(request: Request, path: string) {
       progress.duration = 0;
       progress.position = 0;
     }
-    const grants = await grantsFor(user);
+    const grants = authorized.grants;
     return {
       lesson,
       progress,
@@ -501,7 +524,9 @@ export async function handleAcademyPost(request: Request, path: string) {
         p_sms: d.smsConsent && Boolean(phone),
       }),
     );
-    const grants = await grantsFor(user);
+    // Registration is already saved. Ticket/next-step is personalisation: a
+    // paid-service failure must not fail a completed free signup.
+    const grants = await optionalGrantsFor(user);
     return { ok: true, ticket: ticketFor(grants), nextPath: grants.length ? "/learn" : "/class" };
   }
 

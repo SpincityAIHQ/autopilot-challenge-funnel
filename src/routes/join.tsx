@@ -311,10 +311,12 @@ function Join() {
   const alertRef = useRef<HTMLDivElement | null>(null);
   // On a phone the card is taller than the screen, so a message rendered below
   // the fold reads as "nothing happened". Bring it into view when it changes.
+  // Scroll once per NEW message or cooldown start — never on each countdown
+  // tick, which would yank the page every second for the whole countdown.
   useEffect(() => {
-    if (!statusText && !cooldownText) return;
+    if (!feedback && !emailCooldownUntil && !attemptCooldownUntil) return;
     alertRef.current?.scrollIntoView({ block: "center", behavior: "auto" });
-  }, [statusText, cooldownText]);
+  }, [feedback, emailCooldownUntil, attemptCooldownUntil]);
 
   const alerts = (
     <div ref={alertRef} className="academy-auth-alerts">
