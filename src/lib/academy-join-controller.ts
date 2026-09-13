@@ -65,9 +65,37 @@ export interface JoinHost {
   onSession(): void;
 }
 
+/** A request that never answers must not leave the button stuck on "Working…". */
+export const DEFAULT_REQUEST_TIMEOUT_MS = 25000;
+
 /** Shared synchronous in-flight guard, one per controller instance. */
-export function createJoinController(host: JoinHost) {
+export function createJoinController(host: JoinHost, timeoutMs = DEFAULT_REQUEST_TIMEOUT_MS) {
   let inFlight = false;
+
+  /**
+   * Bounded wait. A timeout is deliberately mapped to the safe temporary
+   * outcome: the request may still have been accepted upstream, so the copy
+   * never claims nothing happened.
+   */
+  function bounded<T>(work: Promise<T>): Promise<T> {
+    if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) return work;
+    return new Promise<T>((resolve, reject) => {
+      const timer = setTimeout(
+        () => reject({ name: "AuthRetryableFetchError", status: 504 }),
+        timeoutMs,
+      );
+      work.then(
+        (value) => {
+          clearTimeout(timer);
+          resolve(value);
+        },
+        (error) => {
+          clearTimeout(timer);
+          reject(error);
+        },
+      );
+    });
+  }
 
   function cooldownFor(error: unknown): { seconds: number; alsoAttempts: boolean } | null {
     const known = classifyAuthError(error);
@@ -93,6 +121,7 @@ export function createJoinController(host: JoinHost) {
       host.setBusy(false);
     }
   }
+
 
   /** Accepted-request outcome for signup / resend / reset. Never reveals existence. */
   function acceptedEmailRequest(
