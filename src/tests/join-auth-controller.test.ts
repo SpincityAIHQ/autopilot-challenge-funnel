@@ -15,6 +15,7 @@ function harness(client: Partial<JoinAuthClient> = {}) {
     feedback: null as AuthFeedback | null,
     awaiting: null as string | null,
     confirmationHelp: false,
+    staleFeedback: null as AuthFeedback | null,
     sessions: 0,
     cooldowns: [] as { seconds: number; alsoAttempts: boolean }[],
     token: 0,
@@ -41,6 +42,9 @@ function harness(client: Partial<JoinAuthClient> = {}) {
       state.feedback = f;
     },
     applyCooldown: (seconds, alsoAttempts) => state.cooldowns.push({ seconds, alsoAttempts }),
+    setStaleFeedback: (f: AuthFeedback) => {
+      state.staleFeedback = f;
+    },
     setAwaitingConfirmation: (e) => {
       state.awaiting = e;
     },

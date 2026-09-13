@@ -19,6 +19,7 @@ function host(overrides: Partial<Record<string, unknown>> = {}) {
       setBusy: (b: boolean) => state.busy.push(b),
       setFeedback: (f: unknown) => state.feedback.push(f),
       applyCooldown: (s: number, a: boolean) => state.cooldowns.push([s, a]),
+      setStaleFeedback: () => {},
       setAwaitingConfirmation: () => {},
       setConfirmationHelp: () => {},
       onSession: () => {
