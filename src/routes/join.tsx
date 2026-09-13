@@ -461,8 +461,14 @@ function Join() {
                   );
                 }}
                 required
+                // Frozen while a request is open: editing here would make the
+                // reply stale for no reason. Programmatic changes still use
+                // the neutral stale path.
+                readOnly={busy}
+                aria-describedby={busy ? "academy-join-alert" : undefined}
                 value={email}
                 onChange={(e) => {
+                  if (busy) return;
                   requestToken.current += 1;
                   setEmail(e.target.value);
                   setFeedback(null);
