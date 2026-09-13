@@ -6,13 +6,23 @@ import { slotMedia } from "../lib/academy-content.server";
 const FREE_URL = "https://aiautopilotsummit.com/api/academy/lesson?lessonId=free-webinar";
 const CONFIGURED = "https://vimeo.com/1225785709";
 
-function restore(value: string | undefined) {
-  if (value === undefined) delete process.env.ACADEMY_VIMEO_FREE_WEBINAR;
-  else process.env.ACADEMY_VIMEO_FREE_WEBINAR = value;
+/** Every environment variable this file touches, snapshotted and restored. */
+const TOUCHED = ["ACADEMY_VIMEO_FREE_WEBINAR", "ACADEMY_MEDIA_FREE_WEBINAR"] as const;
+
+function snapshot(): Record<string, string | undefined> {
+  return Object.fromEntries(TOUCHED.map((name) => [name, process.env[name]]));
+}
+
+function restore(saved: Record<string, string | undefined>) {
+  for (const name of TOUCHED) {
+    const value = saved[name];
+    if (value === undefined) delete process.env[name];
+    else process.env[name] = value;
+  }
 }
 
 describe("Free training visibility for a signed-out visitor", () => {
-  const original = process.env.ACADEMY_VIMEO_FREE_WEBINAR;
+  const original = snapshot();
   afterEach(() => restore(original));
 
   it("never sends the recording to an unauthenticated request", async () => {
@@ -55,7 +65,9 @@ describe("Classroom copy for the signed-out free training visitor", () => {
   const source = readFileSync("src/components/AcademyClassroom.tsx", "utf8");
 
   it("offers account creation instead of claiming the recording is missing", () => {
-    expect(source).toContain("Create your free account to watch");
+    expect(source).toContain("Sign in with a free account to open the training");
+    // Never assert readiness from configuration alone: playback is unverified.
+    expect(source).not.toContain("The free training is ready");
     expect(source).toContain("accountRequired");
     expect(source).toContain("Create a free account or sign in →");
   });
