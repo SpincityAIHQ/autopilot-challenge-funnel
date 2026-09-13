@@ -114,10 +114,10 @@ describe("An interrupted request is never silently swallowed", () => {
     // The provider cooldown is honoured regardless of staleness...
     expect(cooldowns).toEqual([[60, false]]);
     // ...and the outcome is reported, neutrally, instead of disappearing.
-    expect(stale).toHaveLength(1);
+    expect(stale.length).toBe(1);
     expect((stale[0] as { message: string }).message).toContain("earlier request has finished");
     expect((stale[0] as { message: string }).message).not.toContain("account");
-    expect(fresh).toHaveLength(0);
+    expect(fresh.length).toBe(0);
   });
 
   it("applies no cooldown and never retries after a timeout", async () => {
@@ -144,7 +144,7 @@ describe("An interrupted request is never silently swallowed", () => {
     await controller.signUp("buyer@example.com", "a".repeat(12));
     await new Promise((r) => setTimeout(r, 60));
     expect(calls).toBe(1);
-    expect(cooldowns).toHaveLength(0);
+    expect(cooldowns.length).toBe(0);
   });
 
   it("does not let a late answer overwrite newer feedback", async () => {
