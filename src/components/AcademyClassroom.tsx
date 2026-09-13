@@ -60,6 +60,7 @@ function ClassroomSession({
   const [search, setSearch] = useState("");
   const [transcriptVisible, setTranscriptVisible] = useState(800);
   const [panel, setPanel] = useState<"notes" | "book" | "spin">("notes");
+  const [accountRequired, setAccountRequired] = useState(false);
   async function load() {
     const result = await academyApi<{
       lesson: LessonContent;
@@ -67,14 +68,17 @@ function ClassroomSession({
       ticket?: Ticket;
       tutorReady: boolean;
       tutorProvider?: string;
+      accountRequired?: boolean;
     }>(`lesson?lessonId=${encodeURIComponent(lessonId)}`);
     setLesson(result.lesson);
     setProgress(result.progress);
     setTicket(result.ticket ?? null);
     setTutorReady(result.tutorReady);
     setTutorProvider(result.tutorProvider ?? "");
+    setAccountRequired(result.accountRequired === true);
     return result;
   }
+
   useEffect(() => {
     setLesson(null);
     setError("");
