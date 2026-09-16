@@ -53,9 +53,9 @@ describe("video-first conversion order", () => {
     expect(supportingCopy).toBeGreaterThan(form);
   });
 
-  it("puts the General Admission ticket button immediately after the checkout video", () => {
+  it("puts the free account button immediately after the checkout video", () => {
     const video = CHECKOUT.indexOf("<FunnelVideoSlot");
-    const button = CHECKOUT.indexOf("Reserve My Seat", video);
+    const button = CHECKOUT.indexOf("Create my free account", video);
     const details = CHECKOUT.indexOf("How communication works", button);
     expect(video).toBeGreaterThan(-1);
     expect(button).toBeGreaterThan(video);
@@ -73,8 +73,11 @@ describe("video-first conversion order", () => {
   });
 });
 
-describe("checkout owner walkthrough", () => {
-  it("continues to the GA confirmation in QA mode", () => {
-    expect(CHECKOUT).toContain('window.location.href = "/confirmed?qaStage=ga"');
+describe("checkout page sells nothing", () => {
+  it("offers a free account instead of any payment handoff", () => {
+    expect(CHECKOUT).toContain("Create my free account");
+    expect(CHECKOUT).not.toContain("resolveCheckoutUrl");
+    expect(CHECKOUT).not.toContain("isHandoffAllowed");
+    expect(CHECKOUT).not.toContain("formatUsd");
   });
 });

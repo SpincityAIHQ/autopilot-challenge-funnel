@@ -7,6 +7,7 @@ import {
   isAllowedCheckoutUrl,
   resolveCheckoutUrl,
   isHandoffAllowed,
+  PAYMENTS_ENABLED,
   DEFAULT_COMMAS_CHECKOUT_HOSTS,
 } from "@/lib/challenge-config";
 
@@ -76,9 +77,11 @@ describe("summit video configuration", () => {
 });
 
 describe("isHandoffAllowed", () => {
-  it("requires salesEnabled AND legalReady AND resolvable URL", () => {
-    expect(isHandoffAllowed("ga", cfg)).toBe(true);
-    expect(isHandoffAllowed("intensive", cfg)).toBe(false);
+  it("is off for every product while payments are disabled", () => {
+    expect(PAYMENTS_ENABLED).toBe(false);
+    for (const product of ["ga", "vip_upgrade", "vault", "intensive"] as const) {
+      expect(isHandoffAllowed(product, cfg)).toBe(false);
+    }
     expect(isHandoffAllowed("ga", { ...cfg, salesEnabled: false })).toBe(false);
     expect(isHandoffAllowed("ga", { ...cfg, legalReady: false })).toBe(false);
   });
