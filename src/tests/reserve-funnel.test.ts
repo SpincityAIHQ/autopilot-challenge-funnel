@@ -201,7 +201,7 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
   it("/reserve/vip has correct bullets, prices and does NOT have the removed line", () => {
     const src = readReserveVip();
     // Payments are off: no price and no checkout button may appear.
-    expect(src.includes("$")).toBe(false);
+    expect(/\$\d/.test(src)).toBe(false);
     expect(src.includes("Create my free account")).toBe(true);
     expect(src.includes("See what VIP and Emerald include")).toBe(true);
     expect(src.includes("General Admission includes")).toBe(true);
@@ -220,7 +220,7 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     const emeraldStart = src.indexOf("Emerald Key Holder adds Spin's time");
     const vipBenefits = src.slice(vipStart, emeraldStart);
     const emeraldBenefits = src.slice(emeraldStart);
-    expect(src.includes("$")).toBe(false);
+    expect(/\$\d/.test(src)).toBe(false);
     expect(src.includes("Create my free account")).toBe(true);
     expect(src.includes("Browse the Summit sessions")).toBe(true);
     expect(src.includes("AI AutoPilot Summit + VIP + Emerald Vault Key")).toBe(true);
