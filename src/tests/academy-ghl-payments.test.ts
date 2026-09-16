@@ -137,13 +137,11 @@ describe("GHL payment readback and transport", () => {
     assert.throws(() => ghlPaymentConfiguration({ ...env, ACADEMY_GHL_PAYMENTS_ENABLED: "false" }));
     assert.throws(() => ghlPaymentConfiguration({ ...env, ACADEMY_GHL_TICKET_PRICES_JSON: "[]" }));
   });
-  it("keeps Shopify default; GHL checkout requires the explicit flag, actual link, and allowed host", () => {
-    assert.match(academyCheckoutUrl("ga", {})!, /^https:\/\/spincityhq.com\//);
-    assert.equal(academyCheckoutUrl("unknown", {}), null);
+  it("returns no checkout URL for any tier while payments are off", () => {
     const ready = { ...env, ACADEMY_CHECKOUT_PROVIDER: "ghl", ACADEMY_GHL_CHECKOUT_HOSTS: "checkout.example.com", ACADEMY_GHL_CHECKOUT_LINKS_JSON: JSON.stringify({ ga: "https://checkout.example.com/actual-link" }) };
-    assert.equal(academyCheckoutUrl("ga", ready), "https://checkout.example.com/actual-link");
-    assert.equal(academyCheckoutUrl("vip", ready), null);
-    assert.equal(academyCheckoutUrl("ga", { ...ready, ACADEMY_GHL_CHECKOUT_HOSTS: "other.example.com" }), null);
-    assert.equal(academyCheckoutUrl("ga", { ...ready, ACADEMY_GHL_PAYMENTS_ENABLED: "false" }), null);
+    for (const tier of ["ga", "vip", "vault", "accelerator", "unknown"]) {
+      assert.equal(academyCheckoutUrl(tier, {}), null);
+      assert.equal(academyCheckoutUrl(tier, ready), null);
+    }
   });
 });

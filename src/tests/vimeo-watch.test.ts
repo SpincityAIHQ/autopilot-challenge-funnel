@@ -143,8 +143,9 @@ describe("Tickets and the next stage", () => {
     expect(ticketFor(["accelerator"]).code).toBe("ACC-FREE");
   });
   it("invites one stage up and stops when everything is held", () => {
-    expect(nextOffer(ticketFor([]))?.tier).toBe("ga");
-    expect(nextOffer(ticketFor(["vip"]))?.tier).toBe("vault");
+    // Nothing on the Summit is sold, so the only onward step is the Accelerator.
+    expect(nextOffer(ticketFor([]))?.tier).toBe("accelerator");
+    expect(nextOffer(ticketFor(["vip"]))?.tier).toBe("accelerator");
     expect(nextOffer(ticketFor(["vault"]))?.tier).toBe("accelerator");
     expect(nextOffer(ticketFor(["vault", "accelerator"]))).toBeNull();
   });
