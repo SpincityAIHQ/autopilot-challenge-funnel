@@ -198,6 +198,7 @@ export function resolveKeynoteCheckoutUrl(cfg: CommasConfig = getCommasConfig())
 }
 
 export function isKeynoteHandoffAllowed(cfg: CommasConfig = getCommasConfig()): boolean {
+  if (!PAYMENTS_ENABLED) return false;
   if (isQaReviewRuntimeEnabled()) return false;
   if (!cfg.salesEnabled) return false;
   if (!cfg.legalReady) return false;
