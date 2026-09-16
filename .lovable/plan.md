@@ -1,72 +1,73 @@
-# Stripe readiness inspection (read-only) — no changes made
+# Open the Summit free for 7 days, remove all payment buttons
 
-## Corrected readiness summary
+Nobody is charged anywhere on the site. Everyone who signs in gets the full
+Summit experience free for 7 days. Instead of buying, people can text you to
+donate, ask about the Accelerator or a consultation, or join the Skool
+community.
 
-Built-in Stripe on Lovable is a **payment service provider** integration, with
-Stripe Managed Payments as an **optional** add-on. It is not "Lovable as
-merchant of record"; any earlier wording to that effect was wrong and is removed.
+## What visitors will see
 
-- Plan and backend requirements **appear met**: Business plan active, payment
-  method and billing address on file, Lovable Cloud database available.
-- **Unverified:** merchant approval, this project's exact payment-management
-  role, and whether any Stripe account is actually connected to this project.
-- Native payment eligibility/enable tools (`recommend_payment_provider`,
-  `enable_stripe_payments`, `batch_create_product`) are **not available in this
-  session**, so merchant approval, account claim, and business verification
-  status cannot be observed from here.
-- An externally verified `list_custom_connectors` returned **zero**. The
-  workspace catalog entries named "Stripe (live)" and "Stripe (sandbox)" are
-  therefore **not** established connected accounts and must not be read as one.
-  Neither is linked to this project.
+- **No prices, no buy buttons, no checkout anywhere.** Every "Get instant
+  access", "Reserve my seat", "$22 / $99 / $298 / $4,000" button and price tag
+  on the Summit, Vault, reserve and offer pages is replaced.
+- **One clear free-week banner** on Summit, Vault, My Learning and the class
+  pages: the full Summit library is open to everyone who signs in, free, for 7
+  days. Sign in or create a free account and start watching.
+- **A single "what's next" panel** replacing the old ticket cards:
+  - Enjoyed it? Text **510-747-5291** to donate.
+  - Interested in the Accelerator or a 1-on-1 consultation? Text the same
+    number with what you're after.
+  - Join the community: https://www.skool.com/the-ascended-masters/about
+- **Accelerator stays invite-based** — its page keeps the lessons for current
+  students and points everyone else to the text line instead of a price.
 
-## Current project payment state
+## How the free week works
 
-- No Stripe code anywhere in `src/`. Only reference is an empty
-  `ACADEMY_GHL_STRIPE_ACCOUNT_ID` inside the GHL adapter.
-- Project secrets (names only): ACADEMY_ACCESS_CODE_SECRET,
-  ACADEMY_VIMEO_ACCELERATOR_DAY_01, LOVABLE_API_KEY, RATE_LIMIT_HMAC_SECRET,
-  SUMMIT_OWNER_EMAILS, SUMMIT_OWNER_PASSWORD. No Stripe or Shopify credentials.
-- Shopify bridge unconfigured: `ACADEMY_SHOPIFY_ENABLED` and
-  `ACADEMY_PAID_ACCESS_ENABLED` unset, reconciliation returns 503.
-- Owner reports **no working checkout today**. The current Shopify links are
-  therefore treated as broken, not as a fallback to keep live.
+- On the server, any signed-in learner with a confirmed email is treated as
+  holding the full Summit level (GA + VIP + Emerald Vault) while the open week
+  is running. Accelerator content is NOT included.
+- The window has an explicit end date stored as a server setting. When it
+  passes, access quietly reverts to real entitlements — no code change needed
+  to close it.
+- Existing grants (the Q4 cohort, imported buyers, owner grants, Accelerator
+  students) are untouched and keep working before, during and after the week.
+- Nothing is sent to learners automatically; no emails, no messages.
 
-## Existing adapter shape (observed, not endorsed for reuse)
+## Technical detail
 
-```text
-checkout link  -> src/lib/academy-checkout.server.ts (ACADEMY_CHECKOUT_PROVIDER)
-                  routed by src/routes/api/public/checkout/$tier.ts
-webhook        -> src/routes/api/public/webhooks/{shopify,ghl-payment}.ts
-verify + map   -> academy-commerce.server.ts, academy-ghl-payments.server.ts
-persist        -> academy_reconcile_order RPC -> academy_orders, academy_grants
-deliver        -> academy-delivery.server.ts -> access code -> outbox -> email
-gate           -> academy-access.server.ts (ACADEMY_PAID_ACCESS_ENABLED)
-```
+1. `src/lib/academy-access.server.ts` — in `redeemedGrants`, after the
+   imported-ticket lookup, union in `["ga","vip","vault"]` when an open-access
+   window is active. New small helper `openAccessActive()` reading
+   `ACADEMY_OPEN_ACCESS_UNTIL` (ISO timestamp; absent/expired = off). Never adds
+   `accelerator`. Paid guards, code redemption and reconciliation untouched.
+2. `.env` / `.env.example` — add `ACADEMY_OPEN_ACCESS_UNTIL` set 7 days out, with
+   a comment that clearing it ends the free week.
+3. `src/lib/academy.ts` — replace `SUMMIT_OFFERS` / `ACCELERATOR_OFFER` checkout
+   URLs and prices with a single exported `SUPPORT_OPTIONS` (donate-by-text,
+   Accelerator/consult-by-text, Skool link) plus `OPEN_ACCESS_NOTICE` copy.
+   `nextOffer()` returns the support panel instead of a paid upsell.
+4. `src/routes/summit.tsx`, `src/routes/vault.tsx`, `src/routes/learn.tsx`,
+   `src/routes/accelerator.tsx`, `src/routes/class.tsx` — swap ticket cards and
+   locked-state copy for the free-week banner and support panel; locked lesson
+   states become "open this week — sign in".
+5. `src/routes/checkout.tsx`, `src/routes/reserve/*`, `src/routes/offer/*` —
+   remove payment CTAs; render the free-week/support panel instead. Routes stay
+   alive so old links don't 404.
+6. `src/routes/api/public/checkout/$tier.ts` — stop redirecting to any store;
+   respond with a permanent redirect to `/summit`. `academy-checkout.server.ts`
+   returns null for every tier (payments off).
+7. `src/components/reserve/LandingReservationForm.tsx` and homepage copy — keep
+   lead capture, drop purchase language.
+8. Tests: update `src/tests/checkout-config.test.ts`,
+   `branding-checkout-flow.test.ts`, `reserve-funnel.test.ts`,
+   `entitlement-model.test.ts`, `tiers.test.ts` for the no-payment state; add
+   coverage that the open window grants Summit tiers but never Accelerator, and
+   that an expired window grants nothing extra.
+9. No schema changes, no migrations, no sends, no secret changes. Payments stay
+   disabled; Shopify/Stripe/GHL config is left alone so it can be restored later.
 
-`academy_reconcile_order` is Shopify-shaped (order/line/variant identifiers,
-`shopify_updated_at` ordering). Whether it can serve Stripe is **unknown until
-inspected**; no claim of unchanged reuse is made here.
+## Not included
 
-## Owner-only blocker (exact next step)
-
-Open this project's **More > Payments > Stripe** and complete the actual
-provider setup and account claim/verification form there. Native setup tools are
-unavailable in this session, so nothing further can proceed until that shows a
-connected, approved Stripe account and the project's payment-management role.
-
-## Fallback only — not approved, not started
-
-If built-in Stripe turns out to be unavailable to this project, a custom adapter
-would be considered separately. Any such work would have to require:
-
-- entitlement granted only on **verified paid** status, never on redirect
-- asynchronous payment **success and failure** handling (delayed/pending methods)
-- refund, dispute and cancellation reconciliation
-- provider-qualified idempotency keys (event id scoped per provider and mode)
-- strict **test/live separation** of keys, webhooks, prices and granted access
-- a prior inspection of `academy_reconcile_order` before any reuse
-
-Webinar scope stays GA / VIP / Emerald Summit replays; Accelerator is downstream.
-
-Nothing was enabled, created, claimed, linked, published, sent or changed. The
-`/join` recovery fixes are untouched. This note is the only file edited.
+- No donation processing in the app (text only, per your instruction).
+- No changes to Accelerator entitlements or existing student access.
+- Publishing is a separate step after you review the preview.
