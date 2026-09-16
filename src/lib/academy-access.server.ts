@@ -198,7 +198,7 @@ export async function redeemedGrants(user: User, forceRefresh = false) {
     .eq("redeemed_by", user.id)
     .gt("access_until", now);
   if (codes.error) throw new AcademyError("Course access could not be verified.", 503);
-  if (!codes.data?.length) return imported;
+  if (!codes.data?.length) return withOpenAccess(imported);
   const ids = [...new Set(codes.data.map((c) => c.order_id))];
   const orders = await db
     .from("academy_orders")
@@ -232,5 +232,5 @@ export async function redeemedGrants(user: User, forceRefresh = false) {
         ),
     )
     .map((c) => c.tier);
-  return [...new Set([...imported, ...redeemed])];
+  return withOpenAccess([...new Set([...imported, ...redeemed])]);
 }
