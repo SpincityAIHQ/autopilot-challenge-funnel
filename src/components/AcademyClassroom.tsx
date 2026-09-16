@@ -290,9 +290,11 @@ function ClassroomSession({
                       <p>
                         {media || accountRequired
                           ? "A free account opens the training and keeps your place, your watch map and your notes."
-                          : isSession
-                            ? "This build-room replay will appear here when the recording is connected."
-                            : "You can start with the AI notes and activity below."}
+                          : lesson?.mediaNotice
+                            ? lesson.mediaNotice
+                            : isSession
+                              ? "This build-room replay will appear here when the recording is connected."
+                              : "You can start with the AI notes and activity below."}
                       </p>
                       {!session.email ? (
                         <a href={academyJoinHref(lessonId === "free-webinar" ? "/class" : "/summit")}>

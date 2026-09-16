@@ -1,5 +1,13 @@
 import { LESSONS, parseChapters, type LessonContent, type LessonMedia } from "./academy";
 import { parseVimeoUrl, vimeoEmbedUrl } from "./vimeo";
+import {
+  CLASS_2026_09_14_CHECKS,
+  CLASS_2026_09_14_ID,
+  CLASS_2026_09_14_MEDIA_NOTICE,
+  CLASS_2026_09_14_PARAGRAPHS,
+  CLASS_2026_09_14_VERSION,
+  CLASS_2026_09_14_WORKBOOK,
+} from "./academy-class-2026-09-14.server";
 
 // Authored teaching notes. These are not verbatim transcripts or invented video timestamps.
 const units: Record<string, { heading: string; text: string }[]> = {
@@ -71,6 +79,7 @@ const units: Record<string, { heading: string; text: string }[]> = {
       text: "Name the person who handles a failed payment, unavailable model or broken automation. Keep a rollback path and a way for customers to reach a human. Test recovery before relying on unattended operation.",
     },
   ],
+  [CLASS_2026_09_14_ID]: CLASS_2026_09_14_PARAGRAPHS,
   "implementation-lab": [
     {
       heading: "Build one working journey",
@@ -284,6 +293,7 @@ const checks: Record<string, Check[]> = {
       feedback: "A restore test is evidence that recovery works.",
     },
   ],
+  [CLASS_2026_09_14_ID]: CLASS_2026_09_14_CHECKS,
   "implementation-lab": [
     {
       prompt: "What identifies a useful implementation test receipt?",
@@ -382,17 +392,21 @@ export function lessonContent(id: string): LessonContent | null {
       questions: [],
       workbook: SESSION_WORKBOOK,
     };
+  const dated = id === CLASS_2026_09_14_ID;
   return {
     id,
-    version: "2026-09-06.1",
+    version: dated ? CLASS_2026_09_14_VERSION : "2026-09-06.1",
     paragraphs: units[id],
     media,
+    mediaNotice: dated && !media ? CLASS_2026_09_14_MEDIA_NOTICE : null,
     questions: checks[id].map((q, i) => ({
       id: `${id}-${i + 1}`,
       prompt: q.prompt,
       choices: q.choices,
     })),
-    workbook: [
+    workbook: dated
+      ? CLASS_2026_09_14_WORKBOOK
+      : [
       {
         id: "problem",
         label: "The business problem",
