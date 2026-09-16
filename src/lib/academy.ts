@@ -268,12 +268,11 @@ export type Offer = {
   includes: string;
   url: string;
 };
-/** The next stage worth inviting a student into. Null when they already hold everything. */
+/**
+ * Nothing on the Summit is sold, so there is no paid step to point at. The
+ * only onward invitation is the Accelerator, and that starts with a text.
+ */
 export function nextOffer(ticket: Ticket): Offer | null {
-  const order = ["ga", "vip", "vault"] as const;
-  const idx = order.indexOf(ticket.summit as (typeof order)[number]);
-  const nextSummit = order[idx + 1];
-  if (nextSummit) return SUMMIT_OFFERS.find((o) => o.tier === nextSummit) as Offer;
   if (!ticket.accelerator) return ACCELERATOR_OFFER;
   return null;
 }
