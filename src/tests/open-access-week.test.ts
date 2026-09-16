@@ -60,8 +60,8 @@ describe("payments are off", () => {
   });
 
   it("offers donation, Accelerator interest and the community by text", () => {
-    expect(SUPPORT_OPTIONS).toHaveLength(3);
-    expect(SUPPORT_OPTIONS.filter((o) => o.href.startsWith("sms:"))).toHaveLength(2);
+    expect(SUPPORT_OPTIONS.length).toBe(3);
+    expect(SUPPORT_OPTIONS.filter((o) => o.href.startsWith("sms:")).length).toBe(2);
     expect(SUPPORT_OPTIONS.some((o) => o.href.includes("skool.com"))).toBe(true);
     expect(SUPPORT_TEXT_NUMBER).toBe("510-747-5291");
   });
