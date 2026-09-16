@@ -161,10 +161,21 @@ export function resolveCheckoutUrl(
  * Owner QA review is presentation-only. Even if live URLs are accidentally
  * present in the preview environment, every checkout handoff stays disabled.
  */
+/**
+ * PAYMENTS ARE OFF EVERYWHERE.
+ *
+ * The Summit is free for everyone during the open week, so no page may hand a
+ * visitor to a payment provider. This gate returns false for every product
+ * regardless of configuration; the rest of the resolver is kept intact so paid
+ * checkout can be restored later by flipping this one constant.
+ */
+export const PAYMENTS_ENABLED = false;
+
 export function isHandoffAllowed(
   product: ProductId,
   cfg: CommasConfig = getCommasConfig(),
 ): boolean {
+  if (!PAYMENTS_ENABLED) return false;
   if (isQaReviewRuntimeEnabled()) return false;
   if (!cfg.salesEnabled) return false;
   if (!cfg.legalReady) return false;
