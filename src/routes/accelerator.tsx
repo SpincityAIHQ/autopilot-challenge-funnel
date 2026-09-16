@@ -78,6 +78,24 @@ function Accelerator() {
 
         </div>
         <div className="academy-section-heading" style={{ marginTop: 48 }}>
+          <p className="academy-eyebrow">Weekly implementation lab</p>
+          <h2>September 14, 2026.</h2>
+        </div>
+        <article className="academy-card">
+          <p className="academy-eyebrow">Accelerator · September 14, 2026</p>
+          <h3>CEO Calendar, AI Workflows &amp; Client Outreach</h3>
+          <p>
+            Turn your calendar into a working operating plan, specify one AI workflow, and research
+            your first ten prospects.
+          </p>
+          <p className="academy-muted">
+            Class notes and practice ready. Replay connection pending verification.
+          </p>
+          <a className="academy-button" href="/lesson/accelerator-2026-09-14">
+            Open the class notes and practice
+          </a>
+        </article>
+        <div className="academy-section-heading" style={{ marginTop: 48 }}>
           <p className="academy-eyebrow">Week one · build along</p>
           <h2>Day 1 through Day 7.</h2>
           <p>
