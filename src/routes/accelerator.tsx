@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AcademyFrame } from "@/components/AcademyFrame";
-import { ACCELERATOR_DAYS, ACCELERATOR_OFFER } from "@/lib/academy";
+import {
+  ACCELERATOR_DAYS,
+  ACCELERATOR_OFFER,
+  SUPPORT_TEXT_HREF,
+  SUPPORT_TEXT_NUMBER,
+} from "@/lib/academy";
 import { useCatalogue } from "@/lib/academy-client";
 import { WEEK_ONE } from "@/lib/accelerator-week-one";
 export const Route = createFileRoute("/accelerator")({
@@ -37,20 +42,16 @@ function Accelerator() {
                 <span>04</span>Instructor review of your implementation lab
               </li>
             </ol>
-            <p className="academy-price">
-              ${ACCELERATOR_OFFER.price.toLocaleString()}
-              <small>USD</small>
-            </p>
-            <a
-              className="academy-button"
-              href={ACCELERATOR_OFFER.url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Purchase your Accelerator seat
+            <p className="academy-price">By invitation</p>
+            <a className="academy-button" href={SUPPORT_TEXT_HREF}>
+              Text {SUPPORT_TEXT_NUMBER} about the Accelerator
             </a>
+            <p className="academy-muted">
+              Tell Spin what you are building and whether you want the Accelerator or a 1-on-1
+              consultation. No checkout, no card on this site.
+            </p>
             <a className="academy-text-button" href="/redeem">
-              Already purchased? Redeem your code →
+              Already a student? Activate your access →
             </a>
           </div>
           <div className="academy-card academy-card-gold">
