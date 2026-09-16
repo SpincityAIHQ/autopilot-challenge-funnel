@@ -109,43 +109,92 @@ export const LESSONS: LessonMeta[] = [
 export function lessonHref(id: string) {
   return id === "free-webinar" ? "/class" : `/lesson/${id}`;
 }
+/**
+ * Payments are OFF across the whole Summit. Every tier below is open to any
+ * signed-in learner while the open week runs; the prices are kept at 0 so no
+ * page can render a price, and every link points at a page, never a checkout.
+ */
 export const SUMMIT_OFFERS = [
   {
     tier: "ga",
     name: "General Admission",
-    price: 22,
+    price: 0,
     label: "The foundation",
     includes: "Day 1 Main + Day 2 Main recordings",
-    url: "/api/public/checkout/ga",
+    url: "/summit",
   },
   {
     tier: "vip",
     name: "Summit + VIP",
-    price: 99,
+    price: 0,
     label: "Go deeper",
     includes: "General Admission + both VIP after-hours recordings",
-    url: "/api/public/checkout/vip",
+    url: "/summit",
   },
   {
     tier: "vault",
     name: "Emerald Vault Key",
-    price: 298,
+    price: 0,
     label: "The complete Summit",
     includes: "VIP + Day 3 Emerald intensive + the Vault: skills, prompts, plug-ins and templates",
-    url: "/api/public/checkout/vault",
+    url: "/vault",
   },
 ] as const;
 export const ACCELERATOR_OFFER = {
   tier: "accelerator",
   name: "Autopilot Accelerator",
-  price: 4000,
+  price: 0,
   label: "Guided implementation",
   includes:
     "September–December 2026 group build rooms, every day's replay, live AI Spin avatar and 1-on-1 time with SpinCity",
-  url: "/api/public/checkout/accelerator",
+  url: "/accelerator",
 } as const;
 export const COMMUNITY_URL =
   "https://www.skool.com/the-ascended-masters/about?ref=ce11d00bd3994b97bfd25e10976d9f0b";
+
+/** One text line for donations, Accelerator interest and consultations. */
+export const SUPPORT_TEXT_NUMBER = "510-747-5291";
+export const SUPPORT_TEXT_HREF = "sms:+15107475291";
+/** Shown wherever tickets used to be sold. */
+export const OPEN_ACCESS_NOTICE =
+  "Every Summit recording is open to everyone this week. Sign in with a free account and watch the whole thing — no ticket, no payment.";
+export type SupportOption = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  body: string;
+  actionLabel: string;
+  href: string;
+  external?: boolean;
+};
+export const SUPPORT_OPTIONS: SupportOption[] = [
+  {
+    id: "donate",
+    eyebrow: "If it helped you",
+    title: "Send a donation",
+    body: `Nothing is for sale here. If the learning was worth something to you, text ${SUPPORT_TEXT_NUMBER} and we will send you a way to give.`,
+    actionLabel: `Text ${SUPPORT_TEXT_NUMBER}`,
+    href: SUPPORT_TEXT_HREF,
+  },
+  {
+    id: "accelerator",
+    eyebrow: "Want to go further",
+    title: "Accelerator or a 1-on-1 consultation",
+    body: `Text ${SUPPORT_TEXT_NUMBER} with what you are building and what you want help with. Spin replies personally.`,
+    actionLabel: "Text your interest",
+    href: SUPPORT_TEXT_HREF,
+  },
+  {
+    id: "community",
+    eyebrow: "Stay with the family",
+    title: "Join the free community",
+    body: "Keep building with everyone else in the Skool community. Free to join.",
+    actionLabel: "Open the community",
+    href: COMMUNITY_URL,
+    external: true,
+  },
+];
+
 
 /**
  * Two guides. Thoth, keeper of every word and its time, tutors the public floors:
