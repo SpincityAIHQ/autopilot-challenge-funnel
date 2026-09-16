@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AcademyFrame } from "@/components/AcademyFrame";
+import { SupportPanel } from "@/components/OpenAccess";
 import { academyJoinHref } from "@/lib/academy-navigation";
 import {
   ACCELERATOR_OFFER,
   LESSONS,
+  OPEN_ACCESS_NOTICE,
   SUMMIT_OFFERS,
+  SUPPORT_TEXT_NUMBER,
   lessonHref,
   tierAllows,
   type Ticket,
@@ -89,7 +92,7 @@ function Summit() {
                       ? "Ready to watch."
                       : "Recording not connected yet."
                     : session.email
-                      ? "Unlocks with the matching Summit ticket."
+                      ? "Open free this week — reload if it still looks locked."
                       : "Sign in with your purchase email to activate your ticket."}
                 </p>
                 <a
@@ -104,12 +107,9 @@ function Summit() {
         </div>
 
         <div className="academy-section-heading" id="tickets" style={{ marginTop: 48 }}>
-          <p className="academy-eyebrow">Tickets</p>
-          <h2>Choose how far you want to go.</h2>
-          <p>
-            Every recording keeps your watch map, and Thoth knows your ticket. Review the current
-            access and refund terms at checkout.
-          </p>
+          <p className="academy-eyebrow">Open this week · free for everyone</p>
+          <h2>No tickets. Nothing to buy.</h2>
+          <p>{OPEN_ACCESS_NOTICE}</p>
         </div>
         <div className="academy-three">
           {SUMMIT_OFFERS.map((o) => (
@@ -119,28 +119,16 @@ function Summit() {
             >
               <p className="academy-eyebrow">{o.label}</p>
               <h2>{o.name}</h2>
-              <p className="academy-price">
-                ${o.price}
-                <small>USD</small>
-              </p>
+              <p className="academy-price">Open</p>
               <p>{o.includes}</p>
-              <a
-                className="academy-button"
-                href={o.url}
-                onClick={() => {
-                  void academyApi("event", {
-                    name: "checkout_clicked",
-                    offer: o.tier,
-                    eventId: crypto.randomUUID(),
-                  }).catch(() => {});
-                }}
-              >
-                Get instant access
+              <a className="academy-button" href={session.email ? "/learn" : academyJoinHref("/learn", true)}>
+                {session.email ? "Open My Learning" : "Create a free account"}
               </a>
-              <p className="academy-muted">Current terms shown at checkout.</p>
+              <p className="academy-muted">Included free this week.</p>
             </article>
           ))}
         </div>
+        <SupportPanel />
         <div className="academy-callout academy-card academy-card-gold">
           <div>
             <p className="academy-eyebrow">Already purchased?</p>
@@ -158,7 +146,7 @@ function Summit() {
           <div>
             <p className="academy-eyebrow">The next stage</p>
             <h2>{ACCELERATOR_OFFER.name}</h2>
-            <p>{ACCELERATOR_OFFER.includes}.</p>
+            <p>{ACCELERATOR_OFFER.includes}. Text {SUPPORT_TEXT_NUMBER} if you want in.</p>
           </div>
           <a href="/accelerator" className="academy-text-button">
             Explore the Accelerator →

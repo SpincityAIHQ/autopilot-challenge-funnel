@@ -39,7 +39,8 @@ const baseCfg: CommasConfig = {
 
 describe("legal-ready gate is required in addition to sales gate", () => {
   it("GA handoff blocked when legalReady=false, even with salesEnabled=true", () => {
-    expect(isHandoffAllowed("ga", baseCfg)).toBe(true);
+    // Payments are switched off site-wide, so the handoff is blocked either way.
+    expect(isHandoffAllowed("ga", baseCfg)).toBe(false);
     expect(isHandoffAllowed("ga", { ...baseCfg, legalReady: false })).toBe(false);
   });
 });
@@ -47,7 +48,9 @@ describe("legal-ready gate is required in addition to sales gate", () => {
 describe("keynote checkout uses allowlist resolver", () => {
   it("resolves an https allowlisted keynote URL", () => {
     expect(resolveKeynoteCheckoutUrl(baseCfg)).toBe("https://www.fanbasis.com/i/keynote");
-    expect(isKeynoteHandoffAllowed(baseCfg)).toBe(true);
+    // The resolver still validates the URL, but no handoff is allowed while
+    // payments are off.
+    expect(isKeynoteHandoffAllowed(baseCfg)).toBe(false);
   });
   it("rejects http, embedded creds, and off-allowlist hosts", () => {
     const bad: CommasConfig = {
@@ -123,11 +126,10 @@ describe(".env.example documents every product gate", () => {
 
 describe("checkout requires explicit legal-policy acknowledgement", () => {
   const src = readFileSync("src/routes/checkout.tsx", "utf8");
-  it("adds a legal-ack checkbox gated with `legalAck`", () => {
-    expect(src.includes("legalAck")).toBe(true);
-    expect(src.includes("I agree to the")).toBe(true);
-    expect(src.includes("if (!gateAllowed || !checkoutUrl) return")).toBe(true);
-    expect(src.includes("if (!legalAck)")).toBe(true);
-    expect(src.includes("window.location.href = checkoutUrl")).toBe(true);
+  it("takes no payment and links the policies on the free sign-up", () => {
+    expect(src.includes("Create my free account")).toBe(true);
+    expect(src.includes('to="/terms"')).toBe(true);
+    expect(src.includes('to="/privacy"')).toBe(true);
+    expect(src.includes("checkoutUrl")).toBe(false);
   });
 });

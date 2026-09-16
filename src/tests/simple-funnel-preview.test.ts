@@ -15,8 +15,8 @@ describe("simple owner funnel walkthrough", () => {
     }
   });
 
-  it("advances through all four offers without a payment in QA preview", () => {
-    expect(CHECKOUT).toContain("/confirmed?qaStage=ga");
+  it("advances through the offers without any payment", () => {
+    expect(CHECKOUT).toContain("/join?mode=signup");
     expect(VIP).toContain("/offer/implementation-vault?qaStage=vip");
     expect(VAULT).toContain("/strategy-intensive?qaStage=vault");
     expect(INTENSIVE).toContain("/next-steps?qaStage=intensive");

@@ -167,11 +167,29 @@ export async function claimEmailTickets(user: User) {
   }
   return { verificationRequired: false, confirmationPending, activated };
 }
+/**
+ * Open week: while `ACADEMY_OPEN_ACCESS_UNTIL` is a future ISO timestamp, every
+ * signed-in learner reads the full Summit library (GA + VIP + Emerald Vault).
+ * The Accelerator is never included. Clearing or passing the date closes it
+ * again with no code change; real entitlements are never modified.
+ */
+export const OPEN_ACCESS_TIERS = ["ga", "vip", "vault"] as const;
+export function openAccessActive(now: Date = new Date()): boolean {
+  const raw = process.env.ACADEMY_OPEN_ACCESS_UNTIL?.trim();
+  if (!raw) return false;
+  const until = Date.parse(raw);
+  return Number.isFinite(until) && until > now.getTime();
+}
+function withOpenAccess(grants: string[]): string[] {
+  if (!openAccessActive()) return grants;
+  return [...new Set([...grants, ...OPEN_ACCESS_TIERS])];
+}
 export async function redeemedGrants(user: User, forceRefresh = false) {
   // Owner review access: server-only allowlist, verified user email, no purchase.
   if (isStaffEmail(user.email)) return [...STAFF_TIERS];
   const imported = await importedTicketGrants(user);
-  if (process.env.ACADEMY_PAID_ACCESS_ENABLED !== "true") return imported;
+  if (process.env.ACADEMY_PAID_ACCESS_ENABLED !== "true") return withOpenAccess(imported);
+
   const db = academyDb(),
     now = new Date().toISOString();
   const codes = await db
@@ -180,7 +198,7 @@ export async function redeemedGrants(user: User, forceRefresh = false) {
     .eq("redeemed_by", user.id)
     .gt("access_until", now);
   if (codes.error) throw new AcademyError("Course access could not be verified.", 503);
-  if (!codes.data?.length) return imported;
+  if (!codes.data?.length) return withOpenAccess(imported);
   const ids = [...new Set(codes.data.map((c) => c.order_id))];
   const orders = await db
     .from("academy_orders")
@@ -214,5 +232,5 @@ export async function redeemedGrants(user: User, forceRefresh = false) {
         ),
     )
     .map((c) => c.tier);
-  return [...new Set([...imported, ...redeemed])];
+  return withOpenAccess([...new Set([...imported, ...redeemed])]);
 }

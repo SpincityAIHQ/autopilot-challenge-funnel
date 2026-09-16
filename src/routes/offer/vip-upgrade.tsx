@@ -66,13 +66,12 @@ function VipUpgradeContent() {
       Add VIP · {formatUsd(vip.priceCents)}
     </a>
   ) : (
-    <button
-      type="button"
-      disabled
-      className="inline-flex w-full cursor-not-allowed items-center justify-center rounded-md bg-muted px-5 py-3.5 font-heading text-base font-semibold text-muted-foreground"
+    <a
+      href="/join?mode=signup&next=%2Flearn"
+      className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
     >
-      VIP Checkout Link Being Connected
-    </button>
+      Open it free — create your account
+    </a>
   );
 
   return (

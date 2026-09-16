@@ -1,0 +1,41 @@
+import { OPEN_ACCESS_NOTICE, SUPPORT_OPTIONS } from "@/lib/academy";
+
+/**
+ * Shown wherever tickets used to be sold. Nothing here charges anyone.
+ */
+export function OpenAccessBanner({ note }: { note?: string }) {
+  return (
+    <div className="academy-card academy-card-gold" style={{ marginTop: 24 }}>
+      <p className="academy-eyebrow">Open this week · free for everyone</p>
+      <h2>Come in. It is all open.</h2>
+      <p>{note ?? OPEN_ACCESS_NOTICE}</p>
+    </div>
+  );
+}
+
+export function SupportPanel({ heading }: { heading?: string }) {
+  return (
+    <section className="academy-section" style={{ paddingTop: 8 }}>
+      <div className="academy-section-heading">
+        <p className="academy-eyebrow">No tickets, no checkout</p>
+        <h2>{heading ?? "Three ways to keep this going."}</h2>
+      </div>
+      <div className="academy-three">
+        {SUPPORT_OPTIONS.map((o) => (
+          <article className="academy-card" key={o.id}>
+            <p className="academy-eyebrow">{o.eyebrow}</p>
+            <h2>{o.title}</h2>
+            <p>{o.body}</p>
+            <a
+              className="academy-button"
+              href={o.href}
+              {...(o.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            >
+              {o.actionLabel}
+            </a>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}

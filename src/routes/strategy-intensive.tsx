@@ -6,6 +6,7 @@ import { TestimonialSection } from "@/components/TestimonialSection";
 import { useIntensiveSlotsRemaining } from "@/hooks/use-intensive-slots";
 import { useQaReviewMode } from "@/hooks/use-qa-review";
 import { getCommasConfig, isHandoffAllowed, resolveCheckoutUrl } from "@/lib/challenge-config";
+import { SUPPORT_TEXT_HREF, SUPPORT_TEXT_NUMBER } from "@/lib/academy";
 import { formatUsd, UPSELLS } from "@/lib/tiers";
 
 export const Route = createFileRoute("/strategy-intensive")({
@@ -68,7 +69,14 @@ function IntensiveContent() {
   } else if (soldOut) {
     primaryCta = <Disabled label={`All ${intensive.hardCap} Slots Taken`} />;
   } else if (!salesOn || !checkoutUrl || !slotsKnown) {
-    primaryCta = <Disabled label="Intensive Checkout Link Being Connected" />;
+    primaryCta = (
+      <a
+        href={SUPPORT_TEXT_HREF}
+        className="inline-flex w-full items-center justify-center rounded-md bg-primary px-5 py-3.5 font-heading text-base font-semibold text-primary-foreground hover:opacity-90"
+      >
+        Text {SUPPORT_TEXT_NUMBER} about a consultation
+      </a>
+    );
   } else {
     primaryCta = (
       <a

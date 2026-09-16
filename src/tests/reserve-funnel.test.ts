@@ -200,10 +200,10 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
   });
   it("/reserve/vip has correct bullets, prices and does NOT have the removed line", () => {
     const src = readReserveVip();
-    expect(src.includes("$22")).toBe(true);
-    expect(src.includes("$99 Total")).toBe(true);
-    expect(src.includes("Get General Admission · $22")).toBe(true);
-    expect(src.includes("Upgrade My Reservation to VIP")).toBe(true);
+    // Payments are off: no price and no checkout button may appear.
+    expect(/\$\d/.test(src)).toBe(false);
+    expect(src.includes("Create my free account")).toBe(true);
+    expect(src.includes("See what VIP and Emerald include")).toBe(true);
     expect(src.includes("General Admission includes")).toBe(true);
     expect(src.includes("All six build workbooks")).toBe(true);
     expect(src.includes("VIP Build Lab immediately after Day 2")).toBe(true);
@@ -211,7 +211,7 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(src.includes("MVP App Builder")).toBe(true);
     expect(src.includes("AI Business GPS")).toBe(true);
     expect(src.includes("Internal Agent Builder Skill")).toBe(true);
-    expect(src.includes("You're holding $22. VIP adds $77.")).toBe(true);
+    expect(src.includes("Open to everyone this week at no cost.")).toBe(true);
     expect(src.includes("Two-day live Summit access. Nothing else added.")).toBe(false);
   });
   it("/reserve/vault has correct bullets and totals", () => {
@@ -220,10 +220,9 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     const emeraldStart = src.indexOf("Emerald Key Holder adds Spin's time");
     const vipBenefits = src.slice(vipStart, emeraldStart);
     const emeraldBenefits = src.slice(emeraldStart);
-    expect(src.includes("$99")).toBe(true);
-    expect(src.includes("$298 Total")).toBe(true);
-    expect(src.includes("Get VIP Access · $99")).toBe(true);
-    expect(src.includes("Get the Emerald Vault Key · $298")).toBe(true);
+    expect(/\$\d/.test(src)).toBe(false);
+    expect(src.includes("Create my free account")).toBe(true);
+    expect(src.includes("Browse the Summit sessions")).toBe(true);
     expect(src.includes("AI AutoPilot Summit + VIP + Emerald Vault Key")).toBe(true);
     expect(vipStart).toBeGreaterThan(-1);
     expect(emeraldStart).toBeGreaterThan(vipStart);
@@ -234,7 +233,7 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(emeraldBenefits.includes("<li>• AI Business GPS</li>")).toBe(false);
     expect(emeraldBenefits.includes("Secret Day 3 Vault Opener Class with Spin")).toBe(true);
     expect(emeraldBenefits.includes("Two additional live hours with Spin")).toBe(true);
-    expect(emeraldBenefits.includes("Private room details delivered after purchase")).toBe(true);
+    expect(emeraldBenefits.includes("Private room details delivered after you sign in")).toBe(true);
     expect(
       emeraldBenefits
         .replace(/\s+/g, " ")
@@ -244,15 +243,14 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(src.includes("Choose the access level that matches")).toBe(true);
   });
 
-  it("every payment button resolves the matching Shopify checkout URL", () => {
+  it("carries no checkout handoff at all while payments are off", () => {
     const vip = readReserveVip();
     const vault = readReserveVault();
-    expect(vip.includes('resolveReserveCheckoutUrl("ga")')).toBe(true);
-    expect(vip.includes("href={gaUrl!}")).toBe(true);
-    expect(vault.includes('resolveReserveCheckoutUrl("ga_vip")')).toBe(true);
-    expect(vault.includes('resolveReserveCheckoutUrl("ga_vip_vault")')).toBe(true);
-    expect(vault.includes("href={gaVipUrl!}")).toBe(true);
-    expect(vault.includes("href={gaVipVaultUrl!}")).toBe(true);
+    for (const src of [vip, vault]) {
+      expect(src.includes("resolveReserveCheckoutUrl")).toBe(false);
+      expect(src.includes("spincityhq.com/cart")).toBe(false);
+      expect(src.includes("/join?mode=signup")).toBe(true);
+    }
     expect(readUpgradeApi().includes("resolveReserveCheckoutUrlFromProcessEnv")).toBe(false);
   });
   it("never disables or intercepts a public purchase CTA", () => {
@@ -264,27 +262,13 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     }
     expect(readReserveVault().includes("disabled={busy || !gaVipVaultUrl}")).toBe(false);
   });
-  it("navigates every Shopify payment handoff at the top level outside embedded previews", () => {
-    const vip = readReserveVip();
-    const vault = readReserveVault();
-    const paymentAnchors = [
-      [vip, "href={gaUrl!}"],
-      [vault, "href={gaVipUrl!}"],
-      [vault, "href={gaVipVaultUrl!}"],
-    ] as const;
-    for (const [src, href] of paymentAnchors) {
-      const openingTag = [...src.matchAll(/<a\b[^>]*>/g)]
-        .map(([tag]) => tag)
-        .find((tag) => tag.includes(href));
-      expect(openingTag).toBeDefined();
-      expect(openingTag).toContain('target="_top"');
-      expect(openingTag).not.toContain('target="_blank"');
-    }
-    for (const src of [vip, vault]) {
-      expect(src.includes("Continue to secure checkout.")).toBe(true);
-      expect(src.includes("Secure checkout opens in a new tab.")).toBe(false);
+  it("keeps the free account call to action as the only onward action", () => {
+    for (const src of [readReserveVip(), readReserveVault()]) {
+      expect(src.includes("No card, no checkout. Sign in and everything opens.")).toBe(true);
+      expect(src.includes("Continue to secure checkout.")).toBe(false);
     }
   });
+
   it("advances from VIP without waiting on the reservation database", () => {
     const vip = readReserveVip();
     const vault = readReserveVault();

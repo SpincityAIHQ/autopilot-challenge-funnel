@@ -20,8 +20,9 @@ describe("checkout exposes only General Admission", () => {
 
   it("hard-codes GA and ignores legacy tier search values", () => {
     expect(checkout.includes("TIER_MAP.ga")).toBe(true);
-    expect(checkout.includes('resolveCheckoutUrl("ga"')).toBe(true);
-    expect(checkout.includes('isHandoffAllowed("ga"')).toBe(true);
+    // Payments are off: the page must not resolve or gate a checkout URL.
+    expect(checkout.includes("resolveCheckoutUrl")).toBe(false);
+    expect(checkout.includes("isHandoffAllowed")).toBe(false);
     expect(checkout.match(/TIER_MAP\[[^\]]*(search|tier)[^\]]*\]/)).toBeNull();
   });
 });

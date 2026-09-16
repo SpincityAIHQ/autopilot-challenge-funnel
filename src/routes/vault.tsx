@@ -2,7 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AcademyFrame } from "@/components/AcademyFrame";
 import { academyJoinHref } from "@/lib/academy-navigation";
-import { ACCELERATOR_OFFER, SUMMIT_OFFERS, guideFor, type Offer, type Ticket } from "@/lib/academy";
+import {
+  ACCELERATOR_OFFER,
+  SUMMIT_OFFERS,
+  SUPPORT_TEXT_NUMBER,
+  guideFor,
+  type Offer,
+  type Ticket,
+} from "@/lib/academy";
 import { academyApi, useAcademySession } from "@/lib/academy-client";
 import { VAULT_CATEGORIES, vaultCatalogue, type VaultCategory, type VaultItem } from "@/lib/vault";
 export const Route = createFileRoute("/vault")({
@@ -83,11 +90,11 @@ function VaultSession({ session }: { session: ReturnType<typeof useAcademySessio
             ) : null}
             {listing && !unlocked ? (
               <>
-                <a className="academy-button" href={vaultKey.url}>
-                  Get the Emerald Vault Key · ${vaultKey.price}
+                <a className="academy-button" href="/summit">
+                  The Vault is open free this week
                 </a>
                 <a className="academy-text-button" href="/redeem">
-                  Already bought? Redeem your key →
+                  Already have a ticket? Activate it →
                 </a>
               </>
             ) : null}
@@ -214,17 +221,18 @@ function VaultSession({ session }: { session: ReturnType<typeof useAcademySessio
         {listing && !unlocked ? (
           <div className="academy-callout academy-card academy-card-gold" style={{ marginTop: 40 }}>
             <div>
-              <p className="academy-eyebrow">Two ways in</p>
-              <h2>The Emerald Vault Key or the Accelerator.</h2>
+              <p className="academy-eyebrow">Open this week</p>
+              <h2>The Vault is free right now.</h2>
               <p>
-                {vaultKey.name} unlocks every item here plus the complete Summit. The{" "}
-                {ACCELERATOR_OFFER.name} includes the Vault, every build-room replay, the live AI
-                Spin avatar and 1-on-1 time with SpinCity.
+                Nothing here is for sale. Sign in with a free account and the {vaultKey.name}{" "}
+                contents open along with the complete Summit. The {ACCELERATOR_OFFER.name} adds the
+                build rooms, the live AI Spin avatar and 1-on-1 time — text {SUPPORT_TEXT_NUMBER} if
+                that is what you want next.
               </p>
             </div>
             <div className="academy-actions">
               <a className="academy-button" href="/summit">
-                See Summit tickets
+                Open the Summit sessions
               </a>
               <a className="academy-button academy-button-secondary" href="/accelerator">
                 Explore the Accelerator
