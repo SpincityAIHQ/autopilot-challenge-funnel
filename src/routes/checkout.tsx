@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { z } from "zod";
 import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { TestimonialSection } from "@/components/TestimonialSection";
