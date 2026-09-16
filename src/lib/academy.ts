@@ -409,5 +409,7 @@ export type LessonContent = {
   media: LessonMedia | null;
   /** Timed transcript cues when a transcript is connected. Every word, with its time. */
   transcript?: TranscriptCue[] | null;
+  /** Honest, lesson-specific status shown when no recording is attached. */
+  mediaNotice?: string | null;
 };
 export type TranscriptCue = { start: number; end: number; text: string };
