@@ -27,8 +27,8 @@ describe("September 14 Accelerator class", () => {
       "implementation-lab",
     ])
       expect(LESSONS.some((l) => l.id === id)).toBe(true);
-    expect(LESSONS.filter((l) => l.kind === "session")).toHaveLength(12);
-    expect(LESSONS.filter((l) => l.kind === "lesson")).toHaveLength(8);
+    expect(LESSONS.filter((l) => l.kind === "session").length).toBe(12);
+    expect(LESSONS.filter((l) => l.kind === "lesson").length).toBe(8);
   });
 
   it("only opens for Accelerator holders", () => {
@@ -40,10 +40,10 @@ describe("September 14 Accelerator class", () => {
   it("serves five paragraphs, three questions with three choices and five workbook fields", () => {
     const c = lessonContent(ID)!;
     expect(c.version).toBe("2026-09-16.1");
-    expect(c.paragraphs).toHaveLength(5);
+    expect(c.paragraphs.length).toBe(5);
     expect(c.paragraphs[0].heading).toBe("Control the calendar before expanding agents");
-    expect(c.questions).toHaveLength(3);
-    for (const q of c.questions) expect(q.choices).toHaveLength(3);
+    expect(c.questions.length).toBe(3);
+    for (const q of c.questions) expect(q.choices.length).toBe(3);
     expect(c.workbook.map((f) => f.id)).toEqual([
       "calendar",
       "workflow",
@@ -73,7 +73,7 @@ describe("September 14 Accelerator class", () => {
     const partial = scoreAnswers(ID, [0, 0, 2]);
     expect(partial.score).toBe(2);
     expect(partial.total).toBe(3);
-    expect(partial.feedback).toHaveLength(3);
+    expect(partial.feedback.length).toBe(3);
   });
 
   it("leaves the other lessons on their existing version and shared workbook", () => {
