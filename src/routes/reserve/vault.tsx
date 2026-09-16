@@ -7,7 +7,7 @@ import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { getCommasConfig } from "@/lib/challenge-config";
 import { isValidReservationToken } from "@/lib/reservation-token";
 import { getReservationByToken } from "@/lib/reservation.functions";
-import { resolveReserveCheckoutUrl } from "@/lib/reserve-checkout";
+import { SUPPORT_TEXT_NUMBER } from "@/lib/academy";
 
 const searchSchema = z.object({ t: z.string().optional() });
 
@@ -38,8 +38,6 @@ export const Route = createFileRoute("/reserve/vault")({
 function ReserveVaultPage() {
   const { first_name, token } = Route.useLoaderData();
   const cfg = getCommasConfig();
-  const gaVipUrl = resolveReserveCheckoutUrl("ga_vip");
-  const gaVipVaultUrl = resolveReserveCheckoutUrl("ga_vip_vault");
 
   function recordVaultReservation() {
     void fetch("/api/public/reserve-upgrade", {
@@ -81,24 +79,23 @@ function ReserveVaultPage() {
             <section className="reserve-card--vault p-6 sm:p-8">
               <p className="reserve-eyebrow reserve-gold-text">Choose your complete access level</p>
               <p className="mt-4 reserve-body-lg">
-                Your VIP reservation is held. Choose VIP access for $99 or add the Emerald Vault Key
-                and private Day 3 access for $298 total.
+                Nothing is for sale right now. VIP and the Emerald Vault Key are open to everyone
+                this week, free. Create your free account and everything unlocks.
               </p>
               <p className="mt-6 reserve-eyebrow reserve-jewel">The complete package</p>
-              <p className="mt-3 reserve-mono-price text-[48px] reserve-jewel">$298 Total</p>
+              <p className="mt-3 reserve-mono-price text-[40px] reserve-jewel">Open · Free</p>
               <p className="mt-2 reserve-note-15" style={{ opacity: 0.78 }}>
                 AI AutoPilot Summit + VIP + Emerald Vault Key + private Day 3
               </p>
               <a
-                href={gaVipVaultUrl!}
-                target="_top"
+                href="/join?mode=signup&next=%2Flearn"
                 onClick={recordVaultReservation}
                 className="reserve-cta-primary mt-5 block w-full rounded-xl py-4 text-center reserve-body-lg"
               >
-                Get the Emerald Vault Key · $298
+                Create my free account
               </a>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Continue to secure checkout.
+                No card, no checkout. Sign in and everything opens.
               </p>
 
               <div className="my-6 flex items-center gap-4">
@@ -110,14 +107,14 @@ function ReserveVaultPage() {
               </div>
 
               <a
-                href={gaVipUrl!}
-                target="_top"
+                href="/summit"
                 className="block w-full rounded-xl py-4 text-center reserve-body-lg reserve-gold-btn"
               >
-                Get VIP Access · $99
+                Browse the Summit sessions
               </a>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Continue to secure checkout.
+                Enjoying it? Text {SUPPORT_TEXT_NUMBER} to donate, or to ask about the Accelerator
+                or a 1-on-1 consultation.
               </p>
               <div className="mt-8 reserve-hairline" />
               <div className="mt-7 grid gap-7 sm:grid-cols-2">
@@ -149,7 +146,7 @@ function ReserveVaultPage() {
                   <ul className="mt-5 space-y-2 reserve-body-lg">
                     <li>• Secret Day 3 Vault Opener Class with Spin</li>
                     <li>• Two additional live hours with Spin</li>
-                    <li>• Private room details delivered after purchase</li>
+                    <li>• Private room details delivered after you sign in</li>
                     <li>
                       • 30 days of NuAmenti 3 Gold — emailed August 10 for use before the Summit
                     </li>

@@ -7,7 +7,7 @@ import { FunnelVideoSlot } from "@/components/FunnelVideoSlot";
 import { getCommasConfig } from "@/lib/challenge-config";
 import { isValidReservationToken } from "@/lib/reservation-token";
 import { getReservationByToken } from "@/lib/reservation.functions";
-import { resolveReserveCheckoutUrl } from "@/lib/reserve-checkout";
+import { SUPPORT_TEXT_NUMBER } from "@/lib/academy";
 
 const searchSchema = z.object({ t: z.string().optional() });
 
@@ -38,7 +38,6 @@ export const Route = createFileRoute("/reserve/vip")({
 function ReserveVipPage() {
   const { first_name, token } = Route.useLoaderData();
   const cfg = getCommasConfig();
-  const gaUrl = resolveReserveCheckoutUrl("ga");
 
   function recordVipReservation() {
     void fetch("/api/public/reserve-upgrade", {
@@ -140,7 +139,7 @@ function ReserveVipPage() {
                     <li>• More time to ask questions and work through your build</li>
                   </ul>
                   <p className="mt-4 reserve-note-15" style={{ opacity: 0.7 }}>
-                    You're holding $22. VIP adds $77.
+                    Open to everyone this week at no cost.
                   </p>
                 </div>
               </div>
