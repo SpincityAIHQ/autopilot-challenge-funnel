@@ -114,18 +114,18 @@ function LearningSession({ session }: { session: ReturnType<typeof useAcademySes
               </div>
               {data.nextOffer ? (
                 <div className="academy-card academy-card-gold academy-spin-summary">
-                  <p className="academy-eyebrow">When you are ready · {data.nextOffer.label}</p>
-                  <h2>{data.nextOffer.name}</h2>
-                  <p>{data.nextOffer.includes}.</p>
+                  <p className="academy-eyebrow">Open this week · free</p>
+                  <h2>Everything on the Summit is open.</h2>
+                  <p>
+                    No ticket needed this week. If it helps you, text {SUPPORT_TEXT_NUMBER} to
+                    donate, or to ask about the Accelerator or a 1-on-1 consultation.
+                  </p>
                   <div className="academy-actions">
-                    <a
-                      className="academy-button academy-button-secondary"
-                      href={data.nextOffer.tier === "accelerator" ? "/accelerator" : "/summit"}
-                    >
-                      See what it unlocks
+                    <a className="academy-button academy-button-secondary" href="/summit">
+                      Open the Summit sessions
                     </a>
-                    <a className="academy-text-button" href="/redeem">
-                      Activate a purchased ticket
+                    <a className="academy-text-button" href={SUPPORT_TEXT_HREF}>
+                      Text {SUPPORT_TEXT_NUMBER}
                     </a>
                   </div>
                 </div>

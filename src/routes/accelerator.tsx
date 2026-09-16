@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AcademyFrame } from "@/components/AcademyFrame";
 import {
   ACCELERATOR_DAYS,
-  ACCELERATOR_OFFER,
   SUPPORT_TEXT_HREF,
   SUPPORT_TEXT_NUMBER,
 } from "@/lib/academy";
