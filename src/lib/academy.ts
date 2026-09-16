@@ -68,6 +68,15 @@ const CORE: Omit<LessonMeta, "kind" | "envKey">[] = [
     skill: "Operate responsibly",
   },
   {
+    id: "accelerator-2026-09-14",
+    title: "CEO Calendar, AI Workflows & Client Outreach",
+    stage: "Accelerator · September 14, 2026",
+    tier: "accelerator",
+    summary:
+      "Turn your calendar into a working operating plan, specify one AI workflow, and research your first ten prospects.",
+    skill: "Plan and verify an executable business workflow",
+  },
+  {
     id: "implementation-lab",
     title: "Build, test, improve",
     stage: "Accelerator · Lab",
