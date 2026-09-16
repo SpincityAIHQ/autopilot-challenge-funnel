@@ -4,6 +4,8 @@ import { AcademyFrame } from "@/components/AcademyFrame";
 import { WatchMap } from "@/components/WatchMap";
 import {
   LESSONS,
+  SUPPORT_TEXT_HREF,
+  SUPPORT_TEXT_NUMBER,
   lessonHref,
   nextStep,
   tierAllows,
