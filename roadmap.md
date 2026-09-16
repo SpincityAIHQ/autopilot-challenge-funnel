@@ -26,3 +26,12 @@ Open (owner action required):
 - [x] Optional nurture queueing can no longer close a classroom
 - [x] Signed-in lesson errors offer retry instead of a purchase page
 - [x] Video player reports its own playback errors
+
+## Open week — payments off (Sep 16)
+- [x] Every checkout, price and payment button removed (Summit, Vault, Accelerator, reserve, offer, /checkout)
+- [x] `academyCheckoutUrl` returns null; `/api/public/checkout/$tier` redirects to /summit; `PAYMENTS_ENABLED = false`
+- [x] `ACADEMY_OPEN_ACCESS_UNTIL` (set 2026-09-24T04:00:00Z, preview + server secret) opens GA/VIP/Vault to every signed-in learner; Accelerator excluded
+- [x] Donate / Accelerator / consultation by text to 510-747-5291; Skool community link
+- [x] Tutor told payments are off and everything is free this week
+- [x] 8 new tests; typecheck, build, suite green (same 12 pre-existing failures)
+- [ ] Owner: publish to take the free week live; clear `ACADEMY_OPEN_ACCESS_UNTIL` to close it
