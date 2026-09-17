@@ -1,18 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AcademyFrame } from "@/components/AcademyFrame";
-import {
-  ACCELERATOR_DAYS,
-  SUPPORT_TEXT_HREF,
-  SUPPORT_TEXT_NUMBER,
-} from "@/lib/academy";
+import { SUPPORT_TEXT_HREF, SUPPORT_TEXT_NUMBER } from "@/lib/academy";
 import { useCatalogue } from "@/lib/academy-client";
 import { WEEK_ONE } from "@/lib/accelerator-week-one";
+const LAUNCH_DAY = WEEK_ONE[0];
 export const Route = createFileRoute("/accelerator")({
   head: () => ({ meta: [{ title: "Autopilot Accelerator | AI AutoPilot" }] }),
   component: Accelerator,
 });
 function Accelerator() {
   const catalogue = useCatalogue();
+  const launchConnected = catalogue
+    ? catalogue.connected.includes(LAUNCH_DAY.lessonId)
+    : false;
   return (
     <AcademyFrame>
       <section className="academy-section academy-accelerator">
@@ -78,82 +78,46 @@ function Accelerator() {
 
         </div>
         <div className="academy-section-heading" style={{ marginTop: 48 }}>
-          <p className="academy-eyebrow">Weekly implementation lab</p>
-          <h2>September 14, 2026.</h2>
-        </div>
-        <article className="academy-card">
-          <p className="academy-eyebrow">Accelerator · September 14, 2026</p>
-          <h3>CEO Calendar, AI Workflows &amp; Client Outreach</h3>
+          <p className="academy-eyebrow">Your classes</p>
+          <h2>Watch them in order.</h2>
           <p>
-            Turn your calendar into a working operating plan, specify one AI workflow, and research
-            your first ten prospects.
-          </p>
-          <p className="academy-muted">
-            Class notes and practice ready. Replay connection pending verification.
-          </p>
-          <a className="academy-button" href="/lesson/accelerator-2026-09-14">
-            Open the class notes and practice
-          </a>
-        </article>
-        <div className="academy-section-heading" style={{ marginTop: 48 }}>
-          <p className="academy-eyebrow">Week one · build along</p>
-          <h2>Day 1 through Day 7.</h2>
-          <p>
-            Seven days, seven rooms. Day 1 opens the launch, then each day adds the next piece of
-            your operating system. Open a day to watch it and work through the steps.
+            Two classes are recorded so far. More build rooms are added here as Spin records them.
           </p>
         </div>
         <div className="academy-week-one">
-          {WEEK_ONE.map((d) => {
-            const connected = catalogue ? catalogue.connected.includes(d.lessonId) : false;
-            return (
-              <article className="academy-card academy-week-day" key={d.lessonId}>
-                <span className="academy-number">Day {String(d.day).padStart(2, "0")}</span>
-                <h3>{d.title}</h3>
-                <p className="academy-muted">
-                  {connected ? "Video connected." : "Video slot open — recording coming."}
-                </p>
-                {d.tasks.length ? (
-                  <ul>
-                    {d.tasks.map((t) => (
-                      <li key={t}>{t}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="academy-muted">Spin is posting this day's build steps.</p>
-                )}
-                {connected ? (
-                  <a className="academy-button" href={`/lesson/${d.lessonId}`}>
-                    Open the build room
-                  </a>
-                ) : (
-                  <span className="academy-button academy-button-secondary" aria-disabled="true">
-                    Recording coming
-                  </span>
-                )}
-              </article>
-            );
-          })}
-        </div>
-        <div className="academy-section-heading" style={{ marginTop: 48 }}>
-          <p className="academy-eyebrow">Build rooms</p>
-          <h2>Every day, recorded and tracked.</h2>
-          <p>
-            Each day has its own slot. Days light up as recordings are connected. Your watch map
-            follows you through all of them.
-          </p>
-        </div>
-        <div className="academy-days">
-          {ACCELERATOR_DAYS.map((d) => {
-            const connected = catalogue ? catalogue.connected.includes(d.id) : false;
-            return (
-              <div className="academy-day" key={d.id} data-state={connected ? "ready" : "soon"}>
-                <small>{d.stage.replace("Accelerator · ", "")}</small>
-                <strong>{d.title.replace("Build room · ", "")}</strong>
-                <span>{connected ? "Replay connected" : "Coming soon"}</span>
-              </div>
-            );
-          })}
+          <article className="academy-card academy-week-day">
+            <span className="academy-number">Class 01</span>
+            <h3>{LAUNCH_DAY.title}</h3>
+            <p className="academy-muted">
+              {launchConnected ? "Video connected." : "Video slot open — recording coming."}
+            </p>
+            <ul>
+              {LAUNCH_DAY.tasks.map((t) => (
+                <li key={t}>{t}</li>
+              ))}
+            </ul>
+            {launchConnected ? (
+              <a className="academy-button" href={`/lesson/${LAUNCH_DAY.lessonId}`}>
+                Open the build room
+              </a>
+            ) : (
+              <span className="academy-button academy-button-secondary" aria-disabled="true">
+                Recording coming
+              </span>
+            )}
+          </article>
+          <article className="academy-card academy-week-day">
+            <span className="academy-number">Class 02</span>
+            <h3>CEO Calendar, AI Workflows &amp; Client Outreach</h3>
+            <p className="academy-muted">Accelerator · September 14, 2026</p>
+            <p>
+              Turn your calendar into a working operating plan, specify one AI workflow, and
+              research your first ten prospects.
+            </p>
+            <a className="academy-button" href="/lesson/accelerator-2026-09-14">
+              Open the class
+            </a>
+          </article>
         </div>
         <p className="academy-muted">
           Replays are available to enrolled students inside My learning after redemption.
