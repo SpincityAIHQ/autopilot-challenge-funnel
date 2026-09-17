@@ -16,66 +16,18 @@ function Accelerator() {
   return (
     <AcademyFrame>
       <section className="academy-section academy-accelerator">
-        <p className="academy-eyebrow">Guided implementation · September–December 2026</p>
-        <h1>Take your workflow into operation.</h1>
-        <p className="academy-lead">
-          The Autopilot Accelerator brings your business into group build rooms, practical
-          activities and ongoing learning support. Every build room is recorded and tracked, so AI
-          Spin can bring you back to the exact moment you need.
+        <p className="academy-eyebrow">Accelerator classroom · September–December 2026</p>
+        <h1>Your classes.</h1>
+        <p className="academy-lead" style={{ maxWidth: 560 }}>
+          Every class is recorded and tracked, so you can pick up exactly where you stopped.
         </p>
-        <div className="academy-two" style={{ marginTop: 28 }}>
-          <div className="academy-card academy-card-featured">
-            <p className="academy-eyebrow">What you get</p>
-            <h2>The full operating stack</h2>
-            <ol className="academy-flight-card" style={{ padding: 0, marginTop: 8 }}>
-              <li>
-                <span>01</span>Every build-room replay with a watch map
-              </li>
-              <li>
-                <span>02</span>AI Spin text chat and the live AI Spin avatar
-              </li>
-              <li>
-                <span>03</span>1-on-1 time with SpinCity, booked inside the platform
-              </li>
-              <li>
-                <span>04</span>Instructor review of your implementation lab
-              </li>
-            </ol>
-            <p className="academy-price">By invitation</p>
-            <a className="academy-button" href={SUPPORT_TEXT_HREF}>
-              Text {SUPPORT_TEXT_NUMBER} about the Accelerator
-            </a>
-            <p className="academy-muted">
-              Tell Spin what you are building and whether you want the Accelerator or a 1-on-1
-              consultation. No checkout, no card on this site.
-            </p>
-            <a className="academy-text-button" href="/redeem">
-              Already a student? Activate your access →
-            </a>
-          </div>
-          <div className="academy-card academy-card-gold">
-            <p className="academy-eyebrow">AI Spin · Accelerator only</p>
-            <h2>Meet Spin’s own AI, face to face</h2>
-            <p>
-              Thoth tutors the public floors. Inside the Accelerator, AI Spin takes over: Spin’s own
-              AI in text and a live avatar. It knows your ticket, your job card and where you
-              stopped in each build room. Booking a 1-on-1 with SpinCity sits right under the live
-              avatar.
-            </p>
-            <p className="academy-muted">
-              AI Spin is an AI representation of Spin. A live avatar session is not a personal call
-              with Spin. Session limits are shown before starting.
-            </p>
-            <div className="academy-actions">
-              <a className="academy-button academy-button-secondary" href="/ai-spin">
-                Open AI Spin
-              </a>
-              <a className="academy-text-button" href="/redeem">
-                Redeem an Accelerator code →
-              </a>
-            </div>
-          </div>
-
+        <div className="academy-actions" style={{ marginTop: 16 }}>
+          <a className="academy-text-button" href="/redeem">
+            Activate your access →
+          </a>
+          <a className="academy-text-button" href={SUPPORT_TEXT_HREF}>
+            Text {SUPPORT_TEXT_NUMBER} about the Accelerator →
+          </a>
         </div>
         <div className="academy-section-heading" style={{ marginTop: 48 }}>
           <p className="academy-eyebrow">Your classes</p>
