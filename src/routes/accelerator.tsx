@@ -1,18 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AcademyFrame } from "@/components/AcademyFrame";
-import {
-  ACCELERATOR_DAYS,
-  SUPPORT_TEXT_HREF,
-  SUPPORT_TEXT_NUMBER,
-} from "@/lib/academy";
+import { SUPPORT_TEXT_HREF, SUPPORT_TEXT_NUMBER } from "@/lib/academy";
 import { useCatalogue } from "@/lib/academy-client";
 import { WEEK_ONE } from "@/lib/accelerator-week-one";
+const LAUNCH_DAY = WEEK_ONE[0];
 export const Route = createFileRoute("/accelerator")({
   head: () => ({ meta: [{ title: "Autopilot Accelerator | AI AutoPilot" }] }),
   component: Accelerator,
 });
 function Accelerator() {
   const catalogue = useCatalogue();
+  const launchConnected = catalogue
+    ? catalogue.connected.includes(LAUNCH_DAY.lessonId)
+    : false;
   return (
     <AcademyFrame>
       <section className="academy-section academy-accelerator">
