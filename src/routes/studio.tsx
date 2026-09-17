@@ -9,7 +9,18 @@ type Submission = {
   updated_at: string;
   workbook_status: string;
 };
+type Readiness = {
+  key: string;
+  group: string;
+  label: string;
+  state: "ready" | "partial" | "missing" | "off";
+  detail: string;
+  action: string;
+  blocking: boolean;
+};
 type StudioData = {
+  readiness: Readiness[];
+  readinessSummary: { go: boolean; blockers: string[]; total: number; ready: number };
   submissions: Submission[];
   metrics: {
     registrations: number;
@@ -90,13 +101,47 @@ function StudioSession({ session }: { session: ReturnType<typeof useAcademySessi
               All-time platform counts. Checkout clicks are not purchases. Ad spend and ROAS are not
               connected here.
             </p>
-            <div className="academy-three">
-              {Object.entries(data.integrations).map(([k, v]) => (
-                <div className="academy-card" key={k}>
-                  <h2>{k.toUpperCase()}</h2>
-                  <p>{v ? "Configured · delivery tests still required" : "Not configured"}</p>
-                </div>
-              ))}
+            <div
+              className={`academy-card ${data.readinessSummary.go ? "academy-card-featured" : "academy-card-gold"}`}
+              style={{ marginTop: 24 }}
+            >
+              <p className="academy-eyebrow">Launch board</p>
+              <h2>
+                {data.readinessSummary.go
+                  ? "All blocking connections are green."
+                  : `${data.readinessSummary.blockers.length} blocking item${data.readinessSummary.blockers.length === 1 ? "" : "s"} before the full experience is live.`}
+              </h2>
+              <p className="academy-muted">
+                {data.readinessSummary.ready} of {data.readinessSummary.total} connections ready.
+                Each row names the human action that turns it green. Values are never shown here.
+              </p>
+            </div>
+            <div className="academy-readiness">
+              {(["purchases", "messaging", "content", "guides", "operations"] as const).map(
+                (group) => (
+                  <div key={group}>
+                    <p className="academy-subhead" style={{ marginTop: 22 }}>
+                      {group}
+                    </p>
+                    {data.readiness
+                      .filter((r) => r.group === group)
+                      .map((r) => (
+                        <div className="academy-readiness-row" data-state={r.state} key={r.key}>
+                          <span className="academy-readiness-dot" aria-hidden="true" />
+                          <div>
+                            <strong>
+                              {r.label}
+                              {r.blocking ? <em> · blocking</em> : null}
+                            </strong>
+                            <span>{r.detail}</span>
+                            {r.state !== "ready" ? <small>{r.action}</small> : null}
+                          </div>
+                          <b>{r.state}</b>
+                        </div>
+                      ))}
+                  </div>
+                ),
+              )}
             </div>
             <h2 className="academy-section-heading">Submitted activity sheets</h2>
             {data.submissions.length === 0 ? (

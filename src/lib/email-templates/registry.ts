@@ -2,6 +2,7 @@ import type { ComponentType } from 'react'
 import { template as accountWelcome } from './academy-account-welcome'
 import { template as accessActivated } from './academy-access-activated'
 import { template as purchaseAccessCode } from './academy-purchase-access-code'
+import { template as purchaseConfirmed } from './academy-purchase-confirmed'
 import { template as neverStarted } from './academy-never-started'
 import { template as learningInactivity } from './academy-learning-inactivity'
 
@@ -24,6 +25,7 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'academy-account-welcome': accountWelcome,
   'academy-access-activated': accessActivated,
   'academy-purchase-access-code': purchaseAccessCode,
+  'academy-purchase-confirmed': purchaseConfirmed,
   'academy-never-started': neverStarted,
   'academy-learning-inactivity': learningInactivity,
 }

@@ -189,6 +189,9 @@ export async function reconcileGhlOrder(namespacedId: string) {
   if (result.data === true) {
     const { ensureOrderCodes } = await import("./academy-access.server");
     await ensureOrderCodes(snapshot.id);
+    const { syncEmailTickets, queuePurchaseConfirmations } = await import("./academy-email-tickets.server");
+    await syncEmailTickets(snapshot.id);
+    await queuePurchaseConfirmations(snapshot.id);
   }
   return { ok: true, needsReview: snapshot.needsReview };
 }
