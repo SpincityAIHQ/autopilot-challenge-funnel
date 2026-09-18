@@ -58,8 +58,8 @@ function Checkout() {
           Create my free account
         </a>
         <p className="mt-3 text-center text-xs text-muted-foreground">
-          Nothing is sold here. Membership is handled in our Skool community: $97/month opens the
-          whole Summit, $555/month adds the Accelerator. Sign in with the same email and everything
+          Nothing is sold here. Membership is handled in our Skool community: the Summit membership opens the
+          whole Summit, the Accelerator membership adds the classroom. Sign in with the same email and everything
           opens. Questions? Text {SUPPORT_TEXT_NUMBER}.
         </p>
         <p className="mt-3 text-center text-xs text-muted-foreground">

@@ -221,12 +221,12 @@ function VaultSession({ session }: { session: ReturnType<typeof useAcademySessio
         {listing && !unlocked ? (
           <div className="academy-callout academy-card academy-card-gold" style={{ marginTop: 40 }}>
             <div>
-              <p className="academy-eyebrow">Included with the $97/month membership</p>
+              <p className="academy-eyebrow">Included with the Summit membership</p>
               <h2>The Vault opens with your membership.</h2>
               <p>
                 Join the Summit membership in our Skool community, then sign in here with the same
                 email and the {vaultKey.name} contents open along with the complete Summit. The{" "}
-                {ACCELERATOR_OFFER.name} is the $555/month membership and adds the build rooms, the
+                {ACCELERATOR_OFFER.name} is the Accelerator membership and adds the build rooms, the
                 live AI Spin avatar and 1-on-1 time — text {SUPPORT_TEXT_NUMBER} with questions.
               </p>
             </div>

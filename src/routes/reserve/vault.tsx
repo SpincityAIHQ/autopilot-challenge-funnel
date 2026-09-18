@@ -80,7 +80,7 @@ function ReserveVaultPage() {
               <p className="reserve-eyebrow reserve-gold-text">Choose your complete access level</p>
               <p className="mt-4 reserve-body-lg">
                 Nothing is sold here. VIP and the Emerald Vault Key are included with the
-                $97/month membership in our Skool community. Join there, then sign in with the same
+                Summit membership in our Skool community. Join there, then sign in with the same
                 email and everything unlocks.
               </p>
               <p className="mt-6 reserve-eyebrow reserve-jewel">The complete package</p>

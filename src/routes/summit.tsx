@@ -107,7 +107,7 @@ function Summit() {
         </div>
 
         <div className="academy-section-heading" id="tickets" style={{ marginTop: 48 }}>
-          <p className="academy-eyebrow">Included with the $97/month membership</p>
+          <p className="academy-eyebrow">Included with the Summit membership</p>
           <h2>One membership opens the whole Summit.</h2>
           <p>{OPEN_ACCESS_NOTICE}</p>
         </div>
@@ -124,7 +124,7 @@ function Summit() {
               <a className="academy-button" href={session.email ? "/learn" : academyJoinHref("/learn", true)}>
                 {session.email ? "Open My Learning" : "Create a free account"}
               </a>
-              <p className="academy-muted">Included with the $97/month Skool membership.</p>
+              <p className="academy-muted">Included with the Summit membership in Skool.</p>
             </article>
           ))}
         </div>

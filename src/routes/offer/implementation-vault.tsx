@@ -110,7 +110,7 @@ function VaultContent() {
       <div className="mt-8">
         <h2 className="font-display text-2xl text-foreground">{vault.name}</h2>
         <div className="mt-4 font-display text-4xl text-[color:var(--gold)]">
-          Included with the $97/month membership
+          Included with the Summit membership
         </div>
         <p className="mt-4 text-muted-foreground">{vault.summary}</p>
       </div>

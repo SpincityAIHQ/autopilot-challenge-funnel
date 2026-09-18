@@ -79,7 +79,7 @@ function ReserveVipPage() {
               <p className="reserve-eyebrow reserve-gold-text">The whole Summit comes with membership</p>
               <p className="mt-4 reserve-body-lg">
                 Nothing is sold here. Every Summit recording, including the VIP rooms and the
-                Emerald intensive, is included with the $97/month membership in our Skool community.
+                Emerald intensive, is included with the Summit membership in our Skool community.
                 Join there, create your account with the same email and
                 start watching.
               </p>
@@ -140,7 +140,7 @@ function ReserveVipPage() {
                     <li>• More time to ask questions and work through your build</li>
                   </ul>
                   <p className="mt-4 reserve-note-15" style={{ opacity: 0.7 }}>
-                    Included with the $97/month membership.
+                    Included with the Summit membership.
                   </p>
                 </div>
               </div>
