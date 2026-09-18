@@ -55,6 +55,7 @@ import { Route as CalendarDay2DoticsRouteImport } from './routes/calendar.day2[.
 import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.]ics'
 import { Route as ApplyMentorshipRouteImport } from './routes/apply.mentorship'
 import { Route as AdminOwnerLoginRouteImport } from './routes/admin.owner-login'
+import { Route as AdminMembersRouteImport } from './routes/admin.members'
 import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as ApiPublicTrainingWaitlistRouteImport } from './routes/api/public/training-waitlist'
@@ -317,6 +318,11 @@ const AdminOwnerLoginRoute = AdminOwnerLoginRouteImport.update({
   path: '/admin/owner-login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminMembersRoute = AdminMembersRouteImport.update({
+  id: '/admin/members',
+  path: '/admin/members',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLeadsRoute = AdminLeadsRouteImport.update({
   id: '/admin/leads',
   path: '/admin/leads',
@@ -508,6 +514,7 @@ export interface FileRoutesByFullPath {
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/leads': typeof AdminLeadsRoute
+  '/admin/members': typeof AdminMembersRoute
   '/admin/owner-login': typeof AdminOwnerLoginRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
@@ -584,6 +591,7 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/leads': typeof AdminLeadsRoute
+  '/admin/members': typeof AdminMembersRoute
   '/admin/owner-login': typeof AdminOwnerLoginRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
@@ -661,6 +669,7 @@ export interface FileRoutesById {
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/leads': typeof AdminLeadsRoute
+  '/admin/members': typeof AdminMembersRoute
   '/admin/owner-login': typeof AdminOwnerLoginRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
@@ -739,6 +748,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/admin/audit'
     | '/admin/leads'
+    | '/admin/members'
     | '/admin/owner-login'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
@@ -815,6 +825,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/admin/audit'
     | '/admin/leads'
+    | '/admin/members'
     | '/admin/owner-login'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
@@ -891,6 +902,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/admin/audit'
     | '/admin/leads'
+    | '/admin/members'
     | '/admin/owner-login'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
@@ -968,6 +980,7 @@ export interface RootRouteChildren {
   WelcomeRoute: typeof WelcomeRoute
   AdminAuditRoute: typeof AdminAuditRoute
   AdminLeadsRoute: typeof AdminLeadsRoute
+  AdminMembersRoute: typeof AdminMembersRoute
   AdminOwnerLoginRoute: typeof AdminOwnerLoginRoute
   ApplyMentorshipRoute: typeof ApplyMentorshipRoute
   CalendarDay1DoticsRoute: typeof CalendarDay1DoticsRoute
@@ -1334,6 +1347,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOwnerLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/members': {
+      id: '/admin/members'
+      path: '/admin/members'
+      fullPath: '/admin/members'
+      preLoaderRoute: typeof AdminMembersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/leads': {
       id: '/admin/leads'
       path: '/admin/leads'
@@ -1579,6 +1599,7 @@ const rootRouteChildren: RootRouteChildren = {
   WelcomeRoute: WelcomeRoute,
   AdminAuditRoute: AdminAuditRoute,
   AdminLeadsRoute: AdminLeadsRoute,
+  AdminMembersRoute: AdminMembersRoute,
   AdminOwnerLoginRoute: AdminOwnerLoginRoute,
   ApplyMentorshipRoute: ApplyMentorshipRoute,
   CalendarDay1DoticsRoute: CalendarDay1DoticsRoute,
