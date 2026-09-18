@@ -211,7 +211,7 @@ describe("reserve funnel — copy, config, tokens, and headers", () => {
     expect(src.includes("MVP App Builder")).toBe(true);
     expect(src.includes("AI Business GPS")).toBe(true);
     expect(src.includes("Internal Agent Builder Skill")).toBe(true);
-    expect(src.includes("Open to everyone this week at no cost.")).toBe(true);
+    expect(src.includes("Included with the Summit membership.")).toBe(true);
     expect(src.includes("Two-day live Summit access. Nothing else added.")).toBe(false);
   });
   it("/reserve/vault has correct bullets and totals", () => {
