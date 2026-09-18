@@ -158,7 +158,7 @@ function IntensiveContent() {
           )}
         </div>
         <p className="mt-3 text-xs text-muted-foreground">
-          A seat is counted only after payment is confirmed.
+          A seat is counted only after it is confirmed with you directly.
         </p>
       </section>
 
