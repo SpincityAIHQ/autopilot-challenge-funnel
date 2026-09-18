@@ -69,6 +69,7 @@ import { Route as ApiAcademySplatRouteImport } from './routes/api/academy/$'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiPublicWebhooksSkoolRouteImport } from './routes/api/public/webhooks/skool'
 import { Route as ApiPublicWebhooksShopifyRouteImport } from './routes/api/public/webhooks/shopify'
 import { Route as ApiPublicWebhooksGhlPaymentRouteImport } from './routes/api/public/webhooks/ghl-payment'
 import { Route as ApiPublicWebhooksCommasRouteImport } from './routes/api/public/webhooks/commas'
@@ -391,6 +392,11 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicWebhooksSkoolRoute = ApiPublicWebhooksSkoolRouteImport.update({
+  id: '/api/public/webhooks/skool',
+  path: '/api/public/webhooks/skool',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicWebhooksShopifyRoute =
   ApiPublicWebhooksShopifyRouteImport.update({
     id: '/api/public/webhooks/shopify',
@@ -531,6 +537,7 @@ export interface FileRoutesByFullPath {
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
   '/api/public/webhooks/ghl-payment': typeof ApiPublicWebhooksGhlPaymentRoute
   '/api/public/webhooks/shopify': typeof ApiPublicWebhooksShopifyRoute
+  '/api/public/webhooks/skool': typeof ApiPublicWebhooksSkoolRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -605,6 +612,7 @@ export interface FileRoutesByTo {
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
   '/api/public/webhooks/ghl-payment': typeof ApiPublicWebhooksGhlPaymentRoute
   '/api/public/webhooks/shopify': typeof ApiPublicWebhooksShopifyRoute
+  '/api/public/webhooks/skool': typeof ApiPublicWebhooksSkoolRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -680,6 +688,7 @@ export interface FileRoutesById {
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
   '/api/public/webhooks/ghl-payment': typeof ApiPublicWebhooksGhlPaymentRoute
   '/api/public/webhooks/shopify': typeof ApiPublicWebhooksShopifyRoute
+  '/api/public/webhooks/skool': typeof ApiPublicWebhooksSkoolRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -756,6 +765,7 @@ export interface FileRouteTypes {
     | '/api/public/webhooks/commas'
     | '/api/public/webhooks/ghl-payment'
     | '/api/public/webhooks/shopify'
+    | '/api/public/webhooks/skool'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -830,6 +840,7 @@ export interface FileRouteTypes {
     | '/api/public/webhooks/commas'
     | '/api/public/webhooks/ghl-payment'
     | '/api/public/webhooks/shopify'
+    | '/api/public/webhooks/skool'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -904,6 +915,7 @@ export interface FileRouteTypes {
     | '/api/public/webhooks/commas'
     | '/api/public/webhooks/ghl-payment'
     | '/api/public/webhooks/shopify'
+    | '/api/public/webhooks/skool'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -978,6 +990,7 @@ export interface RootRouteChildren {
   ApiPublicWebhooksCommasRoute: typeof ApiPublicWebhooksCommasRoute
   ApiPublicWebhooksGhlPaymentRoute: typeof ApiPublicWebhooksGhlPaymentRoute
   ApiPublicWebhooksShopifyRoute: typeof ApiPublicWebhooksShopifyRoute
+  ApiPublicWebhooksSkoolRoute: typeof ApiPublicWebhooksSkoolRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
@@ -1405,6 +1418,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/webhooks/skool': {
+      id: '/api/public/webhooks/skool'
+      path: '/api/public/webhooks/skool'
+      fullPath: '/api/public/webhooks/skool'
+      preLoaderRoute: typeof ApiPublicWebhooksSkoolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhooks/shopify': {
       id: '/api/public/webhooks/shopify'
       path: '/api/public/webhooks/shopify'
@@ -1575,6 +1595,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicWebhooksCommasRoute: ApiPublicWebhooksCommasRoute,
   ApiPublicWebhooksGhlPaymentRoute: ApiPublicWebhooksGhlPaymentRoute,
   ApiPublicWebhooksShopifyRoute: ApiPublicWebhooksShopifyRoute,
+  ApiPublicWebhooksSkoolRoute: ApiPublicWebhooksSkoolRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
