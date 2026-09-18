@@ -80,6 +80,7 @@ import { Route as ApiPublicResourcesEntitlementSummaryRouteImport } from './rout
 import { Route as ApiPublicCheckoutTierRouteImport } from './routes/api/public/checkout/$tier'
 import { Route as ApiPublicAdminSummitLeadsRouteImport } from './routes/api/public/admin/summit-leads'
 import { Route as ApiPublicAdminSummitAuditRouteImport } from './routes/api/public/admin/summit-audit'
+import { Route as ApiPublicAdminSkoolMembershipRouteImport } from './routes/api/public/admin/skool-membership'
 import { Route as ApiPublicAdminOwnerLoginRouteImport } from './routes/api/public/admin/owner-login'
 import { Route as ApiPublicAdminAcademyEmailTestRouteImport } from './routes/api/public/admin/academy-email-test'
 
@@ -454,6 +455,12 @@ const ApiPublicAdminSummitAuditRoute =
     path: '/api/public/admin/summit-audit',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicAdminSkoolMembershipRoute =
+  ApiPublicAdminSkoolMembershipRouteImport.update({
+    id: '/api/public/admin/skool-membership',
+    path: '/api/public/admin/skool-membership',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicAdminOwnerLoginRoute =
   ApiPublicAdminOwnerLoginRouteImport.update({
     id: '/api/public/admin/owner-login',
@@ -527,6 +534,7 @@ export interface FileRoutesByFullPath {
   '/api/public/training-waitlist': typeof ApiPublicTrainingWaitlistRoute
   '/api/public/admin/academy-email-test': typeof ApiPublicAdminAcademyEmailTestRoute
   '/api/public/admin/owner-login': typeof ApiPublicAdminOwnerLoginRoute
+  '/api/public/admin/skool-membership': typeof ApiPublicAdminSkoolMembershipRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
   '/api/public/checkout/$tier': typeof ApiPublicCheckoutTierRoute
@@ -602,6 +610,7 @@ export interface FileRoutesByTo {
   '/api/public/training-waitlist': typeof ApiPublicTrainingWaitlistRoute
   '/api/public/admin/academy-email-test': typeof ApiPublicAdminAcademyEmailTestRoute
   '/api/public/admin/owner-login': typeof ApiPublicAdminOwnerLoginRoute
+  '/api/public/admin/skool-membership': typeof ApiPublicAdminSkoolMembershipRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
   '/api/public/checkout/$tier': typeof ApiPublicCheckoutTierRoute
@@ -678,6 +687,7 @@ export interface FileRoutesById {
   '/api/public/training-waitlist': typeof ApiPublicTrainingWaitlistRoute
   '/api/public/admin/academy-email-test': typeof ApiPublicAdminAcademyEmailTestRoute
   '/api/public/admin/owner-login': typeof ApiPublicAdminOwnerLoginRoute
+  '/api/public/admin/skool-membership': typeof ApiPublicAdminSkoolMembershipRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
   '/api/public/checkout/$tier': typeof ApiPublicCheckoutTierRoute
@@ -755,6 +765,7 @@ export interface FileRouteTypes {
     | '/api/public/training-waitlist'
     | '/api/public/admin/academy-email-test'
     | '/api/public/admin/owner-login'
+    | '/api/public/admin/skool-membership'
     | '/api/public/admin/summit-audit'
     | '/api/public/admin/summit-leads'
     | '/api/public/checkout/$tier'
@@ -830,6 +841,7 @@ export interface FileRouteTypes {
     | '/api/public/training-waitlist'
     | '/api/public/admin/academy-email-test'
     | '/api/public/admin/owner-login'
+    | '/api/public/admin/skool-membership'
     | '/api/public/admin/summit-audit'
     | '/api/public/admin/summit-leads'
     | '/api/public/checkout/$tier'
@@ -905,6 +917,7 @@ export interface FileRouteTypes {
     | '/api/public/training-waitlist'
     | '/api/public/admin/academy-email-test'
     | '/api/public/admin/owner-login'
+    | '/api/public/admin/skool-membership'
     | '/api/public/admin/summit-audit'
     | '/api/public/admin/summit-leads'
     | '/api/public/checkout/$tier'
@@ -980,6 +993,7 @@ export interface RootRouteChildren {
   ApiPublicTrainingWaitlistRoute: typeof ApiPublicTrainingWaitlistRoute
   ApiPublicAdminAcademyEmailTestRoute: typeof ApiPublicAdminAcademyEmailTestRoute
   ApiPublicAdminOwnerLoginRoute: typeof ApiPublicAdminOwnerLoginRoute
+  ApiPublicAdminSkoolMembershipRoute: typeof ApiPublicAdminSkoolMembershipRoute
   ApiPublicAdminSummitAuditRoute: typeof ApiPublicAdminSummitAuditRoute
   ApiPublicAdminSummitLeadsRoute: typeof ApiPublicAdminSummitLeadsRoute
   ApiPublicCheckoutTierRoute: typeof ApiPublicCheckoutTierRoute
@@ -1495,6 +1509,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAdminSummitAuditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/admin/skool-membership': {
+      id: '/api/public/admin/skool-membership'
+      path: '/api/public/admin/skool-membership'
+      fullPath: '/api/public/admin/skool-membership'
+      preLoaderRoute: typeof ApiPublicAdminSkoolMembershipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/admin/owner-login': {
       id: '/api/public/admin/owner-login'
       path: '/api/public/admin/owner-login'
@@ -1584,6 +1605,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicTrainingWaitlistRoute: ApiPublicTrainingWaitlistRoute,
   ApiPublicAdminAcademyEmailTestRoute: ApiPublicAdminAcademyEmailTestRoute,
   ApiPublicAdminOwnerLoginRoute: ApiPublicAdminOwnerLoginRoute,
+  ApiPublicAdminSkoolMembershipRoute: ApiPublicAdminSkoolMembershipRoute,
   ApiPublicAdminSummitAuditRoute: ApiPublicAdminSummitAuditRoute,
   ApiPublicAdminSummitLeadsRoute: ApiPublicAdminSummitLeadsRoute,
   ApiPublicCheckoutTierRoute: ApiPublicCheckoutTierRoute,
