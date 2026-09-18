@@ -942,17 +942,17 @@ export async function handleAcademyPost(request: Request, path: string) {
                     ? "/book (included with the Accelerator; offer it when a question needs Spin personally)"
                     : "/book (Accelerator benefit; booking calendar is not connected yet, so ask the team for scheduling help)",
                 summitOffers: SUMMIT_OFFERS.map(
-                  (o) => `${o.name} (open free this week, nothing is sold): ${o.includes}`,
+                  (o) => `${o.name} (included with the $97/month Skool membership; nothing is sold in this app): ${o.includes}`,
                 ),
-                acceleratorOffer: `${ACCELERATOR_OFFER.name}: ${ACCELERATOR_OFFER.includes}. There is no checkout; interested students text ${SUPPORT_TEXT_NUMBER}.`,
+                acceleratorOffer: `${ACCELERATOR_OFFER.name}: ${ACCELERATOR_OFFER.includes}. It is included with the $555/month Skool membership. There is no checkout in this app; interested students join in Skool or text ${SUPPORT_TEXT_NUMBER}.`,
                 payments:
-                  "Payments are switched off across the whole site. Never quote a price, never send anyone to a checkout. Everything on the Summit and in the Vault is free this week for any signed-in learner. Donations, Accelerator interest and consultations all start by texting " +
+                  "This app never takes payment and has no checkout. Membership is handled in the Skool community: the Summit membership opens every Summit recording and the Vault, and the Accelerator membership adds the Accelerator classroom. A member signs in here with the same email and access opens automatically. Accelerator questions and 1-on-1 interest start by texting " +
                   SUPPORT_TEXT_NUMBER +
                   ".",
                 lessonLinks: Object.fromEntries(LESSONS.map((l) => [l.title, lessonHref(l.id)])),
                 vault: vaultAllowsUser
                   ? "/vault (open for this student: skills, prompts, plug-ins, playbooks and scorecards)"
-                  : "/vault is open free this week for any signed-in learner",
+                  : "/vault opens for members of the Summit or Accelerator membership",
                 access:
                   "Purchased lessons activate at /redeem after verifying the purchase email and choosing Activate my purchased lessons. This explicit action starts any redemption-based access period. Previously issued purchase codes remain usable there. Opening free training or the dashboard does not activate a new ticket. Active Accelerator access permits AI Spin, the live avatar when connected and 1-on-1 booking when configured; Thoth text chat works for entitled lessons on every ticket.",
               },

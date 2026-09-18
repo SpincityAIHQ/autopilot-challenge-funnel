@@ -285,8 +285,8 @@ export type Offer = {
   url: string;
 };
 /**
- * Nothing on the Summit is sold, so there is no paid step to point at. The
- * only onward invitation is the Accelerator, and that starts with a text.
+ * Nothing is sold in this app. The only onward step is the Accelerator
+ * membership in Skool, which a student joins there or asks about by text.
  */
 export function nextOffer(ticket: Ticket): Offer | null {
   if (!ticket.accelerator) return ACCELERATOR_OFFER;
