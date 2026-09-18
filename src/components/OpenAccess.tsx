@@ -6,8 +6,8 @@ import { OPEN_ACCESS_NOTICE, SUPPORT_OPTIONS } from "@/lib/academy";
 export function OpenAccessBanner({ note }: { note?: string }) {
   return (
     <div className="academy-card academy-card-gold" style={{ marginTop: 24 }}>
-      <p className="academy-eyebrow">Open this week · free for everyone</p>
-      <h2>Come in. It is all open.</h2>
+      <p className="academy-eyebrow">Included with membership</p>
+      <h2>It opens with your membership.</h2>
       <p>{note ?? OPEN_ACCESS_NOTICE}</p>
     </div>
   );
@@ -17,8 +17,8 @@ export function SupportPanel({ heading }: { heading?: string }) {
   return (
     <section className="academy-section" style={{ paddingTop: 8 }}>
       <div className="academy-section-heading">
-        <p className="academy-eyebrow">No tickets, no checkout</p>
-        <h2>{heading ?? "Three ways to keep this going."}</h2>
+        <p className="academy-eyebrow">Membership runs in Skool</p>
+        <h2>{heading ?? "How to get in."}</h2>
       </div>
       <div className="academy-three">
         {SUPPORT_OPTIONS.map((o) => (

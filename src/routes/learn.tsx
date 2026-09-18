@@ -116,11 +116,11 @@ function LearningSession({ session }: { session: ReturnType<typeof useAcademySes
               </div>
               {data.nextOffer ? (
                 <div className="academy-card academy-card-gold academy-spin-summary">
-                  <p className="academy-eyebrow">Open this week · free</p>
-                  <h2>Everything on the Summit is open.</h2>
+                  <p className="academy-eyebrow">Accelerator · $555/month</p>
+                  <h2>Ready for the build rooms?</h2>
                   <p>
-                    No ticket needed this week. If it helps you, text {SUPPORT_TEXT_NUMBER} to
-                    donate, or to ask about the Accelerator or a 1-on-1 consultation.
+                    The Accelerator classroom is included with the $555/month membership in our
+                    Skool community. Text {SUPPORT_TEXT_NUMBER} with questions or for a 1-on-1.
                   </p>
                   <div className="academy-actions">
                     <a className="academy-button academy-button-secondary" href="/summit">

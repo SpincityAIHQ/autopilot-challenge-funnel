@@ -79,8 +79,9 @@ function ReserveVaultPage() {
             <section className="reserve-card--vault p-6 sm:p-8">
               <p className="reserve-eyebrow reserve-gold-text">Choose your complete access level</p>
               <p className="mt-4 reserve-body-lg">
-                Nothing is for sale right now. VIP and the Emerald Vault Key are open to everyone
-                this week, free. Create your free account and everything unlocks.
+                Nothing is sold here. VIP and the Emerald Vault Key are included with the
+                $97/month membership in our Skool community. Join there, then sign in with the same
+                email and everything unlocks.
               </p>
               <p className="mt-6 reserve-eyebrow reserve-jewel">The complete package</p>
               <p className="mt-3 reserve-mono-price text-[40px] reserve-jewel">Open · Free</p>
@@ -113,7 +114,7 @@ function ReserveVaultPage() {
                 Browse the Summit sessions
               </a>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Enjoying it? Text {SUPPORT_TEXT_NUMBER} to donate, or to ask about the Accelerator
+                Questions? Text {SUPPORT_TEXT_NUMBER} about the Accelerator
                 or a 1-on-1 consultation.
               </p>
               <div className="mt-8 reserve-hairline" />
