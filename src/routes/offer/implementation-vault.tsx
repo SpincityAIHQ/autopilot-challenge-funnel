@@ -110,7 +110,7 @@ function VaultContent() {
       <div className="mt-8">
         <h2 className="font-display text-2xl text-foreground">{vault.name}</h2>
         <div className="mt-4 font-display text-4xl text-[color:var(--gold)]">
-          {formatUsd(vault.priceCents)}
+          Open free this week
         </div>
         <p className="mt-4 text-muted-foreground">{vault.summary}</p>
       </div>

@@ -127,8 +127,8 @@ function IntensiveContent() {
         <h2 className="font-display text-2xl text-foreground">
           Private Strategy &amp; Build Intensive
         </h2>
-        <div className="mt-4 font-display text-4xl text-[color:var(--gold)]">
-          {formatUsd(intensive.priceCents)}
+        <div className="mt-4 font-display text-3xl text-[color:var(--gold)]">
+          By request — text {SUPPORT_TEXT_NUMBER}
         </div>
         <p className="mt-5 text-muted-foreground">{intensive.summary}</p>
       </div>
@@ -158,7 +158,7 @@ function IntensiveContent() {
           )}
         </div>
         <p className="mt-3 text-xs text-muted-foreground">
-          A seat is counted only after payment is confirmed.
+          A seat is counted only after it is confirmed with you directly.
         </p>
       </section>
 
