@@ -110,9 +110,9 @@ export function lessonHref(id: string) {
   return id === "free-webinar" ? "/class" : `/lesson/${id}`;
 }
 /**
- * Payments are OFF across the whole Summit. Every tier below is open to any
- * signed-in learner while the open week runs; the prices are kept at 0 so no
- * page can render a price, and every link points at a page, never a checkout.
+ * Nothing is sold in this app. Membership is bought inside the Skool community
+ * and the app simply opens for a member. Prices stay 0 here so no page can
+ * render a checkout price, and every link points at a page or at Skool.
  */
 export const SUMMIT_OFFERS = [
   {
@@ -151,13 +151,19 @@ export const ACCELERATOR_OFFER = {
 } as const;
 export const COMMUNITY_URL =
   "https://www.skool.com/the-ascended-masters/about?ref=ce11d00bd3994b97bfd25e10976d9f0b";
+/** Membership is handled in Skool; both paid tiers are joined from the same community. */
+export const SKOOL_SUMMIT_URL = COMMUNITY_URL;
+export const SKOOL_ACCELERATOR_URL = COMMUNITY_URL;
+export const MEMBERSHIP_SUMMIT_PRICE = "$97/month";
+export const MEMBERSHIP_ACCELERATOR_PRICE = "$555/month";
 
-/** One text line for donations, Accelerator interest and consultations. */
+/** One text line for Accelerator questions and 1-on-1 interest. */
 export const SUPPORT_TEXT_NUMBER = "510-747-5291";
 export const SUPPORT_TEXT_HREF = "sms:+15107475291";
 /** Shown wherever tickets used to be sold. */
-export const OPEN_ACCESS_NOTICE =
-  "Every Summit recording is open to everyone this week. Sign in with a free account and watch the whole thing — no ticket, no payment.";
+export const MEMBERSHIP_NOTICE = `The whole Summit is included with the ${MEMBERSHIP_SUMMIT_PRICE} membership in our Skool community. Join there, then sign in here with the same email and everything opens.`;
+/** Back-compat name used by pages that used to show the free-week banner. */
+export const OPEN_ACCESS_NOTICE = MEMBERSHIP_NOTICE;
 export type SupportOption = {
   id: string;
   eyebrow: string;
@@ -169,29 +175,39 @@ export type SupportOption = {
 };
 export const SUPPORT_OPTIONS: SupportOption[] = [
   {
-    id: "donate",
-    eyebrow: "If it helped you",
-    title: "Send a donation",
-    body: `Nothing is for sale here. If the learning was worth something to you, text ${SUPPORT_TEXT_NUMBER} and we will send you a way to give.`,
-    actionLabel: `Text ${SUPPORT_TEXT_NUMBER}`,
-    href: SUPPORT_TEXT_HREF,
+    id: "summit-membership",
+    eyebrow: `Summit · ${MEMBERSHIP_SUMMIT_PRICE}`,
+    title: "Full Summit app access",
+    body: "Day 1, Day 2, both VIP rooms, the Emerald intensive and the Vault. Included with the Summit membership in Skool.",
+    actionLabel: "Join in Skool",
+    href: SKOOL_SUMMIT_URL,
+    external: true,
   },
   {
-    id: "accelerator",
-    eyebrow: "Want to go further",
-    title: "Accelerator or a 1-on-1 consultation",
-    body: `Text ${SUPPORT_TEXT_NUMBER} with what you are building and what you want help with. Spin replies personally.`,
-    actionLabel: "Text your interest",
-    href: SUPPORT_TEXT_HREF,
+    id: "accelerator-membership",
+    eyebrow: `Accelerator · ${MEMBERSHIP_ACCELERATOR_PRICE}`,
+    title: "Accelerator classroom",
+    body: "Everything in the Summit membership plus the Accelerator classroom, the live build rooms and every class replay.",
+    actionLabel: "Join in Skool",
+    href: SKOOL_ACCELERATOR_URL,
+    external: true,
   },
   {
     id: "community",
-    eyebrow: "Stay with the family",
-    title: "Join the free community",
-    body: "Keep building with everyone else in the Skool community. Free to join.",
+    eyebrow: "Start free",
+    title: "Free community and free training",
+    body: "Join the community for free, watch the free training and step up to a membership whenever you are ready.",
     actionLabel: "Open the community",
     href: COMMUNITY_URL,
     external: true,
+  },
+  {
+    id: "consult",
+    eyebrow: "Questions",
+    title: "Talk to Spin",
+    body: `Text ${SUPPORT_TEXT_NUMBER} about the Accelerator or a 1-on-1. Spin replies personally.`,
+    actionLabel: `Text ${SUPPORT_TEXT_NUMBER}`,
+    href: SUPPORT_TEXT_HREF,
   },
 ];
 
