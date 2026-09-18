@@ -40,7 +40,7 @@ function Checkout() {
     <main className="mx-auto max-w-3xl px-5 py-12">
       <p className="eyebrow">SpinCityHQ &amp; NuAmenti present · AI AutoPilot 2-Day Summit</p>
       <h1 className="mt-3 font-display text-2xl text-foreground sm:text-3xl">
-        The Summit is open free this week
+        The Summit is included with membership
       </h1>
 
       <FunnelVideoSlot
@@ -58,8 +58,9 @@ function Checkout() {
           Create my free account
         </a>
         <p className="mt-3 text-center text-xs text-muted-foreground">
-          Nothing is for sale here. Sign in and every Summit recording opens. Enjoying it? Text{" "}
-          {SUPPORT_TEXT_NUMBER} to donate, or to ask about the Accelerator or a 1-on-1 consultation.
+          Nothing is sold here. Membership is handled in our Skool community: the Summit membership opens the
+          whole Summit, the Accelerator membership adds the classroom. Sign in with the same email and everything
+          opens. Questions? Text {SUPPORT_TEXT_NUMBER}.
         </p>
         <p className="mt-3 text-center text-xs text-muted-foreground">
           By creating an account you agree to the{" "}
@@ -90,7 +91,7 @@ function Checkout() {
             <h2 className="font-heading text-lg text-foreground">{ticket.name}</h2>
             <p className="mt-2 text-sm text-muted-foreground">{ticket.headline}</p>
           </div>
-          <p className="font-display text-2xl text-[color:var(--gold)]">Free this week</p>
+          <p className="font-display text-2xl text-[color:var(--gold)]">With membership</p>
         </div>
         <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
           {ticket.bullets.map((bullet) => (

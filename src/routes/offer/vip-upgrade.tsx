@@ -100,7 +100,7 @@ function VipUpgradeContent() {
 
       <div className="mt-8">
         <h2 className="font-display text-2xl text-foreground">
-          {vip.name} — open free this week
+          {vip.name} — included with the Summit membership
         </h2>
         <p className="mt-3 font-heading text-[color:var(--emerald-signal)]">
           Sunday, August 30 · 4:15–5:45 PM Eastern · immediately after Day 2

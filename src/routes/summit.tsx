@@ -92,7 +92,7 @@ function Summit() {
                       ? "Ready to watch."
                       : "Recording not connected yet."
                     : session.email
-                      ? "Open free this week — reload if it still looks locked."
+                      ? "Included with your membership — reload if it still looks locked."
                       : "Sign in with your purchase email to activate your ticket."}
                 </p>
                 <a
@@ -107,8 +107,8 @@ function Summit() {
         </div>
 
         <div className="academy-section-heading" id="tickets" style={{ marginTop: 48 }}>
-          <p className="academy-eyebrow">Open this week · free for everyone</p>
-          <h2>No tickets. Nothing to buy.</h2>
+          <p className="academy-eyebrow">Included with the Summit membership</p>
+          <h2>One membership opens the whole Summit.</h2>
           <p>{OPEN_ACCESS_NOTICE}</p>
         </div>
         <div className="academy-three">
@@ -124,7 +124,7 @@ function Summit() {
               <a className="academy-button" href={session.email ? "/learn" : academyJoinHref("/learn", true)}>
                 {session.email ? "Open My Learning" : "Create a free account"}
               </a>
-              <p className="academy-muted">Included free this week.</p>
+              <p className="academy-muted">Included with the Summit membership in Skool.</p>
             </article>
           ))}
         </div>

@@ -55,6 +55,7 @@ import { Route as CalendarDay2DoticsRouteImport } from './routes/calendar.day2[.
 import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.]ics'
 import { Route as ApplyMentorshipRouteImport } from './routes/apply.mentorship'
 import { Route as AdminOwnerLoginRouteImport } from './routes/admin.owner-login'
+import { Route as AdminMembersRouteImport } from './routes/admin.members'
 import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as ApiPublicTrainingWaitlistRouteImport } from './routes/api/public/training-waitlist'
@@ -69,6 +70,7 @@ import { Route as ApiAcademySplatRouteImport } from './routes/api/academy/$'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiPublicWebhooksSkoolRouteImport } from './routes/api/public/webhooks/skool'
 import { Route as ApiPublicWebhooksShopifyRouteImport } from './routes/api/public/webhooks/shopify'
 import { Route as ApiPublicWebhooksGhlPaymentRouteImport } from './routes/api/public/webhooks/ghl-payment'
 import { Route as ApiPublicWebhooksCommasRouteImport } from './routes/api/public/webhooks/commas'
@@ -79,6 +81,7 @@ import { Route as ApiPublicResourcesEntitlementSummaryRouteImport } from './rout
 import { Route as ApiPublicCheckoutTierRouteImport } from './routes/api/public/checkout/$tier'
 import { Route as ApiPublicAdminSummitLeadsRouteImport } from './routes/api/public/admin/summit-leads'
 import { Route as ApiPublicAdminSummitAuditRouteImport } from './routes/api/public/admin/summit-audit'
+import { Route as ApiPublicAdminSkoolMembershipRouteImport } from './routes/api/public/admin/skool-membership'
 import { Route as ApiPublicAdminOwnerLoginRouteImport } from './routes/api/public/admin/owner-login'
 import { Route as ApiPublicAdminAcademyEmailTestRouteImport } from './routes/api/public/admin/academy-email-test'
 
@@ -315,6 +318,11 @@ const AdminOwnerLoginRoute = AdminOwnerLoginRouteImport.update({
   path: '/admin/owner-login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminMembersRoute = AdminMembersRouteImport.update({
+  id: '/admin/members',
+  path: '/admin/members',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLeadsRoute = AdminLeadsRouteImport.update({
   id: '/admin/leads',
   path: '/admin/leads',
@@ -391,6 +399,11 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicWebhooksSkoolRoute = ApiPublicWebhooksSkoolRouteImport.update({
+  id: '/api/public/webhooks/skool',
+  path: '/api/public/webhooks/skool',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicWebhooksShopifyRoute =
   ApiPublicWebhooksShopifyRouteImport.update({
     id: '/api/public/webhooks/shopify',
@@ -448,6 +461,12 @@ const ApiPublicAdminSummitAuditRoute =
     path: '/api/public/admin/summit-audit',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicAdminSkoolMembershipRoute =
+  ApiPublicAdminSkoolMembershipRouteImport.update({
+    id: '/api/public/admin/skool-membership',
+    path: '/api/public/admin/skool-membership',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicAdminOwnerLoginRoute =
   ApiPublicAdminOwnerLoginRouteImport.update({
     id: '/api/public/admin/owner-login',
@@ -495,6 +514,7 @@ export interface FileRoutesByFullPath {
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/leads': typeof AdminLeadsRoute
+  '/admin/members': typeof AdminMembersRoute
   '/admin/owner-login': typeof AdminOwnerLoginRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
@@ -521,6 +541,7 @@ export interface FileRoutesByFullPath {
   '/api/public/training-waitlist': typeof ApiPublicTrainingWaitlistRoute
   '/api/public/admin/academy-email-test': typeof ApiPublicAdminAcademyEmailTestRoute
   '/api/public/admin/owner-login': typeof ApiPublicAdminOwnerLoginRoute
+  '/api/public/admin/skool-membership': typeof ApiPublicAdminSkoolMembershipRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
   '/api/public/checkout/$tier': typeof ApiPublicCheckoutTierRoute
@@ -531,6 +552,7 @@ export interface FileRoutesByFullPath {
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
   '/api/public/webhooks/ghl-payment': typeof ApiPublicWebhooksGhlPaymentRoute
   '/api/public/webhooks/shopify': typeof ApiPublicWebhooksShopifyRoute
+  '/api/public/webhooks/skool': typeof ApiPublicWebhooksSkoolRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -569,6 +591,7 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/leads': typeof AdminLeadsRoute
+  '/admin/members': typeof AdminMembersRoute
   '/admin/owner-login': typeof AdminOwnerLoginRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
@@ -595,6 +618,7 @@ export interface FileRoutesByTo {
   '/api/public/training-waitlist': typeof ApiPublicTrainingWaitlistRoute
   '/api/public/admin/academy-email-test': typeof ApiPublicAdminAcademyEmailTestRoute
   '/api/public/admin/owner-login': typeof ApiPublicAdminOwnerLoginRoute
+  '/api/public/admin/skool-membership': typeof ApiPublicAdminSkoolMembershipRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
   '/api/public/checkout/$tier': typeof ApiPublicCheckoutTierRoute
@@ -605,6 +629,7 @@ export interface FileRoutesByTo {
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
   '/api/public/webhooks/ghl-payment': typeof ApiPublicWebhooksGhlPaymentRoute
   '/api/public/webhooks/shopify': typeof ApiPublicWebhooksShopifyRoute
+  '/api/public/webhooks/skool': typeof ApiPublicWebhooksSkoolRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -644,6 +669,7 @@ export interface FileRoutesById {
   '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/leads': typeof AdminLeadsRoute
+  '/admin/members': typeof AdminMembersRoute
   '/admin/owner-login': typeof AdminOwnerLoginRoute
   '/apply/mentorship': typeof ApplyMentorshipRoute
   '/calendar/day1.ics': typeof CalendarDay1DoticsRoute
@@ -670,6 +696,7 @@ export interface FileRoutesById {
   '/api/public/training-waitlist': typeof ApiPublicTrainingWaitlistRoute
   '/api/public/admin/academy-email-test': typeof ApiPublicAdminAcademyEmailTestRoute
   '/api/public/admin/owner-login': typeof ApiPublicAdminOwnerLoginRoute
+  '/api/public/admin/skool-membership': typeof ApiPublicAdminSkoolMembershipRoute
   '/api/public/admin/summit-audit': typeof ApiPublicAdminSummitAuditRoute
   '/api/public/admin/summit-leads': typeof ApiPublicAdminSummitLeadsRoute
   '/api/public/checkout/$tier': typeof ApiPublicCheckoutTierRoute
@@ -680,6 +707,7 @@ export interface FileRoutesById {
   '/api/public/webhooks/commas': typeof ApiPublicWebhooksCommasRoute
   '/api/public/webhooks/ghl-payment': typeof ApiPublicWebhooksGhlPaymentRoute
   '/api/public/webhooks/shopify': typeof ApiPublicWebhooksShopifyRoute
+  '/api/public/webhooks/skool': typeof ApiPublicWebhooksSkoolRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -720,6 +748,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/admin/audit'
     | '/admin/leads'
+    | '/admin/members'
     | '/admin/owner-login'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
@@ -746,6 +775,7 @@ export interface FileRouteTypes {
     | '/api/public/training-waitlist'
     | '/api/public/admin/academy-email-test'
     | '/api/public/admin/owner-login'
+    | '/api/public/admin/skool-membership'
     | '/api/public/admin/summit-audit'
     | '/api/public/admin/summit-leads'
     | '/api/public/checkout/$tier'
@@ -756,6 +786,7 @@ export interface FileRouteTypes {
     | '/api/public/webhooks/commas'
     | '/api/public/webhooks/ghl-payment'
     | '/api/public/webhooks/shopify'
+    | '/api/public/webhooks/skool'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -794,6 +825,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/admin/audit'
     | '/admin/leads'
+    | '/admin/members'
     | '/admin/owner-login'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
@@ -820,6 +852,7 @@ export interface FileRouteTypes {
     | '/api/public/training-waitlist'
     | '/api/public/admin/academy-email-test'
     | '/api/public/admin/owner-login'
+    | '/api/public/admin/skool-membership'
     | '/api/public/admin/summit-audit'
     | '/api/public/admin/summit-leads'
     | '/api/public/checkout/$tier'
@@ -830,6 +863,7 @@ export interface FileRouteTypes {
     | '/api/public/webhooks/commas'
     | '/api/public/webhooks/ghl-payment'
     | '/api/public/webhooks/shopify'
+    | '/api/public/webhooks/skool'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -868,6 +902,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/admin/audit'
     | '/admin/leads'
+    | '/admin/members'
     | '/admin/owner-login'
     | '/apply/mentorship'
     | '/calendar/day1.ics'
@@ -894,6 +929,7 @@ export interface FileRouteTypes {
     | '/api/public/training-waitlist'
     | '/api/public/admin/academy-email-test'
     | '/api/public/admin/owner-login'
+    | '/api/public/admin/skool-membership'
     | '/api/public/admin/summit-audit'
     | '/api/public/admin/summit-leads'
     | '/api/public/checkout/$tier'
@@ -904,6 +940,7 @@ export interface FileRouteTypes {
     | '/api/public/webhooks/commas'
     | '/api/public/webhooks/ghl-payment'
     | '/api/public/webhooks/shopify'
+    | '/api/public/webhooks/skool'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -943,6 +980,7 @@ export interface RootRouteChildren {
   WelcomeRoute: typeof WelcomeRoute
   AdminAuditRoute: typeof AdminAuditRoute
   AdminLeadsRoute: typeof AdminLeadsRoute
+  AdminMembersRoute: typeof AdminMembersRoute
   AdminOwnerLoginRoute: typeof AdminOwnerLoginRoute
   ApplyMentorshipRoute: typeof ApplyMentorshipRoute
   CalendarDay1DoticsRoute: typeof CalendarDay1DoticsRoute
@@ -968,6 +1006,7 @@ export interface RootRouteChildren {
   ApiPublicTrainingWaitlistRoute: typeof ApiPublicTrainingWaitlistRoute
   ApiPublicAdminAcademyEmailTestRoute: typeof ApiPublicAdminAcademyEmailTestRoute
   ApiPublicAdminOwnerLoginRoute: typeof ApiPublicAdminOwnerLoginRoute
+  ApiPublicAdminSkoolMembershipRoute: typeof ApiPublicAdminSkoolMembershipRoute
   ApiPublicAdminSummitAuditRoute: typeof ApiPublicAdminSummitAuditRoute
   ApiPublicAdminSummitLeadsRoute: typeof ApiPublicAdminSummitLeadsRoute
   ApiPublicCheckoutTierRoute: typeof ApiPublicCheckoutTierRoute
@@ -978,6 +1017,7 @@ export interface RootRouteChildren {
   ApiPublicWebhooksCommasRoute: typeof ApiPublicWebhooksCommasRoute
   ApiPublicWebhooksGhlPaymentRoute: typeof ApiPublicWebhooksGhlPaymentRoute
   ApiPublicWebhooksShopifyRoute: typeof ApiPublicWebhooksShopifyRoute
+  ApiPublicWebhooksSkoolRoute: typeof ApiPublicWebhooksSkoolRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
@@ -1307,6 +1347,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOwnerLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/members': {
+      id: '/admin/members'
+      path: '/admin/members'
+      fullPath: '/admin/members'
+      preLoaderRoute: typeof AdminMembersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/leads': {
       id: '/admin/leads'
       path: '/admin/leads'
@@ -1405,6 +1452,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/webhooks/skool': {
+      id: '/api/public/webhooks/skool'
+      path: '/api/public/webhooks/skool'
+      fullPath: '/api/public/webhooks/skool'
+      preLoaderRoute: typeof ApiPublicWebhooksSkoolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhooks/shopify': {
       id: '/api/public/webhooks/shopify'
       path: '/api/public/webhooks/shopify'
@@ -1475,6 +1529,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAdminSummitAuditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/admin/skool-membership': {
+      id: '/api/public/admin/skool-membership'
+      path: '/api/public/admin/skool-membership'
+      fullPath: '/api/public/admin/skool-membership'
+      preLoaderRoute: typeof ApiPublicAdminSkoolMembershipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/admin/owner-login': {
       id: '/api/public/admin/owner-login'
       path: '/api/public/admin/owner-login'
@@ -1538,6 +1599,7 @@ const rootRouteChildren: RootRouteChildren = {
   WelcomeRoute: WelcomeRoute,
   AdminAuditRoute: AdminAuditRoute,
   AdminLeadsRoute: AdminLeadsRoute,
+  AdminMembersRoute: AdminMembersRoute,
   AdminOwnerLoginRoute: AdminOwnerLoginRoute,
   ApplyMentorshipRoute: ApplyMentorshipRoute,
   CalendarDay1DoticsRoute: CalendarDay1DoticsRoute,
@@ -1564,6 +1626,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicTrainingWaitlistRoute: ApiPublicTrainingWaitlistRoute,
   ApiPublicAdminAcademyEmailTestRoute: ApiPublicAdminAcademyEmailTestRoute,
   ApiPublicAdminOwnerLoginRoute: ApiPublicAdminOwnerLoginRoute,
+  ApiPublicAdminSkoolMembershipRoute: ApiPublicAdminSkoolMembershipRoute,
   ApiPublicAdminSummitAuditRoute: ApiPublicAdminSummitAuditRoute,
   ApiPublicAdminSummitLeadsRoute: ApiPublicAdminSummitLeadsRoute,
   ApiPublicCheckoutTierRoute: ApiPublicCheckoutTierRoute,
@@ -1575,6 +1638,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicWebhooksCommasRoute: ApiPublicWebhooksCommasRoute,
   ApiPublicWebhooksGhlPaymentRoute: ApiPublicWebhooksGhlPaymentRoute,
   ApiPublicWebhooksShopifyRoute: ApiPublicWebhooksShopifyRoute,
+  ApiPublicWebhooksSkoolRoute: ApiPublicWebhooksSkoolRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,

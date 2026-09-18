@@ -59,10 +59,13 @@ describe("payments are off", () => {
     expect(SUMMIT_OFFERS.every((o) => !o.url.includes("checkout"))).toBe(true);
   });
 
-  it("offers donation, Accelerator interest and the community by text", () => {
-    expect(SUPPORT_OPTIONS.length).toBe(3);
-    expect(SUPPORT_OPTIONS.filter((o) => o.href.startsWith("sms:")).length).toBe(2);
-    expect(SUPPORT_OPTIONS.some((o) => o.href.includes("skool.com"))).toBe(true);
+  it("offers the two Skool memberships, the free community and one text line", () => {
+    expect(SUPPORT_OPTIONS.length).toBe(4);
+    expect(SUPPORT_OPTIONS.filter((o) => o.href.includes("skool.com")).length).toBe(3);
+    expect(SUPPORT_OPTIONS.filter((o) => o.href.startsWith("sms:")).length).toBe(1);
+    expect(SUPPORT_OPTIONS.some((o) => o.id === "summit-membership")).toBe(true);
+    expect(SUPPORT_OPTIONS.some((o) => o.id === "accelerator-membership")).toBe(true);
+    expect(SUPPORT_OPTIONS.some((o) => o.id === "donate")).toBe(false);
     expect(SUPPORT_TEXT_NUMBER).toBe("510-747-5291");
   });
 

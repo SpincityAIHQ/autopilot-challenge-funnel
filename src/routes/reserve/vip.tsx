@@ -76,10 +76,11 @@ function ReserveVipPage() {
         <div className="mt-5 space-y-10">
           <RevealOnView delayMs={160}>
             <section className="reserve-card reserve-card--emerald p-6 sm:p-8">
-              <p className="reserve-eyebrow reserve-gold-text">The whole Summit is open free</p>
+              <p className="reserve-eyebrow reserve-gold-text">The whole Summit comes with membership</p>
               <p className="mt-4 reserve-body-lg">
-                Nothing is for sale right now. Every Summit recording, including the VIP rooms and
-                the Emerald intensive, is open to everyone this week. Create your free account and
+                Nothing is sold here. Every Summit recording, including the VIP rooms and the
+                Emerald intensive, is included with the Summit membership in our Skool community.
+                Join there, create your account with the same email and
                 start watching.
               </p>
               <a
@@ -109,7 +110,7 @@ function ReserveVipPage() {
                 See what VIP and Emerald include
               </Link>
               <p className="mt-3 text-center reserve-note-15" style={{ opacity: 0.7 }}>
-                Enjoying it? Text {SUPPORT_TEXT_NUMBER} to donate, or to ask about the Accelerator
+                Questions? Text {SUPPORT_TEXT_NUMBER} about the Accelerator
                 or a 1-on-1 consultation.
               </p>
               <div className="mt-8 reserve-hairline" />
@@ -139,7 +140,7 @@ function ReserveVipPage() {
                     <li>• More time to ask questions and work through your build</li>
                   </ul>
                   <p className="mt-4 reserve-note-15" style={{ opacity: 0.7 }}>
-                    Open to everyone this week at no cost.
+                    Included with the Summit membership.
                   </p>
                 </div>
               </div>
