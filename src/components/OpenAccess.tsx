@@ -26,6 +26,13 @@ export function SupportPanel({ heading }: { heading?: string }) {
             <p className="academy-eyebrow">{o.eyebrow}</p>
             <h2>{o.title}</h2>
             <p>{o.body}</p>
+            {o.bullets?.length ? (
+              <ul>
+                {o.bullets.map((b) => (
+                  <li key={b}>{b}</li>
+                ))}
+              </ul>
+            ) : null}
             <a
               className="academy-button"
               href={o.href}
@@ -36,6 +43,7 @@ export function SupportPanel({ heading }: { heading?: string }) {
           </article>
         ))}
       </div>
+
     </section>
   );
 }
