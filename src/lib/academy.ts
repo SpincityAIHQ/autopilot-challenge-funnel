@@ -154,14 +154,17 @@ export const COMMUNITY_URL =
 /** Membership is handled in Skool; both paid tiers are joined from the same community. */
 export const SKOOL_SUMMIT_URL = COMMUNITY_URL;
 export const SKOOL_ACCELERATOR_URL = COMMUNITY_URL;
-export const MEMBERSHIP_SUMMIT_PRICE = "$97/month";
-export const MEMBERSHIP_ACCELERATOR_PRICE = "$555/month";
+export const MEMBERSHIP_SUMMIT_PRICE = "$97/month or $567/year";
+export const MEMBERSHIP_ACCELERATOR_PRICE = "$555/month or $2,000/year";
+/** Tier names as they appear in Skool. */
+export const MEMBERSHIP_SUMMIT_NAME = "Premium";
+export const MEMBERSHIP_ACCELERATOR_NAME = "VIP";
 
 /** One text line for Accelerator questions and 1-on-1 interest. */
 export const SUPPORT_TEXT_NUMBER = "510-747-5291";
 export const SUPPORT_TEXT_HREF = "sms:+15107475291";
 /** Shown wherever tickets used to be sold. */
-export const MEMBERSHIP_NOTICE = `The whole Summit is included with the ${MEMBERSHIP_SUMMIT_PRICE} membership in our Skool community. Join there, then sign in here with the same email and everything opens.`;
+export const MEMBERSHIP_NOTICE = `The whole Summit is included with the ${MEMBERSHIP_SUMMIT_NAME} membership (${MEMBERSHIP_SUMMIT_PRICE}) in our Skool community. Join there, then sign in here with the same email and everything opens.`;
 /** Back-compat name used by pages that used to show the free-week banner. */
 export const OPEN_ACCESS_NOTICE = MEMBERSHIP_NOTICE;
 export type SupportOption = {
@@ -169,36 +172,54 @@ export type SupportOption = {
   eyebrow: string;
   title: string;
   body: string;
+  bullets?: string[];
   actionLabel: string;
   href: string;
   external?: boolean;
 };
 export const SUPPORT_OPTIONS: SupportOption[] = [
   {
+    id: "community",
+    eyebrow: "Standard · Free to join",
+    title: "Free community and free training",
+    body: "Join free, then step up whenever you are ready.",
+    bullets: [
+      "Thursday classes live",
+      "Weekly worksheet",
+      "1 MasterClass recording and workbook",
+    ],
+    actionLabel: "Open the community",
+    href: COMMUNITY_URL,
+    external: true,
+  },
+  {
     id: "summit-membership",
-    eyebrow: `Summit · ${MEMBERSHIP_SUMMIT_PRICE}`,
+    eyebrow: `${MEMBERSHIP_SUMMIT_NAME} · ${MEMBERSHIP_SUMMIT_PRICE}`,
     title: "Full Summit app access",
-    body: "Day 1, Day 2, both VIP rooms, the Emerald intensive and the Vault. Included with the Summit membership in Skool.",
+    body: "Day 1, Day 2, both VIP rooms, the Emerald intensive and the Vault all open here.",
+    bullets: [
+      "Everything in Standard",
+      "Affiliate training and growth with Spin",
+      "Sunday weekly set-up classes",
+      "SpinCity connect",
+      "The B.AI.NK — all recorded MasterClasses",
+    ],
     actionLabel: "Join in Skool",
     href: SKOOL_SUMMIT_URL,
     external: true,
   },
   {
     id: "accelerator-membership",
-    eyebrow: `Accelerator · ${MEMBERSHIP_ACCELERATOR_PRICE}`,
+    eyebrow: `${MEMBERSHIP_ACCELERATOR_NAME} · ${MEMBERSHIP_ACCELERATOR_PRICE}`,
     title: "Accelerator classroom",
-    body: "Everything in the Summit membership plus the Accelerator classroom, the live build rooms and every class replay.",
+    body: "Everything in Premium plus the Accelerator classroom and every class replay.",
+    bullets: [
+      "Everything in Premium",
+      "NuAmenti Founder classes every Tuesday",
+      "2 strategy sessions with Spin",
+    ],
     actionLabel: "Join in Skool",
     href: SKOOL_ACCELERATOR_URL,
-    external: true,
-  },
-  {
-    id: "community",
-    eyebrow: "Start free",
-    title: "Free community and free training",
-    body: "Join the community for free, watch the free training and step up to a membership whenever you are ready.",
-    actionLabel: "Open the community",
-    href: COMMUNITY_URL,
     external: true,
   },
   {
@@ -210,6 +231,7 @@ export const SUPPORT_OPTIONS: SupportOption[] = [
     href: SUPPORT_TEXT_HREF,
   },
 ];
+
 
 
 /**
