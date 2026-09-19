@@ -84,7 +84,9 @@ function ReserveVaultPage() {
                 email and everything unlocks.
               </p>
               <p className="mt-6 reserve-eyebrow reserve-jewel">The complete package</p>
-              <p className="mt-3 reserve-mono-price text-[40px] reserve-jewel">Open · Free</p>
+              <p className="mt-3 reserve-mono-price text-[28px] reserve-jewel">
+                Included with the Summit membership
+              </p>
               <p className="mt-2 reserve-note-15" style={{ opacity: 0.78 }}>
                 AI AutoPilot Summit + VIP + Emerald Vault Key + private Day 3
               </p>
