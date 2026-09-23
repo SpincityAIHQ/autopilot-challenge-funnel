@@ -34,8 +34,20 @@ export type PathStep = {
   proof: string;
 };
 
+export type FoundationCheck = {
+  id: string;
+  title: string;
+  /** Short, tool-neutral way to confirm this rung yourself. */
+  verify: string;
+  href: string | null;
+  linkLabel: string | null;
+  note: string | null;
+};
+
 export type AcceleratorPath = {
   accessVerified: boolean;
+  /** Spin's foundation ladder. Self-verified: no saved data confirms these, so status is never claimed. */
+  foundation: FoundationCheck[];
   steps: PathStep[];
   supplemental: PathStep[];
   next: PathStep | null;
@@ -59,7 +71,63 @@ const SUPPLEMENTAL = [
   { id: "own-the-platform", why: "Optional Emerald day: account ownership, access and recovery." },
 ];
 
+const REUSE =
+  "Already have this? Verify it and move on — no new tool or restart needed.";
+export const FOUNDATION: FoundationCheck[] = [
+  {
+    id: "context",
+    title: "1. Your AI has your business context",
+    verify: `In the AI assistant you use, open its custom instructions or project settings and confirm your business, customer, offer, goals and constraints are written there. Then ask it: "Who is my customer and what do I sell?" — it should answer correctly without you retyping it. ("Train your AI" here means setting up context and instructions, not model fine-tuning.) ${REUSE}`,
+    href: "/lesson/business-before-ai",
+    linkLabel: "Summit Day 1",
+    note: "Instructor recommendation (Sept 22 class): beginners start with the first 30 minutes of Summit Day 1. That is not a verified chapter boundary.",
+  },
+  {
+    id: "memory",
+    title: "2. Saved memory reflects that context",
+    verify: `Open the assistant's saved memory or knowledge area and check the facts it keeps about your business are current and contain nothing private you would not want reused. Start a fresh chat and ask a question that depends on those facts. ${REUSE}`,
+    href: null,
+    linkLabel: null,
+    note: "Do this only after step 1 is in place.",
+  },
+  {
+    id: "skills",
+    title: "3. Reusable business skills or plugins, where your tool supports them",
+    verify: `Name one repeatable job and confirm you have a saved skill, custom assistant or plugin for it that uses your context. Run it once on a real example and keep the output as proof. If your tool has no such feature, a saved written instruction you reuse counts. ${REUSE}`,
+    href: "/lesson/hire-the-ai-team",
+    linkLabel: "Summit Day 2",
+    note: null,
+  },
+  {
+    id: "structure",
+    title: "4. Founder interview, business structure and offer",
+    verify: `Ask your assistant to interview you about what you have done in business, where you are now and where you are going. Save the answers as a one-page summary with your departments and your offer. Even without a business yet, the interview still applies. ${REUSE}`,
+    href: "/lesson/accelerator-2026-09-21",
+    linkLabel: "Class 03 · Sept 21",
+    note: null,
+  },
+  {
+    id: "destination",
+    title: "5. A destination page with intake, booking and follow-up",
+    verify: `Open your landing page on your phone, submit the intake or booking form yourself, and confirm the follow-up message actually arrives and someone owns replying to it. ${REUSE}`,
+    href: null,
+    linkLabel: null,
+    note: null,
+  },
+  {
+    id: "customer-test",
+    title: "6. One customer step tested",
+    verify: "Send one message, call, page or handoff to a small number of real customers and write down what happened. The result is evidence about that step only.",
+    href: "/lesson/accelerator-2026-09-22",
+    linkLabel: "Class 04 · Sept 22",
+    note: null,
+  },
+];
+
 export const PATH_GLOSSARY = [
+  { term: "Train your AI", meaning: "Give your assistant your business context and instructions. Not fine-tuning a model." },
+  { term: "Memory", meaning: "The facts your assistant saves and reuses between chats." },
+  { term: "Skill / plugin", meaning: "A saved, reusable job your assistant can run with your context, where the tool supports it." },
   { term: "Department", meaning: "A part of the business (marketing, sales, fulfilment) with a person, a process and a platform." },
   { term: "Bottleneck", meaning: "The one place where work waits, is redone, or the customer stops hearing from you." },
   { term: "Workflow", meaning: "A repeatable job with a trigger, approved inputs, an owner and a checked result." },
@@ -182,11 +250,14 @@ export function buildAcceleratorPath(input: {
     );
   if (steps.some((s) => s.video === "unknown"))
     uncertainty.push("Viewing for at least one recording could not be measured, so it is shown as unknown.");
+  uncertainty.push(
+    "The six foundation checks are self-verified; nothing saved here confirms them, so their status is not shown.",
+  );
   uncertainty.push("Watching is not mastery; the knowledge check and activity sheet are the evidence.");
   const whereAmI = !accessVerified
     ? "Your account does not show Accelerator access yet."
     : next
       ? `${done} of ${steps.length} steps have evidence saved. You are on: ${next.title} (${next.stage}).`
       : `All ${steps.length} steps have evidence saved.`;
-  return { accessVerified, steps, supplemental, next, whereAmI, uncertainty, glossary: PATH_GLOSSARY };
+  return { accessVerified, foundation: FOUNDATION, steps, supplemental, next, whereAmI, uncertainty, glossary: PATH_GLOSSARY };
 }

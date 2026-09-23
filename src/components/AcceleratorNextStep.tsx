@@ -70,6 +70,21 @@ export function AcceleratorNextStep() {
           <a className="academy-button" href={next.href}>Resume: {next.title}</a>
         </div>
       ) : null}
+      <details style={{ margin: "12px 0" }} open={!next || next.lessonId === "free-webinar"}>
+        <summary><strong>Foundation self-check</strong> — confirm each rung yourself</summary>
+        <ol style={{ paddingLeft: 20, display: "grid", gap: 10, marginTop: 8 }}>
+          {path.foundation.map((f) => (
+            <li key={f.id}>
+              <strong>{f.title.replace(/^\d+\.\s*/, "")}</strong>
+              <br />
+              <span style={{ fontSize: "0.9em" }}>{f.verify}</span>
+              {f.note ? <><br /><span className="academy-muted" style={{ fontSize: "0.85em" }}>{f.note}</span></> : null}
+              {f.href ? <><br /><a href={f.href}>Open {f.linkLabel} →</a></> : null}
+            </li>
+          ))}
+        </ol>
+      </details>
+      <p className="academy-eyebrow" style={{ marginTop: 12 }}>Lessons and saved evidence</p>
       <ol style={{ paddingLeft: 20, display: "grid", gap: 10 }}>
         {path.steps.map((s) => (
           <li key={s.lessonId} aria-current={next?.lessonId === s.lessonId ? "step" : undefined}>
