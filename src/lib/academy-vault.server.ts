@@ -7,8 +7,8 @@ export function vaultListing(grants: string[]) {
   const unlocked = vaultAllows(grants);
   return { unlocked, items: vaultCatalogue().map((i) => ({ ...i, unlocked })) };
 }
-export function vaultItem(grants: string[], slug: string) {
-  if (!vaultAllows(grants))
+export function vaultItem(grants: string[], slug: string, unlockedBySkill = false) {
+  if (!unlockedBySkill && !vaultAllows(grants))
     throw new AcademyError(
       "The Vault opens with the Emerald Vault Key or Accelerator access. Redeem your code to enter.",
       403,

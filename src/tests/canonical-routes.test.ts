@@ -84,6 +84,12 @@ describe("paid content isolation (source scan)", () => {
     expect(offenders).toEqual([]);
   });
 
+  it("no public source imports academy-vault-skills.server", () => {
+    const re =
+      /(?:from\s+["'][^"']*academy-vault-skills\.server["']|import\(\s*["'][^"']*academy-vault-skills\.server["']\s*\))/;
+    expect(publicFiles.filter((f) => re.test(readFileSync(f, "utf8")))).toEqual([]);
+  });
+
   it("no public source contains unique paid-content phrases", () => {
     // Phrases pulled from server-only sections. If any of these appears
     // in a public file, we've leaked paid content into the bundle.
