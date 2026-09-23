@@ -8,6 +8,47 @@ import {
   CLASS_2026_09_14_VERSION,
   CLASS_2026_09_14_WORKBOOK,
 } from "./academy-class-2026-09-14.server";
+import {
+  CLASS_2026_09_21_CHECKS,
+  CLASS_2026_09_21_ID,
+  CLASS_2026_09_21_MEDIA_NOTICE,
+  CLASS_2026_09_21_PARAGRAPHS,
+  CLASS_2026_09_21_REPLAY,
+  CLASS_2026_09_21_VERSION,
+  CLASS_2026_09_21_WORKBOOK,
+  CLASS_2026_09_22_CHECKS,
+  CLASS_2026_09_22_ID,
+  CLASS_2026_09_22_MEDIA_NOTICE,
+  CLASS_2026_09_22_PARAGRAPHS,
+  CLASS_2026_09_22_REPLAY,
+  CLASS_2026_09_22_VERSION,
+  CLASS_2026_09_22_WORKBOOK,
+  type DatedReplay,
+} from "./academy-class-2026-09-21.server";
+
+/** Dated Accelerator meetings with their own version, notes, check and activity sheet. */
+const DATED_CLASSES: Record<
+  string,
+  {
+    version: string;
+    workbook: { id: string; label: string; hint: string }[];
+    mediaNotice: string;
+    replay: DatedReplay | null;
+  }
+> = {
+  [CLASS_2026_09_21_ID]: {
+    version: CLASS_2026_09_21_VERSION,
+    workbook: CLASS_2026_09_21_WORKBOOK,
+    mediaNotice: CLASS_2026_09_21_MEDIA_NOTICE,
+    replay: CLASS_2026_09_21_REPLAY,
+  },
+  [CLASS_2026_09_22_ID]: {
+    version: CLASS_2026_09_22_VERSION,
+    workbook: CLASS_2026_09_22_WORKBOOK,
+    mediaNotice: CLASS_2026_09_22_MEDIA_NOTICE,
+    replay: CLASS_2026_09_22_REPLAY,
+  },
+};
 
 // Authored teaching notes. These are not verbatim transcripts or invented video timestamps.
 const units: Record<string, { heading: string; text: string }[]> = {
