@@ -257,7 +257,7 @@ function VaultSession({ session }: { session: ReturnType<typeof useAcademySessio
                     className="academy-text-button"
                     disabled={busy === i.slug}
                     onClick={() => read(i)}
-                      aria-label={`Open ${i.name}`}
+                    aria-label={`Open ${i.name}`}
                   >
                     {busy === i.slug ? "Opening…" : "Open →"}
                   </button>
@@ -274,7 +274,6 @@ function VaultSession({ session }: { session: ReturnType<typeof useAcademySessio
                   </button>
                 ) : null}
                 {cardUnlocked ? null : (
-                ) : (
                   <a className="academy-text-button" href="/redeem">
                     Redeem a key →
                   </a>
@@ -365,4 +364,3 @@ function VaultSession({ session }: { session: ReturnType<typeof useAcademySessio
     </AcademyFrame>
   );
 }
-

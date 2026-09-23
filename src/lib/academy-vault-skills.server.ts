@@ -180,7 +180,11 @@ export async function skillDownload(
 }
 
 /** True when a published package linked to this existing card unlocks it for these grants. */
-export async function linkedCardUnlocked(store: SkillStore, grants: string[], resourceSlug: string) {
+export async function linkedCardUnlocked(
+  store: SkillStore,
+  grants: string[],
+  resourceSlug: string,
+) {
   if (!(LINKABLE_RESOURCE_SLUGS as readonly string[]).includes(resourceSlug)) return false;
   const rows = await store.listPublished();
   return rows.some((r) => r.linked_resource_slug === resourceSlug && skillAllows(grants, r.access));

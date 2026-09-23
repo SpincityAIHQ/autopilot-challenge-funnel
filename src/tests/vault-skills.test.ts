@@ -76,11 +76,15 @@ describe("vault skill download access", () => {
     expect(s.recorded.length).toBe(1);
   });
   it("accelerator → ok", async () =>
-    expect(await status(skillDownload(store(vaultRow), ["accelerator"], "u", "test-skill"))).toBe(200));
+    expect(await status(skillDownload(store(vaultRow), ["accelerator"], "u", "test-skill"))).toBe(
+      200,
+    ));
   it("vip + access vip → ok", async () =>
     expect(await status(skillDownload(store(vipRow), ["ga", "vip"], "u", "test-skill"))).toBe(200));
   it("vip + access vault → 403", async () =>
-    expect(await status(skillDownload(store(vaultRow), ["ga", "vip"], "u", "test-skill"))).toBe(403));
+    expect(await status(skillDownload(store(vaultRow), ["ga", "vip"], "u", "test-skill"))).toBe(
+      403,
+    ));
   it("unpublished → 404", async () =>
     expect(
       await status(skillDownload(store([row({ published: false })]), ["vault"], "u", "test-skill")),
@@ -106,7 +110,9 @@ describe("vault skill download access", () => {
     expect(await linkedCardUnlocked(store(linked), ["vip"], "company-brain")).toBe(true);
     expect(await linkedCardUnlocked(store(linked), ["ga"], "company-brain")).toBe(false);
     expect(await linkedCardUnlocked(store(linked), ["vip"], "action-guide")).toBe(false);
-    const hidden = [row({ access: "vip", linked_resource_slug: "company-brain", published: false })];
+    const hidden = [
+      row({ access: "vip", linked_resource_slug: "company-brain", published: false }),
+    ];
     expect(await linkedCardUnlocked(store(hidden), ["vip"], "company-brain")).toBe(false);
   });
 });

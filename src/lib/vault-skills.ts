@@ -41,7 +41,13 @@ export function mergeVaultSkills(
   const cards: VaultCard[] = items.map((i) => {
     const skill = linked.get(i.slug);
     if (!skill)
-      return { slug: i.slug, name: i.name, preview: i.preview, category: i.category, unlocked: i.unlocked };
+      return {
+        slug: i.slug,
+        name: i.name,
+        preview: i.preview,
+        category: i.category,
+        unlocked: i.unlocked,
+      };
     return {
       slug: i.slug,
       name: i.name,
