@@ -70,6 +70,30 @@ function Accelerator() {
               Open the class
             </a>
           </article>
+          <article className="academy-card academy-week-day">
+            <span className="academy-number">Class 03</span>
+            <h3>Departments, the bottleneck and your corporate offer</h3>
+            <p className="academy-muted">Accelerator · Monday, September 21, 2026</p>
+            <p>
+              Map marketing, sales and fulfilment as people, process and platform, find the real
+              bottleneck, value the backlog, and shape a four-minute corporate pitch.
+            </p>
+            <a className="academy-button" href="/lesson/accelerator-2026-09-21">
+              Open the class
+            </a>
+          </article>
+          <article className="academy-card academy-week-day">
+            <span className="academy-number">Class 04</span>
+            <h3>Orientation ladder, checkpoints and your first tested step</h3>
+            <p className="academy-muted">Accelerator · Tuesday, September 22, 2026</p>
+            <p>
+              Follows September 21. Know your stage, verify your lesson access and the AI tutor,
+              then take one customer step you can test this week.
+            </p>
+            <a className="academy-button" href="/lesson/accelerator-2026-09-22">
+              Open the class
+            </a>
+          </article>
         </div>
         <p className="academy-muted">
           Replays are available to enrolled students inside My learning after redemption.
