@@ -62,14 +62,14 @@ describe("September 21 and 22 Accelerator classes", () => {
   });
 
   it("scores the knowledge checks on the server", () => {
-    const keys = {
+    const keys: Record<string, { correct: number }[]> = {
       [CLASS_2026_09_21_ID]: CLASS_2026_09_21_CHECKS,
       [CLASS_2026_09_22_ID]: CLASS_2026_09_22_CHECKS,
     };
     for (const id of IDS) {
-      const correct = keys[id].map((q) => q.correct);
+      const correct = keys[id]!.map((q) => q.correct);
       expect(scoreAnswers(id, correct).score).toBe(3);
-      expect(scoreAnswers(id, correct.map((n) => (n + 1) % 3)).score).toBeLessThan(3);
+      expect(scoreAnswers(id, correct.map((n: number) => (n + 1) % 3)).score).toBeLessThan(3);
     }
   });
 });
