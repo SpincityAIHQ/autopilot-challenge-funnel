@@ -28,7 +28,7 @@ describe("September 14 Accelerator class", () => {
     ])
       expect(LESSONS.some((l) => l.id === id)).toBe(true);
     expect(LESSONS.filter((l) => l.kind === "session").length).toBe(12);
-    expect(LESSONS.filter((l) => l.kind === "lesson").length).toBe(8);
+    expect(LESSONS.filter((l) => l.kind === "lesson").length).toBe(10);
   });
 
   it("only opens for Accelerator holders", () => {
@@ -53,11 +53,14 @@ describe("September 14 Accelerator class", () => {
     ]);
   });
 
-  it("states honestly that no recording is attached", () => {
+  it("states honestly that no recording is attached when the slot is empty", () => {
+    const old = process.env.ACADEMY_VIMEO_ACCELERATOR_2026_09_14;
+    delete process.env.ACADEMY_VIMEO_ACCELERATOR_2026_09_14;
     const c = lessonContent(ID)!;
     expect(c.media).toBeNull();
     expect(c.mediaNotice).toContain("awaiting verification");
     expect(c.mediaNotice).not.toMatch(/uploaded|duration verified/i);
+    if (old !== undefined) process.env.ACADEMY_VIMEO_ACCELERATOR_2026_09_14 = old;
   });
 
   it("never leaks answer keys, feedback or source links to the client payload", () => {
