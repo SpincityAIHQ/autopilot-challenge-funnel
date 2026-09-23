@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { LESSONS, tierAllows } from "@/lib/academy";
-import { lessonContent, scoreAnswers } from "@/lib/academy-content.server";
+import { lessonContent, lessonSource, scoreAnswers } from "@/lib/academy-content.server";
 import {
   CLASS_2026_09_21_CHECKS,
   CLASS_2026_09_21_ID,
