@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { LESSONS, tierAllows } from "@/lib/academy";
 import { lessonContent, scoreAnswers } from "@/lib/academy-content.server";
 import {
