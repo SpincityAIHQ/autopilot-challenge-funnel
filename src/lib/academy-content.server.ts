@@ -121,6 +121,8 @@ const units: Record<string, { heading: string; text: string }[]> = {
     },
   ],
   [CLASS_2026_09_14_ID]: CLASS_2026_09_14_PARAGRAPHS,
+  [CLASS_2026_09_21_ID]: CLASS_2026_09_21_PARAGRAPHS,
+  [CLASS_2026_09_22_ID]: CLASS_2026_09_22_PARAGRAPHS,
   "implementation-lab": [
     {
       heading: "Build one working journey",
@@ -335,6 +337,8 @@ const checks: Record<string, Check[]> = {
     },
   ],
   [CLASS_2026_09_14_ID]: CLASS_2026_09_14_CHECKS,
+  [CLASS_2026_09_21_ID]: CLASS_2026_09_21_CHECKS,
+  [CLASS_2026_09_22_ID]: CLASS_2026_09_22_CHECKS,
   "implementation-lab": [
     {
       prompt: "What identifies a useful implementation test receipt?",
