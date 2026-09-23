@@ -39,16 +39,23 @@ describe("September 21 and 22 Accelerator classes", () => {
     }
   });
 
-  it("connects Monday to its own Vimeo slot, leaves Tuesday empty and serves no Drive link", () => {
+  it("connects Monday and Tuesday to their own Vimeo slots and serves no Drive link", () => {
     const old = process.env.ACADEMY_VIMEO_ACCELERATOR_2026_09_21;
     process.env.ACADEMY_VIMEO_ACCELERATOR_2026_09_21 = "https://vimeo.com/1228940591";
+    const oldT = process.env.ACADEMY_VIMEO_ACCELERATOR_2026_09_22;
+    process.env.ACADEMY_VIMEO_ACCELERATOR_2026_09_22 = "https://vimeo.com/1229268762";
     const monday = lessonContent(CLASS_2026_09_21_ID)!;
     expect(monday.media?.provider).toBe("vimeo");
     expect(JSON.stringify(monday)).toContain("1228940591");
     expect(lessonContent("accelerator-day-03")!.media?.url ?? "").not.toContain("1228940591");
     const tuesday = lessonContent(CLASS_2026_09_22_ID)!;
-    expect(tuesday.media).toBeNull();
-    expect(tuesday.mediaNotice).toContain("September 21");
+    expect(tuesday.media?.provider).toBe("vimeo");
+    expect(JSON.stringify(tuesday)).toContain("1229268762");
+    expect(JSON.stringify(tuesday)).not.toContain("1228940591");
+    delete process.env.ACADEMY_VIMEO_ACCELERATOR_2026_09_22;
+    expect(lessonContent(CLASS_2026_09_22_ID)!.media).toBeNull();
+    expect(lessonContent(CLASS_2026_09_22_ID)!.mediaNotice).toContain("September 21");
+    if (oldT !== undefined) process.env.ACADEMY_VIMEO_ACCELERATOR_2026_09_22 = oldT;
     for (const c of [monday, tuesday]) {
       expect(JSON.stringify(c)).not.toContain("drive.google.com");
       expect("replay" in c).toBe(false);
