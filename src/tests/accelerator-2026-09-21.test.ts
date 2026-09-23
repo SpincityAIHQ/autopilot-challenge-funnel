@@ -45,7 +45,7 @@ describe("September 21 and 22 Accelerator classes", () => {
     const monday = lessonContent(CLASS_2026_09_21_ID)!;
     expect(monday.media?.provider).toBe("vimeo");
     expect(JSON.stringify(monday)).toContain("1228940591");
-    expect(lessonContent("accelerator-day-03")!.media?.src ?? "").not.toContain("1228940591");
+    expect(lessonContent("accelerator-day-03")!.media?.url ?? "").not.toContain("1228940591");
     const tuesday = lessonContent(CLASS_2026_09_22_ID)!;
     expect(tuesday.media).toBeNull();
     expect(tuesday.mediaNotice).toContain("September 21");
