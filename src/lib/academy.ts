@@ -515,5 +515,11 @@ export type LessonContent = {
   transcript?: TranscriptCue[] | null;
   /** Honest, lesson-specific status shown when no recording is attached. */
   mediaNotice?: string | null;
+  /**
+   * External replay for meetings recorded outside the tracked player (Google
+   * Drive Meet captures). Served only to entitled learners; watch time is not
+   * measured for these.
+   */
+  replay?: { url: string; label: string; note: string } | null;
 };
 export type TranscriptCue = { start: number; end: number; text: string };
