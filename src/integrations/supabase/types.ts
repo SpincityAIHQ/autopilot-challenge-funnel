@@ -1613,6 +1613,95 @@ export type Database = {
         }
         Relationships: []
       }
+      vault_skill_downloads: {
+        Row: {
+          created_at: string
+          id: string
+          slug: string
+          user_id: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          slug: string
+          user_id: string
+          version: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          slug?: string
+          user_id?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vault_skill_downloads_slug_fkey"
+            columns: ["slug"]
+            isOneToOne: false
+            referencedRelation: "vault_skill_packages"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      vault_skill_packages: {
+        Row: {
+          access: string
+          byte_size: number
+          created_at: string
+          file_name: string
+          is_bundle: boolean
+          linked_resource_slug: string | null
+          name: string
+          overview: Json
+          preview: string
+          published: boolean
+          sha256: string
+          slug: string
+          sort_order: number
+          updated_at: string
+          version: string
+          zip_base64: string
+        }
+        Insert: {
+          access?: string
+          byte_size: number
+          created_at?: string
+          file_name: string
+          is_bundle?: boolean
+          linked_resource_slug?: string | null
+          name: string
+          overview?: Json
+          preview: string
+          published?: boolean
+          sha256: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+          version: string
+          zip_base64: string
+        }
+        Update: {
+          access?: string
+          byte_size?: number
+          created_at?: string
+          file_name?: string
+          is_bundle?: boolean
+          linked_resource_slug?: string | null
+          name?: string
+          overview?: Json
+          preview?: string
+          published?: boolean
+          sha256?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+          version?: string
+          zip_base64?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
