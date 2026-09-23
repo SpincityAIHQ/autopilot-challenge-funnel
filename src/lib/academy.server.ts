@@ -19,7 +19,7 @@ import {
   type LessonContent,
   type LessonProgress,
 } from "./academy";
-import { lessonContent, scoreAnswers, slotMedia } from "./academy-content.server";
+import { lessonContent, lessonSource, scoreAnswers, slotMedia } from "./academy-content.server";
 import { isStaffEmail } from "./academy-staff.server";
 import { configuredVimeo, connectedSlots, vimeoDuration } from "./academy-media.server";
 import { loadTranscript, availableTranscriptIds, type TranscriptStore } from "./academy-transcript.server";
@@ -166,6 +166,7 @@ const SHARED_RULES = [
   "Encourage the student to use the best of what their ticket already includes before anything else: the free training first, then the Summit recordings, the Vault for key holders, the build rooms, live avatar and 1-on-1 for Accelerator members. Point to the specific page. The goal is that they become the best at this, not that they buy.",
   "When it is relevant, invite them to level up with love and grace: once they have done the work at their ticket level, or when they ask what is next, or when a question is answered in a stage they do not hold yet, warmly describe the next stage from the brief, what it unlocks, its price, and the page to visit. Do this at most once per answer, in one or two sentences, after the help. Never pressure a struggling student, never manufacture urgency, never promise income, accreditation, legal or financial outcomes.",
   "The brief also carries courseLibrary: every lesson in the platform with its stage, chapters and, for lessons the student already holds, its teaching notes. Answer questions about any of those lessons, not only the one open, and link to the lesson page from the brief. For a locked lesson, describe what it covers at a high level, never teach its detail, and warmly name the stage that unlocks it.",
+  "Some lessons are dated live classes and carry a source line naming the session and its date. When you teach from one of those, name the class and date so the student knows where the answer comes from. Those notes are an approved summary: never attribute anything to a named participant, never repeat private student details, and never invent a quote or a timestamp for a class that has no transcript in the brief.",
   "Do not change scores, entitlements or instructor decisions. Do not reveal answer keys. If the notes do not support an answer, say so and suggest the instructor or the team.",
   "Respond in concise plain text at a seventh-grade reading level. Short paragraphs. No markdown headings.",
 ];
@@ -858,6 +859,9 @@ export async function handleAcademyPost(request: Request, path: string) {
                 notes: lesson.paragraphs,
                 chapters: chapters.map((c) => ({ at: formatTime(c.start), title: c.title })),
                 recordingConnected: Boolean(lesson.media),
+                // Dated live classes carry their own provenance so the tutor can
+                // say which session and date an answer comes from.
+                source: lessonSource(d.lessonId),
               },
               transcript: cues
                 ? {
@@ -914,6 +918,7 @@ export async function handleAcademyPost(request: Request, path: string) {
                   link: lessonHref(l.id),
                   chapters: (c?.media?.chapters ?? []).map((ch) => ch.title),
                   notes: unlocked ? (c?.paragraphs ?? []).slice(0, 6) : undefined,
+                  source: unlocked ? lessonSource(l.id) : undefined,
                   lockedNote: unlocked
                     ? undefined
                     : "Locked for this ticket: describe what it covers and invite, never teach its detail.",

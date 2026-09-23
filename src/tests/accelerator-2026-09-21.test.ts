@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { LESSONS, tierAllows } from "@/lib/academy";
-import { lessonContent, scoreAnswers } from "@/lib/academy-content.server";
+import { lessonContent, lessonSource, scoreAnswers } from "@/lib/academy-content.server";
 import {
   CLASS_2026_09_21_CHECKS,
   CLASS_2026_09_21_ID,
@@ -41,15 +41,23 @@ describe("September 21 and 22 Accelerator classes", () => {
     }
   });
 
-  it("offers the Google Drive recording honestly, with no claimed watch tracking", () => {
+  it("labels the Vimeo slot as pending and offers the interim recording honestly", () => {
     const monday = lessonContent(CLASS_2026_09_21_ID)!;
     expect(monday.media).toBeNull();
     expect(monday.replay?.url).toBe(CLASS_2026_09_21_REPLAY.url);
-    expect(monday.mediaNotice).toContain("Google Meet");
-    expect(monday.replay?.note).toContain("Watch time is not measured");
+    expect(monday.mediaNotice).toContain("Vimeo upload pending");
+    expect(monday.replay?.note).toContain("watch time is not measured");
     const tuesday = lessonContent(CLASS_2026_09_22_ID)!;
     expect(tuesday.replay?.url).toBe(CLASS_2026_09_22_REPLAY.url);
+    expect(tuesday.mediaNotice).toContain("Vimeo upload pending");
     expect(tuesday.mediaNotice).toContain("September 21");
+  });
+
+  it("gives the tutor a dated source line for each class, with no participant detail", () => {
+    expect(lessonSource(CLASS_2026_09_21_ID)).toContain("September 21, 2026");
+    expect(lessonSource(CLASS_2026_09_22_ID)).toContain("September 22, 2026");
+    for (const id of IDS)
+      expect(lessonSource(id)).toContain("no participant names");
   });
 
   it("never ships answer keys, feedback or the private notes documents", () => {
