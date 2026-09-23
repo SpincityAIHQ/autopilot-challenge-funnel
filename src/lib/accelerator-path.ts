@@ -51,6 +51,8 @@ export type AcceleratorPath = {
   steps: PathStep[];
   supplemental: PathStep[];
   next: PathStep | null;
+  /** When every step has evidence: review and a next goal instead of an empty action. */
+  review: { action: string; proof: string; href: string } | null;
   whereAmI: string;
   uncertainty: string[];
   glossary: { term: string; meaning: string }[];
@@ -259,5 +261,16 @@ export function buildAcceleratorPath(input: {
     : next
       ? `${done} of ${steps.length} steps have evidence saved. You are on: ${next.title} (${next.stage}).`
       : `All ${steps.length} steps have evidence saved.`;
-  return { accessVerified, foundation: FOUNDATION, steps, supplemental, next, whereAmI, uncertainty, glossary: PATH_GLOSSARY };
+  const pending = steps.filter((s) => s.status === "awaiting_review").length;
+  const review =
+    accessVerified && !next && steps.length
+      ? {
+          action: pending
+            ? `Your work is saved. ${pending} activity ${pending === 1 ? "sheet is" : "sheets are"} waiting for instructor review — nothing more is required for ${pending === 1 ? "it" : "them"} now. Meanwhile, re-run the foundation self-check below and pick one customer step to test again this week.`
+            : "Every step has evidence saved. Review your activity sheets, re-run the foundation self-check below, and choose one customer step to test again this week. New classes will appear here as they are added.",
+          proof: "A dated note of the customer step you tested and what happened.",
+          href: "/lesson/accelerator-2026-09-22",
+        }
+      : null;
+  return { accessVerified, foundation: FOUNDATION, review, steps, supplemental, next, whereAmI, uncertainty, glossary: PATH_GLOSSARY };
 }
