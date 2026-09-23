@@ -14,6 +14,7 @@ import {
   CLASS_2026_09_21_MEDIA_NOTICE,
   CLASS_2026_09_21_PARAGRAPHS,
   CLASS_2026_09_21_REPLAY,
+  CLASS_2026_09_21_SOURCE,
   CLASS_2026_09_21_VERSION,
   CLASS_2026_09_21_WORKBOOK,
   CLASS_2026_09_22_CHECKS,
@@ -21,6 +22,7 @@ import {
   CLASS_2026_09_22_MEDIA_NOTICE,
   CLASS_2026_09_22_PARAGRAPHS,
   CLASS_2026_09_22_REPLAY,
+  CLASS_2026_09_22_SOURCE,
   CLASS_2026_09_22_VERSION,
   CLASS_2026_09_22_WORKBOOK,
   type DatedReplay,
@@ -34,6 +36,7 @@ const DATED_CLASSES: Record<
     workbook: { id: string; label: string; hint: string }[];
     mediaNotice: string;
     replay: DatedReplay | null;
+    source: string;
   }
 > = {
   [CLASS_2026_09_21_ID]: {
@@ -41,14 +44,21 @@ const DATED_CLASSES: Record<
     workbook: CLASS_2026_09_21_WORKBOOK,
     mediaNotice: CLASS_2026_09_21_MEDIA_NOTICE,
     replay: CLASS_2026_09_21_REPLAY,
+    source: CLASS_2026_09_21_SOURCE,
   },
   [CLASS_2026_09_22_ID]: {
     version: CLASS_2026_09_22_VERSION,
     workbook: CLASS_2026_09_22_WORKBOOK,
     mediaNotice: CLASS_2026_09_22_MEDIA_NOTICE,
     replay: CLASS_2026_09_22_REPLAY,
+    source: CLASS_2026_09_22_SOURCE,
   },
 };
+
+/** Approved provenance line for a dated class, for the tutor brief. Server-side only. */
+export function lessonSource(id: string): string | null {
+  return DATED_CLASSES[id]?.source ?? null;
+}
 
 // Authored teaching notes. These are not verbatim transcripts or invented video timestamps.
 const units: Record<string, { heading: string; text: string }[]> = {
