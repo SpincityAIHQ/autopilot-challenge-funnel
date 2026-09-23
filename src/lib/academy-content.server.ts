@@ -13,7 +13,6 @@ import {
   CLASS_2026_09_21_ID,
   CLASS_2026_09_21_MEDIA_NOTICE,
   CLASS_2026_09_21_PARAGRAPHS,
-  CLASS_2026_09_21_REPLAY,
   CLASS_2026_09_21_SOURCE,
   CLASS_2026_09_21_VERSION,
   CLASS_2026_09_21_WORKBOOK,
@@ -21,11 +20,9 @@ import {
   CLASS_2026_09_22_ID,
   CLASS_2026_09_22_MEDIA_NOTICE,
   CLASS_2026_09_22_PARAGRAPHS,
-  CLASS_2026_09_22_REPLAY,
   CLASS_2026_09_22_SOURCE,
   CLASS_2026_09_22_VERSION,
   CLASS_2026_09_22_WORKBOOK,
-  type DatedReplay,
 } from "./academy-class-2026-09-21.server";
 
 /** Dated Accelerator meetings with their own version, notes, check and activity sheet. */
@@ -35,7 +32,6 @@ const DATED_CLASSES: Record<
     version: string;
     workbook: { id: string; label: string; hint: string }[];
     mediaNotice: string;
-    replay: DatedReplay | null;
     source: string;
   }
 > = {
@@ -43,14 +39,12 @@ const DATED_CLASSES: Record<
     version: CLASS_2026_09_21_VERSION,
     workbook: CLASS_2026_09_21_WORKBOOK,
     mediaNotice: CLASS_2026_09_21_MEDIA_NOTICE,
-    replay: CLASS_2026_09_21_REPLAY,
     source: CLASS_2026_09_21_SOURCE,
   },
   [CLASS_2026_09_22_ID]: {
     version: CLASS_2026_09_22_VERSION,
     workbook: CLASS_2026_09_22_WORKBOOK,
     mediaNotice: CLASS_2026_09_22_MEDIA_NOTICE,
-    replay: CLASS_2026_09_22_REPLAY,
     source: CLASS_2026_09_22_SOURCE,
   },
 };
@@ -459,7 +453,6 @@ export function lessonContent(id: string): LessonContent | null {
       : dated
         ? CLASS_2026_09_14_MEDIA_NOTICE
         : (datedClass?.mediaNotice ?? null),
-    replay: media ? null : (datedClass?.replay ?? null),
     questions: checks[id].map((q, i) => ({
       id: `${id}-${i + 1}`,
       prompt: q.prompt,

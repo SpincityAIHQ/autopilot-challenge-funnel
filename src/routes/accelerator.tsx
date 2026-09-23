@@ -3,6 +3,7 @@ import { AcademyFrame } from "@/components/AcademyFrame";
 import { SUPPORT_TEXT_HREF, SUPPORT_TEXT_NUMBER } from "@/lib/academy";
 import { useCatalogue } from "@/lib/academy-client";
 import { WEEK_ONE } from "@/lib/accelerator-week-one";
+import { AcceleratorNextStep } from "@/components/AcceleratorNextStep";
 const LAUNCH_DAY = WEEK_ONE[0];
 export const Route = createFileRoute("/accelerator")({
   head: () => ({ meta: [{ title: "Autopilot Accelerator | AI AutoPilot" }] }),
@@ -29,11 +30,12 @@ function Accelerator() {
             Text {SUPPORT_TEXT_NUMBER} about the Accelerator →
           </a>
         </div>
+        <AcceleratorNextStep />
         <div className="academy-section-heading" style={{ marginTop: 48 }}>
           <p className="academy-eyebrow">Your classes</p>
           <h2>Watch them in order.</h2>
           <p>
-            Two classes are recorded so far. More build rooms are added here as Spin records them.
+            Classes are added here as Spin records them. Your checklist above shows which step is yours.
           </p>
         </div>
         <div className="academy-week-one">

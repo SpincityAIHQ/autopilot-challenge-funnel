@@ -2,51 +2,21 @@
  * Server-only teaching source for the Q4 Accelerator meetings of
  * Monday September 21 and Tuesday September 22, 2026.
  *
- * PROVENANCE (instructor metadata — the notes links below never reach the browser):
- * - Monday 2026-09-21 recording (Google Drive, Meet capture):
- *   https://drive.google.com/file/d/15nwoOfeuAsKwEQZJJ48JrEWnIyDSZi5z/view
- *   Computer-generated notes:
- *   https://docs.google.com/document/d/1hc3ln_1_IZeWO6s4mKsuWxvT0yV913U_eMOPpqYE0oc/edit
- * - Tuesday 2026-09-22 recording (Google Drive, Meet capture):
- *   https://drive.google.com/file/d/15gLoOKtlBfnyVPxYbclT0X6hFvDPZvRH/view
- *   Notes / transcript:
- *   https://docs.google.com/document/d/1EsubLYyR0Votw_5ajszikWL4manrsc-GI2zC-8SymXs/edit
+ * PROVENANCE (server-only instructor metadata):
+ * - Monday 2026-09-21 recording plays from the Vimeo slot
+ *   ACADEMY_VIMEO_ACCELERATOR_2026_09_21. Tuesday's slot
+ *   ACADEMY_VIMEO_ACCELERATOR_2026_09_22 stays empty until the owner supplies it.
  * - The paragraphs below are edited summaries of the owner-supplied class outline for each
  *   meeting. They are not verbatim transcript text, and no raw transcript, participant name
- *   or private participant detail is published here.
- * - Recordings are Google Drive files, not Vimeo. They are offered to entitled Accelerator
- *   students as an "Open the recording" link. Drive playback is NOT instrumented: no watch
- *   time, coverage or chapters are claimed for these two meetings.
+ *   or private participant detail is published here. The Google Docs meeting notes were not
+ *   readable by the build tools, so no transcript text has been ingested from them.
  * - No timestamps are quoted, because none have been verified against playback.
  */
-
-export type DatedReplay = {
-  /** Shown to entitled students as a link out to the Google Drive recording. */
-  url: string;
-  label: string;
-  /** Honest statement of what the link is and what is not tracked. */
-  note: string;
-};
 
 export const CLASS_2026_09_21_ID = "accelerator-2026-09-21";
 export const CLASS_2026_09_22_ID = "accelerator-2026-09-22";
 export const CLASS_2026_09_21_VERSION = "2026-09-23.1";
 export const CLASS_2026_09_22_VERSION = "2026-09-23.1";
-
-const DRIVE_NOTE =
-  "Interim link while the recording is being uploaded to Vimeo. It opens in a new tab and is shared with enrolled Accelerator students only, so watch time is not measured here; your knowledge check and activity sheet below are your completion evidence. Once the Vimeo upload is in place the class plays in the tracked player on this page. If the link asks you to request permission, text the support line.";
-
-export const CLASS_2026_09_21_REPLAY: DatedReplay = {
-  url: "https://drive.google.com/file/d/15nwoOfeuAsKwEQZJJ48JrEWnIyDSZi5z/view",
-  label: "Open the Monday September 21 recording",
-  note: DRIVE_NOTE,
-};
-
-export const CLASS_2026_09_22_REPLAY: DatedReplay = {
-  url: "https://drive.google.com/file/d/15gLoOKtlBfnyVPxYbclT0X6hFvDPZvRH/view",
-  label: "Open the Tuesday September 22 recording",
-  note: DRIVE_NOTE,
-};
 
 export const CLASS_2026_09_21_PARAGRAPHS = [
   {
@@ -222,13 +192,13 @@ export const CLASS_2026_09_22_WORKBOOK = [
  * Shown in place of the player until the Vimeo slot for each class is filled.
  * Vimeo is the destination for both recordings; Google Drive is interim only.
  * Slots: ACADEMY_VIMEO_ACCELERATOR_2026_09_21 and ACADEMY_VIMEO_ACCELERATOR_2026_09_22.
- * Setting either one automatically replaces the notice and the interim link with
+ * Setting either one automatically replaces the notice with
  * the tracked player, and lets the transcript pipeline read that video's captions.
  */
 export const CLASS_2026_09_21_MEDIA_NOTICE =
-  "Vimeo upload pending for the Monday September 21 class. Use the interim recording link below, then work through the notes, knowledge check and activity sheet here.";
+  "The Monday September 21 recording is not playing here yet. Work through the notes, knowledge check and activity sheet below; if this stays unavailable, text the support line.";
 export const CLASS_2026_09_22_MEDIA_NOTICE =
-  "Vimeo upload pending for the Tuesday September 22 class. Use the interim recording link below. This class follows Monday September 21 — complete that one first if you have not.";
+  "The Tuesday September 22 recording has not been uploaded yet. Work through the notes, knowledge check and activity sheet below. This class follows Monday September 21 — complete that one first if you have not.";
 
 /**
  * Provenance shown to the AI tutor so it can say where an answer comes from.

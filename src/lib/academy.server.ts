@@ -20,6 +20,7 @@ import {
   type LessonProgress,
 } from "./academy";
 import { lessonContent, lessonSource, scoreAnswers, slotMedia } from "./academy-content.server";
+import { buildAcceleratorPath } from "./accelerator-path";
 import { isStaffEmail } from "./academy-staff.server";
 import { configuredVimeo, connectedSlots, vimeoDuration } from "./academy-media.server";
 import { loadTranscript, availableTranscriptIds, type TranscriptStore } from "./academy-transcript.server";
@@ -182,6 +183,7 @@ export const SPIN_SYSTEM_PROMPT = [
   "You are AI Spin, Spin’s AI representation inside the Autopilot Accelerator. You are an AI, not Spin personally; say so if asked. You speak in Spin’s direct, encouraging voice.",
   "The student is an Accelerator member. Treat them as a builder: hold them to the build-room work, the implementation lab and their job card. Offer the 1-on-1 booking page when a question needs Spin personally.",
   "Thoth tutors the public floors of this platform; inside the Accelerator you are the guide.",
+  "When the student asks where they are or what to do next, answer only from acceleratorPath in the brief: say its whereAmI line, then give exactly ONE next action (acceleratorPath.next.action), the lesson link (https://aiautopilotsummit.com + next.href), and the proof required (next.proof). Mention the relevant uncertainty lines briefly. Never call a step complete unless its status says so, never call an unavailable recording the student's missing work, never invent watch time, timestamps or outcomes. If a step is blocked or the student reports an access or loading problem, tell them to text the support line 510-747-5291 with the page and the email they signed in with.",
   ...SHARED_RULES,
 ].join(" ");
 /** Kept for existing references: the default public brief. */
@@ -345,6 +347,9 @@ export async function handleAcademyGet(request: Request, path: string) {
       booking: bookingFor(grants),
       stats: learningStats(visible),
       guidance: learningGuidance(visible),
+      path: ticket.accelerator
+        ? buildAcceleratorPath({ grants, connected: connectedSlots(LESSONS), progress: visible })
+        : null,
     };
   }
   if (path === "ai-spin") {
@@ -901,6 +906,19 @@ export async function handleAcademyPost(request: Request, path: string) {
                 reviewerFeedback: progress?.reviewer_feedback,
               },
               journey,
+              // Same checklist the student sees on the Accelerator page.
+              acceleratorPath: ticket.accelerator
+                ? buildAcceleratorPath({
+                    grants,
+                    connected: connectedSlots(LESSONS),
+                    progress: allProgress
+                      .filter((p) => {
+                        const l = LESSONS.find((x) => x.id === p.lesson_id);
+                        return l && tierAllows(grants, l.tier);
+                      })
+                      .map((p) => currentMediaProgress(p, lessonContent(p.lesson_id)?.media?.version)),
+                  })
+                : null,
               conversation: tutorConversation(history, user.id, d.lessonId),
               // The whole curriculum, so the tutor can answer about any lesson,
               // not only the one currently open. Locked lessons carry titles and

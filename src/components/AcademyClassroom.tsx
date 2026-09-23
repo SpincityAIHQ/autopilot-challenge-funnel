@@ -296,18 +296,6 @@ function ClassroomSession({
                               ? "This build-room replay will appear here when the recording is connected."
                               : "You can start with the AI notes and activity below."}
                       </p>
-                      {session.email && lesson?.replay ? (
-                        <>
-                          <a
-                            href={lesson.replay.url}
-                            target="_blank"
-                            rel="noreferrer noopener"
-                          >
-                            {lesson.replay.label} ↗
-                          </a>
-                          <p>{lesson.replay.note}</p>
-                        </>
-                      ) : null}
                       {!session.email ? (
                         <a href={academyJoinHref(lessonId === "free-webinar" ? "/class" : "/summit")}>
                           {accountRequired || media
