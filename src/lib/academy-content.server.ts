@@ -438,18 +438,26 @@ export function lessonContent(id: string): LessonContent | null {
       workbook: SESSION_WORKBOOK,
     };
   const dated = id === CLASS_2026_09_14_ID;
+  const datedClass = DATED_CLASSES[id] ?? null;
   return {
     id,
-    version: dated ? CLASS_2026_09_14_VERSION : "2026-09-06.1",
+    version: dated ? CLASS_2026_09_14_VERSION : (datedClass?.version ?? "2026-09-06.1"),
     paragraphs: units[id],
     media,
-    mediaNotice: dated && !media ? CLASS_2026_09_14_MEDIA_NOTICE : null,
+    mediaNotice: media
+      ? null
+      : dated
+        ? CLASS_2026_09_14_MEDIA_NOTICE
+        : (datedClass?.mediaNotice ?? null),
+    replay: media ? null : (datedClass?.replay ?? null),
     questions: checks[id].map((q, i) => ({
       id: `${id}-${i + 1}`,
       prompt: q.prompt,
       choices: q.choices,
     })),
-    workbook: dated
+    workbook: datedClass
+      ? datedClass.workbook
+      : dated
       ? CLASS_2026_09_14_WORKBOOK
       : [
       {
