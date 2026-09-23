@@ -279,6 +279,11 @@ export async function handleAcademyGet(request: Request, path: string) {
     };
   }
 
+  if (path === "vault-catalogue") {
+    const { skillCatalogue, supabaseSkillStore } = await import("./academy-vault-skills.server");
+    return skillCatalogue(supabaseSkillStore());
+  }
+
   const user = await academyUser(request);
   const db = academyDb();
   if (["onboarding", "dashboard", "lesson"].includes(path)) {
@@ -381,9 +386,11 @@ export async function handleAcademyGet(request: Request, path: string) {
   }
   if (path === "vault") {
     const { vaultListing } = await import("./academy-vault.server");
+    const { skillListing, supabaseSkillStore } = await import("./academy-vault-skills.server");
     const grants = await grantsFor(user);
     return {
       ...vaultListing(grants),
+      skills: await skillListing(supabaseSkillStore(), grants),
       ticket: ticketFor(grants),
       nextOffer: nextOffer(ticketFor(grants)),
     };
@@ -394,7 +401,21 @@ export async function handleAcademyGet(request: Request, path: string) {
       .string()
       .regex(/^[a-z0-9-]{1,64}$/)
       .parse(url.searchParams.get("slug") ?? "");
-    return vaultItem(await grantsFor(user), slug);
+    const grants = await grantsFor(user);
+    const { linkedCardUnlocked, supabaseSkillStore } = await import("./academy-vault-skills.server");
+    const viaSkill = vaultAllows(grants)
+      ? false
+      : await linkedCardUnlocked(supabaseSkillStore(), grants, slug);
+    return vaultItem(grants, slug, viaSkill);
+  }
+  if (path === "vault-skill" || path === "vault-skill-download") {
+    const { skillOverview, skillDownload, supabaseSkillStore } =
+      await import("./academy-vault-skills.server");
+    const slug = url.searchParams.get("slug") ?? "";
+    const grants = await grantsFor(user);
+    return path === "vault-skill"
+      ? skillOverview(supabaseSkillStore(), grants, slug)
+      : skillDownload(supabaseSkillStore(), grants, user.id, slug);
   }
   if (path === "studio") {
     requireInstructor(user);
