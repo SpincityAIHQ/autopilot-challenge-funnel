@@ -198,7 +198,7 @@ export const CLASS_2026_09_22_WORKBOOK = [
 export const CLASS_2026_09_21_MEDIA_NOTICE =
   "The Monday September 21 recording is not playing here yet. Work through the notes, knowledge check and activity sheet below; if this stays unavailable, text the support line.";
 export const CLASS_2026_09_22_MEDIA_NOTICE =
-  "The Tuesday September 22 recording has not been uploaded yet. Work through the notes, knowledge check and activity sheet below. This class follows Monday September 21 — complete that one first if you have not.";
+  "The Tuesday September 22 recording is not playing here yet. Work through the notes, knowledge check and activity sheet below. This class follows Monday September 21 — complete that one first if you have not.";
 
 /**
  * Provenance shown to the AI tutor so it can say where an answer comes from.
