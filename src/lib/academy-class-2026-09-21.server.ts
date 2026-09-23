@@ -34,7 +34,7 @@ export const CLASS_2026_09_21_VERSION = "2026-09-23.1";
 export const CLASS_2026_09_22_VERSION = "2026-09-23.1";
 
 const DRIVE_NOTE =
-  "This meeting was recorded in Google Meet and is stored in Google Drive, so it opens in a new tab instead of the tracked player. Watch time is not measured for this class; your knowledge check and activity sheet below are your completion evidence. If Drive says you need permission, text the support line and your access will be added.";
+  "Interim link while the recording is being uploaded to Vimeo. It opens in a new tab and is shared with enrolled Accelerator students only, so watch time is not measured here; your knowledge check and activity sheet below are your completion evidence. Once the Vimeo upload is in place the class plays in the tracked player on this page. If the link asks you to request permission, text the support line.";
 
 export const CLASS_2026_09_21_REPLAY: DatedReplay = {
   url: "https://drive.google.com/file/d/15nwoOfeuAsKwEQZJJ48JrEWnIyDSZi5z/view",
