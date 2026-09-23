@@ -63,6 +63,7 @@ export function AcceleratorNextStep() {
   if (error)
     return (
       <div className="academy-card" style={{ marginTop: 32 }} role="alert">
+        <p className="academy-eyebrow">Start here</p>
         <p>Your checklist could not load. <a href={SUPPORT_TEXT_HREF}>Text {SUPPORT_TEXT_NUMBER}</a> if this continues.</p>
       </div>
     );
