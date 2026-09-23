@@ -208,3 +208,61 @@ export const CLASS_2026_09_21_SOURCE =
   "Live Q4 Accelerator class recorded Monday, September 21, 2026. These notes are an approved summary of that session; they contain no participant names or private student details.";
 export const CLASS_2026_09_22_SOURCE =
   "Live Q4 Accelerator class recorded Tuesday, September 22, 2026, following the September 21 session. These notes are an approved summary of that session; they contain no participant names or private student details.";
+
+/**
+ * Instructor passages from the Google Meet machine transcripts, supplied by the
+ * owner on 2026-09-23 (Monday doc tab t.7z8w2l727u0, Tuesday doc tab t.8nrgzqm14q96).
+ * These are EXCERPTS, not the full transcript. Times are transcript block times,
+ * NOT verified playback offsets in the Vimeo recording. Lightly trimmed: student
+ * names, profanity, an interruption and unrelated chatter are removed ("[…]").
+ * Server-only; served to the tutor for Accelerator-entitled learners.
+ */
+export type TranscriptExcerpt = { blockTime: string; speaker: string; text: string };
+export const TRANSCRIPT_EXCERPT_NOTE =
+  "Machine transcript excerpts from the Google Meet recording (not the full transcript), lightly trimmed. Block times come from the transcript document and are NOT verified against the video — never present them as playback timestamps.";
+
+export const CLASS_2026_09_21_EXCERPTS: TranscriptExcerpt[] = [
+  {
+    blockTime: "00:14:50",
+    speaker: "Sebastian (Spin)",
+    text: "We're just going to get into business infrastructure. Some of you are advanced. Whoever else sees the video, wherever you're at is where you're at. Business is a set of lanes, aka systems. So, we're talking about marketing, sales, and fulfillment. […] That's why I wanted to make sure everybody had a business infrastructure. You got a site, you got a landing page, because once marketing starts, sales set in and fulfillment starts to go out, we all need to know exactly what's happening next. […] What a lane actually is is people, processes, and a platform. People are the expectations and the responsibilities. Somebody owns it.",
+  },
+  {
+    blockTime: "00:17:14",
+    speaker: "Sebastian (Spin)",
+    text: "Sometimes it's just a hit of miscommunication, a certain misalignment between partners, employees, business infrastructure. […] A lot of us build and we'll have websites and we'll have apps and we'll have landing pages and we'll have funnels. We don't really run them. We don't run them through marketing. We don't run them to sales. We don't run them through fulfillment. […] If you do everything, it's actually going to cost you a lot more money. It's already costing you effort.",
+  },
+  {
+    blockTime: "00:26:25",
+    speaker: "Sebastian (Spin)",
+    text: "There's no way that I can get it figured out all by myself. Even with the automations, this stuff has to go to a human. So, look at the lanes that you're carrying right now and put a number on what each item costs you every week. I want you to value your sales next to your calendar. What's that weekly value? If you're sitting in on the sales calls, how valuable is it? […] If you're selling, delivering, marketing, building infrastructure, I want you to value it. Take a minute, two minutes. Value everything. Your own time. Everywhere you're sitting, how much are you making?",
+  },
+  {
+    blockTime: "00:36:27",
+    speaker: "Sebastian (Spin)",
+    text: "We're talking about the weekly value. Everybody value what you can do for a week and then make a backlog of the things that you can't do within the week, and then line it up for what it costs you. You can even do it daily. What am I able to do every day? What am I missing every day that I keep backlogging? And then how much is it worth? How much could it potentially be costing me? I want everybody to see that and bring that to their AI. […] A bottleneck is that the founder is built to create, but you have nobody in post-production. So you can create, create, create, but since you have nobody in post-production you'll never get to add sales and delivery.",
+  },
+];
+
+export const CLASS_2026_09_22_EXCERPTS: TranscriptExcerpt[] = [
+  {
+    blockTime: "00:33:08",
+    speaker: "Sebastian (Spin)",
+    text: "I haven't worded it that step one is: is your large language model trained. Step two is: has your memory been shaped by the training of your large language model. Step three: have you built a custom plugin based off the settings and teaching of your large language model plus memories. So I definitely need to line that up punch by punch. […] If my AI is not trained, I shouldn't be doing memory manipulation. If I got memory manipulation, I'm on to custom plugins, my business, small business plugins. […] So step by step, level by level, I'll break that down.",
+  },
+  {
+    blockTime: "00:44:13",
+    speaker: "Sebastian (Spin)",
+    text: "I noted that part down for a checklist follow-up for exactly where you are. It's like, do you have your large language model training? Yes or no? […] You need to stick to the first 30 minutes of AI AutoPilot Summit video one.",
+  },
+  {
+    blockTime: "00:45:11",
+    speaker: "Sebastian (Spin)",
+    text: "Your AI is trained and you're structuring a business. Do you have your business structure? Do you have your interview lined up? […] That's one of the top things: that checklist follow-up so you know exactly where you are. And the way that I built the software, it should be following you around and doing the same thing.",
+  },
+  {
+    blockTime: "00:47:01",
+    speaker: "Sebastian (Spin)",
+    text: "Even if you don't have a business, there's a place to ask Claude or ChatGPT to interview you on what you've done in business, where you are in business, where you look to go in business. […] Give them the modules, give them the checklist to know that my AI is trained, my memories are shaped, my business is inside of the plugins, it's been customized, I'm bringing in customized connectors, I've got all my custom skills, I've brought up a landing page.",
+  },
+];

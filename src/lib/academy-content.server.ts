@@ -23,6 +23,9 @@ import {
   CLASS_2026_09_22_SOURCE,
   CLASS_2026_09_22_VERSION,
   CLASS_2026_09_22_WORKBOOK,
+  CLASS_2026_09_21_EXCERPTS,
+  CLASS_2026_09_22_EXCERPTS,
+  TRANSCRIPT_EXCERPT_NOTE,
 } from "./academy-class-2026-09-21.server";
 
 /** Dated Accelerator meetings with their own version, notes, check and activity sheet. */
@@ -48,6 +51,13 @@ const DATED_CLASSES: Record<
     source: CLASS_2026_09_22_SOURCE,
   },
 };
+
+/** Server-only machine-transcript excerpts for a dated class; the caller must have authorized the lesson. */
+export function lessonTranscriptExcerpts(id: string) {
+  const excerpts =
+    id === CLASS_2026_09_21_ID ? CLASS_2026_09_21_EXCERPTS : id === CLASS_2026_09_22_ID ? CLASS_2026_09_22_EXCERPTS : null;
+  return excerpts ? { note: TRANSCRIPT_EXCERPT_NOTE, excerpts } : null;
+}
 
 /** Approved provenance line for a dated class, for the tutor brief. Server-side only. */
 export function lessonSource(id: string): string | null {
