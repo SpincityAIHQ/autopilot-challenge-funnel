@@ -35,8 +35,8 @@ describe("September 21 and 22 Accelerator classes", () => {
     for (const id of IDS) {
       const c = lessonContent(id)!;
       expect(c.paragraphs.length).toBeGreaterThanOrEqual(4);
-      expect(c.questions).toHaveLength(3);
-      expect(c.workbook).toHaveLength(5);
+      expect(c.questions.length).toBe(3);
+      expect(c.workbook.length).toBe(5);
       expect(c.version).toBe("2026-09-23.1");
     }
   });
