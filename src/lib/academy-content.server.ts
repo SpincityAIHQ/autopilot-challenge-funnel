@@ -8,6 +8,47 @@ import {
   CLASS_2026_09_14_VERSION,
   CLASS_2026_09_14_WORKBOOK,
 } from "./academy-class-2026-09-14.server";
+import {
+  CLASS_2026_09_21_CHECKS,
+  CLASS_2026_09_21_ID,
+  CLASS_2026_09_21_MEDIA_NOTICE,
+  CLASS_2026_09_21_PARAGRAPHS,
+  CLASS_2026_09_21_REPLAY,
+  CLASS_2026_09_21_VERSION,
+  CLASS_2026_09_21_WORKBOOK,
+  CLASS_2026_09_22_CHECKS,
+  CLASS_2026_09_22_ID,
+  CLASS_2026_09_22_MEDIA_NOTICE,
+  CLASS_2026_09_22_PARAGRAPHS,
+  CLASS_2026_09_22_REPLAY,
+  CLASS_2026_09_22_VERSION,
+  CLASS_2026_09_22_WORKBOOK,
+  type DatedReplay,
+} from "./academy-class-2026-09-21.server";
+
+/** Dated Accelerator meetings with their own version, notes, check and activity sheet. */
+const DATED_CLASSES: Record<
+  string,
+  {
+    version: string;
+    workbook: { id: string; label: string; hint: string }[];
+    mediaNotice: string;
+    replay: DatedReplay | null;
+  }
+> = {
+  [CLASS_2026_09_21_ID]: {
+    version: CLASS_2026_09_21_VERSION,
+    workbook: CLASS_2026_09_21_WORKBOOK,
+    mediaNotice: CLASS_2026_09_21_MEDIA_NOTICE,
+    replay: CLASS_2026_09_21_REPLAY,
+  },
+  [CLASS_2026_09_22_ID]: {
+    version: CLASS_2026_09_22_VERSION,
+    workbook: CLASS_2026_09_22_WORKBOOK,
+    mediaNotice: CLASS_2026_09_22_MEDIA_NOTICE,
+    replay: CLASS_2026_09_22_REPLAY,
+  },
+};
 
 // Authored teaching notes. These are not verbatim transcripts or invented video timestamps.
 const units: Record<string, { heading: string; text: string }[]> = {
@@ -80,6 +121,8 @@ const units: Record<string, { heading: string; text: string }[]> = {
     },
   ],
   [CLASS_2026_09_14_ID]: CLASS_2026_09_14_PARAGRAPHS,
+  [CLASS_2026_09_21_ID]: CLASS_2026_09_21_PARAGRAPHS,
+  [CLASS_2026_09_22_ID]: CLASS_2026_09_22_PARAGRAPHS,
   "implementation-lab": [
     {
       heading: "Build one working journey",
@@ -294,6 +337,8 @@ const checks: Record<string, Check[]> = {
     },
   ],
   [CLASS_2026_09_14_ID]: CLASS_2026_09_14_CHECKS,
+  [CLASS_2026_09_21_ID]: CLASS_2026_09_21_CHECKS,
+  [CLASS_2026_09_22_ID]: CLASS_2026_09_22_CHECKS,
   "implementation-lab": [
     {
       prompt: "What identifies a useful implementation test receipt?",
@@ -393,18 +438,26 @@ export function lessonContent(id: string): LessonContent | null {
       workbook: SESSION_WORKBOOK,
     };
   const dated = id === CLASS_2026_09_14_ID;
+  const datedClass = DATED_CLASSES[id] ?? null;
   return {
     id,
-    version: dated ? CLASS_2026_09_14_VERSION : "2026-09-06.1",
+    version: dated ? CLASS_2026_09_14_VERSION : (datedClass?.version ?? "2026-09-06.1"),
     paragraphs: units[id],
     media,
-    mediaNotice: dated && !media ? CLASS_2026_09_14_MEDIA_NOTICE : null,
+    mediaNotice: media
+      ? null
+      : dated
+        ? CLASS_2026_09_14_MEDIA_NOTICE
+        : (datedClass?.mediaNotice ?? null),
+    replay: media ? null : (datedClass?.replay ?? null),
     questions: checks[id].map((q, i) => ({
       id: `${id}-${i + 1}`,
       prompt: q.prompt,
       choices: q.choices,
     })),
-    workbook: dated
+    workbook: datedClass
+      ? datedClass.workbook
+      : dated
       ? CLASS_2026_09_14_WORKBOOK
       : [
       {
