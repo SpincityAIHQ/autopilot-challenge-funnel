@@ -86,7 +86,7 @@ describe("vault skill download access", () => {
       await status(skillDownload(store([row({ published: false })]), ["vault"], "u", "test-skill")),
     ).toBe(404));
   it("unknown / invalid → 404", async () => {
-    expect(await status(skillDownload(store(vaultRow), ["vault"], "u", "nope"))).toBe(404));
+    expect(await status(skillDownload(store(vaultRow), ["vault"], "u", "nope"))).toBe(404);
     expect(await status(skillDownload(store(vaultRow), ["vault"], "u", "../x"))).toBe(404);
   });
   it("over the cap → 429", async () => {
