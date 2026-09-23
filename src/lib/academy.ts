@@ -77,6 +77,24 @@ const CORE: Omit<LessonMeta, "kind" | "envKey">[] = [
     skill: "Plan and verify an executable business workflow",
   },
   {
+    id: "accelerator-2026-09-21",
+    title: "Departments, the bottleneck and your corporate offer",
+    stage: "Accelerator · September 21, 2026",
+    tier: "accelerator",
+    summary:
+      "Map marketing, sales and fulfilment, find the real bottleneck, value the backlog and shape a four-minute corporate pitch.",
+    skill: "Diagnose the constraint and define the offer",
+  },
+  {
+    id: "accelerator-2026-09-22",
+    title: "Orientation ladder, checkpoints and your first tested step",
+    stage: "Accelerator · September 22, 2026",
+    tier: "accelerator",
+    summary:
+      "Follows September 21. Know your stage, verify access and the tutor, and take one customer step you can test this week.",
+    skill: "Verify your stage and test one customer step",
+  },
+  {
     id: "implementation-lab",
     title: "Build, test, improve",
     stage: "Accelerator · Lab",
