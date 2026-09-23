@@ -50,3 +50,28 @@ describe("Accelerator next-step checklist", () => {
     expect(p.supplemental.every((s) => s.optional)).toBe(true);
   });
 });
+
+describe("Accelerator checklist — finished students and foundation", () => {
+  const SEQ = ["free-webinar","business-before-ai","hire-the-ai-team","accelerator-2026-09-14","accelerator-2026-09-21","accelerator-2026-09-22","implementation-lab"];
+  it("gives an all-done student a review and next goal, not a blank action", () => {
+    const p = buildAcceleratorPath({ grants: ALL, connected: [], progress: SEQ.map((id) => row(id, { quiz_score: 3, quiz_total: 3, workbook_status: "approved" })) });
+    expect(p.next).toBe(null);
+    expect(p.review?.action).toMatch(/customer step/);
+    expect(p.review?.proof.length).toBeGreaterThan(10);
+  });
+  it("tells a student awaiting review that nothing more is required yet", () => {
+    const p = buildAcceleratorPath({ grants: ALL, connected: [], progress: SEQ.map(done) });
+    expect(p.review?.action).toMatch(/waiting for instructor review/);
+  });
+  it("lists the six self-verified foundation rungs without claiming status", () => {
+    const p = buildAcceleratorPath({ grants: ALL, connected: [], progress: [] });
+    expect(p.foundation.map((f) => f.id).join()).toBe("context,memory,skills,structure,destination,customer-test");
+    expect(p.foundation[0].note).toMatch(/not a verified chapter/);
+    expect(JSON.stringify(p.foundation)).not.toMatch(/orientation video/i);
+    expect(p.review).toBe(null);
+  });
+  it("gives no review to a student without Accelerator access", () => {
+    const p = buildAcceleratorPath({ grants: ["ga"], connected: [], progress: [] });
+    expect(p.review).toBe(null);
+  });
+});

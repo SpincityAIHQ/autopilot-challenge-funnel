@@ -32,14 +32,23 @@ const STATUS: Record<PathStep["status"], string> = {
 
 export function AcceleratorNextStep() {
   const session = useAcademySession();
-  const [path, setPath] = useState<AcceleratorPath | null>(null);
-  const [error, setError] = useState("");
+  // Keyed by the email it was loaded for, so a previous account's path or error never shows.
+  const [state, setState] = useState<{ email: string; path: AcceleratorPath | null; error: string } | null>(null);
   useEffect(() => {
-    if (!session.email) return setPath(null);
+    const email = session.email;
+    setState(null);
+    if (!email) return;
+    let active = true;
     academyApi<{ path: AcceleratorPath | null }>("dashboard")
-      .then((d) => setPath(d.path))
-      .catch((e: Error) => setError(e.message));
+      .then((d) => active && setState({ email, path: d.path ?? null, error: "" }))
+      .catch((e: Error) => active && setState({ email, path: null, error: e.message || "failed" }));
+    return () => {
+      active = false;
+    };
   }, [session.email]);
+  const current = state && state.email === session.email ? state : null;
+  const path = current?.path ?? null;
+  const error = current?.error ?? "";
 
   if (session.loading) return null;
   if (!session.email)
@@ -54,10 +63,27 @@ export function AcceleratorNextStep() {
   if (error)
     return (
       <div className="academy-card" style={{ marginTop: 32 }} role="alert">
+        <p className="academy-eyebrow">Start here</p>
         <p>Your checklist could not load. <a href={SUPPORT_TEXT_HREF}>Text {SUPPORT_TEXT_NUMBER}</a> if this continues.</p>
       </div>
     );
-  if (!path) return null;
+  if (!current)
+    return (
+      <div className="academy-card" style={{ marginTop: 32 }} aria-busy="true">
+        <p className="academy-eyebrow">Start here</p>
+        <p className="academy-muted">Loading your checklist…</p>
+      </div>
+    );
+  if (!path)
+    return (
+      <div className="academy-card" style={{ marginTop: 32 }}>
+        <p className="academy-eyebrow">Start here</p>
+        <p>
+          Your account does not show Accelerator access yet. If you enrolled,{" "}
+          <a href="/redeem">activate your access</a> or <a href={SUPPORT_TEXT_HREF}>text {SUPPORT_TEXT_NUMBER}</a> with your sign-in email.
+        </p>
+      </div>
+    );
   const next = path.next;
   return (
     <section className="academy-card" style={{ marginTop: 32 }} aria-labelledby="next-step-title">
@@ -68,6 +94,12 @@ export function AcceleratorNextStep() {
           <p><strong>Do this next:</strong> {next.action}</p>
           <p><strong>Proof:</strong> {next.proof}</p>
           <a className="academy-button" href={next.href}>Resume: {next.title}</a>
+        </div>
+      ) : path.review ? (
+        <div style={{ margin: "16px 0" }}>
+          <p><strong>Next goal:</strong> {path.review.action}</p>
+          <p><strong>Proof:</strong> {path.review.proof}</p>
+          <a className="academy-button" href={path.review.href}>Review: customer step lesson</a>
         </div>
       ) : null}
       <details style={{ margin: "12px 0" }} open={!next || next.lessonId === "free-webinar"}>
