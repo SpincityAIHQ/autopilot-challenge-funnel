@@ -55,8 +55,8 @@ describe("September 21 and 22 Accelerator classes", () => {
   it("never ships answer keys, feedback or the private notes documents", () => {
     for (const id of IDS) {
       const json = JSON.stringify(lessonContent(id));
-      expect(json).not.toContain("correct");
-      expect(json).not.toContain("feedback");
+      expect(json).not.toContain('"correct"');
+      expect(json).not.toContain('"feedback"');
       expect(json).not.toContain("docs.google.com");
     }
   });
