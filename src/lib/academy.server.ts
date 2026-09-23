@@ -19,7 +19,7 @@ import {
   type LessonContent,
   type LessonProgress,
 } from "./academy";
-import { lessonContent, scoreAnswers, slotMedia } from "./academy-content.server";
+import { lessonContent, lessonSource, scoreAnswers, slotMedia } from "./academy-content.server";
 import { isStaffEmail } from "./academy-staff.server";
 import { configuredVimeo, connectedSlots, vimeoDuration } from "./academy-media.server";
 import { loadTranscript, availableTranscriptIds, type TranscriptStore } from "./academy-transcript.server";
@@ -858,6 +858,9 @@ export async function handleAcademyPost(request: Request, path: string) {
                 notes: lesson.paragraphs,
                 chapters: chapters.map((c) => ({ at: formatTime(c.start), title: c.title })),
                 recordingConnected: Boolean(lesson.media),
+                // Dated live classes carry their own provenance so the tutor can
+                // say which session and date an answer comes from.
+                source: lessonSource(d.lessonId),
               },
               transcript: cues
                 ? {
@@ -914,6 +917,7 @@ export async function handleAcademyPost(request: Request, path: string) {
                   link: lessonHref(l.id),
                   chapters: (c?.media?.chapters ?? []).map((ch) => ch.title),
                   notes: unlocked ? (c?.paragraphs ?? []).slice(0, 6) : undefined,
+                  source: unlocked ? lessonSource(l.id) : undefined,
                   lockedNote: unlocked
                     ? undefined
                     : "Locked for this ticket: describe what it covers and invite, never teach its detail.",
