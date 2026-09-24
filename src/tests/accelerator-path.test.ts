@@ -49,6 +49,16 @@ describe("Accelerator next-step checklist", () => {
     expect(sept21.action).toContain("support");
     expect(p.supplemental.every((s) => s.optional)).toBe(true);
   });
+  it("moves an Accelerator-only member past Summit lessons they don't hold", () => {
+    const p = buildAcceleratorPath({ grants: ["accelerator"], connected: [], progress: [] });
+    expect(p.accessVerified).toBe(true);
+    expect(p.next?.lessonId).toBe("free-webinar");
+    const p2 = buildAcceleratorPath({ grants: ["accelerator"], connected: [], progress: [done("free-webinar")] });
+    expect(p2.next?.lessonId).toBe("accelerator-2026-09-14");
+    const blocked = p2.steps.find((s) => s.lessonId === "business-before-ai")!;
+    expect(blocked.status).toBe("blocked");
+    expect(blocked.action).not.toContain("support");
+  });
 });
 
 describe("Accelerator checklist — finished students and foundation", () => {
