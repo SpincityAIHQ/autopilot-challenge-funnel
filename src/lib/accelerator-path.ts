@@ -177,7 +177,9 @@ function buildStep(
       activity: "not_started",
       action: optional
         ? "Not included in your access. Optional — skip it."
-        : "Your account does not show access to this lesson. Text the support line with the page and the email you signed in with.",
+        : grants.includes("accelerator")
+          ? "This Summit lesson is not included in your access. Skip it and continue with your Accelerator classes."
+          : "Your account does not show access to this lesson. Text the support line with the page and the email you signed in with.",
       proof: "None needed until access is confirmed.",
     };
   const p = progress.find((x) => x.lesson_id === id);
@@ -242,7 +244,13 @@ export function buildAcceleratorPath(input: {
   const revision = steps.find((s) => s.activity === "needs_revision");
   const next =
     revision ??
-    steps.find((s) => s.status !== "complete" && s.status !== "awaiting_review") ??
+    steps.find(
+      (s) =>
+        s.status !== "complete" &&
+        s.status !== "awaiting_review" &&
+        // Accelerator members skip Summit lessons they don't hold instead of stalling on them.
+        !(accessVerified && s.status === "blocked"),
+    ) ??
     null;
   const done = steps.filter((s) => s.status === "complete" || s.status === "awaiting_review").length;
   const uncertainty: string[] = [];
