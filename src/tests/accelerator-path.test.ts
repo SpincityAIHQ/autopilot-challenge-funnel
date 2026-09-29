@@ -85,3 +85,14 @@ describe("Accelerator checklist — finished students and foundation", () => {
     expect(p.review).toBe(null);
   });
 });
+
+import { buildAcceleratorPath as _bap } from "../lib/accelerator-path";
+test("accelerator-only all-done does not claim locked Summit lessons are done", () => {
+  const ids = ["free-webinar","accelerator-2026-09-14","accelerator-2026-09-21","accelerator-2026-09-22","implementation-lab"];
+  const progress = ids.map((lesson_id) => ({ lesson_id, intervals: [], duration: 0, quiz_score: 3, quiz_total: 3, workbook: {}, workbook_status: "approved" })) as any;
+  const p = _bap({ grants: ["accelerator"], connected: [], progress });
+  expect(p.next).toBe(null);
+  expect(p.whereAmI.startsWith("All 7")).toBe(false);
+  expect(p.whereAmI).toContain("included in your access");
+  expect(p.review!.action.startsWith("Every step has")).toBe(false);
+});
