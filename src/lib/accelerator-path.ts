@@ -252,6 +252,11 @@ export function buildAcceleratorPath(input: {
         !(accessVerified && s.status === "blocked"),
     ) ??
     null;
+  const applicable = steps.filter((s) => s.status !== "blocked");
+  const skipped = steps.length - applicable.length;
+  const skippedNote = skipped
+    ? ` ${skipped} Summit ${skipped === 1 ? "lesson is" : "lessons are"} not included in your access and ${skipped === 1 ? "is" : "are"} not counted.`
+    : "";
   const done = steps.filter((s) => s.status === "complete" || s.status === "awaiting_review").length;
   const uncertainty: string[] = [];
   if (steps.some((s) => s.video === "unavailable" && s.status !== "blocked"))
@@ -268,14 +273,18 @@ export function buildAcceleratorPath(input: {
     ? "Your account does not show Accelerator access yet."
     : next
       ? `${done} of ${steps.length} steps have evidence saved. You are on: ${next.title} (${next.stage}).`
-      : `All ${steps.length} steps have evidence saved.`;
+      : skipped
+        ? `All ${applicable.length} steps included in your access have evidence saved.${skippedNote}`
+        : `All ${steps.length} steps have evidence saved.`;
   const pending = steps.filter((s) => s.status === "awaiting_review").length;
   const review =
     accessVerified && !next && steps.length
       ? {
           action: pending
             ? `Your work is saved. ${pending} activity ${pending === 1 ? "sheet is" : "sheets are"} waiting for instructor review — nothing more is required for ${pending === 1 ? "it" : "them"} now. Meanwhile, re-run the foundation self-check below and pick one customer step to test again this week.`
-            : "Every step has evidence saved. Review your activity sheets, re-run the foundation self-check below, and choose one customer step to test again this week. New classes will appear here as they are added.",
+            : skipped
+              ? `Every step included in your access has evidence saved.${skippedNote} Review your activity sheets, re-run the foundation self-check below, and choose one customer step to test again this week. New classes will appear here as they are added.`
+              : "Every step has evidence saved. Review your activity sheets, re-run the foundation self-check below, and choose one customer step to test again this week. New classes will appear here as they are added.",
           proof: "A dated note of the customer step you tested and what happened.",
           href: "/lesson/accelerator-2026-09-22",
         }
