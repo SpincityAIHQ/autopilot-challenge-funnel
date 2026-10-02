@@ -120,9 +120,23 @@ export const ACCELERATOR_DAYS: LessonMeta[] = Array.from(
     };
   },
 );
+/** Dated Accelerator meeting replays without authored notes yet. */
+const DATED_REPLAYS: LessonMeta[] = [
+  {
+    id: "accelerator-2026-09-28",
+    title: "Class 05 replay",
+    stage: "Accelerator · Monday, September 28, 2026",
+    tier: "accelerator",
+    summary: "Replay of the September 28 class. Ask AI Spin to help you apply it.",
+    skill: "Implement with the group",
+    kind: "session",
+    envKey: envKeyFor("accelerator-2026-09-28"),
+  },
+];
 export const LESSONS: LessonMeta[] = [
   ...CORE.map((l) => ({ ...l, kind: "lesson" as const, envKey: envKeyFor(l.id) })),
   ...ACCELERATOR_DAYS,
+  ...DATED_REPLAYS,
 ];
 export function lessonHref(id: string) {
   return id === "free-webinar" ? "/class" : `/lesson/${id}`;
