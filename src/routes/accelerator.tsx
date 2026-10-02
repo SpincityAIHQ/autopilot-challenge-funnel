@@ -18,26 +18,7 @@ function Accelerator() {
     <AcademyFrame>
       <section className="academy-section academy-accelerator">
         <p className="academy-eyebrow">Accelerator classroom · September–December 2026</p>
-        <h1>Your classes.</h1>
-        <p className="academy-lead" style={{ maxWidth: 560 }}>
-          Every class is recorded and tracked, so you can pick up exactly where you stopped.
-        </p>
-        <div className="academy-actions" style={{ marginTop: 16 }}>
-          <a className="academy-text-button" href="/redeem">
-            Activate your access →
-          </a>
-          <a className="academy-text-button" href={SUPPORT_TEXT_HREF}>
-            Text {SUPPORT_TEXT_NUMBER} about the Accelerator →
-          </a>
-        </div>
-        <AcceleratorNextStep />
-        <div className="academy-section-heading" style={{ marginTop: 48 }}>
-          <p className="academy-eyebrow">Your classes</p>
-          <h2>Watch them in order.</h2>
-          <p>
-            Classes are added here as Spin records them. Your checklist above shows which step is yours.
-          </p>
-        </div>
+        <h1>Welcome to the Accelerator.</h1>
         <div className="academy-week-one">
           <article className="academy-card academy-week-day">
             <span className="academy-number">Class 01</span>
@@ -114,6 +95,15 @@ function Accelerator() {
               Open the class
             </a>
           </article>
+        </div>
+        <AcceleratorNextStep />
+        <div className="academy-actions" style={{ marginTop: 24 }}>
+          <a className="academy-text-button" href="/redeem">
+            Activate your access →
+          </a>
+          <a className="academy-text-button" href={SUPPORT_TEXT_HREF}>
+            Text {SUPPORT_TEXT_NUMBER} about the Accelerator →
+          </a>
         </div>
         <p className="academy-muted">
           Replays are available to enrolled students inside My learning after redemption.
