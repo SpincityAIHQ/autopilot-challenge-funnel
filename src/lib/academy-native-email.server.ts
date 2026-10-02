@@ -183,7 +183,7 @@ export async function dispatchAcademyNativeEmail(
   const template = nativeEmailTemplate(name);
   if (!template) return hold("template_not_authored");
 
-  const purchase = ["purchase_access_code", "access_activated"].includes(name);
+  const purchase = ["purchase_access_code", "access_activated", "purchase_confirmed"].includes(name);
   if (purchase && payload.purchase_verified !== true) return cancel("purchase_not_verified");
   if (
     payload.send_email !== true ||

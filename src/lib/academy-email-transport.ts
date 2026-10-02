@@ -49,6 +49,7 @@ export const NATIVE_EMAIL_TEMPLATES: Record<string, string> = {
   webinar_registered: "academy-account-welcome",
   access_activated: "academy-access-activated",
   purchase_access_code: "academy-purchase-access-code",
+  purchase_confirmed: "academy-purchase-confirmed",
   // Service-related learning reminders (app-side optional consent still applies)
   webinar_not_started: "academy-never-started",
   learning_dropoff: "academy-learning-inactivity",
@@ -88,7 +89,7 @@ export function nativeEmailPurpose(_eventName: string): "transactional" {
  * app queues or sends the reminder; it does not change the provider purpose.
  */
 export function nativeEmailConsentClass(eventName: string): "account_access" | "optional_learning" {
-  return ["webinar_registered", "access_activated", "purchase_access_code"].includes(eventName)
+  return ["webinar_registered", "access_activated", "purchase_access_code", "purchase_confirmed"].includes(eventName)
     ? "account_access"
     : "optional_learning";
 }
