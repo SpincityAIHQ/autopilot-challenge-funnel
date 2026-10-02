@@ -105,6 +105,15 @@ function Accelerator() {
               Open the class
             </a>
           </article>
+          <article className="academy-card academy-week-day">
+            <span className="academy-number">Class 06</span>
+            <h3>Class 06 replay</h3>
+            <p className="academy-muted">Accelerator · Class 06</p>
+            <p>Watch the replay of Class 06 and ask AI Spin to help you apply it.</p>
+            <a className="academy-button" href="/lesson/accelerator-class-06">
+              Open the class
+            </a>
+          </article>
         </div>
         <p className="academy-muted">
           Replays are available to enrolled students inside My learning after redemption.
