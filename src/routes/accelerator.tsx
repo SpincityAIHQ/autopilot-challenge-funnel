@@ -37,6 +37,13 @@ function Accelerator() {
             <span className="academy-number">Class 01</span>
             <h3>{launchSource?.title ?? LAUNCH_DAY.title}</h3>
             {launchSource ? <p className="academy-muted">{launchSource.stage}</p> : null}
+            {catalogue?.transcripts ? (
+              <p className="academy-muted">
+                {catalogue.transcripts.includes(LAUNCH_DAY.lessonId)
+                  ? "Transcript connected"
+                  : "Teaching notes · Spoken transcript pending"}
+              </p>
+            ) : null}
             <p className="academy-muted">
               {launchConnected ? "Video connected." : "Video slot open — recording coming."}
             </p>
@@ -63,6 +70,13 @@ function Accelerator() {
                 <span className="academy-number">Class {number}</span>
                 <h3>{lesson.title}</h3>
                 <p className="academy-muted">{lesson.stage}</p>
+                {catalogue?.transcripts ? (
+                  <p className="academy-muted">
+                    {catalogue.transcripts.includes(id)
+                      ? "Transcript connected"
+                      : "Spoken transcript pending"}
+                  </p>
+                ) : null}
                 <p>{lesson.summary}</p>
                 <a className="academy-button" href={`/lesson/${id}`}>
                   Open the class

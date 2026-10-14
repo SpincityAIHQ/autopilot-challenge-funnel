@@ -123,6 +123,7 @@ export async function academyApi<T>(path: string, body?: unknown): Promise<T> {
 export type Catalogue = {
   lessons: import("./academy").LessonMeta[];
   connected: string[];
+  transcripts?: string[];
   bookingConfigured: boolean;
 };
 /** Public slot map: which recordings are connected. Booleans only, never URLs. */
