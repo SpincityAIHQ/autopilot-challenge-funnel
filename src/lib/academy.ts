@@ -567,6 +567,10 @@ export type LessonContent = {
   media: LessonMedia | null;
   /** Timed transcript cues when a transcript is connected. Every word, with its time. */
   transcript?: TranscriptCue[] | null;
+  /** Provenance and privacy note for the recording's teaching source. */
+  sourceNote?: string | null;
+  /** Source transcript clocks must not be advertised as aligned player timestamps. */
+  transcriptTiming?: "media" | "source_landmarks";
   /** Honest, lesson-specific status shown when no recording is attached. */
   mediaNotice?: string | null;
 };

@@ -1,10 +1,13 @@
-import type { TranscriptCue } from "./academy";
+import { LESSONS, type TranscriptCue } from "./academy";
 import { MAX_TRANSCRIPT_CHARACTERS, parseTranscript } from "./transcript";
 import { createHash } from "node:crypto";
 import { configuredVimeo } from "./academy-media.server";
+import { loadRecordingTranscriptSource, type RecordingSourceStore } from "./academy-recording-sources.server";
 /**
  * Transcript source per slot, in order:
  * 0. A private academy_transcripts row, tied to this recording version.
+ *    If no row exists, a verified private recording source for the slot's actual
+ *    Vimeo video can provide its full transcript and source-clock provenance.
  * 1. ACADEMY_TRANSCRIPT_<KEY>: an HTTPS .vtt/.srt link.
  * 2. Vimeo captions through the Vimeo API when VIMEO_ACCESS_TOKEN is set and the
  *    slot is a Vimeo video (auto-generated or uploaded captions both count).
@@ -23,7 +26,7 @@ type PrivateTranscriptRow = {
   media_version: string;
   active: boolean;
 };
-export type TranscriptStore = {
+export type TranscriptStore = RecordingSourceStore & {
   readPrivateTranscript?: (id: string) => PromiseLike<{ data: unknown; error: unknown }>;
   storage: {
     from: (bucket: string) => {
@@ -118,20 +121,42 @@ export async function loadTranscript(
   envKey: string,
   db: TranscriptStore,
 ): Promise<TranscriptCue[] | null> {
+  return (await loadTranscriptWithSource(id, envKey, db)).cues;
+}
+export type LoadedTranscript = {
+  cues: TranscriptCue[] | null;
+  timing: "media" | "source_landmarks";
+  sourceNote: string | null;
+};
+/** Preserve source-clock provenance without changing the compatibility loader. */
+export async function loadTranscriptWithSource(
+  id: string,
+  envKey: string,
+  db: TranscriptStore,
+): Promise<LoadedTranscript> {
   const version = recordingVersion(envKey);
-  const key = `${id}:${version}`;
-  const hit = cache.get(key);
-  if (hit && Date.now() - hit.at < TTL) return hit.cues;
+  const key = `${id}:${version}:${configuredVimeo(envKey)?.id ?? ""}`;
+  const result = (cues: TranscriptCue[] | null): LoadedTranscript => ({ cues, timing: "media", sourceNote: null });
   let text: string | null = null;
   try {
+    // Recheck the authoritative row before reading any fallback or cache.
+    // Revoking or replacing a row must never expose another source instead.
     const privateSource = await privateTranscript(id, version, db);
     if (privateSource.found) {
       let cues: TranscriptCue[] | null = null;
       try { cues = privateSource.text ? parseTranscript(privateSource.text) : null; } catch { /* Reject unsupported source. */ }
       if (!cues?.length) cues = null;
-      cache.set(key, { cues, at: Date.now() });
-      return cues;
+      return result(cues);
     }
+    const meta = LESSONS.find((lesson) => lesson.id === id && lesson.envKey === envKey);
+    const recordingSource = meta ? await loadRecordingTranscriptSource(meta, db) : null;
+    if (recordingSource) return {
+      cues: recordingSource.cues,
+      timing: recordingSource.timing,
+      sourceNote: recordingSource.sourceNote,
+    };
+    const hit = cache.get(key);
+    if (hit && Date.now() - hit.at < TTL) return result(hit.cues);
     const url = process.env[`ACADEMY_TRANSCRIPT_${envKey}`];
     if (url) text = await fetchText(new URL(url));
     if (!text) text = await vimeoCaptions(envKey);
@@ -154,7 +179,7 @@ export async function loadTranscript(
   try { cues = text ? parseTranscript(text) : null; } catch { /* Reject unsupported source. */ }
   if (cues && !cues.length) cues = null;
   cache.set(key, { cues, at: Date.now() });
-  return cues;
+  return result(cues);
 }
 
 
