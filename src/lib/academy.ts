@@ -162,6 +162,16 @@ const DATED_REPLAYS: LessonMeta[] = [
     kind: "session",
     envKey: envKeyFor("accelerator-class-08"),
   },
+  {
+    id: "accelerator-class-09",
+    title: "Class 09 replay",
+    stage: "Accelerator · Class 09",
+    tier: "accelerator",
+    summary: "Replay of Class 09. Ask AI Spin to help you apply it.",
+    skill: "Implement with the group",
+    kind: "session",
+    envKey: envKeyFor("accelerator-class-09"),
+  },
 ];
 export const LESSONS: LessonMeta[] = [
   ...CORE.map((l) => ({ ...l, kind: "lesson" as const, envKey: envKeyFor(l.id) })),
