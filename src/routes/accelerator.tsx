@@ -21,6 +21,9 @@ export const Route = createFileRoute("/accelerator")({
 });
 function Accelerator() {
   const catalogue = useCatalogue();
+  const launchMeta = catalogue?.lessons.find((lesson) => lesson.id === LAUNCH_DAY.lessonId);
+  const launchSource = launchMeta && launchMeta.title !== LESSONS.find((lesson) => lesson.id === LAUNCH_DAY.lessonId)?.title
+    ? launchMeta : null;
   const launchConnected = catalogue
     ? catalogue.connected.includes(LAUNCH_DAY.lessonId)
     : false;
@@ -32,7 +35,8 @@ function Accelerator() {
         <div className="academy-week-one">
           <article className="academy-card academy-week-day">
             <span className="academy-number">Class 01</span>
-            <h3>{LAUNCH_DAY.title}</h3>
+            <h3>{launchSource?.title ?? LAUNCH_DAY.title}</h3>
+            {launchSource ? <p className="academy-muted">{launchSource.stage}</p> : null}
             <p className="academy-muted">
               {launchConnected ? "Video connected." : "Video slot open — recording coming."}
             </p>

@@ -33,6 +33,17 @@ const row = {
 };
 const class06 = LESSONS.find((lesson) => lesson.id === "accelerator-class-06")!;
 const class09 = LESSONS.find((lesson) => lesson.id === "accelerator-class-09")!;
+const class01 = LESSONS.find((lesson) => lesson.id === "accelerator-day-01")!;
+const notesOnlyRow = {
+  ...row,
+  source_date: "2026-09-07",
+  title: "Example launch planning topic",
+  stage: "Accelerator · September 7, 2026",
+  source_vtt: null,
+  source_sha256: null,
+  cue_count: 0,
+  source_note: "Approved untimed class notes are connected. The spoken transcript file is missing; these notes are not a transcript.",
+};
 
 async function withVideo<T>(meta: LessonMeta, id: string, run: () => Promise<T>) {
   const key = `ACADEMY_VIMEO_${meta.envKey}`;
@@ -111,6 +122,48 @@ describe("Verified recording identity and catalogue projection", () => {
 });
 
 describe("Private teaching source validation", () => {
+  it("loads approved notes-only classes without claiming a spoken transcript or source-clock timing", async () => {
+    await withVideo(class01, videoId, async () => {
+      const store = recordingStore(notesOnlyRow).store;
+      const resolved = await resolveRecordingLessonMeta(class01, store);
+      expect(resolved.title).toBe(notesOnlyRow.title);
+      expect(resolved.stage).toBe(notesOnlyRow.stage);
+      const source = await loadRecordingLessonSource(class01, store);
+      expect(source?.notes).toEqual(notesOnlyRow.notes);
+      expect(source?.cues).toBeNull();
+      expect(source?.timing).toBe("media");
+      expect(await loadRecordingTranscriptSource(class01, store)).toBeNull();
+      const lesson = lessonContent(class01.id, source)!;
+      expect(lesson.sourceNote).toBe(notesOnlyRow.source_note);
+      expect(lesson.transcriptTiming).toBe("media");
+      expect(lesson.transcript).toBeUndefined();
+      const library = tutorCourseLibrary([resolved], new Map([[class01.id, lesson]]), ["accelerator"]);
+      expect(library[0].notes).toEqual(notesOnlyRow.notes);
+      expect(library[0].source).toBe(notesOnlyRow.source_note);
+      expect(library[0].transcriptTiming).toBe("media");
+    });
+  });
+  it("rejects partial transcript pairs, nonzero notes-only counts, and text with zero cues", async () => {
+    await withVideo(class01, videoId, async () => {
+      for (const change of [
+        { source_vtt: text }, { source_sha256: row.source_sha256 },
+        { cue_count: 1 }, { source_vtt: text, source_sha256: row.source_sha256, cue_count: 0 },
+      ]) {
+        const store = recordingStore({ ...notesOnlyRow, ...change }).store;
+        expect(await loadRecordingLessonSource(class01, store)).toBeNull();
+        expect(await loadRecordingTranscriptSource(class01, store)).toBeNull();
+      }
+    });
+  });
+  it("continues the existing caption/storage fallback when only untimed notes are connected", async () => {
+    await withVideo(class01, videoId, async () => {
+      const store = transcriptStore(notesOnlyRow);
+      store.storage = { from: () => ({ download: async () => ({ data: new Blob([text]), error: null }) }) };
+      const loaded = await loadTranscriptWithSource(class01.id, class01.envKey, store);
+      expect(loaded.cues?.length).toBe(1);
+      expect(loaded.timing).toBe("media");
+    });
+  });
   it("loads the full verified transcript, real notes and honest source clock for session replays", async () => {
     await withVideo(class06, videoId, async () => {
       const source = await loadRecordingLessonSource(class06, recordingStore().store);

@@ -23,7 +23,9 @@ export type RecordingTranscriptSource = {
   timing: "media" | "source_landmarks";
   cues: TranscriptCue[];
 };
-export type RecordingLessonSource = RecordingTranscriptSource & {
+export type RecordingLessonSource = Omit<RecordingTranscriptSource, "cues"> & {
+  /** Null for approved untimed notes when the spoken transcript is missing. */
+  cues: TranscriptCue[] | null;
   notes: { heading: string; text: string }[];
 };
 
@@ -108,8 +110,22 @@ export async function loadRecordingTranscriptSource(meta: LessonMeta, store: Rec
 export async function loadRecordingLessonSource(meta: LessonMeta, store: RecordingSourceStore): Promise<RecordingLessonSource | null> {
   const source = await readSource(meta, store, "content");
   if (!source) return null;
-  const validated = transcriptSource(source);
-  const notes = source.row.notes;
+  const { row, resolved } = source;
+  // A notes-only record is explicit, not a malformed or partially imported
+  // transcript. It must never manufacture words, timed cues or source-clock
+  // playback restrictions. Actual caption/storage fallback remains available.
+  const notesOnly = row.source_vtt === null && row.source_sha256 === null && row.cue_count === 0;
+  const validated = notesOnly && approvedText(row.source_note, 16_000) &&
+    (row.timing_basis === "source_landmarks" || row.timing_basis === "media")
+    ? {
+      metadata: resolved,
+      sourceDate: row.source_date as string,
+      sourceNote: row.source_note,
+      timing: "media" as const,
+      cues: null,
+    }
+    : transcriptSource(source);
+  const notes = row.notes;
   if (!validated || !Array.isArray(notes) || !notes.length || notes.length > 40) return null;
   const approved: { heading: string; text: string }[] = [];
   for (const note of notes) {
