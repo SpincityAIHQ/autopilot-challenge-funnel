@@ -9,195 +9,115 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WelcomeRouteImport } from './routes/welcome'
-import { Route as VaultWelcomeRouteImport } from './routes/vault-welcome'
-import { Route as VaultRouteImport } from './routes/vault'
-import { Route as ThothRouteImport } from './routes/thoth'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as SummitRouteImport } from './routes/summit'
-import { Route as StudioRouteImport } from './routes/studio'
-import { Route as StrategyIntensiveRouteImport } from './routes/strategy-intensive'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as SessionsRouteImport } from './routes/sessions'
-import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
-import { Route as ResourcesRouteImport } from './routes/resources'
-import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
-import { Route as RedeemRouteImport } from './routes/redeem'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as NextStepsRouteImport } from './routes/next-steps'
-import { Route as NextKeynoteRouteImport } from './routes/next-keynote'
-import { Route as MentorshipRouteImport } from './routes/mentorship'
-import { Route as LearnRouteImport } from './routes/learn'
-import { Route as KeynoteRouteImport } from './routes/keynote'
-import { Route as JoinRouteImport } from './routes/join'
-import { Route as IntensiveRouteImport } from './routes/intensive'
-import { Route as ConfirmedRouteImport } from './routes/confirmed'
-import { Route as CommunicationPreferencesRouteImport } from './routes/communication-preferences'
-import { Route as ClassRouteImport } from './routes/class'
-import { Route as CheckoutRouteImport } from './routes/checkout'
-import { Route as BookRouteImport } from './routes/book'
-import { Route as AuditRouteImport } from './routes/audit'
-import { Route as AiSpinRouteImport } from './routes/ai-spin'
-import { Route as AcceleratorRouteImport } from './routes/accelerator'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ReserveIndexRouteImport } from './routes/reserve/index'
-import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
-import { Route as ReserveVipRouteImport } from './routes/reserve/vip'
-import { Route as ReserveVaultRouteImport } from './routes/reserve/vault'
-import { Route as OfferVipUpgradeRouteImport } from './routes/offer/vip-upgrade'
-import { Route as OfferStrategyIntensiveRouteImport } from './routes/offer/strategy-intensive'
-import { Route as OfferMentorshipRouteImport } from './routes/offer/mentorship'
-import { Route as OfferKeynoteRouteImport } from './routes/offer/keynote'
-import { Route as OfferImplementationVaultRouteImport } from './routes/offer/implementation-vault'
-import { Route as LessonLessonIdRouteImport } from './routes/lesson.$lessonId'
-import { Route as CalendarVaultWithSpinDoticsRouteImport } from './routes/calendar.vault-with-spin[.]ics'
-import { Route as CalendarDay2DoticsRouteImport } from './routes/calendar.day2[.]ics'
-import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.]ics'
-import { Route as ApplyMentorshipRouteImport } from './routes/apply.mentorship'
-import { Route as AdminOwnerLoginRouteImport } from './routes/admin.owner-login'
-import { Route as AdminMembersRouteImport } from './routes/admin.members'
-import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
+import { Route as AcceleratorRouteImport } from './routes/accelerator'
+import { Route as AiSpinRouteImport } from './routes/ai-spin'
+import { Route as AuditRouteImport } from './routes/audit'
+import { Route as BookRouteImport } from './routes/book'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as ClassRouteImport } from './routes/class'
+import { Route as CommunicationPreferencesRouteImport } from './routes/communication-preferences'
+import { Route as ConfirmedRouteImport } from './routes/confirmed'
+import { Route as IntensiveRouteImport } from './routes/intensive'
+import { Route as JoinRouteImport } from './routes/join'
+import { Route as KeynoteRouteImport } from './routes/keynote'
+import { Route as LearnRouteImport } from './routes/learn'
+import { Route as MentorshipRouteImport } from './routes/mentorship'
+import { Route as NextKeynoteRouteImport } from './routes/next-keynote'
+import { Route as NextStepsRouteImport } from './routes/next-steps'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as RedeemRouteImport } from './routes/redeem'
+import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
+import { Route as ResourcesRouteImport } from './routes/resources'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SessionsRouteImport } from './routes/sessions'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as StrategyIntensiveRouteImport } from './routes/strategy-intensive'
+import { Route as StudioRouteImport } from './routes/studio'
+import { Route as SummitRouteImport } from './routes/summit'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as ThothRouteImport } from './routes/thoth'
+import { Route as VaultRouteImport } from './routes/vault'
+import { Route as VaultWelcomeRouteImport } from './routes/vault-welcome'
+import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
-import { Route as ApiPublicTrainingWaitlistRouteImport } from './routes/api/public/training-waitlist'
-import { Route as ApiPublicSummitAuditRouteImport } from './routes/api/public/summit-audit'
-import { Route as ApiPublicReserveUpgradeRouteImport } from './routes/api/public/reserve-upgrade'
-import { Route as ApiPublicReserveRouteImport } from './routes/api/public/reserve'
-import { Route as ApiPublicMentorshipApplicationRouteImport } from './routes/api/public/mentorship-application'
-import { Route as ApiPublicKeynoteWaitlistRouteImport } from './routes/api/public/keynote-waitlist'
-import { Route as ApiPublicCommunicationPreferencesRouteImport } from './routes/api/public/communication-preferences'
-import { Route as ApiAcademyProcessIntegrationsRouteImport } from './routes/api/academy/process-integrations'
+import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
+import { Route as AdminMembersRouteImport } from './routes/admin.members'
+import { Route as AdminOwnerLoginRouteImport } from './routes/admin.owner-login'
+import { Route as ApplyMentorshipRouteImport } from './routes/apply.mentorship'
+import { Route as CalendarDay1DoticsRouteImport } from './routes/calendar.day1[.]ics'
+import { Route as CalendarDay2DoticsRouteImport } from './routes/calendar.day2[.]ics'
+import { Route as CalendarVaultWithSpinDoticsRouteImport } from './routes/calendar.vault-with-spin[.]ics'
+import { Route as LessonLessonIdRouteImport } from './routes/lesson.$lessonId'
+import { Route as OfferImplementationVaultRouteImport } from './routes/offer/implementation-vault'
+import { Route as OfferKeynoteRouteImport } from './routes/offer/keynote'
+import { Route as OfferMentorshipRouteImport } from './routes/offer/mentorship'
+import { Route as OfferStrategyIntensiveRouteImport } from './routes/offer/strategy-intensive'
+import { Route as OfferVipUpgradeRouteImport } from './routes/offer/vip-upgrade'
+import { Route as ReserveIndexRouteImport } from './routes/reserve/index'
+import { Route as ReserveVaultRouteImport } from './routes/reserve/vault'
+import { Route as ReserveVipRouteImport } from './routes/reserve/vip'
+import { Route as ResourcesSlugRouteImport } from './routes/resources.$slug'
 import { Route as ApiAcademySplatRouteImport } from './routes/api/academy/$'
-import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
-import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
-import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
-import { Route as ApiPublicWebhooksSkoolRouteImport } from './routes/api/public/webhooks/skool'
-import { Route as ApiPublicWebhooksShopifyRouteImport } from './routes/api/public/webhooks/shopify'
-import { Route as ApiPublicWebhooksGhlPaymentRouteImport } from './routes/api/public/webhooks/ghl-payment'
-import { Route as ApiPublicWebhooksCommasRouteImport } from './routes/api/public/webhooks/commas'
-import { Route as ApiPublicResourcesReadRouteImport } from './routes/api/public/resources/read'
-import { Route as ApiPublicResourcesLogoutRouteImport } from './routes/api/public/resources/logout'
-import { Route as ApiPublicResourcesExchangeRouteImport } from './routes/api/public/resources/exchange'
-import { Route as ApiPublicResourcesEntitlementSummaryRouteImport } from './routes/api/public/resources/entitlement-summary'
-import { Route as ApiPublicCheckoutTierRouteImport } from './routes/api/public/checkout/$tier'
-import { Route as ApiPublicAdminSummitLeadsRouteImport } from './routes/api/public/admin/summit-leads'
-import { Route as ApiPublicAdminSummitAuditRouteImport } from './routes/api/public/admin/summit-audit'
-import { Route as ApiPublicAdminSkoolMembershipRouteImport } from './routes/api/public/admin/skool-membership'
-import { Route as ApiPublicAdminOwnerLoginRouteImport } from './routes/api/public/admin/owner-login'
+import { Route as ApiAcademyProcessIntegrationsRouteImport } from './routes/api/academy/process-integrations'
+import { Route as ApiPublicCommunicationPreferencesRouteImport } from './routes/api/public/communication-preferences'
+import { Route as ApiPublicKeynoteWaitlistRouteImport } from './routes/api/public/keynote-waitlist'
+import { Route as ApiPublicMentorshipApplicationRouteImport } from './routes/api/public/mentorship-application'
+import { Route as ApiPublicReserveRouteImport } from './routes/api/public/reserve'
+import { Route as ApiPublicReserveUpgradeRouteImport } from './routes/api/public/reserve-upgrade'
+import { Route as ApiPublicSummitAuditRouteImport } from './routes/api/public/summit-audit'
+import { Route as ApiPublicTrainingWaitlistRouteImport } from './routes/api/public/training-waitlist'
 import { Route as ApiPublicAdminAcademyEmailTestRouteImport } from './routes/api/public/admin/academy-email-test'
+import { Route as ApiPublicAdminOwnerLoginRouteImport } from './routes/api/public/admin/owner-login'
+import { Route as ApiPublicAdminSkoolMembershipRouteImport } from './routes/api/public/admin/skool-membership'
+import { Route as ApiPublicAdminSummitAuditRouteImport } from './routes/api/public/admin/summit-audit'
+import { Route as ApiPublicAdminSummitLeadsRouteImport } from './routes/api/public/admin/summit-leads'
+import { Route as ApiPublicCheckoutTierRouteImport } from './routes/api/public/checkout/$tier'
+import { Route as ApiPublicResourcesEntitlementSummaryRouteImport } from './routes/api/public/resources/entitlement-summary'
+import { Route as ApiPublicResourcesExchangeRouteImport } from './routes/api/public/resources/exchange'
+import { Route as ApiPublicResourcesLogoutRouteImport } from './routes/api/public/resources/logout'
+import { Route as ApiPublicResourcesReadRouteImport } from './routes/api/public/resources/read'
+import { Route as ApiPublicWebhooksCommasRouteImport } from './routes/api/public/webhooks/commas'
+import { Route as ApiPublicWebhooksGhlPaymentRouteImport } from './routes/api/public/webhooks/ghl-payment'
+import { Route as ApiPublicWebhooksShopifyRouteImport } from './routes/api/public/webhooks/shopify'
+import { Route as ApiPublicWebhooksSkoolRouteImport } from './routes/api/public/webhooks/skool'
+import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
-const WelcomeRoute = WelcomeRouteImport.update({
-  id: '/welcome',
-  path: '/welcome',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VaultWelcomeRoute = VaultWelcomeRouteImport.update({
-  id: '/vault-welcome',
-  path: '/vault-welcome',
+const AcceleratorRoute = AcceleratorRouteImport.update({
+  id: '/accelerator',
+  path: '/accelerator',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VaultRoute = VaultRouteImport.update({
-  id: '/vault',
-  path: '/vault',
+const AiSpinRoute = AiSpinRouteImport.update({
+  id: '/ai-spin',
+  path: '/ai-spin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ThothRoute = ThothRouteImport.update({
-  id: '/thoth',
-  path: '/thoth',
+const AuditRoute = AuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
+const BookRoute = BookRouteImport.update({
+  id: '/book',
+  path: '/book',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SummitRoute = SummitRouteImport.update({
-  id: '/summit',
-  path: '/summit',
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StudioRoute = StudioRouteImport.update({
-  id: '/studio',
-  path: '/studio',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StrategyIntensiveRoute = StrategyIntensiveRouteImport.update({
-  id: '/strategy-intensive',
-  path: '/strategy-intensive',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SessionsRoute = SessionsRouteImport.update({
-  id: '/sessions',
-  path: '/sessions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
-  id: '/robots.txt',
-  path: '/robots.txt',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResourcesRoute = ResourcesRouteImport.update({
-  id: '/resources',
-  path: '/resources',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RefundPolicyRoute = RefundPolicyRouteImport.update({
-  id: '/refund-policy',
-  path: '/refund-policy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RedeemRoute = RedeemRouteImport.update({
-  id: '/redeem',
-  path: '/redeem',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NextStepsRoute = NextStepsRouteImport.update({
-  id: '/next-steps',
-  path: '/next-steps',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NextKeynoteRoute = NextKeynoteRouteImport.update({
-  id: '/next-keynote',
-  path: '/next-keynote',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MentorshipRoute = MentorshipRouteImport.update({
-  id: '/mentorship',
-  path: '/mentorship',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LearnRoute = LearnRouteImport.update({
-  id: '/learn',
-  path: '/learn',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KeynoteRoute = KeynoteRouteImport.update({
-  id: '/keynote',
-  path: '/keynote',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const JoinRoute = JoinRouteImport.update({
-  id: '/join',
-  path: '/join',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IntensiveRoute = IntensiveRouteImport.update({
-  id: '/intensive',
-  path: '/intensive',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConfirmedRoute = ConfirmedRouteImport.update({
-  id: '/confirmed',
-  path: '/confirmed',
+const ClassRoute = ClassRouteImport.update({
+  id: '/class',
+  path: '/class',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CommunicationPreferencesRoute =
@@ -206,90 +126,154 @@ const CommunicationPreferencesRoute =
     path: '/communication-preferences',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ClassRoute = ClassRouteImport.update({
-  id: '/class',
-  path: '/class',
+const ConfirmedRoute = ConfirmedRouteImport.update({
+  id: '/confirmed',
+  path: '/confirmed',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CheckoutRoute = CheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
+const IntensiveRoute = IntensiveRouteImport.update({
+  id: '/intensive',
+  path: '/intensive',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BookRoute = BookRouteImport.update({
-  id: '/book',
-  path: '/book',
+const JoinRoute = JoinRouteImport.update({
+  id: '/join',
+  path: '/join',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuditRoute = AuditRouteImport.update({
-  id: '/audit',
-  path: '/audit',
+const KeynoteRoute = KeynoteRouteImport.update({
+  id: '/keynote',
+  path: '/keynote',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AiSpinRoute = AiSpinRouteImport.update({
-  id: '/ai-spin',
-  path: '/ai-spin',
+const LearnRoute = LearnRouteImport.update({
+  id: '/learn',
+  path: '/learn',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AcceleratorRoute = AcceleratorRouteImport.update({
-  id: '/accelerator',
-  path: '/accelerator',
+const MentorshipRoute = MentorshipRouteImport.update({
+  id: '/mentorship',
+  path: '/mentorship',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const NextKeynoteRoute = NextKeynoteRouteImport.update({
+  id: '/next-keynote',
+  path: '/next-keynote',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ReserveIndexRoute = ReserveIndexRouteImport.update({
-  id: '/reserve/',
-  path: '/reserve/',
+const NextStepsRoute = NextStepsRouteImport.update({
+  id: '/next-steps',
+  path: '/next-steps',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => ResourcesRoute,
-} as any)
-const ReserveVipRoute = ReserveVipRouteImport.update({
-  id: '/reserve/vip',
-  path: '/reserve/vip',
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ReserveVaultRoute = ReserveVaultRouteImport.update({
-  id: '/reserve/vault',
-  path: '/reserve/vault',
+const RedeemRoute = RedeemRouteImport.update({
+  id: '/redeem',
+  path: '/redeem',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OfferVipUpgradeRoute = OfferVipUpgradeRouteImport.update({
-  id: '/offer/vip-upgrade',
-  path: '/offer/vip-upgrade',
+const RefundPolicyRoute = RefundPolicyRouteImport.update({
+  id: '/refund-policy',
+  path: '/refund-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OfferStrategyIntensiveRoute = OfferStrategyIntensiveRouteImport.update({
-  id: '/offer/strategy-intensive',
-  path: '/offer/strategy-intensive',
+const ResourcesRoute = ResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OfferMentorshipRoute = OfferMentorshipRouteImport.update({
-  id: '/offer/mentorship',
-  path: '/offer/mentorship',
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OfferKeynoteRoute = OfferKeynoteRouteImport.update({
-  id: '/offer/keynote',
-  path: '/offer/keynote',
+const SessionsRoute = SessionsRouteImport.update({
+  id: '/sessions',
+  path: '/sessions',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OfferImplementationVaultRoute =
-  OfferImplementationVaultRouteImport.update({
-    id: '/offer/implementation-vault',
-    path: '/offer/implementation-vault',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LessonLessonIdRoute = LessonLessonIdRouteImport.update({
-  id: '/lesson/$lessonId',
-  path: '/lesson/$lessonId',
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StrategyIntensiveRoute = StrategyIntensiveRouteImport.update({
+  id: '/strategy-intensive',
+  path: '/strategy-intensive',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudioRoute = StudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SummitRoute = SummitRouteImport.update({
+  id: '/summit',
+  path: '/summit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ThothRoute = ThothRouteImport.update({
+  id: '/thoth',
+  path: '/thoth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VaultRoute = VaultRouteImport.update({
+  id: '/vault',
+  path: '/vault',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VaultWelcomeRoute = VaultWelcomeRouteImport.update({
+  id: '/vault-welcome',
+  path: '/vault-welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/admin/audit',
+  path: '/admin/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLeadsRoute = AdminLeadsRouteImport.update({
+  id: '/admin/leads',
+  path: '/admin/leads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminMembersRoute = AdminMembersRouteImport.update({
+  id: '/admin/members',
+  path: '/admin/members',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminOwnerLoginRoute = AdminOwnerLoginRouteImport.update({
+  id: '/admin/owner-login',
+  path: '/admin/owner-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApplyMentorshipRoute = ApplyMentorshipRouteImport.update({
+  id: '/apply/mentorship',
+  path: '/apply/mentorship',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CalendarDay1DoticsRoute = CalendarDay1DoticsRouteImport.update({
+  id: '/calendar/day1.ics',
+  path: '/calendar/day1.ics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CalendarDay2DoticsRoute = CalendarDay2DoticsRouteImport.update({
+  id: '/calendar/day2.ics',
+  path: '/calendar/day2.ics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CalendarVaultWithSpinDoticsRoute =
@@ -298,72 +282,66 @@ const CalendarVaultWithSpinDoticsRoute =
     path: '/calendar/vault-with-spin.ics',
     getParentRoute: () => rootRouteImport,
   } as any)
-const CalendarDay2DoticsRoute = CalendarDay2DoticsRouteImport.update({
-  id: '/calendar/day2.ics',
-  path: '/calendar/day2.ics',
+const LessonLessonIdRoute = LessonLessonIdRouteImport.update({
+  id: '/lesson/$lessonId',
+  path: '/lesson/$lessonId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CalendarDay1DoticsRoute = CalendarDay1DoticsRouteImport.update({
-  id: '/calendar/day1.ics',
-  path: '/calendar/day1.ics',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApplyMentorshipRoute = ApplyMentorshipRouteImport.update({
-  id: '/apply/mentorship',
-  path: '/apply/mentorship',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminOwnerLoginRoute = AdminOwnerLoginRouteImport.update({
-  id: '/admin/owner-login',
-  path: '/admin/owner-login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminMembersRoute = AdminMembersRouteImport.update({
-  id: '/admin/members',
-  path: '/admin/members',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminLeadsRoute = AdminLeadsRouteImport.update({
-  id: '/admin/leads',
-  path: '/admin/leads',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminAuditRoute = AdminAuditRouteImport.update({
-  id: '/admin/audit',
-  path: '/admin/audit',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicTrainingWaitlistRoute =
-  ApiPublicTrainingWaitlistRouteImport.update({
-    id: '/api/public/training-waitlist',
-    path: '/api/public/training-waitlist',
+const OfferImplementationVaultRoute =
+  OfferImplementationVaultRouteImport.update({
+    id: '/offer/implementation-vault',
+    path: '/offer/implementation-vault',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicSummitAuditRoute = ApiPublicSummitAuditRouteImport.update({
-  id: '/api/public/summit-audit',
-  path: '/api/public/summit-audit',
+const OfferKeynoteRoute = OfferKeynoteRouteImport.update({
+  id: '/offer/keynote',
+  path: '/offer/keynote',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicReserveUpgradeRoute = ApiPublicReserveUpgradeRouteImport.update({
-  id: '/api/public/reserve-upgrade',
-  path: '/api/public/reserve-upgrade',
+const OfferMentorshipRoute = OfferMentorshipRouteImport.update({
+  id: '/offer/mentorship',
+  path: '/offer/mentorship',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicReserveRoute = ApiPublicReserveRouteImport.update({
-  id: '/api/public/reserve',
-  path: '/api/public/reserve',
+const OfferStrategyIntensiveRoute = OfferStrategyIntensiveRouteImport.update({
+  id: '/offer/strategy-intensive',
+  path: '/offer/strategy-intensive',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicMentorshipApplicationRoute =
-  ApiPublicMentorshipApplicationRouteImport.update({
-    id: '/api/public/mentorship-application',
-    path: '/api/public/mentorship-application',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicKeynoteWaitlistRoute =
-  ApiPublicKeynoteWaitlistRouteImport.update({
-    id: '/api/public/keynote-waitlist',
-    path: '/api/public/keynote-waitlist',
+const OfferVipUpgradeRoute = OfferVipUpgradeRouteImport.update({
+  id: '/offer/vip-upgrade',
+  path: '/offer/vip-upgrade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReserveIndexRoute = ReserveIndexRouteImport.update({
+  id: '/reserve/',
+  path: '/reserve/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReserveVaultRoute = ReserveVaultRouteImport.update({
+  id: '/reserve/vault',
+  path: '/reserve/vault',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReserveVipRoute = ReserveVipRouteImport.update({
+  id: '/reserve/vip',
+  path: '/reserve/vip',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ResourcesRoute,
+} as any)
+const ApiAcademySplatRoute = ApiAcademySplatRouteImport.update({
+  id: '/api/academy/$',
+  path: '/api/academy/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAcademyProcessIntegrationsRoute =
+  ApiAcademyProcessIntegrationsRouteImport.update({
+    id: '/api/academy/process-integrations',
+    path: '/api/academy/process-integrations',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicCommunicationPreferencesRoute =
@@ -372,99 +350,43 @@ const ApiPublicCommunicationPreferencesRoute =
     path: '/api/public/communication-preferences',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiAcademyProcessIntegrationsRoute =
-  ApiAcademyProcessIntegrationsRouteImport.update({
-    id: '/api/academy/process-integrations',
-    path: '/api/academy/process-integrations',
+const ApiPublicKeynoteWaitlistRoute =
+  ApiPublicKeynoteWaitlistRouteImport.update({
+    id: '/api/public/keynote-waitlist',
+    path: '/api/public/keynote-waitlist',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiAcademySplatRoute = ApiAcademySplatRouteImport.update({
-  id: '/api/academy/$',
-  path: '/api/academy/$',
+const ApiPublicMentorshipApplicationRoute =
+  ApiPublicMentorshipApplicationRouteImport.update({
+    id: '/api/public/mentorship-application',
+    path: '/api/public/mentorship-application',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicReserveRoute = ApiPublicReserveRouteImport.update({
+  id: '/api/public/reserve',
+  path: '/api/public/reserve',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LovableEmailTransactionalPreviewRoute =
-  LovableEmailTransactionalPreviewRouteImport.update({
-    id: '/lovable/email/transactional/preview',
-    path: '/lovable/email/transactional/preview',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
-  id: '/lovable/email/auth/webhook',
-  path: '/lovable/email/auth/webhook',
+const ApiPublicReserveUpgradeRoute = ApiPublicReserveUpgradeRouteImport.update({
+  id: '/api/public/reserve-upgrade',
+  path: '/api/public/reserve-upgrade',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
-  id: '/lovable/email/auth/preview',
-  path: '/lovable/email/auth/preview',
+const ApiPublicSummitAuditRoute = ApiPublicSummitAuditRouteImport.update({
+  id: '/api/public/summit-audit',
+  path: '/api/public/summit-audit',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicWebhooksSkoolRoute = ApiPublicWebhooksSkoolRouteImport.update({
-  id: '/api/public/webhooks/skool',
-  path: '/api/public/webhooks/skool',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicWebhooksShopifyRoute =
-  ApiPublicWebhooksShopifyRouteImport.update({
-    id: '/api/public/webhooks/shopify',
-    path: '/api/public/webhooks/shopify',
+const ApiPublicTrainingWaitlistRoute =
+  ApiPublicTrainingWaitlistRouteImport.update({
+    id: '/api/public/training-waitlist',
+    path: '/api/public/training-waitlist',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicWebhooksGhlPaymentRoute =
-  ApiPublicWebhooksGhlPaymentRouteImport.update({
-    id: '/api/public/webhooks/ghl-payment',
-    path: '/api/public/webhooks/ghl-payment',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicWebhooksCommasRoute = ApiPublicWebhooksCommasRouteImport.update({
-  id: '/api/public/webhooks/commas',
-  path: '/api/public/webhooks/commas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicResourcesReadRoute = ApiPublicResourcesReadRouteImport.update({
-  id: '/api/public/resources/read',
-  path: '/api/public/resources/read',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicResourcesLogoutRoute =
-  ApiPublicResourcesLogoutRouteImport.update({
-    id: '/api/public/resources/logout',
-    path: '/api/public/resources/logout',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicResourcesExchangeRoute =
-  ApiPublicResourcesExchangeRouteImport.update({
-    id: '/api/public/resources/exchange',
-    path: '/api/public/resources/exchange',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicResourcesEntitlementSummaryRoute =
-  ApiPublicResourcesEntitlementSummaryRouteImport.update({
-    id: '/api/public/resources/entitlement-summary',
-    path: '/api/public/resources/entitlement-summary',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicCheckoutTierRoute = ApiPublicCheckoutTierRouteImport.update({
-  id: '/api/public/checkout/$tier',
-  path: '/api/public/checkout/$tier',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicAdminSummitLeadsRoute =
-  ApiPublicAdminSummitLeadsRouteImport.update({
-    id: '/api/public/admin/summit-leads',
-    path: '/api/public/admin/summit-leads',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicAdminSummitAuditRoute =
-  ApiPublicAdminSummitAuditRouteImport.update({
-    id: '/api/public/admin/summit-audit',
-    path: '/api/public/admin/summit-audit',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicAdminSkoolMembershipRoute =
-  ApiPublicAdminSkoolMembershipRouteImport.update({
-    id: '/api/public/admin/skool-membership',
-    path: '/api/public/admin/skool-membership',
+const ApiPublicAdminAcademyEmailTestRoute =
+  ApiPublicAdminAcademyEmailTestRouteImport.update({
+    id: '/api/public/admin/academy-email-test',
+    path: '/api/public/admin/academy-email-test',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicAdminOwnerLoginRoute =
@@ -473,10 +395,88 @@ const ApiPublicAdminOwnerLoginRoute =
     path: '/api/public/admin/owner-login',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicAdminAcademyEmailTestRoute =
-  ApiPublicAdminAcademyEmailTestRouteImport.update({
-    id: '/api/public/admin/academy-email-test',
-    path: '/api/public/admin/academy-email-test',
+const ApiPublicAdminSkoolMembershipRoute =
+  ApiPublicAdminSkoolMembershipRouteImport.update({
+    id: '/api/public/admin/skool-membership',
+    path: '/api/public/admin/skool-membership',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicAdminSummitAuditRoute =
+  ApiPublicAdminSummitAuditRouteImport.update({
+    id: '/api/public/admin/summit-audit',
+    path: '/api/public/admin/summit-audit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicAdminSummitLeadsRoute =
+  ApiPublicAdminSummitLeadsRouteImport.update({
+    id: '/api/public/admin/summit-leads',
+    path: '/api/public/admin/summit-leads',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicCheckoutTierRoute = ApiPublicCheckoutTierRouteImport.update({
+  id: '/api/public/checkout/$tier',
+  path: '/api/public/checkout/$tier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicResourcesEntitlementSummaryRoute =
+  ApiPublicResourcesEntitlementSummaryRouteImport.update({
+    id: '/api/public/resources/entitlement-summary',
+    path: '/api/public/resources/entitlement-summary',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicResourcesExchangeRoute =
+  ApiPublicResourcesExchangeRouteImport.update({
+    id: '/api/public/resources/exchange',
+    path: '/api/public/resources/exchange',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicResourcesLogoutRoute =
+  ApiPublicResourcesLogoutRouteImport.update({
+    id: '/api/public/resources/logout',
+    path: '/api/public/resources/logout',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicResourcesReadRoute = ApiPublicResourcesReadRouteImport.update({
+  id: '/api/public/resources/read',
+  path: '/api/public/resources/read',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicWebhooksCommasRoute = ApiPublicWebhooksCommasRouteImport.update({
+  id: '/api/public/webhooks/commas',
+  path: '/api/public/webhooks/commas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicWebhooksGhlPaymentRoute =
+  ApiPublicWebhooksGhlPaymentRouteImport.update({
+    id: '/api/public/webhooks/ghl-payment',
+    path: '/api/public/webhooks/ghl-payment',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicWebhooksShopifyRoute =
+  ApiPublicWebhooksShopifyRouteImport.update({
+    id: '/api/public/webhooks/shopify',
+    path: '/api/public/webhooks/shopify',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicWebhooksSkoolRoute = ApiPublicWebhooksSkoolRouteImport.update({
+  id: '/api/public/webhooks/skool',
+  path: '/api/public/webhooks/skool',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
+  id: '/lovable/email/auth/preview',
+  path: '/lovable/email/auth/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
+  id: '/lovable/email/auth/webhook',
+  path: '/lovable/email/auth/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -1025,207 +1025,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/welcome': {
-      id: '/welcome'
-      path: '/welcome'
-      fullPath: '/welcome'
-      preLoaderRoute: typeof WelcomeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/vault-welcome': {
-      id: '/vault-welcome'
-      path: '/vault-welcome'
-      fullPath: '/vault-welcome'
-      preLoaderRoute: typeof VaultWelcomeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/vault': {
-      id: '/vault'
-      path: '/vault'
-      fullPath: '/vault'
-      preLoaderRoute: typeof VaultRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/thoth': {
-      id: '/thoth'
-      path: '/thoth'
-      fullPath: '/thoth'
-      preLoaderRoute: typeof ThothRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/summit': {
-      id: '/summit'
-      path: '/summit'
-      fullPath: '/summit'
-      preLoaderRoute: typeof SummitRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/studio': {
-      id: '/studio'
-      path: '/studio'
-      fullPath: '/studio'
-      preLoaderRoute: typeof StudioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/strategy-intensive': {
-      id: '/strategy-intensive'
-      path: '/strategy-intensive'
-      fullPath: '/strategy-intensive'
-      preLoaderRoute: typeof StrategyIntensiveRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sessions': {
-      id: '/sessions'
-      path: '/sessions'
-      fullPath: '/sessions'
-      preLoaderRoute: typeof SessionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/robots.txt': {
-      id: '/robots.txt'
-      path: '/robots.txt'
-      fullPath: '/robots.txt'
-      preLoaderRoute: typeof RobotsDottxtRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/resources': {
-      id: '/resources'
-      path: '/resources'
-      fullPath: '/resources'
-      preLoaderRoute: typeof ResourcesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/refund-policy': {
-      id: '/refund-policy'
-      path: '/refund-policy'
-      fullPath: '/refund-policy'
-      preLoaderRoute: typeof RefundPolicyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/redeem': {
-      id: '/redeem'
-      path: '/redeem'
-      fullPath: '/redeem'
-      preLoaderRoute: typeof RedeemRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/next-steps': {
-      id: '/next-steps'
-      path: '/next-steps'
-      fullPath: '/next-steps'
-      preLoaderRoute: typeof NextStepsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/next-keynote': {
-      id: '/next-keynote'
-      path: '/next-keynote'
-      fullPath: '/next-keynote'
-      preLoaderRoute: typeof NextKeynoteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mentorship': {
-      id: '/mentorship'
-      path: '/mentorship'
-      fullPath: '/mentorship'
-      preLoaderRoute: typeof MentorshipRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/learn': {
-      id: '/learn'
-      path: '/learn'
-      fullPath: '/learn'
-      preLoaderRoute: typeof LearnRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/keynote': {
-      id: '/keynote'
-      path: '/keynote'
-      fullPath: '/keynote'
-      preLoaderRoute: typeof KeynoteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/join': {
-      id: '/join'
-      path: '/join'
-      fullPath: '/join'
-      preLoaderRoute: typeof JoinRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/intensive': {
-      id: '/intensive'
-      path: '/intensive'
-      fullPath: '/intensive'
-      preLoaderRoute: typeof IntensiveRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/confirmed': {
-      id: '/confirmed'
-      path: '/confirmed'
-      fullPath: '/confirmed'
-      preLoaderRoute: typeof ConfirmedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/communication-preferences': {
-      id: '/communication-preferences'
-      path: '/communication-preferences'
-      fullPath: '/communication-preferences'
-      preLoaderRoute: typeof CommunicationPreferencesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/class': {
-      id: '/class'
-      path: '/class'
-      fullPath: '/class'
-      preLoaderRoute: typeof ClassRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/checkout': {
-      id: '/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/book': {
-      id: '/book'
-      path: '/book'
-      fullPath: '/book'
-      preLoaderRoute: typeof BookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/audit': {
-      id: '/audit'
-      path: '/audit'
-      fullPath: '/audit'
-      preLoaderRoute: typeof AuditRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ai-spin': {
-      id: '/ai-spin'
-      path: '/ai-spin'
-      fullPath: '/ai-spin'
-      preLoaderRoute: typeof AiSpinRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/accelerator': {
@@ -1235,130 +1039,207 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AcceleratorRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/ai-spin': {
+      id: '/ai-spin'
+      path: '/ai-spin'
+      fullPath: '/ai-spin'
+      preLoaderRoute: typeof AiSpinRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/reserve/': {
-      id: '/reserve/'
-      path: '/reserve'
-      fullPath: '/reserve/'
-      preLoaderRoute: typeof ReserveIndexRouteImport
+    '/audit': {
+      id: '/audit'
+      path: '/audit'
+      fullPath: '/audit'
+      preLoaderRoute: typeof AuditRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/resources/$slug': {
-      id: '/resources/$slug'
-      path: '/$slug'
-      fullPath: '/resources/$slug'
-      preLoaderRoute: typeof ResourcesSlugRouteImport
-      parentRoute: typeof ResourcesRoute
-    }
-    '/reserve/vip': {
-      id: '/reserve/vip'
-      path: '/reserve/vip'
-      fullPath: '/reserve/vip'
-      preLoaderRoute: typeof ReserveVipRouteImport
+    '/book': {
+      id: '/book'
+      path: '/book'
+      fullPath: '/book'
+      preLoaderRoute: typeof BookRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/reserve/vault': {
-      id: '/reserve/vault'
-      path: '/reserve/vault'
-      fullPath: '/reserve/vault'
-      preLoaderRoute: typeof ReserveVaultRouteImport
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/offer/vip-upgrade': {
-      id: '/offer/vip-upgrade'
-      path: '/offer/vip-upgrade'
-      fullPath: '/offer/vip-upgrade'
-      preLoaderRoute: typeof OfferVipUpgradeRouteImport
+    '/class': {
+      id: '/class'
+      path: '/class'
+      fullPath: '/class'
+      preLoaderRoute: typeof ClassRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/offer/strategy-intensive': {
-      id: '/offer/strategy-intensive'
-      path: '/offer/strategy-intensive'
-      fullPath: '/offer/strategy-intensive'
-      preLoaderRoute: typeof OfferStrategyIntensiveRouteImport
+    '/communication-preferences': {
+      id: '/communication-preferences'
+      path: '/communication-preferences'
+      fullPath: '/communication-preferences'
+      preLoaderRoute: typeof CommunicationPreferencesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/offer/mentorship': {
-      id: '/offer/mentorship'
-      path: '/offer/mentorship'
-      fullPath: '/offer/mentorship'
-      preLoaderRoute: typeof OfferMentorshipRouteImport
+    '/confirmed': {
+      id: '/confirmed'
+      path: '/confirmed'
+      fullPath: '/confirmed'
+      preLoaderRoute: typeof ConfirmedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/offer/keynote': {
-      id: '/offer/keynote'
-      path: '/offer/keynote'
-      fullPath: '/offer/keynote'
-      preLoaderRoute: typeof OfferKeynoteRouteImport
+    '/intensive': {
+      id: '/intensive'
+      path: '/intensive'
+      fullPath: '/intensive'
+      preLoaderRoute: typeof IntensiveRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/offer/implementation-vault': {
-      id: '/offer/implementation-vault'
-      path: '/offer/implementation-vault'
-      fullPath: '/offer/implementation-vault'
-      preLoaderRoute: typeof OfferImplementationVaultRouteImport
+    '/join': {
+      id: '/join'
+      path: '/join'
+      fullPath: '/join'
+      preLoaderRoute: typeof JoinRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lesson/$lessonId': {
-      id: '/lesson/$lessonId'
-      path: '/lesson/$lessonId'
-      fullPath: '/lesson/$lessonId'
-      preLoaderRoute: typeof LessonLessonIdRouteImport
+    '/keynote': {
+      id: '/keynote'
+      path: '/keynote'
+      fullPath: '/keynote'
+      preLoaderRoute: typeof KeynoteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/calendar/vault-with-spin.ics': {
-      id: '/calendar/vault-with-spin.ics'
-      path: '/calendar/vault-with-spin.ics'
-      fullPath: '/calendar/vault-with-spin.ics'
-      preLoaderRoute: typeof CalendarVaultWithSpinDoticsRouteImport
+    '/learn': {
+      id: '/learn'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof LearnRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/calendar/day2.ics': {
-      id: '/calendar/day2.ics'
-      path: '/calendar/day2.ics'
-      fullPath: '/calendar/day2.ics'
-      preLoaderRoute: typeof CalendarDay2DoticsRouteImport
+    '/mentorship': {
+      id: '/mentorship'
+      path: '/mentorship'
+      fullPath: '/mentorship'
+      preLoaderRoute: typeof MentorshipRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/calendar/day1.ics': {
-      id: '/calendar/day1.ics'
-      path: '/calendar/day1.ics'
-      fullPath: '/calendar/day1.ics'
-      preLoaderRoute: typeof CalendarDay1DoticsRouteImport
+    '/next-keynote': {
+      id: '/next-keynote'
+      path: '/next-keynote'
+      fullPath: '/next-keynote'
+      preLoaderRoute: typeof NextKeynoteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/apply/mentorship': {
-      id: '/apply/mentorship'
-      path: '/apply/mentorship'
-      fullPath: '/apply/mentorship'
-      preLoaderRoute: typeof ApplyMentorshipRouteImport
+    '/next-steps': {
+      id: '/next-steps'
+      path: '/next-steps'
+      fullPath: '/next-steps'
+      preLoaderRoute: typeof NextStepsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/owner-login': {
-      id: '/admin/owner-login'
-      path: '/admin/owner-login'
-      fullPath: '/admin/owner-login'
-      preLoaderRoute: typeof AdminOwnerLoginRouteImport
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/members': {
-      id: '/admin/members'
-      path: '/admin/members'
-      fullPath: '/admin/members'
-      preLoaderRoute: typeof AdminMembersRouteImport
+    '/redeem': {
+      id: '/redeem'
+      path: '/redeem'
+      fullPath: '/redeem'
+      preLoaderRoute: typeof RedeemRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/leads': {
-      id: '/admin/leads'
-      path: '/admin/leads'
-      fullPath: '/admin/leads'
-      preLoaderRoute: typeof AdminLeadsRouteImport
+    '/refund-policy': {
+      id: '/refund-policy'
+      path: '/refund-policy'
+      fullPath: '/refund-policy'
+      preLoaderRoute: typeof RefundPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resources': {
+      id: '/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof ResourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sessions': {
+      id: '/sessions'
+      path: '/sessions'
+      fullPath: '/sessions'
+      preLoaderRoute: typeof SessionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/strategy-intensive': {
+      id: '/strategy-intensive'
+      path: '/strategy-intensive'
+      fullPath: '/strategy-intensive'
+      preLoaderRoute: typeof StrategyIntensiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/studio': {
+      id: '/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/summit': {
+      id: '/summit'
+      path: '/summit'
+      fullPath: '/summit'
+      preLoaderRoute: typeof SummitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/thoth': {
+      id: '/thoth'
+      path: '/thoth'
+      fullPath: '/thoth'
+      preLoaderRoute: typeof ThothRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vault': {
+      id: '/vault'
+      path: '/vault'
+      fullPath: '/vault'
+      preLoaderRoute: typeof VaultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vault-welcome': {
+      id: '/vault-welcome'
+      path: '/vault-welcome'
+      fullPath: '/vault-welcome'
+      preLoaderRoute: typeof VaultWelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/audit': {
@@ -1368,53 +1249,130 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuditRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/training-waitlist': {
-      id: '/api/public/training-waitlist'
-      path: '/api/public/training-waitlist'
-      fullPath: '/api/public/training-waitlist'
-      preLoaderRoute: typeof ApiPublicTrainingWaitlistRouteImport
+    '/admin/leads': {
+      id: '/admin/leads'
+      path: '/admin/leads'
+      fullPath: '/admin/leads'
+      preLoaderRoute: typeof AdminLeadsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/summit-audit': {
-      id: '/api/public/summit-audit'
-      path: '/api/public/summit-audit'
-      fullPath: '/api/public/summit-audit'
-      preLoaderRoute: typeof ApiPublicSummitAuditRouteImport
+    '/admin/members': {
+      id: '/admin/members'
+      path: '/admin/members'
+      fullPath: '/admin/members'
+      preLoaderRoute: typeof AdminMembersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/reserve-upgrade': {
-      id: '/api/public/reserve-upgrade'
-      path: '/api/public/reserve-upgrade'
-      fullPath: '/api/public/reserve-upgrade'
-      preLoaderRoute: typeof ApiPublicReserveUpgradeRouteImport
+    '/admin/owner-login': {
+      id: '/admin/owner-login'
+      path: '/admin/owner-login'
+      fullPath: '/admin/owner-login'
+      preLoaderRoute: typeof AdminOwnerLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/reserve': {
-      id: '/api/public/reserve'
-      path: '/api/public/reserve'
-      fullPath: '/api/public/reserve'
-      preLoaderRoute: typeof ApiPublicReserveRouteImport
+    '/apply/mentorship': {
+      id: '/apply/mentorship'
+      path: '/apply/mentorship'
+      fullPath: '/apply/mentorship'
+      preLoaderRoute: typeof ApplyMentorshipRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/mentorship-application': {
-      id: '/api/public/mentorship-application'
-      path: '/api/public/mentorship-application'
-      fullPath: '/api/public/mentorship-application'
-      preLoaderRoute: typeof ApiPublicMentorshipApplicationRouteImport
+    '/calendar/day1.ics': {
+      id: '/calendar/day1.ics'
+      path: '/calendar/day1.ics'
+      fullPath: '/calendar/day1.ics'
+      preLoaderRoute: typeof CalendarDay1DoticsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/keynote-waitlist': {
-      id: '/api/public/keynote-waitlist'
-      path: '/api/public/keynote-waitlist'
-      fullPath: '/api/public/keynote-waitlist'
-      preLoaderRoute: typeof ApiPublicKeynoteWaitlistRouteImport
+    '/calendar/day2.ics': {
+      id: '/calendar/day2.ics'
+      path: '/calendar/day2.ics'
+      fullPath: '/calendar/day2.ics'
+      preLoaderRoute: typeof CalendarDay2DoticsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/communication-preferences': {
-      id: '/api/public/communication-preferences'
-      path: '/api/public/communication-preferences'
-      fullPath: '/api/public/communication-preferences'
-      preLoaderRoute: typeof ApiPublicCommunicationPreferencesRouteImport
+    '/calendar/vault-with-spin.ics': {
+      id: '/calendar/vault-with-spin.ics'
+      path: '/calendar/vault-with-spin.ics'
+      fullPath: '/calendar/vault-with-spin.ics'
+      preLoaderRoute: typeof CalendarVaultWithSpinDoticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lesson/$lessonId': {
+      id: '/lesson/$lessonId'
+      path: '/lesson/$lessonId'
+      fullPath: '/lesson/$lessonId'
+      preLoaderRoute: typeof LessonLessonIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offer/implementation-vault': {
+      id: '/offer/implementation-vault'
+      path: '/offer/implementation-vault'
+      fullPath: '/offer/implementation-vault'
+      preLoaderRoute: typeof OfferImplementationVaultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offer/keynote': {
+      id: '/offer/keynote'
+      path: '/offer/keynote'
+      fullPath: '/offer/keynote'
+      preLoaderRoute: typeof OfferKeynoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offer/mentorship': {
+      id: '/offer/mentorship'
+      path: '/offer/mentorship'
+      fullPath: '/offer/mentorship'
+      preLoaderRoute: typeof OfferMentorshipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offer/strategy-intensive': {
+      id: '/offer/strategy-intensive'
+      path: '/offer/strategy-intensive'
+      fullPath: '/offer/strategy-intensive'
+      preLoaderRoute: typeof OfferStrategyIntensiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offer/vip-upgrade': {
+      id: '/offer/vip-upgrade'
+      path: '/offer/vip-upgrade'
+      fullPath: '/offer/vip-upgrade'
+      preLoaderRoute: typeof OfferVipUpgradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reserve/': {
+      id: '/reserve/'
+      path: '/reserve'
+      fullPath: '/reserve/'
+      preLoaderRoute: typeof ReserveIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reserve/vault': {
+      id: '/reserve/vault'
+      path: '/reserve/vault'
+      fullPath: '/reserve/vault'
+      preLoaderRoute: typeof ReserveVaultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reserve/vip': {
+      id: '/reserve/vip'
+      path: '/reserve/vip'
+      fullPath: '/reserve/vip'
+      preLoaderRoute: typeof ReserveVipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resources/$slug': {
+      id: '/resources/$slug'
+      path: '/$slug'
+      fullPath: '/resources/$slug'
+      preLoaderRoute: typeof ResourcesSlugRouteImport
+      parentRoute: typeof ResourcesRoute
+    }
+    '/api/academy/$': {
+      id: '/api/academy/$'
+      path: '/api/academy/$'
+      fullPath: '/api/academy/$'
+      preLoaderRoute: typeof ApiAcademySplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/academy/process-integrations': {
@@ -1424,116 +1382,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAcademyProcessIntegrationsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/academy/$': {
-      id: '/api/academy/$'
-      path: '/api/academy/$'
-      fullPath: '/api/academy/$'
-      preLoaderRoute: typeof ApiAcademySplatRouteImport
+    '/api/public/communication-preferences': {
+      id: '/api/public/communication-preferences'
+      path: '/api/public/communication-preferences'
+      fullPath: '/api/public/communication-preferences'
+      preLoaderRoute: typeof ApiPublicCommunicationPreferencesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lovable/email/transactional/preview': {
-      id: '/lovable/email/transactional/preview'
-      path: '/lovable/email/transactional/preview'
-      fullPath: '/lovable/email/transactional/preview'
-      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+    '/api/public/keynote-waitlist': {
+      id: '/api/public/keynote-waitlist'
+      path: '/api/public/keynote-waitlist'
+      fullPath: '/api/public/keynote-waitlist'
+      preLoaderRoute: typeof ApiPublicKeynoteWaitlistRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lovable/email/auth/webhook': {
-      id: '/lovable/email/auth/webhook'
-      path: '/lovable/email/auth/webhook'
-      fullPath: '/lovable/email/auth/webhook'
-      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
+    '/api/public/mentorship-application': {
+      id: '/api/public/mentorship-application'
+      path: '/api/public/mentorship-application'
+      fullPath: '/api/public/mentorship-application'
+      preLoaderRoute: typeof ApiPublicMentorshipApplicationRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/lovable/email/auth/preview': {
-      id: '/lovable/email/auth/preview'
-      path: '/lovable/email/auth/preview'
-      fullPath: '/lovable/email/auth/preview'
-      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
+    '/api/public/reserve': {
+      id: '/api/public/reserve'
+      path: '/api/public/reserve'
+      fullPath: '/api/public/reserve'
+      preLoaderRoute: typeof ApiPublicReserveRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/webhooks/skool': {
-      id: '/api/public/webhooks/skool'
-      path: '/api/public/webhooks/skool'
-      fullPath: '/api/public/webhooks/skool'
-      preLoaderRoute: typeof ApiPublicWebhooksSkoolRouteImport
+    '/api/public/reserve-upgrade': {
+      id: '/api/public/reserve-upgrade'
+      path: '/api/public/reserve-upgrade'
+      fullPath: '/api/public/reserve-upgrade'
+      preLoaderRoute: typeof ApiPublicReserveUpgradeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/webhooks/shopify': {
-      id: '/api/public/webhooks/shopify'
-      path: '/api/public/webhooks/shopify'
-      fullPath: '/api/public/webhooks/shopify'
-      preLoaderRoute: typeof ApiPublicWebhooksShopifyRouteImport
+    '/api/public/summit-audit': {
+      id: '/api/public/summit-audit'
+      path: '/api/public/summit-audit'
+      fullPath: '/api/public/summit-audit'
+      preLoaderRoute: typeof ApiPublicSummitAuditRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/webhooks/ghl-payment': {
-      id: '/api/public/webhooks/ghl-payment'
-      path: '/api/public/webhooks/ghl-payment'
-      fullPath: '/api/public/webhooks/ghl-payment'
-      preLoaderRoute: typeof ApiPublicWebhooksGhlPaymentRouteImport
+    '/api/public/training-waitlist': {
+      id: '/api/public/training-waitlist'
+      path: '/api/public/training-waitlist'
+      fullPath: '/api/public/training-waitlist'
+      preLoaderRoute: typeof ApiPublicTrainingWaitlistRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/webhooks/commas': {
-      id: '/api/public/webhooks/commas'
-      path: '/api/public/webhooks/commas'
-      fullPath: '/api/public/webhooks/commas'
-      preLoaderRoute: typeof ApiPublicWebhooksCommasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/resources/read': {
-      id: '/api/public/resources/read'
-      path: '/api/public/resources/read'
-      fullPath: '/api/public/resources/read'
-      preLoaderRoute: typeof ApiPublicResourcesReadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/resources/logout': {
-      id: '/api/public/resources/logout'
-      path: '/api/public/resources/logout'
-      fullPath: '/api/public/resources/logout'
-      preLoaderRoute: typeof ApiPublicResourcesLogoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/resources/exchange': {
-      id: '/api/public/resources/exchange'
-      path: '/api/public/resources/exchange'
-      fullPath: '/api/public/resources/exchange'
-      preLoaderRoute: typeof ApiPublicResourcesExchangeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/resources/entitlement-summary': {
-      id: '/api/public/resources/entitlement-summary'
-      path: '/api/public/resources/entitlement-summary'
-      fullPath: '/api/public/resources/entitlement-summary'
-      preLoaderRoute: typeof ApiPublicResourcesEntitlementSummaryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/checkout/$tier': {
-      id: '/api/public/checkout/$tier'
-      path: '/api/public/checkout/$tier'
-      fullPath: '/api/public/checkout/$tier'
-      preLoaderRoute: typeof ApiPublicCheckoutTierRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/admin/summit-leads': {
-      id: '/api/public/admin/summit-leads'
-      path: '/api/public/admin/summit-leads'
-      fullPath: '/api/public/admin/summit-leads'
-      preLoaderRoute: typeof ApiPublicAdminSummitLeadsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/admin/summit-audit': {
-      id: '/api/public/admin/summit-audit'
-      path: '/api/public/admin/summit-audit'
-      fullPath: '/api/public/admin/summit-audit'
-      preLoaderRoute: typeof ApiPublicAdminSummitAuditRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/admin/skool-membership': {
-      id: '/api/public/admin/skool-membership'
-      path: '/api/public/admin/skool-membership'
-      fullPath: '/api/public/admin/skool-membership'
-      preLoaderRoute: typeof ApiPublicAdminSkoolMembershipRouteImport
+    '/api/public/admin/academy-email-test': {
+      id: '/api/public/admin/academy-email-test'
+      path: '/api/public/admin/academy-email-test'
+      fullPath: '/api/public/admin/academy-email-test'
+      preLoaderRoute: typeof ApiPublicAdminAcademyEmailTestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/admin/owner-login': {
@@ -1543,11 +1445,109 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAdminOwnerLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/admin/academy-email-test': {
-      id: '/api/public/admin/academy-email-test'
-      path: '/api/public/admin/academy-email-test'
-      fullPath: '/api/public/admin/academy-email-test'
-      preLoaderRoute: typeof ApiPublicAdminAcademyEmailTestRouteImport
+    '/api/public/admin/skool-membership': {
+      id: '/api/public/admin/skool-membership'
+      path: '/api/public/admin/skool-membership'
+      fullPath: '/api/public/admin/skool-membership'
+      preLoaderRoute: typeof ApiPublicAdminSkoolMembershipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/admin/summit-audit': {
+      id: '/api/public/admin/summit-audit'
+      path: '/api/public/admin/summit-audit'
+      fullPath: '/api/public/admin/summit-audit'
+      preLoaderRoute: typeof ApiPublicAdminSummitAuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/admin/summit-leads': {
+      id: '/api/public/admin/summit-leads'
+      path: '/api/public/admin/summit-leads'
+      fullPath: '/api/public/admin/summit-leads'
+      preLoaderRoute: typeof ApiPublicAdminSummitLeadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/checkout/$tier': {
+      id: '/api/public/checkout/$tier'
+      path: '/api/public/checkout/$tier'
+      fullPath: '/api/public/checkout/$tier'
+      preLoaderRoute: typeof ApiPublicCheckoutTierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/resources/entitlement-summary': {
+      id: '/api/public/resources/entitlement-summary'
+      path: '/api/public/resources/entitlement-summary'
+      fullPath: '/api/public/resources/entitlement-summary'
+      preLoaderRoute: typeof ApiPublicResourcesEntitlementSummaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/resources/exchange': {
+      id: '/api/public/resources/exchange'
+      path: '/api/public/resources/exchange'
+      fullPath: '/api/public/resources/exchange'
+      preLoaderRoute: typeof ApiPublicResourcesExchangeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/resources/logout': {
+      id: '/api/public/resources/logout'
+      path: '/api/public/resources/logout'
+      fullPath: '/api/public/resources/logout'
+      preLoaderRoute: typeof ApiPublicResourcesLogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/resources/read': {
+      id: '/api/public/resources/read'
+      path: '/api/public/resources/read'
+      fullPath: '/api/public/resources/read'
+      preLoaderRoute: typeof ApiPublicResourcesReadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/webhooks/commas': {
+      id: '/api/public/webhooks/commas'
+      path: '/api/public/webhooks/commas'
+      fullPath: '/api/public/webhooks/commas'
+      preLoaderRoute: typeof ApiPublicWebhooksCommasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/webhooks/ghl-payment': {
+      id: '/api/public/webhooks/ghl-payment'
+      path: '/api/public/webhooks/ghl-payment'
+      fullPath: '/api/public/webhooks/ghl-payment'
+      preLoaderRoute: typeof ApiPublicWebhooksGhlPaymentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/webhooks/shopify': {
+      id: '/api/public/webhooks/shopify'
+      path: '/api/public/webhooks/shopify'
+      fullPath: '/api/public/webhooks/shopify'
+      preLoaderRoute: typeof ApiPublicWebhooksShopifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/webhooks/skool': {
+      id: '/api/public/webhooks/skool'
+      path: '/api/public/webhooks/skool'
+      fullPath: '/api/public/webhooks/skool'
+      preLoaderRoute: typeof ApiPublicWebhooksSkoolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/auth/preview': {
+      id: '/lovable/email/auth/preview'
+      path: '/lovable/email/auth/preview'
+      fullPath: '/lovable/email/auth/preview'
+      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/auth/webhook': {
+      id: '/lovable/email/auth/webhook'
+      path: '/lovable/email/auth/webhook'
+      fullPath: '/lovable/email/auth/webhook'
+      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
