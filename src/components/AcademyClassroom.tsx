@@ -16,7 +16,7 @@ import {
   type Ticket,
 } from "@/lib/academy";
 import { keywords } from "@/lib/transcript";
-import { academyApi, useAcademySession } from "@/lib/academy-client";
+import { academyApi, useAcademySession, useCatalogue } from "@/lib/academy-client";
 import { academyJoinHref } from "@/lib/academy-navigation";
 
 export function AcademyClassroom({ lessonId }: { lessonId: string }) {
@@ -37,7 +37,8 @@ function ClassroomSession({
   lessonId: string;
   session: ReturnType<typeof useAcademySession>;
 }) {
-  const meta = LESSONS.find((l) => l.id === lessonId);
+  const catalogue = useCatalogue();
+  const meta = (catalogue?.lessons ?? LESSONS).find((l) => l.id === lessonId);
   const [lesson, setLesson] = useState<LessonContent | null>(null);
   const [progress, setProgress] = useState<LessonProgress>();
   const [ticket, setTicket] = useState<Ticket | null>(null);
@@ -176,6 +177,8 @@ function ClassroomSession({
     [media?.chapters, progress?.intervals, progress?.duration, media?.duration],
   );
   const transcript = lesson?.transcript ?? null;
+  const sourceLandmarks = lesson?.transcriptTiming === "source_landmarks";
+  const canSeekTranscript = canSeek && !sourceLandmarks;
   const hits = useMemo(() => {
     const terms = keywords(search);
     if (!terms.length || !transcript) return new Set<number>();
@@ -367,7 +370,9 @@ function ClassroomSession({
                       "notes",
                       "01",
                       "AI Notes",
-                      transcript ? "Every word, timed" : "Notes and key moments",
+                      transcript
+                        ? sourceLandmarks ? "Search the class transcript" : "Every word, timed"
+                        : "Notes and key moments",
                     ],
                     ["book", "02", "Activity Sheet", "Job card and knowledge check"],
                     ["spin", "03", `Ask ${guide.name}`, `${guide.name} knows where you stopped`],
@@ -405,11 +410,16 @@ function ClassroomSession({
                       <h2>AI Notes</h2>
                       <p>
                         {transcript
-                          ? "Every word and its time. Tap a moment to jump the recording there."
+                          ? sourceLandmarks
+                            ? "Search the class transcript. Its source timestamps have not been aligned to the recording."
+                            : "Every word and its time. Tap a moment to jump the recording there."
                           : "The approved notes for this recording. Timed moments appear once the transcript is connected."}
                       </p>
                     </div>
                   </div>
+                  {lesson.sourceNote ? (
+                    <p className="academy-muted">{lesson.sourceNote}</p>
+                  ) : null}
                   <div
                     className={
                       lesson.paragraphs.length && moments.length ? "academy-block-body-two" : ""
@@ -461,7 +471,7 @@ function ClassroomSession({
                   {transcript ? (
                     <details className="academy-transcript">
                       <summary>
-                        Full transcript <span>{transcript.length} timed cues</span>
+                        Class transcript <span>{transcript.length} {sourceLandmarks ? "source blocks" : "timed cues"}</span>
                       </summary>
                       <div className="academy-transcript-search">
                         <input
@@ -483,7 +493,7 @@ function ClassroomSession({
                               key={c.start}
                               type="button"
                               data-hit={hits.has(c.start)}
-                              disabled={!canSeek}
+                              disabled={!canSeekTranscript}
                               onClick={() => jump(c.start)}
                             >
                               <time>{formatTime(c.start)}</time>

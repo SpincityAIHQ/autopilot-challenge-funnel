@@ -1,10 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AcademyFrame } from "@/components/AcademyFrame";
-import { SUPPORT_TEXT_HREF, SUPPORT_TEXT_NUMBER } from "@/lib/academy";
+import { LESSONS, SUPPORT_TEXT_HREF, SUPPORT_TEXT_NUMBER } from "@/lib/academy";
 import { useCatalogue } from "@/lib/academy-client";
 import { WEEK_ONE } from "@/lib/accelerator-week-one";
 import { AcceleratorNextStep } from "@/components/AcceleratorNextStep";
 const LAUNCH_DAY = WEEK_ONE[0];
+const REPLAY_CLASSES = [
+  ["02", "accelerator-2026-09-14"],
+  ["03", "accelerator-2026-09-21"],
+  ["04", "accelerator-2026-09-22"],
+  ["05", "accelerator-2026-09-28"],
+  ["06", "accelerator-class-06"],
+  ["07", "accelerator-class-07"],
+  ["08", "accelerator-class-08"],
+  ["09", "accelerator-class-09"],
+] as const;
 export const Route = createFileRoute("/accelerator")({
   head: () => ({ meta: [{ title: "Autopilot Accelerator | AI AutoPilot" }] }),
   component: Accelerator,
@@ -41,87 +51,21 @@ function Accelerator() {
               </span>
             )}
           </article>
-          <article className="academy-card academy-week-day">
-            <span className="academy-number">Class 02</span>
-            <h3>CEO Calendar, AI Workflows &amp; Client Outreach</h3>
-            <p className="academy-muted">Accelerator · September 14, 2026</p>
-            <p>
-              Turn your calendar into a working operating plan, specify one AI workflow, and
-              research your first ten prospects.
-            </p>
-            <a className="academy-button" href="/lesson/accelerator-2026-09-14">
-              Open the class
-            </a>
-          </article>
-          <article className="academy-card academy-week-day">
-            <span className="academy-number">Class 03</span>
-            <h3>Departments, the bottleneck and your corporate offer</h3>
-            <p className="academy-muted">Accelerator · Monday, September 21, 2026</p>
-            <p>
-              Map marketing, sales and fulfilment as people, process and platform, find the real
-              bottleneck, value the backlog, and shape a four-minute corporate pitch.
-            </p>
-            <a className="academy-button" href="/lesson/accelerator-2026-09-21">
-              Open the class
-            </a>
-          </article>
-          <article className="academy-card academy-week-day">
-            <span className="academy-number">Class 04</span>
-            <h3>Orientation ladder, checkpoints and your first tested step</h3>
-            <p className="academy-muted">Accelerator · Tuesday, September 22, 2026</p>
-            <p>
-              Follows September 21. Know your stage, verify your lesson access and the AI tutor,
-              then take one customer step you can test this week.
-            </p>
-            <a className="academy-button" href="/lesson/accelerator-2026-09-22">
-              Open the class
-            </a>
-          </article>
-          <article className="academy-card academy-week-day">
-            <span className="academy-number">Class 05</span>
-            <h3>September 28 class replay</h3>
-            <p className="academy-muted">Accelerator · Monday, September 28, 2026</p>
-            <p>Watch the replay of the September 28 class and ask AI Spin to help you apply it.</p>
-            <a className="academy-button" href="/lesson/accelerator-2026-09-28">
-              Open the class
-            </a>
-          </article>
-          <article className="academy-card academy-week-day">
-            <span className="academy-number">Class 06</span>
-            <h3>Class 06 replay</h3>
-            <p className="academy-muted">Accelerator · Class 06</p>
-            <p>Watch the replay of Class 06 and ask AI Spin to help you apply it.</p>
-            <a className="academy-button" href="/lesson/accelerator-class-06">
-              Open the class
-            </a>
-          </article>
-          <article className="academy-card academy-week-day">
-            <span className="academy-number">Class 07</span>
-            <h3>Class 07 replay</h3>
-            <p className="academy-muted">Accelerator · Class 07</p>
-            <p>Watch the replay of Class 07 and ask AI Spin to help you apply it.</p>
-            <a className="academy-button" href="/lesson/accelerator-class-07">
-              Open the class
-            </a>
-          </article>
-          <article className="academy-card academy-week-day">
-            <span className="academy-number">Class 08</span>
-            <h3>Class 08 replay</h3>
-            <p className="academy-muted">Accelerator · Class 08</p>
-            <p>Watch the replay of Class 08 and ask AI Spin to help you apply it.</p>
-            <a className="academy-button" href="/lesson/accelerator-class-08">
-              Open the class
-            </a>
-          </article>
-          <article className="academy-card academy-week-day">
-            <span className="academy-number">Class 09</span>
-            <h3>Class 09 replay</h3>
-            <p className="academy-muted">Accelerator · Class 09</p>
-            <p>Watch the replay of Class 09 and ask AI Spin to help you apply it.</p>
-            <a className="academy-button" href="/lesson/accelerator-class-09">
-              Open the class
-            </a>
-          </article>
+          {REPLAY_CLASSES.map(([number, id]) => {
+            const lesson = (catalogue?.lessons ?? LESSONS).find((item) => item.id === id);
+            if (!lesson) return null;
+            return (
+              <article className="academy-card academy-week-day" key={id}>
+                <span className="academy-number">Class {number}</span>
+                <h3>{lesson.title}</h3>
+                <p className="academy-muted">{lesson.stage}</p>
+                <p>{lesson.summary}</p>
+                <a className="academy-button" href={`/lesson/${id}`}>
+                  Open the class
+                </a>
+              </article>
+            );
+          })}
         </div>
         <AcceleratorNextStep />
         <div className="academy-actions" style={{ marginTop: 24 }}>

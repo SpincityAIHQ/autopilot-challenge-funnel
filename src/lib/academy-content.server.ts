@@ -1,5 +1,6 @@
 import { LESSONS, parseChapters, type LessonContent, type LessonMedia } from "./academy";
 import { parseVimeoUrl, vimeoEmbedUrl } from "./vimeo";
+import type { RecordingLessonSource } from "./academy-recording-sources.server";
 import {
   CLASS_2026_09_14_CHECKS,
   CLASS_2026_09_14_ID,
@@ -438,7 +439,8 @@ export function slotMedia(id: string): LessonMedia | null {
     return null;
   }
 }
-export function lessonContent(id: string): LessonContent | null {
+/** A private recording source may be supplied only after lesson authorization. */
+export function lessonContent(id: string, source?: RecordingLessonSource | null): LessonContent | null {
   const meta = LESSONS.find((l) => l.id === id);
   if (!meta) return null;
   const media = slotMedia(id);
@@ -446,18 +448,22 @@ export function lessonContent(id: string): LessonContent | null {
     return {
       id,
       version: "2026-09-06.1",
-      paragraphs: [],
+      paragraphs: source?.notes ?? [],
       media,
       questions: [],
       workbook: SESSION_WORKBOOK,
+      sourceNote: source?.sourceNote ?? null,
+      transcriptTiming: source?.timing ?? "media",
     };
   const dated = id === CLASS_2026_09_14_ID;
   const datedClass = DATED_CLASSES[id] ?? null;
   return {
     id,
     version: dated ? CLASS_2026_09_14_VERSION : (datedClass?.version ?? "2026-09-06.1"),
-    paragraphs: units[id],
+    paragraphs: source?.notes ?? units[id],
     media,
+    sourceNote: source?.sourceNote ?? lessonSource(id),
+    transcriptTiming: source?.timing ?? "media",
     mediaNotice: media
       ? null
       : dated

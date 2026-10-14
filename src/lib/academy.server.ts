@@ -17,13 +17,21 @@ import {
   vaultAllows,
   watchSummary,
   type LessonContent,
+  type LessonMeta,
   type LessonProgress,
 } from "./academy";
 import { lessonContent, lessonSource, lessonTranscriptExcerpts, scoreAnswers, slotMedia } from "./academy-content.server";
 import { buildAcceleratorPath } from "./accelerator-path";
 import { isStaffEmail } from "./academy-staff.server";
 import { configuredVimeo, connectedSlots, vimeoDuration } from "./academy-media.server";
-import { loadTranscript, availableTranscriptIds, type TranscriptStore } from "./academy-transcript.server";
+import { loadTranscriptWithSource, availableTranscriptIds, type TranscriptStore } from "./academy-transcript.server";
+import {
+  loadRecordingLessonSource,
+  resolveRecordingCatalogue,
+  RECORDING_CONTENT_COLUMNS,
+  RECORDING_METADATA_COLUMNS,
+  RECORDING_TRANSCRIPT_COLUMNS,
+} from "./academy-recording-sources.server";
 import { retrieveCues } from "./transcript";
 import { consumeRateLimit } from "./rate-limit";
 import { readLimitedBody } from "./academy-http.server";
@@ -54,6 +62,16 @@ function transcriptStore(db: ReturnType<typeof academyDb>): TranscriptStore {
       const { data, error } = await db.from("academy_transcripts")
         .select("source_vtt,source_sha256,media_version,active")
         .eq("lesson_id", id)
+        .maybeSingle();
+      return { data, error };
+    },
+    readRecordingSource: async (videoId, projection) => {
+      const columns = projection === "metadata" ? RECORDING_METADATA_COLUMNS
+        : projection === "transcript" ? RECORDING_TRANSCRIPT_COLUMNS
+        : RECORDING_CONTENT_COLUMNS;
+      const { data, error } = await db.from("academy_recording_sources")
+        .select(columns)
+        .eq("video_id", videoId)
         .maybeSingle();
       return { data, error };
     },
@@ -162,7 +180,7 @@ const SHARED_RULES = [
   "The conversation field contains this student’s recent exchanges in this lesson. Use it to remember their business example, goals, previous questions and agreed next step. Earlier assistant answers are conversation history, not an approved teaching source. Current lesson evidence and access always override older conversation. Never infer completed work from a promise to do it.",
   "When the student asks for help, prioritize the question and one achievable next action. Invite a paid next stage only when they ask about it or the brief shows that they are ready after completing their current work. Never append a purchase pitch to every answer.",
   "Meet them exactly where they are. Use viewing telemetry to hold them accountable with warmth: if they stopped part-way, name the timestamp and the chapter they missed and ask them to finish that part before moving on. If a chapter is missed, point to it by title and time. Never invent a timestamp or chapter that is not in the brief.",
-  "When transcript excerpts are provided, they are the recording's own words: quote or paraphrase the relevant moment and cite its timestamp so the student can jump straight to it. Prefer the transcript over general knowledge for anything Spin said in the recording.",
+  "When transcript excerpts are provided, prefer the transcript over general knowledge for anything taught in the recording and cite its timestamp with the stated timing basis. Honor transcript.timingBasis: media timestamps are playback offsets; source_landmarks timestamps are the source transcript's clock and are NOT verified video offsets. For source_landmarks, label each citation as a source-transcript time, do not tell the student to seek or jump to it, and do not match that clock to viewing telemetry. Preserve speaker and presentation/replay labels inside the text; do not attribute presentation audio or a replay to live Spin. Respect the sourceNote's segment-specific provenance.",
   "Help with the current lesson using only the approved notes, the transcript excerpts and the platform guide. Reference the relevant heading, chapter or timestamp. Ask one useful follow-up question, give a small worked example when helpful, and use progress to identify the next practice task. Watching is not mastery.",
   "Encourage the student to use the best of what their ticket already includes before anything else: the free training first, then the Summit recordings, the Vault for key holders, the build rooms, live avatar and 1-on-1 for Accelerator members. Point to the specific page. The goal is that they become the best at this, not that they buy.",
   "When it is relevant, invite them to level up with love and grace: once they have done the work at their ticket level, or when they ask what is next, or when a question is answered in a stage they do not hold yet, warmly describe the next stage from the brief, what it unlocks, its price, and the page to visit. Do this at most once per answer, in one or two sentences, after the help. Never pressure a struggling student, never manufacture urgency, never promise income, accreditation, legal or financial outcomes.",
@@ -254,14 +272,41 @@ function bookingFor(grants: string[]) {
   }
   return { eligible, configured: Boolean(url), url: eligible ? url : null, embed };
 }
+/** The tutor sees full approved notes only for tiers in its authoritative grants. */
+export function tutorCourseLibrary(
+  catalogue: LessonMeta[],
+  contents: ReadonlyMap<string, LessonContent>,
+  grants: string[],
+) {
+  return catalogue.map((meta) => {
+    const unlocked = tierAllows(grants, meta.tier);
+    const content = unlocked ? contents.get(meta.id) : undefined;
+    return {
+      id: meta.id,
+      title: meta.title,
+      stage: meta.stage,
+      kind: meta.kind,
+      tier: meta.tier,
+      unlocked,
+      link: lessonHref(meta.id),
+      chapters: (content?.media?.chapters ?? []).map((chapter) => chapter.title),
+      notes: unlocked ? content?.paragraphs ?? [] : undefined,
+      source: unlocked ? content?.sourceNote ?? lessonSource(meta.id) : undefined,
+      transcriptTiming: unlocked ? content?.transcriptTiming ?? "media" : undefined,
+      lockedNote: unlocked ? undefined
+        : "Locked for this ticket: describe what it covers and invite, never teach its detail.",
+    };
+  });
+}
 export async function handleAcademyGet(request: Request, path: string) {
   const url = new URL(request.url);
   if (path === "catalogue") {
     const connected = connectedSlots(LESSONS);
+    const store = transcriptStore(academyDb());
     return {
-      lessons: LESSONS,
+      lessons: await resolveRecordingCatalogue(LESSONS, store),
       connected,
-      transcripts: await availableTranscriptIds(LESSONS.filter((l) => connected.includes(l.id)), transcriptStore(academyDb())),
+      transcripts: await availableTranscriptIds(LESSONS.filter((l) => connected.includes(l.id)), store),
       bookingConfigured: bookingFor([]).configured,
     };
   }
@@ -312,10 +357,14 @@ export async function handleAcademyGet(request: Request, path: string) {
         .eq("lesson_id", id)
         .maybeSingle(),
     ).data;
-    const lesson = lessonContent(id)!;
+    const store = transcriptStore(db);
+    const source = await loadRecordingLessonSource(authorized.meta, store);
+    const lesson = lessonContent(id, source)!;
     await resolveMedia(lesson, db);
-    const meta = LESSONS.find((l) => l.id === id)!;
-    lesson.transcript = lesson.media ? await loadTranscript(id, meta.envKey, transcriptStore(db)) : null;
+    const transcript = lesson.media ? await loadTranscriptWithSource(id, authorized.meta.envKey, store) : null;
+    lesson.transcript = transcript?.cues ?? null;
+    lesson.transcriptTiming = transcript?.timing ?? source?.timing ?? "media";
+    lesson.sourceNote = transcript?.sourceNote ?? lesson.sourceNote;
     if (progress && progress.media_version !== lesson.media?.version) {
       progress.intervals = [];
       progress.duration = 0;
@@ -805,14 +854,23 @@ export async function handleAcademyPost(request: Request, path: string) {
         .maybeSingle()
         .then((r) => check(r).data),
     ]);
-    const lesson = lessonContent(d.lessonId)!;
+    const store = transcriptStore(db);
+    const catalogue = await resolveRecordingCatalogue(LESSONS, store);
+    // `grants` came from the strict entitlement lookup above. Locked tiers
+    // receive metadata only and never trigger a private teaching-note read.
+    const contentEntries = await Promise.all(catalogue
+      .filter((candidate) => tierAllows(grants, candidate.tier))
+      .map(async (candidate) => [candidate.id, lessonContent(candidate.id,
+        await loadRecordingLessonSource(candidate, store))!] as const));
+    const contents = new Map<string, LessonContent>(contentEntries);
+    const lesson = contents.get(d.lessonId)!;
     const quizPractice = latestQuiz?.content_version === lesson.version && Array.isArray(latestQuiz.answers)
       ? missedQuizTopics(lesson.questions, scoreAnswers(d.lessonId, latestQuiz.answers).feedback)
       : [];
     const progress = savedProgress
       ? currentMediaProgress(savedProgress, lesson.media?.version)
       : null;
-    const meta = LESSONS.find((x) => x.id === d.lessonId)!;
+    const meta = catalogue.find((x) => x.id === d.lessonId)!;
     const ticket = ticketFor(grants);
     if (d.guide === "spin" && !ticket.accelerator)
       throw new AcademyError(
@@ -825,7 +883,10 @@ export async function handleAcademyPost(request: Request, path: string) {
     const vaultAllowsUser = vaultAllows(grants);
     const chapters = lesson.media?.chapters ?? [];
     const watch = progress ? watchSummary(progress) : null;
-    const cues = lesson.media ? await loadTranscript(d.lessonId, meta.envKey, transcriptStore(db)) : null;
+    const transcript = lesson.media ? await loadTranscriptWithSource(d.lessonId, meta.envKey, store) : null;
+    const cues = transcript?.cues ?? null;
+    const transcriptTiming = transcript?.timing ?? lesson.transcriptTiming ?? "media";
+    const sourceNote = transcript?.sourceNote ?? lesson.sourceNote ?? lessonSource(d.lessonId);
     const missed = progress
       ? chapterStatus(chapters, progress.intervals, progress.duration).filter(
           (c) => c.status !== "watched",
@@ -833,7 +894,7 @@ export async function handleAcademyPost(request: Request, path: string) {
       : chapters.map((c) => ({ ...c, status: "missed" as const }));
     const journey = allProgress
       .map((p) => {
-        const l = LESSONS.find((x) => x.id === p.lesson_id);
+        const l = catalogue.find((x) => x.id === p.lesson_id);
         if (!l || !tierAllows(grants, l.tier)) return null;
         const w = watchSummary(currentMediaProgress(p, lessonContent(l.id)?.media?.version));
         return {
@@ -871,10 +932,10 @@ export async function handleAcademyPost(request: Request, path: string) {
                 ticket: ticket.label,
                 ticketCode: ticket.code,
                 acceleratorMember: ticket.accelerator,
-                unlockedStages: LESSONS.filter((l) => tierAllows(grants, l.tier)).map(
+                unlockedStages: catalogue.filter((l) => tierAllows(grants, l.tier)).map(
                   (l) => l.stage,
                 ),
-                lockedStages: LESSONS.filter(
+                lockedStages: catalogue.filter(
                   (l) => !tierAllows(grants, l.tier) && l.kind === "lesson",
                 ).map((l) => l.stage),
               },
@@ -887,22 +948,28 @@ export async function handleAcademyPost(request: Request, path: string) {
                 recordingConnected: Boolean(lesson.media),
                 // Dated live classes carry their own provenance so the tutor can
                 // say which session and date an answer comes from.
-                source: lessonSource(d.lessonId),
+                source: sourceNote,
+                sourceNote,
+                transcriptTiming,
                 // Exact instructor passages; block times are not playback offsets.
                 transcriptExcerpts: tierAllows(grants, meta.tier) ? lessonTranscriptExcerpts(d.lessonId) : null,
               },
               transcript: cues
                 ? {
-                    note: "Timed transcript excerpts from this recording. Cite the timestamp when you point the student to a moment.",
+                    note: transcriptTiming === "source_landmarks"
+                      ? "Complete source transcript is connected; these are retrieved excerpts. Times belong to the source-transcript clock, not verified video playback offsets. Label citations as source-transcript times and preserve each speaker/presentation/replay label."
+                      : "Timed transcript excerpts from this recording. Cite the playback timestamp when you point the student to a moment.",
+                    timingBasis: transcriptTiming,
+                    sourceNote,
                     totalCues: cues.length,
                     excerpts: retrieveCues(cues, {
                       question: d.question,
-                      around: [
+                      around: transcriptTiming === "media" ? [
                         ...(watch?.dropOffAt !== null && watch?.dropOffAt !== undefined
                           ? [watch.dropOffAt]
                           : []),
                         ...missed.slice(0, 3).map((c) => c.start),
-                      ],
+                      ] : [],
                       limit: 40,
                     }).map((c) => ({ at: formatTime(c.start), text: c.text })),
                   }
@@ -946,25 +1013,7 @@ export async function handleAcademyPost(request: Request, path: string) {
               // The whole curriculum, so the tutor can answer about any lesson,
               // not only the one currently open. Locked lessons carry titles and
               // chapter names only; their teaching notes stay behind the ticket.
-              courseLibrary: LESSONS.map((l) => {
-                const unlocked = tierAllows(grants, l.tier);
-                const c = lessonContent(l.id);
-                return {
-                  id: l.id,
-                  title: l.title,
-                  stage: l.stage,
-                  kind: l.kind,
-                  tier: l.tier,
-                  unlocked,
-                  link: lessonHref(l.id),
-                  chapters: (c?.media?.chapters ?? []).map((ch) => ch.title),
-                  notes: unlocked ? (c?.paragraphs ?? []).slice(0, 6) : undefined,
-                  source: unlocked ? lessonSource(l.id) : undefined,
-                  lockedNote: unlocked
-                    ? undefined
-                    : "Locked for this ticket: describe what it covers and invite, never teach its detail.",
-                };
-              }),
+              courseLibrary: tutorCourseLibrary(catalogue, contents, grants),
               nextStage: offer
                 ? {
                     name: offer.name,
