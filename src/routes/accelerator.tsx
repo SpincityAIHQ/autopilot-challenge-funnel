@@ -104,6 +104,15 @@ function Accelerator() {
               Open the class
             </a>
           </article>
+          <article className="academy-card academy-week-day">
+            <span className="academy-number">Class 08</span>
+            <h3>Class 08 replay</h3>
+            <p className="academy-muted">Accelerator · Class 08</p>
+            <p>Watch the replay of Class 08 and ask AI Spin to help you apply it.</p>
+            <a className="academy-button" href="/lesson/accelerator-class-08">
+              Open the class
+            </a>
+          </article>
         </div>
         <AcceleratorNextStep />
         <div className="academy-actions" style={{ marginTop: 24 }}>
