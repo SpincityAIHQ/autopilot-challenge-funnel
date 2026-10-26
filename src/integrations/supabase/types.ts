@@ -554,6 +554,63 @@ export type Database = {
         }
         Relationships: []
       }
+      academy_recording_sources: {
+        Row: {
+          active: boolean
+          cue_count: number
+          imported_at: string
+          notes: Json
+          skill: string
+          source_date: string
+          source_modified_at: string
+          source_name: string
+          source_note: string
+          source_sha256: string | null
+          source_vtt: string | null
+          stage: string
+          summary: string
+          timing_basis: string
+          title: string
+          video_id: string
+        }
+        Insert: {
+          active?: boolean
+          cue_count: number
+          imported_at?: string
+          notes: Json
+          skill: string
+          source_date: string
+          source_modified_at: string
+          source_name: string
+          source_note: string
+          source_sha256?: string | null
+          source_vtt?: string | null
+          stage: string
+          summary: string
+          timing_basis?: string
+          title: string
+          video_id: string
+        }
+        Update: {
+          active?: boolean
+          cue_count?: number
+          imported_at?: string
+          notes?: Json
+          skill?: string
+          source_date?: string
+          source_modified_at?: string
+          source_name?: string
+          source_note?: string
+          source_sha256?: string | null
+          source_vtt?: string | null
+          stage?: string
+          summary?: string
+          timing_basis?: string
+          title?: string
+          video_id?: string
+        }
+        Relationships: []
+      }
       academy_reviews: {
         Row: {
           created_at: string
