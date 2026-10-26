@@ -55,7 +55,7 @@ describe("October 26 Accelerator class", () => {
       const lesson = lessonContent(meta.id, source)!;
       expect(lesson.transcript).toBeUndefined();
       const lib = tutorCourseLibrary([meta], new Map([[meta.id, lesson]]), ["accelerator"]);
-      expect(lib[0].notes.length).toBe(14);
+      expect(lib[0]?.notes?.length).toBe(14);
       const denied = tutorCourseLibrary([meta], new Map([[meta.id, lesson]]), ["ga", "vip", "vault"]);
       expect(JSON.stringify(denied)).not.toContain("Synthetic note body.");
     });
