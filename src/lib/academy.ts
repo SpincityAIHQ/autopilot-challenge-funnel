@@ -172,6 +172,16 @@ const DATED_REPLAYS: LessonMeta[] = [
     kind: "session",
     envKey: envKeyFor("accelerator-class-09"),
   },
+  {
+    id: "accelerator-2026-10-26",
+    title: "ICP, Search Intent and Governed AI Employees",
+    stage: "Accelerator · Monday, October 26, 2026",
+    tier: "accelerator",
+    summary: "Focus on one ideal client, map search intent to useful content, and train an AI employee with reviewed examples and escalation rules.",
+    skill: "Design a source-grounded, reviewable content workflow",
+    kind: "session",
+    envKey: envKeyFor("accelerator-2026-10-26"),
+  },
 ];
 export const LESSONS: LessonMeta[] = [
   ...CORE.map((l) => ({ ...l, kind: "lesson" as const, envKey: envKeyFor(l.id) })),
