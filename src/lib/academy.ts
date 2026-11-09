@@ -182,6 +182,16 @@ const DATED_REPLAYS: LessonMeta[] = [
     kind: "session",
     envKey: envKeyFor("accelerator-2026-10-26"),
   },
+  {
+    id: "accelerator-2026-11-09",
+    title: "Holiday Buyer Psychology and the PASE Funnel System",
+    stage: "Accelerator · Monday, November 9, 2026",
+    tier: "accelerator",
+    summary: "Apply buyer psychology to one offer, four matching page routes and a holiday campaign.",
+    skill: "Build and review a PASE campaign",
+    kind: "session",
+    envKey: envKeyFor("accelerator-2026-11-09"),
+  },
 ];
 export const LESSONS: LessonMeta[] = [
   ...CORE.map((l) => ({ ...l, kind: "lesson" as const, envKey: envKeyFor(l.id) })),
@@ -574,6 +584,8 @@ export type LessonContent = {
   paragraphs: { heading: string; text: string }[];
   questions: { id: string; prompt: string; choices: string[] }[];
   workbook: { id: string; label: string; hint: string }[];
+  /** Private resource bytes are fetched separately after lesson authorization. */
+  resources?: { id: string; label: string; filename: string }[];
   media: LessonMedia | null;
   /** Timed transcript cues when a transcript is connected. Every word, with its time. */
   transcript?: TranscriptCue[] | null;

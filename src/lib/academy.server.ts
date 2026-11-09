@@ -33,6 +33,7 @@ import {
   RECORDING_TRANSCRIPT_COLUMNS,
 } from "./academy-recording-sources.server";
 import { retrieveCues } from "./transcript";
+import { recordingResourceForGrants } from "./academy-recording-resources.server";
 import { consumeRateLimit } from "./rate-limit";
 import { readLimitedBody } from "./academy-http.server";
 import { learningGuidance, learningStats } from "./academy-guidance";
@@ -331,6 +332,16 @@ export async function handleAcademyGet(request: Request, path: string) {
 
   const user = await academyUser(request);
   const db = academyDb();
+  if (path === "lesson-resource") {
+    const id = url.searchParams.get("lessonId") ?? "";
+    const authorized = await authorizeLessonWithGrants(user, id);
+    const source = await loadRecordingLessonSource(authorized.meta, transcriptStore(db));
+    const resource = recordingResourceForGrants(
+      authorized.meta, source, url.searchParams.get("resourceId") ?? "", authorized.grants,
+    );
+    if (!resource) throw new AcademyError("Resource not found", 404);
+    return resource;
+  }
   if (["onboarding", "dashboard", "lesson"].includes(path)) {
     // Identity comes only from the verified auth session, never request input.
     const prepared = await db.rpc("academy_prepare_customer", { p_user: user.id, p_email: user.email! });

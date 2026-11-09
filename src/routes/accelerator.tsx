@@ -15,6 +15,7 @@ const REPLAY_CLASSES = [
   ["08", "accelerator-class-08"],
   ["09", "accelerator-class-09"],
   ["10", "accelerator-2026-10-26"],
+  ["November 9", "accelerator-2026-11-09"],
 ] as const;
 export const Route = createFileRoute("/accelerator")({
   head: () => ({ meta: [{ title: "Autopilot Accelerator | AI AutoPilot" }] }),
@@ -68,7 +69,7 @@ function Accelerator() {
             if (!lesson) return null;
             return (
               <article className="academy-card academy-week-day" key={id}>
-                <span className="academy-number">Class {number}</span>
+                <span className="academy-number">{number === "November 9" ? "November 9 replay" : `Class ${number}`}</span>
                 <h3>{lesson.title}</h3>
                 <p className="academy-muted">{lesson.stage}</p>
                 {catalogue?.transcripts ? (
