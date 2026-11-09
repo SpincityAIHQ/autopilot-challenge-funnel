@@ -136,6 +136,26 @@ function ClassroomSession({
       setBusy(false);
     }
   }
+  async function downloadResource(resourceId: string) {
+    setBusy(true);
+    setStatus("");
+    try {
+      const resource = await academyApi<{
+        filename: string; mimeType: string; encoding: "utf8"; content: string;
+      }>(`lesson-resource?lessonId=${encodeURIComponent(lessonId)}&resourceId=${encodeURIComponent(resourceId)}`);
+      const url = URL.createObjectURL(new Blob([resource.content], { type: resource.mimeType }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = resource.filename;
+      link.click();
+      URL.revokeObjectURL(url);
+      setStatus("Resource downloaded.");
+    } catch (error) {
+      setStatus((error as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
   async function ask(text: string) {
     const q = text.trim();
     if (!q || busy) return;
@@ -526,6 +546,21 @@ function ClassroomSession({
                     </p>
                   ) : null}
                 </section>
+                {lesson.resources?.length ? (
+                  <section className="academy-card academy-block" aria-label="Lesson downloads">
+                    <div className="academy-block-head">
+                      <div><h2>Worksheets and prompts</h2><p>Download the class resources and apply them to your business.</p></div>
+                    </div>
+                    <div className="academy-actions">
+                      {lesson.resources.map((resource) => (
+                        <button key={resource.id} className="academy-button academy-button-secondary"
+                          disabled={busy} onClick={() => downloadResource(resource.id)}>
+                          {resource.label}
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+                ) : null}
                 {/* ---------- ACTIVITY SHEET ---------- */}
                 {!isSession ? (
                   <section

@@ -1,6 +1,7 @@
 import { LESSONS, parseChapters, type LessonContent, type LessonMedia } from "./academy";
 import { parseVimeoUrl, vimeoEmbedUrl } from "./vimeo";
 import type { RecordingLessonSource } from "./academy-recording-sources.server";
+import { recordingTeachingNotes, recordingResourceDescriptors } from "./academy-recording-resources.server";
 import {
   CLASS_2026_09_14_CHECKS,
   CLASS_2026_09_14_ID,
@@ -448,7 +449,8 @@ export function lessonContent(id: string, source?: RecordingLessonSource | null)
     return {
       id,
       version: "2026-09-06.1",
-      paragraphs: source?.notes ?? [],
+      paragraphs: recordingTeachingNotes(meta, source),
+      resources: recordingResourceDescriptors(meta, source),
       media,
       questions: [],
       workbook: SESSION_WORKBOOK,
