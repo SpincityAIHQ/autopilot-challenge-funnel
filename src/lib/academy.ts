@@ -103,23 +103,20 @@ const CORE: Omit<LessonMeta, "kind" | "envKey">[] = [
     skill: "Demonstrate a working system",
   },
 ];
-export const ACCELERATOR_DAYS: LessonMeta[] = Array.from(
-  { length: ACCELERATOR_DAY_COUNT },
-  (_, i) => {
-    const n = String(i + 1).padStart(2, "0");
-    const id = `accelerator-day-${n}`;
-    return {
-      id,
-      title: `Build room · Day ${n}`,
-      stage: `Accelerator · Day ${n}`,
-      tier: "accelerator" as const,
-      summary: "Replay of the live implementation session. Ask AI Spin to find the part you need.",
-      skill: "Implement with the group",
-      kind: "session" as const,
-      envKey: envKeyFor(id),
-    };
-  },
-);
+export const ACCELERATOR_DAYS: LessonMeta[] = Array.from({ length: ACCELERATOR_DAY_COUNT }, (_, i) => {
+  const n = String(i + 1).padStart(2, "0");
+  const id = `accelerator-day-${n}`;
+  return {
+    id,
+    title: `Build room · Day ${n}`,
+    stage: `Accelerator · Day ${n}`,
+    tier: "accelerator" as const,
+    summary: "Replay of the live implementation session. Ask AI Spin to find the part you need.",
+    skill: "Implement with the group",
+    kind: "session" as const,
+    envKey: envKeyFor(id),
+  };
+});
 /** Dated Accelerator meeting replays without authored notes yet. */
 const DATED_REPLAYS: LessonMeta[] = [
   {
@@ -177,38 +174,39 @@ const DATED_REPLAYS: LessonMeta[] = [
     title: "ICP, Search Intent and Governed AI Employees",
     stage: "Accelerator · Monday, October 26, 2026",
     tier: "accelerator",
-    summary: "Focus on one ideal client, map search intent to useful content, and train an AI employee with reviewed examples and escalation rules.",
+    summary:
+      "Focus on one ideal client, map search intent to useful content, and train an AI employee with reviewed examples and escalation rules.",
     skill: "Design a source-grounded, reviewable content workflow",
     kind: "session",
     envKey: envKeyFor("accelerator-2026-10-26"),
   },
   {
     id: "accelerator-class-11",
-    title: "Class 11 replay",
-    stage: "Accelerator · Class 11",
+    title: "Three Stories Behind Your Offer",
+    stage: "Accelerator · Monday, November 2, 2026",
     tier: "accelerator",
-    summary: "Replay of Class 11. Ask AI Spin to help you apply it.",
-    skill: "Implement with the group",
+    summary: "Find the real stories that explain why you built your offer.",
+    skill: "Connect your founder story to your offer",
     kind: "session",
     envKey: envKeyFor("accelerator-class-11"),
   },
   {
     id: "accelerator-class-12",
-    title: "Class 12 replay",
-    stage: "Accelerator · Class 12",
+    title: "P A S E: Buyer Psychology for Holiday Offers",
+    stage: "Accelerator · Monday, November 9, 2026",
     tier: "accelerator",
-    summary: "Replay of Class 12. Ask AI Spin to help you apply it.",
-    skill: "Implement with the group",
+    summary: "Match your offer message to what makes different customers buy.",
+    skill: "Match offer messages to buyer motivations",
     kind: "session",
     envKey: envKeyFor("accelerator-class-12"),
   },
   {
     id: "accelerator-class-13",
-    title: "Class 13 replay",
-    stage: "Accelerator · Class 13",
+    title: "Build Your Monetization System with Chad Focus",
+    stage: "Accelerator · Monday, November 16, 2026",
     tier: "accelerator",
-    summary: "Replay of Class 13. Ask AI Spin to help you apply it.",
-    skill: "Implement with the group",
+    summary: "Try one content-to-offer workflow by hand before you automate it.",
+    skill: "Validate a content-to-offer workflow by hand",
     kind: "session",
     envKey: envKeyFor("accelerator-class-13"),
   },
@@ -261,8 +259,7 @@ export const ACCELERATOR_OFFER = {
     "September–December 2026 group build rooms, every day's replay, live AI Spin avatar and 1-on-1 time with SpinCity",
   url: "/accelerator",
 } as const;
-export const COMMUNITY_URL =
-  "https://www.skool.com/the-ascended-masters/about?ref=ce11d00bd3994b97bfd25e10976d9f0b";
+export const COMMUNITY_URL = "https://www.skool.com/the-ascended-masters/about?ref=ce11d00bd3994b97bfd25e10976d9f0b";
 /** Membership is handled in Skool; both paid tiers are joined from the same community. */
 export const SKOOL_SUMMIT_URL = COMMUNITY_URL;
 export const SKOOL_ACCELERATOR_URL = COMMUNITY_URL;
@@ -295,11 +292,7 @@ export const SUPPORT_OPTIONS: SupportOption[] = [
     eyebrow: "Standard · Free to join",
     title: "Free community and free training",
     body: "Join free, then step up whenever you are ready.",
-    bullets: [
-      "Thursday classes live",
-      "Weekly worksheet",
-      "1 MasterClass recording and workbook",
-    ],
+    bullets: ["Thursday classes live", "Weekly worksheet", "1 MasterClass recording and workbook"],
     actionLabel: "Open the community",
     href: COMMUNITY_URL,
     external: true,
@@ -325,11 +318,7 @@ export const SUPPORT_OPTIONS: SupportOption[] = [
     eyebrow: `${MEMBERSHIP_ACCELERATOR_NAME} · ${MEMBERSHIP_ACCELERATOR_PRICE}`,
     title: "Accelerator classroom",
     body: "Everything in Premium plus the Accelerator classroom and every class replay.",
-    bullets: [
-      "Everything in Premium",
-      "NuAmenti Founder classes every Tuesday",
-      "2 strategy sessions with Spin",
-    ],
+    bullets: ["Everything in Premium", "NuAmenti Founder classes every Tuesday", "2 strategy sessions with Spin"],
     actionLabel: "Join in Skool",
     href: SKOOL_ACCELERATOR_URL,
     external: true,
@@ -343,8 +332,6 @@ export const SUPPORT_OPTIONS: SupportOption[] = [
     href: SUPPORT_TEXT_HREF,
   },
 ];
-
-
 
 /**
  * Two guides. Thoth, keeper of every word and its time, tutors the public floors:
@@ -399,9 +386,7 @@ export function ticketFor(grants: string[]): Ticket {
   let summit: Ticket["summit"] = "free";
   for (const g of grants) if ((rank[g] ?? 0) > (rank[summit] ?? 0)) summit = g as Ticket["summit"];
   const accelerator = grants.includes("accelerator");
-  const parts = [accelerator ? "Autopilot Accelerator" : null, SUMMIT_LABELS[summit]].filter(
-    Boolean,
-  ) as string[];
+  const parts = [accelerator ? "Autopilot Accelerator" : null, SUMMIT_LABELS[summit]].filter(Boolean) as string[];
   const label = accelerator && summit === "free" ? "Autopilot Accelerator" : parts.join(" + ");
   return {
     summit,
@@ -445,9 +430,7 @@ export function mergeIntervals(ranges: Interval[], duration: number): Interval[]
 }
 export function coverage(ranges: Interval[], duration: number): number {
   return duration > 0
-    ? Math.round(
-        (100 * mergeIntervals(ranges, duration).reduce((n, [a, b]) => n + b - a, 0)) / duration,
-      )
+    ? Math.round((100 * mergeIntervals(ranges, duration).reduce((n, [a, b]) => n + b - a, 0)) / duration)
     : 0;
 }
 /** The Vault opens for Emerald Vault Key holders and Accelerator students. */
@@ -510,9 +493,7 @@ export function parseChapters(raw: string | undefined | null, duration = Infinit
     if (start < 0 || start >= duration) continue;
     out.push({ start, title: m[2].trim().slice(0, 120) });
   }
-  return out
-    .sort((a, b) => a.start - b.start)
-    .filter((c, i, arr) => i === 0 || c.start > arr[i - 1].start);
+  return out.sort((a, b) => a.start - b.start).filter((c, i, arr) => i === 0 || c.start > arr[i - 1].start);
 }
 export type ChapterStatus = Chapter & {
   end: number;
@@ -520,11 +501,7 @@ export type ChapterStatus = Chapter & {
   status: "watched" | "partial" | "missed";
 };
 /** Per-chapter coverage so the guide and the watch map can name the exact part a student missed. */
-export function chapterStatus(
-  chapters: Chapter[],
-  intervals: Interval[],
-  duration: number,
-): ChapterStatus[] {
+export function chapterStatus(chapters: Chapter[], intervals: Interval[], duration: number): ChapterStatus[] {
   if (!duration || !chapters.length) return [];
   const merged = mergeIntervals(intervals, duration);
   return chapters.map((c, i) => {
@@ -537,11 +514,7 @@ export function chapterStatus(
       ...c,
       end,
       watched,
-      status: (watched >= 85
-        ? "watched"
-        : watched >= 15
-          ? "partial"
-          : "missed") as ChapterStatus["status"],
+      status: (watched >= 85 ? "watched" : watched >= 15 ? "partial" : "missed") as ChapterStatus["status"],
     };
   });
 }
@@ -554,11 +527,8 @@ export type WatchSummary = {
   gaps: Interval[];
   minutesWatched: number;
 };
-export function watchSummary(
-  p?: Pick<LessonProgress, "intervals" | "duration" | "position">,
-): WatchSummary {
-  if (!p || !p.duration)
-    return { coverage: 0, furthest: 0, dropOffAt: null, gaps: [], minutesWatched: 0 };
+export function watchSummary(p?: Pick<LessonProgress, "intervals" | "duration" | "position">): WatchSummary {
+  if (!p || !p.duration) return { coverage: 0, furthest: 0, dropOffAt: null, gaps: [], minutesWatched: 0 };
   const merged = mergeIntervals(p.intervals, p.duration);
   const watched = merged.reduce((n, [a, b]) => n + b - a, 0);
   const pct = Math.round((100 * watched) / p.duration);
@@ -582,20 +552,16 @@ export function nextStep(p?: LessonProgress, kind: LessonKind = "lesson") {
   if (kind === "session") {
     const w = watchSummary(p);
     if (!p || !p.duration) return "Press play on this replay when you have 20 focused minutes.";
-    if (w.coverage < 90)
-      return `You stopped at ${formatTime(w.dropOffAt ?? 0)}. Pick up there and finish the session.`;
+    if (w.coverage < 90) return `You stopped at ${formatTime(w.dropOffAt ?? 0)}. Pick up there and finish the session.`;
     return "You finished this session. Apply one thing from it in the implementation lab.";
   }
   if (!p) return "Start the lesson and identify one real business problem.";
   if (p.quiz_score === null) return "Try the knowledge check to find what needs practice.";
-  if (p.quiz_score < (p.quiz_total ?? 1))
-    return "Review the feedback, then try the knowledge check again.";
-  if (p.workbook_status === "draft")
-    return "Apply the lesson to your business in the activity sheet.";
+  if (p.quiz_score < (p.quiz_total ?? 1)) return "Review the feedback, then try the knowledge check again.";
+  if (p.workbook_status === "draft") return "Apply the lesson to your business in the activity sheet.";
   if (p.workbook_status === "submitted")
     return "Your activity is ready for instructor review. Practise the workflow while you wait.";
-  if (p.workbook_status === "needs_revision")
-    return "Use the instructor feedback to revise your activity.";
+  if (p.workbook_status === "needs_revision") return "Use the instructor feedback to revise your activity.";
   return "You demonstrated this skill. Revisit it with a new example in a week.";
 }
 export type LessonContent = {
