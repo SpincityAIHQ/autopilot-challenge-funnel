@@ -16,6 +16,7 @@ const REPLAY_CLASSES = [
   ["09", "accelerator-class-09"],
   ["10", "accelerator-2026-10-26"],
   ["11", "accelerator-class-11"],
+  ["12", "accelerator-class-12"],
 ] as const;
 export const Route = createFileRoute("/accelerator")({
   head: () => ({ meta: [{ title: "Autopilot Accelerator | AI AutoPilot" }] }),
