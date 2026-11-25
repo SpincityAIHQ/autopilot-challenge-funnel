@@ -27,7 +27,7 @@ describe("September 14 Accelerator class", () => {
       "implementation-lab",
     ])
       expect(LESSONS.some((l) => l.id === id)).toBe(true);
-    expect(LESSONS.filter((l) => l.kind === "session").length).toBe(12);
+    expect(LESSONS.filter((l) => l.kind === "session").length).toBe(22);
     expect(LESSONS.filter((l) => l.kind === "lesson").length).toBe(10);
   });
 
