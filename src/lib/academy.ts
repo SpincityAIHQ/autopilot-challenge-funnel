@@ -212,10 +212,10 @@ const DATED_REPLAYS: LessonMeta[] = [
   },
   {
     id: "accelerator-class-14",
-    title: "Class 14 replay",
+    title: "Turn Your Content Into IP Assets with Dr. Tonee",
     stage: "Accelerator · Class 14",
     tier: "accelerator",
-    summary: "Replay of Class 14. Ask AI Spin to help you apply it.",
+    summary: "Dr. Tonee lays out the IP asset system: every piece of content gets an intake record, its agreements, and a registered place inside your company — building valuation instead of letting a platform keep the upside of 512 million views for a $1,000 payout. Spin then works distribution live: ClickBank button math, warm lookalike audiences converted at $5 a message, and the channel map — Google as the defensive goalie, Meta, TikTok and Roku on offense.",
     skill: "Implement with the group",
     kind: "session",
     envKey: envKeyFor("accelerator-class-14"),
